@@ -1,0 +1,601 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+generator zod {
+  provider                 = "zod-prisma"
+  output                   = "./zod" // (default) the directory where generated zod schemas will be saved
+  relationModel            = false // (default) Create and export both plain and related models.
+  modelSuffix              = "Model" // (default) Suffix to apply to your prisma models when naming Zod schemas
+  useDecimalJs             = true // represent the prisma Decimal type using Decimal.js (as Prisma does)
+
+  // https://www.prisma.io/docs/concepts/components/prisma-client/working-with-fields/working-with-json-fields#filtering-by-null-values
+  prismaJsonNullability    = true // (default) uses prisma's scheme for JSON field nullability
+}
+
+model User {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  email     String  @unique
+  password  String?
+  firstName String?
+  lastName  String?
+
+  verifiedEmail Boolean @default(false)
+
+  loginToken      String?   @unique
+  loginExpiration DateTime?
+
+  employee Employee?
+}
+
+model AdminUser {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  email                   String                   @unique
+  password                String
+  payrollAdvanceHistories PayrollAdvanceHistory[]
+  PayrollAdvanceTransfer  PayrollAdvanceTransfer[]
+}
+
+model Company {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  name        String
+  status      CompanyStatus @default(INACTIVE)
+  description String?
+  address     String?
+  phone       String?
+
+  // USED FOR PAYROLL ADVANCES
+  dispersion     Float?
+  paymentDays    Int[]
+  lastRequestDay Int?   @default(25)
+
+  // USED FOR PREMIUM ADVANCES
+  premiumDispersion     Float?
+  premiumPaymentDays    Int[]
+  premiumLastRequestDay Int?   @default(25)
+
+  country            Country?              @relation(fields: [countryId], references: [id])
+  countryId          Int?
+  employees          Employee[]
+  banks              Bank[]
+  categories         CompanyCategory[]
+  contactPerson      CompanyContactPerson?
+  cryptocurrencies   Cryptocurrency[]
+  companyTaxes       CompanyTax[]
+  payrollAdvances    PayrollAdvance[]
+  companyFiatDebts   CompanyFiatDebt[]
+  companyCryptoDebts CompanyCryptoDebt[]
+  companyDebts       CompanyDebt[]
+}
+
+enum CompanyStatus {
+  ACTIVE
+  INACTIVE
+}
+
+model CompanyDebt {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  month Int
+  year  Int
+
+  fiatDebt   CompanyFiatDebt?
+  cryptoDebt CompanyCryptoDebt?
+
+  company   Company @relation(fields: [companyId], references: [id])
+  companyId String
+}
+
+model CompanyFiatDebt {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  amount        Float // Total accumulated value of the debt
+  currentAmount Float // Actual value of the debt
+
+  currency      Currency     @relation(fields: [currencyId], references: [id])
+  currencyId    Int
+  companyDebt   CompanyDebt? @relation(fields: [companyDebtId], references: [id], onDelete: Cascade)
+  companyDebtId String?      @unique
+  company       Company      @relation(fields: [companyId], references: [id])
+  companyId     String
+
+  payrollAdvances PayrollAdvance[]
+}
+
+model CompanyCryptoDebt {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  amount        Float // Total accumulated value of the debt
+  currentAmount Float // Actual value of the debt
+
+  cryptocurrency   Cryptocurrency @relation(fields: [cryptocurrencyId], references: [id])
+  cryptocurrencyId Int
+  companyDebt      CompanyDebt?   @relation(fields: [companyDebtId], references: [id], onDelete: Cascade)
+  companyDebtId    String?        @unique
+  company          Company        @relation(fields: [companyId], references: [id])
+  companyId        String
+
+  payrollAdvances PayrollAdvance[]
+}
+
+model CompanyContactPerson {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  firstName String
+  lastName  String
+  phone     String
+
+  company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  companyId String  @unique
+}
+
+model CompanyCategory {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  name String @unique
+
+  companies Company[]
+}
+
+model Employee {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  status EmployeeStatus @default(INACTIVE)
+  roles  EmployeeRole[]
+  salary Float?
+
+  acceptedPrivacyPolicy  Boolean @default(false)
+  acceptedTermsOfService Boolean @default(false)
+
+  salaryFiat             Float?
+  advanceMaxAmount       Float  @default(0)
+  advanceAvailableAmount Float  @default(0)
+
+  currency   Currency? @relation(fields: [currencyId], references: [id])
+  currencyId Int?
+
+  documentIssueDate DateTime? // Timestamp
+  birthDay          DateTime? // Timestamp
+
+  salaryCrypto                 Float?
+  advanceCryptoMaxAmount       Float?          @default(0)
+  advanceCryptoAvailableAmount Float?          @default(0)
+  cryptocurrency               Cryptocurrency? @relation(fields: [cryptocurrencyId], references: [id])
+  cryptocurrencyId             Int?
+  wallet                       Wallet?         @relation(fields: [walletId], references: [id])
+  walletId                     String?         @unique
+
+  numberOfChildren Int     @default(0)
+  phone            String?
+  address          String?
+
+  company         Company        @relation(fields: [companyId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  companyId       String
+  user            User           @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId          String         @unique
+  bankAccount     BankAccount?   @relation(fields: [bankAccountId], references: [id])
+  bankAccountId   String?        @unique
+  gender          Gender?        @relation(fields: [genderId], references: [id])
+  genderId        Int?
+  jobDepartment   JobDepartment? @relation(fields: [jobDepartmentId], references: [id])
+  jobDepartmentId Int?
+  jobPosition     JobPosition?   @relation(fields: [jobPositionId], references: [id])
+  jobPositionId   Int?
+
+  country   Country? @relation(fields: [countryId], references: [id])
+  countryId Int?
+  state     State?   @relation(fields: [stateId], references: [id])
+  stateId   Int?
+  city      City?    @relation(fields: [cityId], references: [id])
+  cityId    Int?
+
+  companyTaxes            CompanyTax[]
+  payrollAdvances         PayrollAdvance[]
+  payrollAdvanceHistories PayrollAdvanceHistory[]
+}
+
+enum EmployeeRole {
+  MEMBER
+  MANAGER
+  OWNER
+}
+
+enum EmployeeStatus {
+  ACTIVE
+  INACTIVE
+}
+
+model Gender {
+  id   Int    @id @default(autoincrement())
+  name String @unique
+
+  employees Employee[]
+}
+
+model Country {
+  id Int @id @default(autoincrement())
+
+  name      String @unique
+  code2     String @unique
+  phoneCode String
+
+  employees  Employee[]
+  currencies Currency[]
+  banks      Bank[]
+  companies  Company[]
+  states     State[]
+}
+
+model State {
+  id Int @id @default(autoincrement())
+
+  name String
+
+  country   Country @relation(fields: [countryId], references: [id], onDelete: Cascade)
+  countryId Int
+
+  cities    City[]
+  employees Employee[]
+}
+
+model City {
+  id   Int    @id @default(autoincrement())
+  name String
+
+  state   State @relation(fields: [stateId], references: [id], onDelete: Cascade)
+  stateId Int
+
+  employees Employee[]
+}
+
+model JobDepartment {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  name String @unique
+
+  employees Employee[]
+}
+
+model JobPosition {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  name String @unique
+
+  employees Employee[]
+}
+
+model CompanyTax {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  name        String
+  description String?
+  valueType   TaxType @default(PERCENTAGE)
+  value       Float
+
+  company   Company    @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  companyId String
+  employees Employee[]
+}
+
+model GlobalTax {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  name        String  @unique
+  description String?
+  valueType   TaxType @default(PERCENTAGE)
+  value       Float
+}
+
+enum TaxType {
+  FIXED
+  PERCENTAGE
+}
+
+model Bank {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  name String
+
+  fee          BankFee?
+  country      Country?      @relation(fields: [countryId], references: [id])
+  countryId    Int?
+  bankAccounts BankAccount[]
+  companies    Company[]
+}
+
+model BankFee {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  name        String
+  description String?
+  valueType   TaxType @default(FIXED)
+  value       Float
+
+  bank   Bank @relation(fields: [bankId], references: [id], onDelete: Cascade)
+  bankId Int  @unique
+}
+
+model BankAccount {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  accountNumber String
+
+  accountType        BankAccountType  @relation(fields: [accountTypeId], references: [id])
+  accountTypeId      Int
+  bank               Bank             @relation(fields: [bankId], references: [id])
+  bankId             Int
+  identityDocument   IdentityDocument @relation(fields: [identityDocumentId], references: [id])
+  identityDocumentId Int              @unique
+  employee           Employee?
+}
+
+model BankAccountType {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  name String @unique
+
+  bankAccounts BankAccount[]
+}
+
+model IdentityDocument {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  value String
+
+  documentType   IdentityDocumentType @relation(fields: [documentTypeId], references: [id])
+  documentTypeId Int
+  bankAccount    BankAccount?
+}
+
+model IdentityDocumentType {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  name String @unique
+
+  identityDocuments IdentityDocument[]
+}
+
+model Currency {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  name String @unique
+  code String @unique
+
+  country          Country?          @relation(fields: [countryId], references: [id])
+  countryId        Int?
+  employees        Employee[]
+  companyFiatDebts CompanyFiatDebt[]
+}
+
+model Cryptocurrency {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  name    String @unique
+  acronym String
+
+  wallets            Wallet[]
+  companies          Company[]
+  companyCryptoDebts CompanyCryptoDebt[]
+  employee           Employee[]
+}
+
+model Wallet {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  address String
+
+  network          CryptoNetwork?  @relation(fields: [networkId], references: [id])
+  networkId        Int?
+  cryptocurrency   Cryptocurrency? @relation(fields: [cryptocurrencyId], references: [id], onDelete: Cascade)
+  cryptocurrencyId Int?
+  employee         Employee?
+}
+
+model CryptoNetwork {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  name            String @unique
+  networkIdNumber Int
+
+  wallets Wallet[]
+}
+
+model PayrollAdvance {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  requestedAmount Float
+  totalAmount     Float
+
+  status          PayrollAdvanceStatus        @default(REQUESTED)
+  paymentMethod   PayrollAdvancePaymentMethod
+  paymentTermDays Int? // 
+
+  paymentDate  Int? // [!] Timestamp
+  periodOfDays Int? // Period of days between the payroll request and the next payday.
+
+  taxes   PayrollAdvanceTax[]
+  history PayrollAdvanceHistory[]
+
+  // Blockchain transfers should only be present in crypto payments.
+  transfers PayrollAdvanceTransfer[]
+
+  bankAccountData PayrollAdvanceBankAccount?
+  walletData      PayrollAdvanceWallet?
+
+  employee            Employee?          @relation(fields: [employeeId], references: [id])
+  employeeId          String?
+  company             Company            @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  companyId           String
+  companyCryptoDebt   CompanyCryptoDebt? @relation(fields: [companyCryptoDebtId], references: [id])
+  companyCryptoDebtId String?
+  companyFiatDebt     CompanyFiatDebt?   @relation(fields: [companyFiatDebtId], references: [id])
+  companyFiatDebtId   String?
+}
+
+enum PayrollAdvanceStatus {
+  REQUESTED
+  APPROVED
+  PAID
+  CANCELLED
+  DENIED
+}
+
+enum PayrollAdvancePaymentMethod {
+  WALLET
+  BANK_ACCOUNT
+}
+
+model PayrollAdvanceHistory {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  toStatus PayrollAdvanceStatus
+  actor    PayrollAdvanceHistoryActor
+
+  payrollAdvance   PayrollAdvance @relation(fields: [payrollAdvanceId], references: [id], onDelete: Cascade)
+  payrollAdvanceId Int
+  employee         Employee?      @relation(fields: [employeeId], references: [id])
+  employeeId       String?
+  adminUser        AdminUser?     @relation(fields: [adminUserId], references: [id])
+  adminUserId      String?
+}
+
+model PayrollAdvanceTransfer {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  transactionHash String                       @unique
+  status          PayrollAdvanceTransferStatus
+
+  payrollAdvance   PayrollAdvance @relation(fields: [payrollAdvanceId], references: [id], onDelete: Cascade)
+  payrollAdvanceId Int
+  adminUser        AdminUser      @relation(fields: [adminUserId], references: [id])
+  adminUserId      String
+}
+
+enum PayrollAdvanceTransferStatus {
+  PENDING
+  FAILURE
+  SUCCESS
+}
+
+enum PayrollAdvanceHistoryActor {
+  ADMIN
+  EMPLOYEE
+}
+
+model PayrollAdvanceTax {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  name        String
+  description String?
+  value       Float
+
+  payrollAdvance   PayrollAdvance @relation(fields: [payrollAdvanceId], references: [id], onDelete: Cascade)
+  payrollAdvanceId Int
+}
+
+model PayrollAdvanceBankAccount {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  accountNumber String
+  accountType   String
+
+  currencyName     String?
+  bankName         String
+  bankFeeName      String?
+  bankFeeValue     Float?
+  bankFeeValueType String?
+
+  identityDocumentValue String
+  identityDocumentType  String
+
+  payrollAdvance   PayrollAdvance @relation(fields: [payrollAdvanceId], references: [id], onDelete: Cascade)
+  payrollAdvanceId Int            @unique
+}
+
+model PayrollAdvanceWallet {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  address               String
+  cryptocurrencyName    String
+  cryptocurrencyAcronym String
+  cryptoNetworkName     String
+  cryptoNetworkIdNumber Int
+
+  payrollAdvance   PayrollAdvance @relation(fields: [payrollAdvanceId], references: [id], onDelete: Cascade)
+  payrollAdvanceId Int            @unique
+}
+
+model GlobalSettings {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  daysWithoutRequestsBeforePaymentDay Int
+  annualInterestRate                  Float
+}
