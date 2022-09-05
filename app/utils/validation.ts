@@ -1,6 +1,6 @@
 import type { ZodError, ZodSchema } from 'zod'
 
-type ActionErrors<T> = Partial<Record<keyof T, string>>
+export type ActionErrors<T> = Partial<Record<keyof T, string>>
 
 export async function validateSchema<SchemaInput>({
   request,
@@ -19,7 +19,7 @@ export async function validateSchema<SchemaInput>({
     const errors = e as ZodError<SchemaInput>
 
     return {
-      formData: body,
+      formData: body as SchemaInput,
       errors: errors.issues.reduce((acc: ActionErrors<SchemaInput>, curr) => {
         const key = curr.path[0] as keyof SchemaInput
         return { ...acc, [key]: curr.message }

@@ -13,7 +13,14 @@ import { getUser } from './session.server'
 import tailwindStylesheetUrl from './styles/tailwind.css'
 
 export const links: LinksFunction = () => {
-  return [{ rel: 'stylesheet', href: tailwindStylesheetUrl }]
+  return [
+    { rel: 'shortcut icon', href: '/favicon.png' },
+    { rel: 'stylesheet', href: tailwindStylesheetUrl },
+    {
+      rel: 'stylesheet',
+      href: 'https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;700;800&display=swap',
+    },
+  ]
 }
 
 export const meta: MetaFunction = () => ({

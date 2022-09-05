@@ -1,10 +1,10 @@
 import { createCookieSessionStorage, redirect } from '@remix-run/node'
 import invariant from 'tiny-invariant'
 
-import type { User } from '~/models/user.server'
-import { getUserById } from '~/models/user.server'
-import { getAdminUserById } from '~/models/admin-user.server'
-import { getEmployeeById } from '~/models/employee.server'
+import type { User } from '~/services/user.server'
+import { getUserById } from '~/services/user.server'
+import { getAdminUserById } from '~/services/admin-user.server'
+import { getEmployeeById } from '~/services/employee.server'
 
 invariant(process.env.SESSION_SECRET, 'SESSION_SECRET must be set')
 
@@ -158,12 +158,10 @@ export async function requireAdminUser(request: Request) {
 export async function createUserSession({
   request,
   userId,
-  remember,
   redirectTo,
 }: {
   request: Request
   userId: string
-  remember: boolean
   redirectTo: string
 }) {
   const session = await getSession(request)
@@ -171,9 +169,7 @@ export async function createUserSession({
   return redirect(redirectTo, {
     headers: {
       'Set-Cookie': await sessionStorage.commitSession(session, {
-        maxAge: remember
-          ? 60 * 60 * 24 * 7 // 7 days
-          : undefined,
+        maxAge: 60 * 60 * 5, // 5 Hours
       }),
     },
   })
@@ -182,12 +178,10 @@ export async function createUserSession({
 export async function createAdminSession({
   request,
   adminUserId,
-  remember,
   redirectTo,
 }: {
   request: Request
   adminUserId: string
-  remember: boolean
   redirectTo: string
 }) {
   const session = await getSession(request)
@@ -195,9 +189,7 @@ export async function createAdminSession({
   return redirect(redirectTo, {
     headers: {
       'Set-Cookie': await sessionStorage.commitSession(session, {
-        maxAge: remember
-          ? 60 * 60 * 24 * 7 // 7 days
-          : undefined,
+        maxAge: 60 * 60 * 5, // 5 Hours
       }),
     },
   })

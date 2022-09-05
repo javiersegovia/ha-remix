@@ -1,26 +1,63 @@
-import type { LoaderFunction } from '@remix-run/server-runtime'
-import { Form, Outlet } from '@remix-run/react'
-// import { json } from '@remix-run/node'
-import { requireAdminUserId } from '~/session.server'
+import type { LoaderFunction, MetaFunction } from '@remix-run/server-runtime'
+import { Outlet, useLoaderData } from '@remix-run/react'
+import { json } from '@remix-run/node'
+import { HiOutlineHome, HiOutlineOfficeBuilding } from 'react-icons/hi'
+import { MdAttachMoney } from 'react-icons/md'
+import { FiSettings } from 'react-icons/fi'
 
-export const loader: LoaderFunction = async ({ request }) => {
-  await requireAdminUserId(request)
-  return null
+import { requireAdminUser } from '~/session.server'
+import type { INavPath } from '~/components/SideBar/DashboardSideBar'
+import { DashboardSideBar } from '~/components/SideBar/DashboardSideBar'
+
+type LoaderData = {
+  user: Awaited<ReturnType<typeof requireAdminUser>>
 }
 
+export const loader: LoaderFunction = async ({ request }) => {
+  const adminUser = await requireAdminUser(request)
+  return json<LoaderData>({ user: adminUser })
+}
+
+export const meta: MetaFunction = () => {
+  return {
+    title: '[Admin] Resumen',
+  }
+}
+
+const navPaths: INavPath[] = [
+  {
+    icon: HiOutlineHome,
+    path: '/admin/dashboard',
+    title: 'Inicio',
+  },
+  {
+    icon: HiOutlineOfficeBuilding,
+    title: 'Compañías',
+    path: '/admin/dashboard/companies',
+  },
+  {
+    icon: MdAttachMoney,
+    path: '/admin/dashboard/payroll-advances',
+    title: 'Adelantos',
+  },
+  {
+    icon: FiSettings,
+    path: '/admin/dashboard/settings',
+    title: 'Configuración',
+  },
+]
+
 export default function AdminDashboardRoute() {
+  const { user } = useLoaderData<LoaderData>()
   return (
-    <section>
-      ADMIN
-      <Form action="/logout" method="post">
-        <button
-          type="submit"
-          className="rounded bg-yellow-600 py-2 px-4 text-blue-100 hover:bg-yellow-500 active:bg-yellow-600"
-        >
-          Logout
-        </button>
-      </Form>
+    <DashboardSideBar
+      variant="DARK"
+      paths={navPaths}
+      user={user}
+      logoHref="/admin/dashboard"
+      isAdmin
+    >
       <Outlet />
-    </section>
+    </DashboardSideBar>
   )
 }

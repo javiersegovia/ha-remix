@@ -2,7 +2,7 @@ import { Link } from '@remix-run/react'
 
 import { useOptionalUser } from '~/utils/utils'
 
-export default function Index() {
+export default function IndexRoute() {
   const user = useOptionalUser()
 
   return (

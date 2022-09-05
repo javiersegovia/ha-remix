@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 import { useMatches } from '@remix-run/react'
-import type { User } from '~/models/user.server'
-import type { GetEmployeeByIdResponse } from '~/models/employee.server'
+import type { User } from '~/services/user.server'
+import type { GetEmployeeByIdResponse } from '~/services/employee.server'
 
 const DEFAULT_REDIRECT = '/'
 

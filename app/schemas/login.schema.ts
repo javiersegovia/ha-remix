@@ -7,10 +7,14 @@ export const loginSchema = z.object({
     })
     .email('Correo electrónico inválido'),
   password: z
-    .string()
+    .string({
+      required_error: 'Ingrese una contraseña',
+    })
     .min(6, 'La contraseña debe poseer al menos 6 caracteres'),
-  remember: z.enum(['on']).optional(),
   redirectTo: z.string().default('/dashboard'),
 })
 
+export const loginEmailSchema = loginSchema.pick({ email: true })
+
 export type LoginSchemaInput = z.TypeOf<typeof loginSchema>
+export type LoginEmailSchemaInput = z.TypeOf<typeof loginEmailSchema>
