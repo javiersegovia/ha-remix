@@ -32,13 +32,12 @@ export function selectStyles<isMulti extends boolean>(
       ...(state.isFocused && {
         borderColor: '#60A5FA',
         boxShadow:
-          'var(--tw-ring-inset) 0 0 0 calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color)',
-        '-ringColor': '#60A5FA',
+          'var(--tw-ring-inset) 0 0 0 calc(2px + var(--tw-ring-offset-width)) #60A5FA',
         outline: '0',
       }),
 
       ...(state.isFocused &&
-        hasError && { borderColor: '#EF4444', '-ringColor': '#EF4444' }),
+        hasError && { borderColor: '#EF4444', outlineColor: '#EF4444' }),
 
       ...(state.isDisabled && {
         backgroundColor: '#E5E7EB',

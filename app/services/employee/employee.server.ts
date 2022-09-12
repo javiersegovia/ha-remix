@@ -9,6 +9,10 @@ import { connect, connectOrDisconnect } from '~/utils/relationships'
 import { generateExpirationDate, generateRandomToken } from '../auth.server'
 import { sendInvitation } from '../email/email.server'
 import { badRequest } from 'remix-utils'
+import { dateAsUTC } from '~/utils/formatDate'
+import type { WelcomeSchemaInput } from '~/schemas/welcome.schema'
+import { hash } from 'bcryptjs'
+import { requestSignature } from '../signature/signature.server'
 
 const INVITATION_EXPIRES_IN = '20m'
 
@@ -68,6 +72,11 @@ export const getEmployeesByCompanyId = async (
     take,
     skip,
     cursor,
+    orderBy: {
+      user: {
+        firstName: 'asc',
+      },
+    },
     select: {
       id: true,
       status: true,
@@ -218,12 +227,13 @@ export const createEmployee = async (
         advanceCryptoAvailableAmount,
         advanceCryptoMaxAmount,
         advanceMaxAmount,
-        birthDay,
-        documentIssueDate,
         address,
         phone,
         numberOfChildren: numberOfChildren || undefined,
         roles: roles || undefined,
+
+        birthDay: dateAsUTC(birthDay),
+        documentIssueDate: dateAsUTC(documentIssueDate),
 
         gender: connect(genderId),
         country: connect(countryId),
@@ -369,10 +379,8 @@ export const updateEmployeeById = async (
           delete: true,
         }
 
-  console.log({ cryptocurrencyId })
-
   try {
-    return prisma.employee.update({
+    return await prisma.employee.update({
       where: {
         id: employeeId,
       },
@@ -383,8 +391,8 @@ export const updateEmployeeById = async (
         advanceCryptoAvailableAmount,
         advanceCryptoMaxAmount,
         advanceMaxAmount,
-        birthDay,
-        documentIssueDate,
+        birthDay: dateAsUTC(birthDay),
+        documentIssueDate: dateAsUTC(documentIssueDate),
         address,
         phone,
         status,
@@ -413,7 +421,72 @@ export const updateEmployeeById = async (
   } catch (err) {
     // todo add logger
     console.error(err)
-    throw badRequest('Ha ocurrido un error')
+    throw badRequest({ message: 'Ha ocurrido un error' })
+  }
+}
+
+export const updateEmployeeByWelcomeForm = async (
+  data: WelcomeSchemaInput,
+  employeeId: Employee['id']
+) => {
+  const {
+    password,
+    birthDay,
+    documentIssueDate,
+    genderId,
+
+    countryId,
+    stateId,
+    cityId,
+
+    address,
+    numberOfChildren,
+    phone,
+    user,
+  } = data
+
+  try {
+    await prisma.employee.update({
+      where: {
+        id: employeeId,
+      },
+      data: {
+        birthDay: dateAsUTC(birthDay),
+        documentIssueDate: dateAsUTC(documentIssueDate),
+        address,
+        phone,
+        numberOfChildren: numberOfChildren || undefined,
+
+        gender: connectOrDisconnect(genderId),
+        country: connectOrDisconnect(countryId),
+        state: connectOrDisconnect(stateId),
+        city: connectOrDisconnect(cityId),
+
+        acceptedPrivacyPolicy: true,
+        acceptedTermsOfService: true,
+
+        user: {
+          update: {
+            firstName: user?.firstName,
+            lastName: user?.lastName,
+            password: await hash(password, 10),
+          },
+        },
+      },
+    })
+
+    const { signerToken } = await requestSignature({
+      fullName: `${user.firstName} ${user.lastName}`,
+      email: user.email,
+      employeeId,
+      phone,
+    })
+
+    return signerToken as string
+  } catch (err) {
+    // todo add logger
+    console.error(err)
+    throw badRequest({ message: 'Ha ocurrido un error' })
   }
 }
 

@@ -22,7 +22,9 @@ export const getCompanies = async () => {
       },
     },
     orderBy: {
-      createdAt: 'asc',
+      employees: {
+        _count: 'desc',
+      },
     },
   })
 }
@@ -144,7 +146,9 @@ export const updateCompanyById = async (
             },
           },
         }
-      : undefined
+      : {
+          delete: true,
+        }
 
   try {
     const company = await prisma.company.update({

@@ -3,20 +3,9 @@ import { withZod } from '@remix-validated-form/with-zod'
 import { z } from 'zod'
 import { zfd } from 'zod-form-data'
 import { zDate } from '../../schemas/helpers'
+import { bankAccountSchema } from '../bank/bank.schema'
 
-const bankAccountSchema = z.object({
-  bankId: zfd.numeric(z.number().int().nullish()),
-  accountNumber: zfd.text(z.string().nullish()),
-  accountTypeId: zfd.numeric(z.number().int().nullish()),
-  identityDocument: z
-    .object({
-      documentTypeId: zfd.numeric(z.number().int().nullish()),
-      value: zfd.text(z.string().nullish()),
-    })
-    .nullish(),
-})
-
-const employeeSchema = z.object({
+export const employeeSchema = z.object({
   salaryFiat: zfd.numeric(z.number().nullish()),
   salaryCrypto: zfd.numeric(z.number().nullish()),
   advanceMaxAmount: zfd.numeric(z.number().default(0)),
@@ -46,8 +35,8 @@ const employeeSchema = z.object({
     ),
   }),
 
-  phone: zfd.text(z.string().nullish()),
-  address: zfd.text(z.string().nullish()),
+  phone: zfd.text(z.string().nullable().default(null)),
+  address: zfd.text(z.string().nullable().default(null)),
   numberOfChildren: zfd.numeric(z.number().int().nullish().default(0)),
 
   status: z.nativeEnum(EmployeeStatus).default(EmployeeStatus.INACTIVE),
@@ -70,7 +59,9 @@ const employeeSchema = z.object({
         required_error: 'Ingrese la fecha de expedición',
       })
       .nullish()
-  ).nullish(),
+  )
+    .nullable()
+    .default(null),
 
   birthDay: zDate(
     z
@@ -79,7 +70,9 @@ const employeeSchema = z.object({
         required_error: 'Ingrese la fecha de nacimiento',
       })
       .nullish()
-  ).nullish(),
+  )
+    .nullable()
+    .default(null),
 
   wallet: z
     .object({
@@ -88,7 +81,7 @@ const employeeSchema = z.object({
     })
     .nullish(),
 
-  bankAccount: bankAccountSchema, // todo: refactor this schema and make the fields optional
+  bankAccount: bankAccountSchema,
 })
 
 export const employeeValidator = withZod(employeeSchema)

@@ -1,5 +1,4 @@
 import type { ZodError, ZodSchema } from 'zod'
-import queryString from 'query-string'
 
 export type ActionErrors<T> = Partial<Record<keyof T, string>>
 
@@ -10,14 +9,7 @@ export async function validateSchema<SchemaInput>({
   request: Request
   schema: ZodSchema
 }) {
-  const formQueryString = await request.text()
-
-  console.log({ formQueryString })
-
-  const body = queryString.parse(formQueryString)
-  // const body = Object.fromEntries(await request.formData())
-  console.log({ body })
-  // todo: get nested values
+  const body = Object.fromEntries(await request.formData())
 
   try {
     const formData = schema.parse(body) as SchemaInput

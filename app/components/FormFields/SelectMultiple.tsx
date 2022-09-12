@@ -59,7 +59,9 @@ export const SelectMultiple = ({
               type="hidden"
               name={`${name}[${i}]`}
               key={typeof val === 'object' ? getSelectValue(val) : val}
-              value={typeof val === 'object' ? getSelectValue(val) : val}
+              value={
+                (typeof val === 'object' ? getSelectValue(val) : val) || ''
+              }
             />
           )
         })}

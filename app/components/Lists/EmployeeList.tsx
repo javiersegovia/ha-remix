@@ -31,8 +31,8 @@ export function EmployeeList({ employees }: EmployeeListProps) {
               <tbody className="divide-y divide-gray-200 bg-white">
                 {employees.map((employee) => (
                   <tr key={employee.user.email} className="hover:bg-gray-100">
-                    <Link to={employee.id}>
-                      <td className="whitespace-nowrap px-6 py-4">
+                    <td className="whitespace-nowrap px-6 py-4">
+                      <Link to={employee.id}>
                         <div className="text-sm font-medium text-gray-900 underline hover:text-cyan-600">
                           {`${employee.user.firstName} ${employee.user.lastName}`}
                         </div>
@@ -40,8 +40,8 @@ export function EmployeeList({ employees }: EmployeeListProps) {
                         <div className="text-sm text-gray-500">
                           {employee.user.email}
                         </div>
-                      </td>
-                    </Link>
+                      </Link>
+                    </td>
 
                     <TableData isCentered>
                       {employee.advanceMaxAmount > 0 && (

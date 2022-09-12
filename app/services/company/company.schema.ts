@@ -13,20 +13,23 @@ const companySchema = z.object({
 
   status: z.nativeEnum(CompanyStatus).default(CompanyStatus.INACTIVE),
 
-  address: z.string().nullish(),
-  description: z.string().nullish(),
-  phone: z.string().nullish(),
+  address: z.string().nullable().default(null),
+  description: z.string().nullable().default(null),
+  phone: z.string().nullable().default(null),
 
-  dispersion: zfd.numeric(z.number().nullish()),
-  premiumDispersion: zfd.numeric(z.number().nullish()),
+  dispersion: zfd.numeric(z.number().nullable().default(null)),
+  premiumDispersion: zfd.numeric(z.number().nullable().default(null)),
 
-  lastRequestDay: zfd.numeric(z.number().nullish()),
-  premiumLastRequestDay: zfd.numeric(z.number().nullish()),
+  lastRequestDay: zfd.numeric(z.number().nullable().default(null)),
+  premiumLastRequestDay: zfd.numeric(z.number().nullable().default(null)),
 
-  paymentDays: z.preprocess(formatPaymentDays, z.number().array().nullish()),
+  paymentDays: z.preprocess(
+    formatPaymentDays,
+    z.number().array().nullable().default(null)
+  ),
   premiumPaymentDays: z.preprocess(
     formatPaymentDays,
-    z.number().array().nullish()
+    z.number().array().nullable().default(null)
   ),
 
   countryId: zfd.numeric(z.number().nullish()),

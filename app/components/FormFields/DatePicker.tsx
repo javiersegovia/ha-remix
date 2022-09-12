@@ -3,6 +3,8 @@ import { Label } from './Label'
 import { inputBaseStyles, inputDisabledStyles, inputErrorStyles } from './Input'
 import { useField, useIsSubmitting } from 'remix-validated-form'
 import clsx from 'clsx'
+import { format } from 'date-fns'
+import { es } from 'date-fns/locale'
 
 type d = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 0
 type oneToNine = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
@@ -31,12 +33,17 @@ export const DatePicker = ({
   maxDate = undefined,
   disabled,
 }: DatePickerProps) => {
-  const { error: formError, getInputProps } = useField(name)
+  const { error: formError, defaultValue, getInputProps } = useField(name)
   const isSubmitting = useIsSubmitting()
   const fieldError: string | undefined = error || formError
 
-  // todo: check defaultValue and minDate/maxDate in different browsers.
-  // probably we will have to change the format to "YYYY-MM-DD", and it could be useful to parse that inside this component
+  const fieldDefault = defaultValue
+    ? format(defaultValue, 'yyyy-MM-dd', {
+        locale: es,
+      })
+    : undefined
+
+  // todo: check defaultValue and minDate/maxDate in different browsers (cypress?)
   return (
     <Label htmlFor={name} description={label} className="block w-full">
       <input
@@ -57,6 +64,7 @@ export const DatePicker = ({
             (disabled || isSubmitting) && inputDisabledStyles
           ),
         })}
+        defaultValue={fieldDefault}
       />
       <ErrorMessage>{fieldError}</ErrorMessage>
     </Label>

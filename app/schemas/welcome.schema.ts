@@ -1,0 +1,62 @@
+import { withZod } from '@remix-validated-form/with-zod'
+import { z } from 'zod'
+import { zfd } from 'zod-form-data'
+import { bankAccountSchema } from '~/services/bank/bank.schema'
+import { zDate } from './helpers'
+
+export const welcomeSchema = z.object({
+  password: z.string().min(6),
+  confirmPassword: z.string().min(6),
+
+  acceptedPrivacyPolicyAndTermsOfService: zfd.checkbox(),
+
+  user: z.object({
+    email: zfd.text(
+      z
+        .string({
+          required_error: 'Ingrese un correo electrónico',
+        })
+        .email('Correo electrónico inválido')
+    ),
+
+    firstName: zfd.text(
+      z.string({
+        required_error: 'Ingrese un nombre',
+      })
+    ),
+
+    lastName: zfd.text(
+      z.string({
+        required_error: 'Ingrese un apellido',
+      })
+    ),
+  }),
+
+  phone: zfd.text(z.string()),
+  address: zfd.text(z.string()),
+  numberOfChildren: zfd.numeric(z.number().int().default(0)),
+
+  countryId: zfd.numeric(z.number().int()),
+  stateId: zfd.numeric(z.number().int().nullish()),
+  cityId: zfd.numeric(z.number().int().nullish()),
+  genderId: zfd.numeric(z.number().int()),
+
+  birthDay: zDate(
+    z.date({
+      invalid_type_error: 'Ingrese la fecha de nacimiento',
+      required_error: 'Ingrese la fecha de nacimiento',
+    })
+  ),
+
+  documentIssueDate: zDate(
+    z.date({
+      invalid_type_error: 'Ingrese la fecha de expedición',
+      required_error: 'Ingrese la fecha de expedición',
+    })
+  ),
+
+  bankAccount: bankAccountSchema,
+})
+
+export const welcomeValidator = withZod(welcomeSchema)
+export type WelcomeSchemaInput = z.infer<typeof welcomeSchema>

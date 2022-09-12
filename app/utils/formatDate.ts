@@ -32,3 +32,9 @@ export const parseDate = (date: Date | string) => {
     parseFloat(parts[2])
   ) // Note: months are 0-based
 }
+
+export function dateAsUTC(date?: Date | null) {
+  return date
+    ? new Date(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate())
+    : null
+}

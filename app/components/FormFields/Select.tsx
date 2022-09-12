@@ -129,17 +129,21 @@ export const Select = ({
         >
           {() => (
             <>
-              <input type="hidden" value={value || undefined} name={name} />
+              <input
+                type="hidden"
+                value={value || ''} // The value should always be defined, even as an empty string instead of undefined
+                name={name}
+              />
               <ReactSelect<TReactSelectOption, false>
-                aria-labelledby={name}
                 id={name}
+                aria-labelledby={name}
                 instanceId={name}
                 styles={styles}
                 defaultValue={formattedDefaultValue}
                 options={formattedOptions}
                 placeholder={placeholder}
                 isClearable={isClearable}
-                // isDisabled={disabled || isSubmitting}
+                isDisabled={disabled || isSubmitting}
                 getOptionValue={(option: TReactSelectOption) =>
                   `${getSelectValue(option)}`
                 }

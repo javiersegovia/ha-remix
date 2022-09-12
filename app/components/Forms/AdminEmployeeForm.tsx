@@ -314,6 +314,7 @@ export const AdminEmployeeForm = ({
               }}
             />
           </FormGridItem>
+
           <FormGridItem>
             <Select
               name="stateId"

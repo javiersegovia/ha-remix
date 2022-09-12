@@ -128,8 +128,6 @@ export default function AdminDashboardCompanyUpdateEmployeeRoute() {
     cryptoNetworks,
   } = useLoaderData<LoaderData>()
 
-  console.log({ employee, cryptocurrencies })
-
   return (
     <section className="mx-auto w-full max-w-screen-lg pb-10">
       <Title>Actualizar colaborador</Title>
