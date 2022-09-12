@@ -7,17 +7,6 @@ generator client {
   provider = "prisma-client-js"
 }
 
-generator zod {
-  provider                 = "zod-prisma"
-  output                   = "./zod" // (default) the directory where generated zod schemas will be saved
-  relationModel            = false // (default) Create and export both plain and related models.
-  modelSuffix              = "Model" // (default) Suffix to apply to your prisma models when naming Zod schemas
-  useDecimalJs             = true // represent the prisma Decimal type using Decimal.js (as Prisma does)
-
-  // https://www.prisma.io/docs/concepts/components/prisma-client/working-with-fields/working-with-json-fields#filtering-by-null-values
-  prismaJsonNullability    = true // (default) uses prisma's scheme for JSON field nullability
-}
-
 model User {
   id        String   @id @default(cuid())
   createdAt DateTime @default(now())

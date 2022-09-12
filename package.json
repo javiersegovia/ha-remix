@@ -50,12 +50,12 @@
     "@aws-sdk/client-ses": "^3.163.0",
     "@aws-sdk/credential-provider-node": "^3.163.0",
     "@headlessui/react": "^1.6.6",
-    "@hookform/resolvers": "^2.9.7",
     "@prisma/client": "^4.2.1",
     "@remix-run/express": "^1.7.0",
     "@remix-run/node": "^1.7.0",
     "@remix-run/react": "^1.7.0",
     "@remix-run/server-runtime": "^1.7.0",
+    "@remix-validated-form/with-zod": "^2.0.1",
     "bcryptjs": "^2.4.3",
     "clsx": "^1.2.1",
     "compression": "^1.7.4",
@@ -75,8 +75,11 @@
     "react-hot-toast": "^2.3.0",
     "react-icons": "^4.4.0",
     "react-select": "^5.4.0",
+    "remix-utils": "^3.3.0",
+    "remix-validated-form": "^4.5.5",
     "tiny-invariant": "^1.2.0",
-    "zod": "^3.18.0"
+    "zod": "^3.18.0",
+    "zod-form-data": "^1.2.1"
   },
   "devDependencies": {
     "@faker-js/faker": "^7.4.0",
@@ -124,8 +127,7 @@
     "typescript": "^4.7.4",
     "vite": "^3.0.9",
     "vite-tsconfig-paths": "^3.5.0",
-    "vitest": "^0.22.1",
-    "zod-prisma": "^0.5.4"
+    "vitest": "^0.22.1"
   },
   "engines": {
     "node": ">=14"

@@ -1,8 +1,11 @@
 import { useState } from 'react'
 import clsx from 'clsx'
+import {
+  useControlField,
+  useField,
+  useIsSubmitting,
+} from 'remix-validated-form'
 import ReactCurrencyInput from 'react-currency-input-field'
-import type { RegisterOptions } from 'react-hook-form'
-import { Controller, useFormContext } from 'react-hook-form'
 
 import { inputBaseStyles, inputErrorStyles } from './Input'
 import { Label } from './Label'
@@ -19,7 +22,7 @@ interface CurrencyInputProps {
   placeholder?: string
   error?: string
   symbol?: CurrencySymbol // todo Javier: make this dynamic
-  validations?: RegisterOptions
+  disabled?: boolean
 }
 
 export const CurrencyInput = ({
@@ -28,56 +31,34 @@ export const CurrencyInput = ({
   placeholder,
   error,
   symbol,
+  disabled,
 }: CurrencyInputProps) => {
-  const {
-    control,
-    formState: { errors },
-    watch,
-  } = useFormContext()
+  const { error: formError, defaultValue, validate } = useField(name)
+  const [value, setValue] = useControlField<number | undefined>(name)
+  const isSubmitting = useIsSubmitting()
 
-  const currentValue = watch(name)
-
-  const fieldError: string | undefined =
-    error || (errors?.[name]?.message as string)
-
-  const [maskedValue, setMaskedValue] = useState(currentValue)
+  const fieldError: string | undefined = error || formError
+  const [maskedValue, setMaskedValue] = useState(defaultValue)
 
   return (
-    <Label
-      htmlFor={name}
-      description={label}
-      className={clsx(
-        'block w-full',
-        inputBaseStyles,
-        !!fieldError && inputErrorStyles
-      )}
-    >
-      <Controller
-        name={name}
-        control={control}
-        render={({ field: { ref, onChange } }) => (
-          <>
-            <ReactCurrencyInput
-              name={`${name}-mask`}
-              value={maskedValue}
-              placeholder={placeholder}
-              prefix={symbol && `${symbol} `}
-              onValueChange={(value, __, values) => {
-                onChange(values?.float || 0)
-                setMaskedValue(value || '0')
-              }}
-            />
+    <Label htmlFor={name} description={label}>
+      <>
+        <ReactCurrencyInput
+          name={`${name}-mask`}
+          value={maskedValue}
+          disabled={disabled || isSubmitting}
+          placeholder={placeholder}
+          prefix={symbol && `${symbol} `}
+          onValueChange={(value, __, values) => {
+            setValue(values?.float || 0)
+            setMaskedValue(value || '0')
+            validate()
+          }}
+          className={clsx(inputBaseStyles, !!fieldError && inputErrorStyles)}
+        />
 
-            <input
-              value={currentValue}
-              name={name}
-              type="hidden"
-              ref={ref}
-              readOnly
-            />
-          </>
-        )}
-      />
+        <input value={value} name={name} type="hidden" readOnly />
+      </>
       <ErrorMessage>{fieldError}</ErrorMessage>
     </Label>
   )

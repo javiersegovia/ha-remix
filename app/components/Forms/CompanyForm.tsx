@@ -1,10 +1,18 @@
+import type {
+  Company,
+  CompanyCategory,
+  CompanyContactPerson,
+  Country,
+} from '@prisma/client'
 import { CompanyStatus } from '@prisma/client'
+import type { Validator } from 'remix-validated-form'
+import { ValidatedForm } from 'remix-validated-form'
 
-import type { ZodSchema } from 'zod'
+import type { CompanySchemaInput } from '~/services/company/company.schema'
 import type { getCompanyCategories } from '~/services/company/company-category.server'
 import type { getCountries } from '~/services/country/country.server'
 
-import { Form, useForm } from '../FormFields/Form'
+import type { EnumOption } from '~/schemas/helpers'
 import { Box } from '../Layout/Box'
 import { Title } from '../Typography/Title'
 import { Input } from '../FormFields/Input'
@@ -13,32 +21,87 @@ import { FormGridItem } from '../FormFields/FormGridItem'
 import { FormGridWrapper } from '../FormFields/FormGridWrapper'
 import { SelectMultiple } from '../FormFields/SelectMultiple'
 
-const companyStatusList = [
+const companyStatusList: EnumOption[] = [
   { name: 'Activa', value: CompanyStatus.ACTIVE },
   { name: 'Inactiva', value: CompanyStatus.INACTIVE },
 ]
 
-interface CompanyFormProps {
+interface CompanyFormProps<T = CompanySchemaInput> {
   actions: JSX.Element
   companyCategories: Awaited<ReturnType<typeof getCompanyCategories>>
   countries: Awaited<ReturnType<typeof getCountries>>
-  schema?: ZodSchema
+  validator: Validator<T>
+  defaultValues?: Pick<
+    Company,
+    | 'address'
+    | 'description'
+    | 'dispersion'
+    | 'lastRequestDay'
+    | 'premiumDispersion'
+    | 'premiumLastRequestDay'
+    | 'premiumPaymentDays'
+    | 'paymentDays'
+    | 'phone'
+    | 'status'
+    | 'name'
+    | 'countryId'
+  > & {
+    country?: Pick<Country, 'id'>
+    categories?: Pick<CompanyCategory, 'id'>[]
+    contactPerson?: Pick<
+      CompanyContactPerson,
+      'firstName' | 'lastName' | 'phone'
+    >
+  }
 }
 
 export const CompanyForm = ({
+  defaultValues,
   actions,
   companyCategories,
   countries,
-  schema,
+  validator,
 }: CompanyFormProps) => {
-  const formProps = useForm({
-    schema,
-    method: 'post',
-  })
+  const {
+    address,
+    description,
+    dispersion,
+    lastRequestDay,
+    premiumDispersion,
+    premiumLastRequestDay,
+    premiumPaymentDays,
+    paymentDays,
+    phone,
+    status,
+    name,
+    categories,
+    countryId,
+    contactPerson,
+  } = defaultValues || {}
 
   return (
     <>
-      <Form {...formProps}>
+      <ValidatedForm
+        id="CompanyForm"
+        validator={validator}
+        method="post"
+        defaultValues={{
+          address,
+          description,
+          dispersion,
+          lastRequestDay,
+          premiumDispersion,
+          premiumLastRequestDay,
+          premiumPaymentDays,
+          paymentDays,
+          phone,
+          status: status || CompanyStatus.INACTIVE,
+          name,
+          categoriesIds: categories?.map((cat) => cat.id),
+          countryId,
+          contactPerson,
+        }}
+      >
         <Box className="p-5">
           <Title as="h4" className="pb-3">
             Información principal
@@ -81,7 +144,7 @@ export const CompanyForm = ({
             </FormGridItem>
             <FormGridItem>
               <SelectMultiple
-                name="categories"
+                name="categoriesIds"
                 label="Sector"
                 placeholder="Sector de la compañía"
                 options={companyCategories}
@@ -89,7 +152,7 @@ export const CompanyForm = ({
             </FormGridItem>
             <FormGridItem>
               <Select
-                name="country"
+                name="countryId"
                 label="País"
                 placeholder="País"
                 options={countries}
@@ -116,7 +179,6 @@ export const CompanyForm = ({
                 type="text"
                 label="Nombre"
                 placeholder="Nombre de la persona de contacto"
-                // error={errors?.contactPerson?.firstName}
               />
             </FormGridItem>
             <FormGridItem>
@@ -125,7 +187,6 @@ export const CompanyForm = ({
                 type="text"
                 label="Apellido"
                 placeholder="Apellido de la persona de contacto"
-                // error={errors?.contactPerson?.lastName}
               />
             </FormGridItem>
             <FormGridItem>
@@ -134,7 +195,6 @@ export const CompanyForm = ({
                 type="text"
                 label="Teléfono"
                 placeholder="Teléfono de la persona contacto"
-                // error={errors?.contactPerson?.phone}
               />
             </FormGridItem>
           </FormGridWrapper>
@@ -203,7 +263,7 @@ export const CompanyForm = ({
           </FormGridWrapper>
           {actions}
         </Box>
-      </Form>
+      </ValidatedForm>
     </>
   )
 }

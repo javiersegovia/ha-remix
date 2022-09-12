@@ -1,17 +1,17 @@
-import type { ActionArgs, LoaderFunction } from '@remix-run/node'
+import type { ActionArgs, LoaderFunction, MetaFunction } from '@remix-run/node'
 import { redirect } from '@remix-run/node'
-import { requireAdminUserId } from '~/session.server'
 import { json } from '@remix-run/node'
+import { validationError } from 'remix-validated-form'
+
+import { requireAdminUserId } from '~/session.server'
 import { Title } from '~/components/Typography/Title'
 import { CompanyForm } from '~/components/Forms/CompanyForm'
 import { FormActions } from '~/components/FormFields/FormActions'
-import { useLoaderData, useTransition } from '@remix-run/react'
+import { useLoaderData } from '@remix-run/react'
 import { getCompanyCategories } from '~/services/company/company-category.server'
 import { getCountries } from '~/services/country/country.server'
-import type { CreateCompanySchemaInput } from '~/schemas/createCompany.schema'
-import { createCompanySchema } from '~/schemas/createCompany.schema'
-import { validateSchema } from '~/utils/validation'
 import { createCompany } from '~/services/company/company.server'
+import { validator } from '~/services/company/company.schema'
 
 type LoaderData = {
   companyCategories: Awaited<ReturnType<typeof getCompanyCategories>>
@@ -26,35 +26,40 @@ export const loader: LoaderFunction = async ({ request }) => {
   })
 }
 
-export async function action({ request }: ActionArgs) {
-  const { formData, errors } = await validateSchema<CreateCompanySchemaInput>({
-    request,
-    schema: createCompanySchema,
-  })
-
-  if (errors) {
-    return json({ formData, errors }, { status: 400 })
+export const meta: MetaFunction = () => {
+  return {
+    title: '[Admin] Crear compañía',
   }
+}
 
-  const { company, error } = await createCompany(formData)
+export async function action({ request }: ActionArgs) {
+  await requireAdminUserId(request)
+
+  const { data, submittedData, error } = await validator.validate(
+    await request.formData()
+  )
 
   if (error) {
+    return validationError(error, submittedData)
+  }
+
+  const { company, error: companyError } = await createCompany(data)
+
+  if (companyError || !company) {
     return json(
       {
-        formData,
+        submittedData,
+        companyError,
       },
       { status: 400 }
     )
   }
 
-  // todo: redirect to createdCompany
-
-  return redirect('/admin/dashboard/companies')
+  return redirect(`/admin/dashboard/companies/${company.id}`)
 }
 
 export default function AdminDashboardCompaniesCreateRoute() {
   const { countries, companyCategories } = useLoaderData<LoaderData>()
-  const transition = useTransition()
 
   return (
     <section className="mx-auto w-full max-w-screen-lg px-2 pb-10 sm:px-10">
@@ -64,13 +69,8 @@ export default function AdminDashboardCompaniesCreateRoute() {
         <CompanyForm
           countries={countries}
           companyCategories={companyCategories}
-          schema={createCompanySchema}
-          actions={
-            <FormActions
-              title="Crear"
-              inProgress={transition.state === 'submitting'}
-            />
-          }
+          validator={validator}
+          actions={<FormActions title="Crear" />}
         />
       </div>
     </section>

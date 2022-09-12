@@ -1,3 +1,4 @@
+import React from 'react'
 import type { LinksFunction, LoaderArgs, MetaFunction } from '@remix-run/node'
 import { json } from '@remix-run/node'
 import {
@@ -22,6 +23,9 @@ export const links: LinksFunction = () => {
     },
   ]
 }
+
+// https://gist.github.com/gaearon/e7d97cdf38a2907924ea12e4ebdf3c85?permalink_comment_id=3886909#gistcomment-3886909
+if (typeof document === 'undefined') React.useLayoutEffect = React.useEffect
 
 export const meta: MetaFunction = () => ({
   charset: 'utf-8',

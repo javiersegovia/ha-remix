@@ -13,7 +13,7 @@ export type TButtonVariants =
   | 'LIGHT'
   | 'WARNING'
 
-interface IButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   href?: string
   targetBlank?: boolean
   isLoading?: boolean
@@ -22,7 +22,7 @@ interface IButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: TButtonVariants
 }
 
-export const Button = ({ href, ...props }: IButtonProps) =>
+export const Button = ({ href, ...props }: ButtonProps) =>
   href ? (
     <Link to={href} className="w-full">
       <ButtonElement {...props} />
@@ -41,7 +41,7 @@ export const ButtonElement = ({
   children,
   className,
   ...otherProps
-}: IButtonProps) => {
+}: ButtonProps) => {
   const isPrimary = variant === 'PRIMARY'
   const isSecondary = variant === 'SECONDARY'
   const isSuccess = variant === 'SUCCESS'

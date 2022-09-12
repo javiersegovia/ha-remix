@@ -114,3 +114,29 @@ export const sendLoginLink = async ({
     templateData,
   })
 }
+
+/** Send an invitation to new users on SignUp */
+export const sendInvitation = async ({
+  destination,
+  firstName,
+  token,
+}: TSendLoginArgs) => {
+  const templateData: TBasicTemplate = {
+    title: 'Invitación a HoyAdelantas',
+    firstLine: `Hola ${firstName},`,
+    secondLine: '¡Bienvenido a HoyAdelantas!',
+    thirdLine:
+      'Haz click en el siguiente botón para ingresar a tu cuenta y validar tus datos.',
+    button: 'Ingresar',
+    buttonHref: `${CLIENT_URL}/verify-login?token=${token}`,
+  }
+
+  return sendEmail({
+    templateName: 'basic',
+    info: {
+      to: destination,
+      subject: '¡Has sido invitado a HoyAdelantas!',
+    },
+    templateData,
+  })
+}

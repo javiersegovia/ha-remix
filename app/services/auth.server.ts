@@ -3,10 +3,8 @@ import { promisify } from 'util'
 import { randomBytes } from 'crypto'
 import { prisma } from '~/db.server'
 import { sendLoginLink } from './email/email.server'
-// import { Response } from '@remix-run/node'
 
 const LOGIN_EXPIRES_IN = '1h'
-// const INVITATION_EXPIRES_IN = '20m'
 
 export const requestLoginLink = async (email: string) => {
   const user = await prisma.user.findFirst({
@@ -78,13 +76,11 @@ export const verifyLoginLink = async (token: string) => {
   }
 }
 
-/** FUNCTIONS THAT ARE ONLY USED INSIDE THIS SERVICE SHOULD _NOT_ BE EXPORTED  */
-
-const generateExpirationDate = (expiresIn: string) => {
+export const generateExpirationDate = (expiresIn: string) => {
   const expirationDate = ms(expiresIn)
   return new Date(Date.now() + expirationDate)
 }
 
-const generateRandomToken = async () => {
+export const generateRandomToken = async () => {
   return (await promisify(randomBytes)(20)).toString('hex')
 }

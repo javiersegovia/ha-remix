@@ -1,27 +1,13 @@
-import { Button } from '../Button'
+import { SubmitButton } from '../SubmitButton'
 
 interface ActionsProps {
-  inProgress: boolean
   title: string
-  disabled?: boolean
 }
 
-export const FormActions = ({
-  inProgress,
-  title,
-  disabled = false,
-}: ActionsProps) => {
+export const FormActions = ({ title }: ActionsProps) => {
   return (
     <div className="mt-6 flex justify-end">
-      <Button
-        type="submit"
-        isLoading={inProgress}
-        disabled={inProgress || disabled}
-        className="mt-3 w-auto md:px-6"
-        showCheckOnSuccess
-      >
-        {title}
-      </Button>
+      <SubmitButton className="mt-3 w-auto md:px-6">{title}</SubmitButton>
     </div>
   )
 }

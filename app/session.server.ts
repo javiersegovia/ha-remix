@@ -4,7 +4,7 @@ import invariant from 'tiny-invariant'
 import type { User } from '~/services/user.server'
 import { getUserById } from '~/services/user.server'
 import { getAdminUserById } from '~/services/admin-user.server'
-import { getEmployeeById } from '~/services/employee.server'
+import { getEmployeeById } from '~/services/employee/employee.server'
 
 invariant(process.env.SESSION_SECRET, 'SESSION_SECRET must be set')
 

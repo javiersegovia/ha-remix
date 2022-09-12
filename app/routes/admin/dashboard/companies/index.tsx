@@ -1,4 +1,4 @@
-import type { LoaderFunction } from '@remix-run/node'
+import type { LoaderFunction, MetaFunction } from '@remix-run/node'
 import { json } from '@remix-run/node'
 import { useLoaderData } from '@remix-run/react'
 import { HiPlus } from 'react-icons/hi'
@@ -13,6 +13,12 @@ type LoaderData = {
   companies: Awaited<ReturnType<typeof getCompanies>>
 }
 
+export const meta: MetaFunction = () => {
+  return {
+    title: '[Admin] Lista de compañías',
+  }
+}
+
 export const loader: LoaderFunction = async ({ request }) => {
   await requireAdminUserId(request)
   return json<LoaderData>({
@@ -25,7 +31,7 @@ export default function CompanyIndexRoute() {
 
   return (
     <>
-      {companies?.length ? (
+      {companies?.length > 0 ? (
         <>
           <div className="mb-8 mt-2 flex flex-col items-center px-2 sm:items-start lg:flex-row lg:items-center lg:justify-between">
             <Title>Compañías</Title>

@@ -1,7 +1,8 @@
 import { useMemo } from 'react'
 import { useMatches } from '@remix-run/react'
 import type { User } from '~/services/user.server'
-import type { GetEmployeeByIdResponse } from '~/services/employee.server'
+import type { getEmployeeById } from '~/services/employee/employee.server'
+// import type { GetEmployeeByIdResponse } from '~/services/employee/employee.server'
 
 const DEFAULT_REDIRECT = '/'
 
@@ -50,7 +51,7 @@ function isUser(user: any): user is User {
 
 function isEmployee(
   employee: any
-): employee is Awaited<GetEmployeeByIdResponse> {
+): employee is Awaited<ReturnType<typeof getEmployeeById>> {
   return (
     employee &&
     typeof employee === 'object' &&
@@ -81,7 +82,7 @@ export function useUser(): User {
 }
 
 /** Only use inside the Dashboard */
-export function useEmployee(): Awaited<GetEmployeeByIdResponse> {
+export function useEmployee(): Awaited<ReturnType<typeof getEmployeeById>> {
   const data = useMatchesData('routes/dashboard')
 
   if (!data || !isEmployee(data.employee)) {

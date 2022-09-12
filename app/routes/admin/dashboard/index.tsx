@@ -6,20 +6,30 @@ import { json } from '@remix-run/node'
 import { CurrencySymbol } from '~/components/FormFields/CurrencyInput'
 
 import { Title } from '~/components/Typography/Title'
-import type { LoaderFunction } from '@remix-run/server-runtime'
+import type { LoaderFunction, MetaFunction } from '@remix-run/server-runtime'
 import { requireAdminUserId } from '~/session.server'
 import { getLastPaymentMonths } from '~/utils/paymentMonths'
 import { getMonthlyOverview } from '~/services/payroll-advance/payroll-advance.server'
 import { formatMoney } from '~/utils/formatMoney'
 import { Box } from '~/components/Layout/Box'
 import { Select } from '~/components/FormFields/Select'
-import { Form, useForm } from '~/components/FormFields/Form'
 import { PaymentDayList } from '~/components/Lists/PaymentDaysList'
+import { ValidatedForm } from 'remix-validated-form'
+import { withZod } from '@remix-validated-form/with-zod'
+import { z } from 'zod'
 
 const lastPaymentMonths = getLastPaymentMonths()
 
 type LoaderData = {
   data: Awaited<ReturnType<typeof getMonthlyOverview>>
+}
+
+const validator = withZod(z.object({ month: z.string() }))
+
+export const meta: MetaFunction = () => {
+  return {
+    title: '[Admin] Resumen',
+  }
 }
 
 export const loader: LoaderFunction = async ({ request }) => {
@@ -34,7 +44,6 @@ export default function AdminDashboardIndexRoute() {
   const { data: loaderData } = useLoaderData<LoaderData>()
 
   const fetcher = useFetcher<LoaderData>()
-  const formProps = useForm({ method: 'get' })
   const { overview, requestDays } = fetcher?.data?.data || loaderData
 
   return (
@@ -44,21 +53,26 @@ export default function AdminDashboardIndexRoute() {
           <Title>Resumen del mes</Title>
 
           <div className="w-72">
-            <Form {...formProps}>
+            <ValidatedForm
+              validator={validator}
+              id="CompanyFormId"
+              defaultValues={{
+                month: lastPaymentMonths[0]?.id,
+              }}
+            >
               <Select
                 name="month"
                 options={lastPaymentMonths}
-                defaultSelectValue={lastPaymentMonths[0]}
                 onSelectChange={(newValue) => {
                   if (newValue) {
                     fetcher.submit(
-                      { month: (newValue as { id: string }).id },
+                      { month: String(newValue) },
                       { method: 'get' }
                     )
                   }
                 }}
               />
-            </Form>
+            </ValidatedForm>
           </div>
         </div>
 

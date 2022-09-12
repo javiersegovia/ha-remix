@@ -1,5 +1,6 @@
 import { formatRelative, format } from 'date-fns'
 import { es } from 'date-fns/locale'
+import type { DateMDYString } from '~/components/FormFields/DatePicker'
 
 export const formatRelativeDate = (date: Date) => {
   return formatRelative(date, new Date(), {
@@ -11,6 +12,12 @@ export const formatDate = (date: Date | number) => {
   return format(date, 'dd/MM/yyyy', {
     locale: es,
   })
+}
+
+export const formatMDYDate = (date: Date | number): DateMDYString => {
+  return format(date, 'MM-dd-yyyy', {
+    locale: es,
+  }) as DateMDYString
 }
 
 // parse a date in yyyy-mm-dd format

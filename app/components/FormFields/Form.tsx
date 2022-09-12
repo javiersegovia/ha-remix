@@ -9,19 +9,12 @@ import type { UseFormReturn } from 'react-hook-form'
 import { FormProvider, useForm as useReactHookForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 
-interface FormProps<SchemaType extends ZodSchema> extends PropsWithChildren {
-  schema?: SchemaType
-  method: FormMethod
-  defaultValues?: z.infer<SchemaType>
-  action?: string
-}
-
-interface FormComponentProps extends PropsWithChildren {
+interface FormProps extends PropsWithChildren {
   formMethods: UseFormReturn<any>
   method: FormMethod
   action?: string
   handleSubmit: (
-    _: z.TypeOf<ZodSchema>,
+    _: z.infer<ZodSchema>,
     event?: React.BaseSyntheticEvent
   ) => void
 }
@@ -32,7 +25,7 @@ export const Form = ({
   action,
   method,
   handleSubmit,
-}: FormComponentProps) => {
+}: FormProps) => {
   return (
     <FormProvider {...formMethods}>
       <RemixForm
@@ -46,17 +39,24 @@ export const Form = ({
   )
 }
 
+interface UseFormProps<T extends ZodSchema<any>> extends PropsWithChildren {
+  schema?: T
+  method: FormMethod
+  defaultValues?: z.infer<T>
+  action?: string
+}
+
 /** This useForm hook is a wrapper around React Hook Form and Remix Form.
  *  The result is a JavaScript enhanced form that will return helpers to manipulate formValues when needed,
  *  and a form that will work without JavaScript when it's disabled.
  */
-export const useForm = <SchemaType extends ZodSchema>({
+export const useForm = <T extends ZodSchema<any>>({
   schema,
   defaultValues,
   method,
   action,
-}: FormProps<SchemaType>) => {
-  const formMethods = useReactHookForm<z.TypeOf<SchemaType>>({
+}: UseFormProps<T>) => {
+  const formMethods = useReactHookForm<z.infer<T>>({
     resolver: schema && zodResolver(schema),
     defaultValues,
   })
@@ -69,12 +69,15 @@ export const useForm = <SchemaType extends ZodSchema>({
    *
    * If the JavaScript is disabled, the form will submit normally.
    */
-  const handleSubmit = (
-    _: z.TypeOf<SchemaType>,
-    event?: React.BaseSyntheticEvent
-  ) => {
+  const handleSubmit = (_: z.infer<T>, event?: React.BaseSyntheticEvent) => {
     if (event) {
-      submit(new FormData(event?.target as HTMLFormElement), {
+      console.log({
+        _,
+        form: event?.target,
+        formData: new FormData(event?.target),
+      })
+      // submit(_, {
+      submit(new FormData(event?.target), {
         method,
         action,
       })

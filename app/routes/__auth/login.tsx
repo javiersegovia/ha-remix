@@ -1,22 +1,16 @@
 import type { ActionArgs, LoaderArgs, MetaFunction } from '@remix-run/node'
-import { json, redirect } from '@remix-run/node'
-import {
-  Link,
-  useActionData,
-  useSearchParams,
-  useTransition,
-} from '@remix-run/react'
+import { redirect } from '@remix-run/node'
+import { Link, useSearchParams } from '@remix-run/react'
+import { ValidatedForm, validationError } from 'remix-validated-form'
 
 import { verifyUserLogin } from '~/services/user.server'
 import { createUserSession, getUserIdFromSession } from '~/session.server'
 import { safeRedirect } from '~/utils/utils'
-import { validateSchema } from '~/utils/validation'
-import { loginSchema } from '~/schemas/login.schema'
-import type { LoginSchemaInput } from '~/schemas/login.schema'
-import { Form, useForm } from '~/components/FormFields/Form'
+import { loginValidator } from '~/schemas/login.schema'
 import { Input } from '~/components/FormFields/Input'
 import { Button } from '~/components/Button'
 import { Title } from '~/components/Typography/Title'
+import { SubmitButton } from '~/components/SubmitButton'
 
 export async function loader({ request }: LoaderArgs) {
   const userId = await getUserIdFromSession(request)
@@ -25,30 +19,31 @@ export async function loader({ request }: LoaderArgs) {
 }
 
 export async function action({ request }: ActionArgs) {
-  const { formData, errors } = await validateSchema<LoginSchemaInput>({
-    request,
-    schema: loginSchema,
-  })
+  const { data, submittedData, error, formId } = await loginValidator.validate(
+    await request.formData()
+  )
 
-  if (errors) {
-    return json({ formData, errors }, { status: 400 })
+  if (error) {
+    return validationError(error, submittedData)
   }
 
-  const { email, password, redirectTo } = formData
+  const { email, password, redirectTo } = data
   const user = await verifyUserLogin(email, password)
 
   if (!user) {
-    return json(
+    return validationError(
       {
-        formData,
-        errors: {
+        fieldErrors: {
           email: 'Correo o contraseña inválida',
           password: 'Correo o contraseña inválida',
         },
+        formId,
       },
-      { status: 400 }
+      submittedData
     )
   }
+
+  // todo: check if user has signed terms
 
   let redirectPath = redirectTo
 
@@ -72,19 +67,9 @@ export const meta: MetaFunction = () => {
   }
 }
 
-export default function LoginRoute() {
-  const transition = useTransition()
-
+export default function LoginRemixRoute() {
   const [searchParams] = useSearchParams()
   const redirectTo = searchParams.get('redirectTo') || '/dashboard'
-  const actionData = useActionData<typeof action>()
-
-  const { formData, errors } = actionData || {}
-
-  const isLoading =
-    transition.state === 'submitting' || transition.state === 'loading'
-
-  const formProps = useForm({ schema: loginSchema, method: 'post' })
 
   return (
     <section
@@ -108,47 +93,41 @@ export default function LoginRoute() {
         <div className="mx-auto mb-6 mt-8 w-full rounded-none bg-white px-4 pb-6 pt-5 shadow-2xl sm:w-10/12 sm:rounded-lg sm:px-6 md:w-6/12 lg:w-5/12 xl:w-4/12 2xl:w-3/12">
           <Title className="mb-4 text-center">Inicio de sesión</Title>
 
-          <Form {...formProps}>
-            <fieldset disabled={isLoading} className="space-y-4">
-              <input type="hidden" name="redirectTo" value={redirectTo} />
+          <ValidatedForm
+            validator={loginValidator}
+            method="post"
+            className="space-y-4"
+          >
+            <input type="hidden" name="redirectTo" value={redirectTo} />
 
-              <Input
-                name="email"
-                type="email"
-                label="Correo electrónico"
-                placeholder="Ingresa tu correo"
-                disabled={isLoading}
-                error={errors?.email}
-                defaultValue={formData?.email}
-              />
-              <Input
-                name="password"
-                type="password"
-                label="Contraseña"
-                placeholder="Ingresa tu contraseña"
-                disabled={isLoading}
-                error={errors?.password}
-                defaultValue={formData?.password}
-              />
+            <Input
+              name="email"
+              type="email"
+              label="Correo electrónico"
+              placeholder="Ingresa tu correo"
+            />
+            <Input
+              name="password"
+              type="password"
+              label="Contraseña"
+              placeholder="Ingresa tu contraseña"
+            />
 
-              <Button type="submit" showCheckOnSuccess>
-                Ingresar
+            <SubmitButton>Ingresar</SubmitButton>
+
+            <div className="w-full border-b border-gray-300 pt-4" />
+
+            <div className="pt-3">
+              <Button
+                type="button"
+                href="/login-email"
+                variant="LIGHT"
+                className="text-sm"
+              >
+                Ingresar usando correo electrónico
               </Button>
-
-              <div className="w-full border-b border-gray-300 pt-4" />
-
-              <div className="pt-3">
-                <Button
-                  type="button"
-                  href="/login-email"
-                  variant="LIGHT"
-                  className="text-sm"
-                >
-                  Ingresar usando correo electrónico
-                </Button>
-              </div>
-            </fieldset>
-          </Form>
+            </div>
+          </ValidatedForm>
         </div>
       </div>
 

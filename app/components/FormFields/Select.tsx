@@ -1,25 +1,36 @@
+import clsx from 'clsx'
 import React from 'react'
-import { Controller, useFormContext } from 'react-hook-form'
 import ReactSelect from 'react-select'
+import { ClientOnly } from 'remix-utils'
+import {
+  useControlField,
+  useField,
+  useIsSubmitting,
+} from 'remix-validated-form'
 import { ErrorMessage } from './ErrorMessage'
 import { Label } from './Label'
 import { selectStyles } from './Select.styles'
 
+export type TOptionValue = string | number
+
 export type TReactSelectOption =
   | {
-      id: string | number
+      id: TOptionValue
       name: string
     }
   | {
-      value: string | number
+      value: TOptionValue
       name: string
     }
 
 export type TSelectOption = TReactSelectOption | string
 
-export type TSelectProps = React.DetailedHTMLProps<
-  React.SelectHTMLAttributes<HTMLSelectElement>,
-  HTMLSelectElement
+export type TSelectProps = Omit<
+  React.DetailedHTMLProps<
+    React.SelectHTMLAttributes<HTMLSelectElement>,
+    HTMLSelectElement
+  >,
+  'defaultValue'
 >
 
 interface SelectProps extends TSelectProps {
@@ -30,8 +41,8 @@ interface SelectProps extends TSelectProps {
   error?: string
   isClearable?: boolean
   noOptionsText?: string
-  defaultSelectValue?: TSelectOption
-  onSelectChange?: (newValue?: TSelectOption | null) => void
+  defaultValue?: TSelectOption | null
+  onSelectChange?: (newValue?: TOptionValue | null) => void
 }
 
 const formatOptions = (
@@ -49,6 +60,19 @@ const formatOptions = (
     : []
 }
 
+export const getSelectValue = (selectedOption?: TReactSelectOption | null) =>
+  (selectedOption && 'id' in selectedOption && selectedOption.id) ||
+  (selectedOption && 'value' in selectedOption && selectedOption.value) ||
+  undefined
+
+export const getSelectOption = (
+  options: TReactSelectOption[],
+  value: TOptionValue | null | undefined
+) =>
+  options.find((option) =>
+    'value' in option ? option.value === value : option.id === value
+  )
+
 export const Select = ({
   name,
   label,
@@ -57,66 +81,87 @@ export const Select = ({
   error,
   isClearable = false,
   disabled,
-  defaultSelectValue,
   noOptionsText,
   onSelectChange,
 }: SelectProps) => {
-  const {
-    control,
-    formState: { errors },
-  } = useFormContext()
+  const { error: formError, defaultValue, validate } = useField(name)
+  const [value, setValue] = useControlField<TOptionValue | undefined>(name)
+  const isSubmitting = useIsSubmitting()
 
-  const fieldError: string | undefined =
-    error || (errors?.[name]?.message as string)
-
+  const fieldError: string | undefined = error || formError
   const styles = selectStyles<false>(!!fieldError)
-
   const formattedOptions = formatOptions(options)
+
+  const formattedDefaultValue =
+    typeof defaultValue !== 'object'
+      ? getSelectOption(formattedOptions, defaultValue)
+      : defaultValue
+
+  const currentValue = getSelectOption(formattedOptions, value) || null
 
   return (
     <Label htmlFor={name} description={label} className="block w-full">
-      <Controller
-        name={name}
-        control={control}
-        render={({ field: { ref, value, onChange } }) => (
-          <ReactSelect<TReactSelectOption, false>
-            ref={ref}
-            aria-labelledby={name}
-            id={name}
-            instanceId={name}
-            styles={styles}
-            className="react-select-container"
-            defaultValue={
-              typeof defaultSelectValue === 'string'
-                ? {
-                    id: defaultSelectValue,
-                    name: defaultSelectValue,
-                  }
-                : defaultSelectValue
-            }
-            classNamePrefix="react-select"
-            options={formattedOptions}
-            placeholder={placeholder}
-            isClearable={isClearable}
-            isDisabled={disabled}
-            getOptionValue={(option: TReactSelectOption) =>
-              `${
-                ('id' in option && option.id) ||
-                ('value' in option && option.value)
-              }`
-            }
-            getOptionLabel={(option: TReactSelectOption) => `${option.name}`}
-            value={value}
-            onChange={(newValue) => {
-              onChange(newValue)
-              onSelectChange?.(newValue)
-            }}
-            noOptionsMessage={() =>
-              noOptionsText || 'No hay opciones disponibles'
-            }
-          />
-        )}
-      />
+      <>
+        <ClientOnly
+          fallback={
+            <select
+              id={name}
+              name={name}
+              defaultValue={defaultValue || undefined}
+              className={clsx(
+                'flex min-h-[50px] w-full items-center rounded-[15px] border border-gray-300 bg-white p-3 text-sm leading-6 shadow-sm focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-400',
+                fieldError &&
+                  'border-red-500 text-red-600 hover:border-red-500 focus:ring-red-500',
+                (disabled || isSubmitting) &&
+                  'pointer-events-auto cursor-not-allowed bg-gray-200'
+              )}
+            >
+              {formattedOptions?.map((opt) => (
+                <option
+                  key={typeof opt === 'object' ? getSelectValue(opt) : opt}
+                  value={typeof opt === 'object' ? getSelectValue(opt) : opt}
+                >
+                  {opt.name}
+                </option>
+              ))}
+            </select>
+          }
+        >
+          {() => (
+            <>
+              <input type="hidden" value={value || undefined} name={name} />
+              <ReactSelect<TReactSelectOption, false>
+                aria-labelledby={name}
+                id={name}
+                instanceId={name}
+                styles={styles}
+                defaultValue={formattedDefaultValue}
+                options={formattedOptions}
+                placeholder={placeholder}
+                isClearable={isClearable}
+                // isDisabled={disabled || isSubmitting}
+                getOptionValue={(option: TReactSelectOption) =>
+                  `${getSelectValue(option)}`
+                }
+                getOptionLabel={(option: TReactSelectOption) =>
+                  `${option.name}`
+                }
+                value={currentValue}
+                onBlur={validate}
+                onChange={(newValue) => {
+                  setValue(getSelectValue(newValue))
+                  validate()
+                  onSelectChange?.(getSelectValue(newValue))
+                }}
+                noOptionsMessage={() =>
+                  noOptionsText || 'No hay opciones disponibles'
+                }
+              />
+            </>
+          )}
+        </ClientOnly>
+      </>
+
       <ErrorMessage>{fieldError}</ErrorMessage>
     </Label>
   )

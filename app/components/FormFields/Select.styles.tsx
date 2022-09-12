@@ -94,7 +94,12 @@ export function selectStyles<isMulti extends boolean>(
     }),
     placeholder: (provided) => ({
       ...provided,
-      ...{ paddingTop: '0', paddingBottom: '0', margin: '0', color: '#6B7280' },
+      ...{
+        paddingTop: '0',
+        paddingBottom: '0',
+        margin: '0',
+        color: 'rgb(148, 163, 184)',
+      },
     }),
     valueContainer: (provided) => ({
       ...provided,

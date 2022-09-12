@@ -27,7 +27,7 @@ export function CompanyList({ companies }: CompanyListProps) {
                   <tr key={company.id} className="hover:bg-gray-100">
                     <TableData>
                       <Link
-                        to={`/admin/dashboard/companies/${company.id}/information`}
+                        to={`/admin/dashboard/companies/${company.id}?index`}
                         className="text-sm font-medium text-gray-900 underline hover:text-cyan-600"
                       >
                         {company.name}
