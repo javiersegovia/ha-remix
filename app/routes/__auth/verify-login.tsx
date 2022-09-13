@@ -12,7 +12,7 @@ export async function loader({ request }: LoaderArgs) {
     return null
   }
 
-  let redirectPath = '/dashboard'
+  let redirectPath = '/dashboard/overview'
 
   try {
     const { user, hasPassword, hasAcceptedTerms } = await verifyLoginLink(token)

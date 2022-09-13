@@ -4,6 +4,7 @@ import * as aws from '@aws-sdk/client-ses'
 import { defaultProvider } from '@aws-sdk/credential-provider-node'
 
 import type { TBasicTemplate } from './templates/basic/interface'
+import type { Company, Employee } from '@prisma/client'
 
 type TEmailInfo = {
   to: string
@@ -136,6 +137,42 @@ export const sendInvitation = async ({
     info: {
       to: destination,
       subject: '¡Has sido invitado a HoyAdelantas!',
+    },
+    templateData,
+  })
+}
+
+type TSendPremiumAdvanceNotificationArgs = {
+  employeeFullName?: string
+  companyId: Company['id']
+  employeeId: Employee['id']
+}
+
+/** Notify the admin about a new PremiumAdvance request */
+export const sendPremiumAdvanceNotificationToAdmin = async ({
+  employeeFullName,
+  companyId,
+  employeeId,
+}: TSendPremiumAdvanceNotificationArgs) => {
+  const templateData: TBasicTemplate = {
+    title: `${employeeFullName} desea un adelanto de prima`,
+    firstLine:
+      'Por favor, haz click en el siguiente enlace para obtener más información',
+    button: 'Ver colaborador',
+    buttonHref: `${CLIENT_URL}/admin/dashboard/companies/${companyId}/employees/${employeeId}`,
+  }
+
+  const adminEmail = process.env.ADMIN_NOTIFICATION_EMAIL
+
+  if (!adminEmail) {
+    throw new Error('Please add the ADMIN_NOTIFICATION_EMAIL to .env')
+  }
+
+  return sendEmail({
+    templateName: 'basic',
+    info: {
+      to: adminEmail,
+      subject: `${employeeFullName} desea un adelanto de prima`,
     },
     templateData,
   })

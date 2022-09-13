@@ -93,6 +93,14 @@ export async function getEmployee(request: Request) {
   throw await logout(request)
 }
 
+export async function requireEmployee(request: Request) {
+  const employee = await getEmployee(request)
+  if (!employee) {
+    throw await logout(request)
+  }
+  return employee
+}
+
 /**
  * Returns the userId from session.
  * If not present, redirects to login.

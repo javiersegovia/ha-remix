@@ -12,7 +12,7 @@ const loginSchema = z.object({
       required_error: 'Ingrese una contraseña',
     })
     .min(6, 'La contraseña debe poseer al menos 6 caracteres'),
-  redirectTo: z.string().default('/dashboard'),
+  redirectTo: z.string().default('/dashboard/overview'),
 })
 
 const loginEmailSchema = loginSchema.pick({ email: true })

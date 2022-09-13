@@ -31,9 +31,9 @@ export type DashboardColorVariant = 'PRIMARY' | 'DARK'
 
 interface DashboardSideBarProps {
   user: Pick<User, 'firstName' | 'email'> | Pick<AdminUser, 'email'>
-  isAdmin: boolean
   paths: INavPath[]
   logoHref: string
+  isAdmin?: boolean
   variant?: DashboardColorVariant
 }
 
@@ -54,17 +54,15 @@ export const DashboardSideBar = ({
     <>
       <section
         className={clsx(
-          'flex min-h-screen flex-col bg-orange-800',
-          variant === 'PRIMARY' && 'bg-steelBlue-900',
+          'flex min-h-screen flex-col bg-steelBlue-900',
           variant === 'DARK' && 'bg-gray-900'
         )}
       >
         <nav
           ref={navRef}
           className={clsx(
-            'fixed left-0 top-0 z-20 h-full w-60 origin-left transform overflow-y-auto overflow-x-hidden pb-10 transition md:translate-x-0',
+            'fixed left-0 top-0 z-20 h-full w-60 origin-left transform overflow-y-auto overflow-x-hidden bg-steelBlue-900 pb-10 transition md:translate-x-0',
             showSideBar ? 'translate-x-0' : '-translate-x-full',
-            variant === 'PRIMARY' && 'bg-steelBlue-900',
             variant === 'DARK' && 'bg-gray-900'
           )}
         >

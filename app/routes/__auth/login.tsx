@@ -57,7 +57,7 @@ export async function action({ request }: ActionArgs) {
   return createUserSession({
     request,
     userId: user.id,
-    redirectTo: safeRedirect(redirectPath, '/dashboard'),
+    redirectTo: safeRedirect(redirectPath, '/dashboard/overview'),
   })
 }
 
@@ -69,7 +69,7 @@ export const meta: MetaFunction = () => {
 
 export default function LoginRemixRoute() {
   const [searchParams] = useSearchParams()
-  const redirectTo = searchParams.get('redirectTo') || '/dashboard'
+  const redirectTo = searchParams.get('redirectTo') || '/dashboard/overview'
 
   return (
     <section

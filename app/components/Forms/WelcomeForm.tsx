@@ -416,7 +416,9 @@ export const WelcomeForm = ({
         />
       </div>
 
-      <SubmitButton disabled={!checkboxIsChecked}>Continuar</SubmitButton>
+      <SubmitButton disabled={!checkboxIsChecked} showSpinner>
+        Continuar
+      </SubmitButton>
     </ValidatedForm>
   )
 }

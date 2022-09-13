@@ -1,42 +1,74 @@
-import type { Employee } from '@prisma/client'
+import type { Employee, ZapsignDocument } from '@prisma/client'
+import { ZapsignDocumentStatus } from '@prisma/client'
 import { fetch } from '@remix-run/node'
 import { badRequest, serverError } from 'remix-utils'
 import { prisma } from '~/db.server'
 
-export const getSignature = async (signerToken: string) => {
-  const zapsignDocument = await prisma.zapsignDocument.findFirst({
-    where: {
-      signerToken,
-    },
-  })
-  console.log({ zapsignDocument })
+import type { SignatureDetailsResponse } from './signature.interface'
+
+export const getSignature = async (
+  signerToken: string,
+  zapsignDocument: ZapsignDocument | null = null
+): Promise<SignatureDetailsResponse> => {
+  if (!zapsignDocument) {
+    zapsignDocument = await prisma.zapsignDocument.findFirst({
+      where: {
+        signerToken,
+      },
+    })
+  }
 
   if (!zapsignDocument) {
     throw badRequest('Token inválido')
   }
 
-  const response = await fetch(
-    `https://api.zapsign.com.br/api/v1/docs/${zapsignDocument.externalToken}/?api_token=${process.env.ZAPSIGN_ACCESS_TOKEN}`
-  ).catch((err) => {
-    throw serverError(err.response.data)
-  })
-
-  const data = await response.json()
-
-  console.log({ data })
-
-  if (data?.status !== zapsignDocument.documentStatus) {
-    await prisma.zapsignDocument.update({
-      where: {
-        id: zapsignDocument.id,
-      },
-      data: {
-        documentStatus: data?.status,
-      },
+  if (zapsignDocument.externalToken) {
+    const response = await fetch(
+      `https://api.zapsign.com.br/api/v1/docs/${zapsignDocument.externalToken}/?api_token=${process.env.ZAPSIGN_ACCESS_TOKEN}`
+    ).catch((err) => {
+      throw serverError(err.response.data)
     })
+
+    const data = await response.json()
+
+    if (data?.status !== zapsignDocument.documentStatus) {
+      await prisma.zapsignDocument.update({
+        where: {
+          id: zapsignDocument.id,
+        },
+        data: {
+          documentStatus: data?.status,
+        },
+      })
+    }
+
+    return data
   }
 
-  return data
+  throw serverError('Ha ocurrido un error con el registro del documento')
+}
+
+/** ! Right now, we only use ZapSign on Terms & Conditions.
+ *  If we add more documents, we will have to refactor this function in order to identify
+ *  The specific document that we have to check.
+ *  TODO: Add a ENUM with the document type on ZapsignDocument (TERMS_AND_CONDITIONS) and refactor this
+ */
+export const hasSignedTerms = async (
+  employeeId: Employee['id']
+): Promise<boolean> => {
+  /** It should have only one, but just in case */
+  const document = await prisma.zapsignDocument.findFirst({
+    where: {
+      employeeId,
+    },
+  })
+
+  if (document) {
+    const signatureData = await getSignature(document.signerToken, document)
+    return signatureData.status === ZapsignDocumentStatus.signed
+  }
+
+  return Boolean(document)
 }
 
 export const requestSignature = async ({
@@ -78,13 +110,13 @@ export const requestSignature = async ({
       }),
     }
   ).catch((err) => {
-    throw serverError(err.response.data)
+    console.error(err) // todo add logger
+    throw serverError(err.message)
   })
 
-  const result = await response.json()
-
-  const signerToken = result?.data?.signers?.[0]?.token || ''
-  const externalToken = result?.data?.token || ''
+  const data = await response.json()
+  const signerToken = data?.signers?.[0]?.token || ''
+  const externalToken = data?.token || ''
 
   await prisma.zapsignDocument.create({
     data: {
@@ -94,5 +126,7 @@ export const requestSignature = async ({
     },
   })
 
-  return { data: result?.data, signerToken }
+  return { data, signerToken }
 }
+
+/** TODO Add ZapSign Webhook */
