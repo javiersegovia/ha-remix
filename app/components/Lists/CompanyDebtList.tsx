@@ -55,7 +55,7 @@ export function CompanyDebtList({ debts }: CompanyDebtListProps) {
                   ({ id, fiatDebt, cryptoDebt, month, year, updatedAt }) => (
                     <tr key={id}>
                       <TableData>
-                        <Link to={`/debts/${id}`}>
+                        <Link to={`/admin/dashboard/debts/${id}`}>
                           <div className="text-sm font-medium text-gray-900 underline hover:text-cyan-600">
                             Novedades de{' '}
                             {format(new Date(year, month), 'MMMM', {
@@ -120,7 +120,7 @@ export function CompanyDebtList({ debts }: CompanyDebtListProps) {
 
                       <TableData isCentered>
                         <div className="text-sm text-gray-900">
-                          {/* todo: get latest date between fiat and crypto */}
+                          {/* todo: use last date between fiatDebt and cryptoDebt */}
                           {formatRelativeDate(new Date(Date.parse(updatedAt)))}
                         </div>
                       </TableData>

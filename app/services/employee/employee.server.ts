@@ -1,4 +1,12 @@
-import type { Company, Employee, Prisma } from '@prisma/client'
+import type {
+  Bank,
+  BankAccount,
+  Company,
+  Employee,
+  Prisma,
+  Wallet,
+} from '@prisma/client'
+import { PayrollAdvancePaymentMethod } from '@prisma/client'
 import type { EmployeeSchemaInput } from './employee.schema'
 
 import { EmployeeStatus } from '@prisma/client'
@@ -17,7 +25,7 @@ import { requestSignature } from '../signature/signature.server'
 const INVITATION_EXPIRES_IN = '20m'
 
 export const getEmployeeById = async (employeeId: Employee['id']) => {
-  return prisma.employee.findFirst({
+  return prisma.employee.findUnique({
     where: {
       id: employeeId,
     },
@@ -147,7 +155,7 @@ export const createEmployee = async (
     advanceMaxAmount,
   } = data
 
-  const userExists = await prisma.user.findFirst({
+  const userExists = await prisma.user.findUnique({
     where: { email: user.email },
   })
 
@@ -275,7 +283,7 @@ export const createEmployee = async (
 
     return { employee }
   } catch (err) {
-    console.error(err) // todo: add error logger
+    // Todo LOGGER: Log error and save to a file
     return { error: err, employee: null }
   }
 }
@@ -419,7 +427,7 @@ export const updateEmployeeById = async (
       },
     })
   } catch (err) {
-    // todo add logger
+    // Todo LOGGER: Log error and save to a file
     console.error(err)
     throw badRequest({ message: 'Ha ocurrido un error' })
   }
@@ -484,14 +492,14 @@ export const updateEmployeeByWelcomeForm = async (
 
     return signerToken as string
   } catch (err) {
-    // todo add logger
+    // Todo LOGGER: Log error and save to a file
     console.error(err)
     throw badRequest({ message: 'Ha ocurrido un error' })
   }
 }
 
 export const deleteEmployeeById = async (employeeId: Employee['id']) => {
-  const employee = await prisma.employee.findFirst({
+  const employee = await prisma.employee.findUnique({
     where: { id: employeeId },
   })
 
@@ -524,4 +532,45 @@ export const deleteEmployeeById = async (employeeId: Employee['id']) => {
       status: 404,
     })
   }
+}
+
+interface GetEmployeePaymentOptionsArgs {
+  employee: Pick<
+    Employee,
+    'advanceCryptoAvailableAmount' | 'advanceAvailableAmount'
+  >
+  wallet?: Pick<Wallet, 'address'> | null
+  bankAccount?:
+    | (Pick<BankAccount, 'accountNumber'> & {
+        bank: Pick<Bank, 'name'>
+      })
+    | null
+}
+
+export const getEmployeePaymentOptions = ({
+  employee,
+  wallet,
+  bankAccount,
+}: GetEmployeePaymentOptionsArgs) => {
+  const paymentOptions = []
+
+  if (
+    wallet &&
+    employee.advanceCryptoAvailableAmount &&
+    employee.advanceCryptoAvailableAmount > 0
+  ) {
+    paymentOptions.push({
+      value: PayrollAdvancePaymentMethod.WALLET,
+      name: `Billetera cripto — ${wallet.address}`,
+    })
+  }
+
+  if (bankAccount && employee.advanceAvailableAmount > 0) {
+    paymentOptions.push({
+      value: PayrollAdvancePaymentMethod.BANK_ACCOUNT,
+      name: `${bankAccount?.bank.name} — ${bankAccount.accountNumber}`,
+    })
+  }
+
+  return paymentOptions
 }

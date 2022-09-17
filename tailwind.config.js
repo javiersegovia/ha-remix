@@ -34,7 +34,7 @@ module.exports = {
           900: '#00294c',
         },
         orange: {
-          50: '#ffd4ad',
+          50: '#ffe9d5',
           100: '#ffc793',
           200: '#ffbd80',
           300: '#ffaa5b',

@@ -55,7 +55,9 @@ export const loader: LoaderFunction = async ({ request, params }) => {
   if (!employeeId) {
     throw badRequest({ error: 'No pudimos encontrar el ID del empleado' })
   }
-  const employeExists = prisma.employee.findFirst({ where: { id: employeeId } })
+  const employeExists = prisma.employee.findUnique({
+    where: { id: employeeId },
+  })
   if (!employeExists) {
     throw badRequest({ error: 'No pudimos encontrar el ID del empleado' })
   }

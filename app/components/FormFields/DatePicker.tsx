@@ -55,8 +55,8 @@ export const DatePicker = ({
           // BUT if we use the "disabled" field, the data won't be submitted. That's why we use readonly.
           // See details: https://stackoverflow.com/a/7357314/10653675
           readOnly: disabled || isSubmitting,
-          min: minDate, // todo
-          max: maxDate, // todo
+          min: minDate,
+          max: maxDate,
           placeholder,
           className: clsx(
             inputBaseStyles,

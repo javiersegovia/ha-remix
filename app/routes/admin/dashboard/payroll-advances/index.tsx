@@ -1,25 +1,20 @@
 import { useLoaderData } from '@remix-run/react'
 import { json } from '@remix-run/server-runtime'
-import { Button } from '~/components/Button'
 import { PayrollAdvanceList } from '~/components/Lists/PayrollAdvanceList'
 import { Title } from '~/components/Typography/Title'
-import { requireEmployee } from '~/session.server'
+import { requireAdminUserId } from '~/session.server'
 import { getPayrollAdvances } from '~/services/payroll-advance/payroll-advance.server'
 
 import type { LoaderFunction, MetaFunction } from '@remix-run/server-runtime'
 
 type LoaderData = {
-  payrollAdvances: Awaited<ReturnType<typeof getPayrollAdvances>>
+  payrollAdvances: Awaited<ReturnType<any>>
 }
 
 export const loader: LoaderFunction = async ({ request }) => {
-  const employee = await requireEmployee(request)
+  await requireAdminUserId(request)
 
-  const payrollAdvances = await getPayrollAdvances({
-    where: {
-      employeeId: employee.id,
-    },
-  })
+  const payrollAdvances = await getPayrollAdvances()
 
   return json<LoaderData>({
     payrollAdvances,
@@ -28,11 +23,11 @@ export const loader: LoaderFunction = async ({ request }) => {
 
 export const meta: MetaFunction = () => {
   return {
-    title: 'Tus adelantos de nómina | HoyAdelantas',
+    title: 'Lista de adelantos de nómina | HoyAdelantas',
   }
 }
 
-export default function PayrollAdvancesIndexRoute() {
+export default function AdminPayrollAdvancesIndexRoute() {
   const { payrollAdvances } = useLoaderData<LoaderData>()
 
   return (
@@ -40,21 +35,14 @@ export default function PayrollAdvancesIndexRoute() {
       {payrollAdvances?.length > 0 ? (
         <>
           <div className="mb-8 mt-2 flex flex-col items-center px-2 sm:items-start lg:flex-row lg:items-center lg:justify-between">
-            <Title as="h1">Mis solicitudes de adelanto</Title>
-            <div>
-              <Button href="new" className="ml-auto w-auto">
-                Solicitar nuevo adelanto
-              </Button>
-            </div>
+            <Title as="h1">Solicitudes de Adelanto de Nómina</Title>
           </div>
-          <PayrollAdvanceList payrollAdvances={payrollAdvances} />
+
+          <PayrollAdvanceList payrollAdvances={payrollAdvances} isAdmin />
         </>
       ) : (
         <section className="m-auto pb-20 text-center">
-          <Title as="h1">Todavía no posees solicitudes</Title>
-          <Button href="new" className="mt-4 w-auto">
-            Solicitar mi primer adelanto de nómina
-          </Button>
+          <Title as="h1">No hay solicitudes</Title>
         </section>
       )}
     </>

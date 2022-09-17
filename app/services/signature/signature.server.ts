@@ -110,7 +110,7 @@ export const requestSignature = async ({
       }),
     }
   ).catch((err) => {
-    console.error(err) // todo add logger
+    console.error(err) // Todo LOGGER: Log error and save to a file
     throw serverError(err.message)
   })
 

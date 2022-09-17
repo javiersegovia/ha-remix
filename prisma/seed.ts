@@ -269,7 +269,7 @@ async function main() {
 
   const email = 'jack@test.com'
   const hashedPassword = await bcrypt.hash('123123', 10)
-  const testUser = await prisma.user.findFirst({ where: { email } })
+  const testUser = await prisma.user.findUnique({ where: { email } })
 
   if (!testUser) {
     await prisma.employee.create({

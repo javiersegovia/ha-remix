@@ -1,3 +1,4 @@
+import type { InputHTMLAttributes } from 'react'
 import { useState } from 'react'
 import clsx from 'clsx'
 import {
@@ -16,12 +17,13 @@ export enum CurrencySymbol {
   BUSD = 'BUSD',
 }
 
-interface CurrencyInputProps {
+interface CurrencyInputProps
+  extends Omit<InputHTMLAttributes<HTMLInputElement>, 'defaultValue'> {
   name: string
   label?: string
   placeholder?: string
   error?: string
-  symbol?: CurrencySymbol // todo Javier: make this dynamic
+  symbol?: CurrencySymbol
   disabled?: boolean
 }
 
@@ -46,6 +48,7 @@ export const CurrencyInput = ({
         <ReactCurrencyInput
           name={`${name}-mask`}
           value={maskedValue}
+          defaultValue={defaultValue}
           disabled={disabled || isSubmitting}
           placeholder={placeholder}
           prefix={symbol && `${symbol} `}

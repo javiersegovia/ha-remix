@@ -58,10 +58,7 @@ export default function DashboardIndexRoute() {
         <Box className="flex w-full max-w-xs flex-col justify-between space-y-5 p-5">
           <Title as="h4">Adelantos de Prima</Title>
 
-          {/* todo: create compatible without JS */}
           <Button href="request-premium-advance" className="mt-auto">
-            {/* {isSuccessRequestPremiumAdvance ? 'Solicitado' : 'Solicitar'} */}
-            {/* todo: fix text and disable button based on loaderProp */}
             Solicitar
           </Button>
         </Box>

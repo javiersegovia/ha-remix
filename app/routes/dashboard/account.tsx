@@ -1,4 +1,4 @@
-import type { LoaderFunction } from '@remix-run/server-runtime'
+import type { LoaderFunction, MetaFunction } from '@remix-run/server-runtime'
 
 import { requireUserId } from '~/session.server'
 import { useEmployee } from '~/utils/utils'
@@ -6,6 +6,12 @@ import { useEmployee } from '~/utils/utils'
 export const loader: LoaderFunction = async ({ request }) => {
   await requireUserId(request)
   return null
+}
+
+export const meta: MetaFunction = () => {
+  return {
+    title: 'Mi cuenta | HoyAdelantas',
+  }
 }
 
 export default function DashboardAccountRoute() {

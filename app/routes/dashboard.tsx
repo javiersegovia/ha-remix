@@ -2,6 +2,7 @@ import type { LoaderFunction, MetaFunction } from '@remix-run/server-runtime'
 import { Outlet, useLoaderData } from '@remix-run/react'
 import { json } from '@remix-run/node'
 import { HiOutlineHome } from 'react-icons/hi'
+import { RiFileList3Line } from 'react-icons/ri'
 
 import type { INavPath } from '~/components/SideBar/DashboardSideBar'
 import { DashboardSideBar } from '~/components/SideBar/DashboardSideBar'
@@ -32,7 +33,7 @@ const navPaths: INavPath[] = [
     title: 'Inicio',
   },
   {
-    icon: HiOutlineHome,
+    icon: RiFileList3Line,
     path: '/dashboard/payroll-advances',
     title: 'Mis solicitudes',
   },

@@ -43,7 +43,7 @@ export async function action({ request }: ActionArgs) {
     )
   }
 
-  // todo: check if user has signed terms
+  // todo: check if user has signed terms in Zapsign
 
   let redirectPath = redirectTo
 

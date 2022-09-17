@@ -7,7 +7,7 @@ import { sendLoginLink } from './email/email.server'
 const LOGIN_EXPIRES_IN = '1h'
 
 export const requestLoginLink = async (email: string) => {
-  const user = await prisma.user.findFirst({
+  const user = await prisma.user.findUnique({
     where: {
       email,
     },

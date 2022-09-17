@@ -69,7 +69,7 @@ export default function RequestPremiumAdvanceModalRoute() {
                 Nos comunicaremos contigo lo más pronto posible vía WhatsApp
               </p>
 
-              <Button className="mt-5" href="/dashboard/overview/">
+              <Button className="mt-5" href="/dashboard/overview">
                 Cerrar
               </Button>
             </>

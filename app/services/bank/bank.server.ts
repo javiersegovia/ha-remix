@@ -29,7 +29,6 @@ export const getIdentityDocumentTypes = () => {
   })
 }
 
-// todo: move this to bank schema
 export const validateBankAccount = (
   bankAccount: EmployeeSchemaInput['bankAccount'],
   formId?: string
