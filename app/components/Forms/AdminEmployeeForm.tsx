@@ -1,8 +1,3 @@
-import { useEffect } from 'react'
-import { EmployeeStatus } from '@prisma/client'
-import { useControlField, ValidatedForm } from 'remix-validated-form'
-import { useFetcher } from '@remix-run/react'
-
 import type {
   BankAccount,
   Country,
@@ -16,8 +11,8 @@ import type {
   getBanks,
   getIdentityDocumentTypes,
 } from '~/services/bank/bank.server'
-import type { CityLoader } from '~/routes/__queries/cities'
-import type { StateLoader } from '~/routes/__queries/states'
+import type { CityLoader } from '~/routes/__api/cities'
+import type { StateLoader } from '~/routes/__api/states'
 import type { Validator } from 'remix-validated-form'
 import type { EmployeeSchemaInput } from '~/services/employee/employee.schema'
 import type { EnumOption } from '~/schemas/helpers'
@@ -29,9 +24,12 @@ import type { getGenders } from '~/services/gender/gender.server'
 import type { getJobDepartments } from '~/services/job-department/job-department.server'
 import type { getJobPositions } from '~/services/job-position/job-position.server'
 
+import { useEffect } from 'react'
+import { EmployeeStatus } from '@prisma/client'
+import { useControlField, ValidatedForm } from 'remix-validated-form'
+import { useFetcher } from '@remix-run/react'
 import { formatMDYDate } from '~/utils/formatDate'
 import { useCleanForm } from '~/hooks/useCleanForm'
-
 import { Box } from '../Layout/Box'
 import { FormGridItem } from '../FormFields/FormGridItem'
 import { FormGridWrapper } from '../FormFields/FormGridWrapper'

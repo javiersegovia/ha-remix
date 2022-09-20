@@ -40,7 +40,7 @@ export default function PayrollAdvancesIndexRoute() {
       {payrollAdvances?.length > 0 ? (
         <>
           <div className="mb-8 mt-2 flex flex-col items-center px-2 sm:items-start lg:flex-row lg:items-center lg:justify-between">
-            <Title as="h1">Mis solicitudes de adelanto</Title>
+            <Title as="h1">Mis solicitudes</Title>
             <div>
               <Button href="new" className="ml-auto w-auto">
                 Solicitar nuevo adelanto

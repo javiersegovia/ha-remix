@@ -68,7 +68,7 @@ export const DashboardSideBar = ({
         >
           <Link
             to={logoHref}
-            className="width[200px] mx-auto flex cursor-pointer items-center object-contain px-4 pt-5 text-white"
+            className="mx-auto flex w-[200px] cursor-pointer items-center object-contain px-4 pt-5 text-white"
           >
             <img
               src="/logo/logo_hoyadelantas_white_over_blue.png"

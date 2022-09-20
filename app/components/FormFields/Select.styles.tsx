@@ -40,7 +40,7 @@ export function selectStyles<isMulti extends boolean>(
         hasError && { borderColor: '#EF4444', outlineColor: '#EF4444' }),
 
       ...(state.isDisabled && {
-        backgroundColor: '#E5E7EB',
+        backgroundColor: '#E2E8F0',
         cursor: 'not-allowed',
       }),
     }),

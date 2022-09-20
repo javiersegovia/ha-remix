@@ -4,11 +4,8 @@ import type {
   IdentityDocument,
   User,
 } from '@prisma/client'
-import { useControlField, ValidatedForm } from 'remix-validated-form'
-
-import { welcomeValidator } from '~/schemas/welcome.schema'
-import type { StateLoader } from '~/routes/__queries/states'
-import type { CityLoader } from '~/routes/__queries/cities'
+import type { StateLoader } from '~/routes/__api/states'
+import type { CityLoader } from '~/routes/__api/cities'
 import type { getCountries } from '~/services/country/country.server'
 import type { getGenders } from '~/services/gender/gender.server'
 import type {
@@ -17,6 +14,8 @@ import type {
   getIdentityDocumentTypes,
 } from '~/services/bank/bank.server'
 
+import { useControlField, ValidatedForm } from 'remix-validated-form'
+import { welcomeValidator } from '~/schemas/welcome.schema'
 import { FormGridItem } from '../FormFields/FormGridItem'
 import { FormGridWrapper } from '../FormFields/FormGridWrapper'
 import { Input } from '../FormFields/Input'

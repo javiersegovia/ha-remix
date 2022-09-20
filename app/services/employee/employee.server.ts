@@ -6,20 +6,20 @@ import type {
   Prisma,
   Wallet,
 } from '@prisma/client'
-import { PayrollAdvancePaymentMethod } from '@prisma/client'
+import type { WelcomeSchemaInput } from '~/schemas/welcome.schema'
+import type { EditAccountSchemaInput } from '~/schemas/edit-account.schema'
 import type { EmployeeSchemaInput } from './employee.schema'
 
+import { PayrollAdvancePaymentMethod } from '@prisma/client'
 import { EmployeeStatus } from '@prisma/client'
 import { Response, json } from '@remix-run/node'
-
+import { badRequest } from 'remix-utils'
+import { hash } from 'bcryptjs'
 import { prisma } from '~/db.server'
 import { connect, connectOrDisconnect } from '~/utils/relationships'
 import { generateExpirationDate, generateRandomToken } from '../auth.server'
 import { sendInvitation } from '../email/email.server'
-import { badRequest } from 'remix-utils'
 import { dateAsUTC } from '~/utils/formatDate'
-import type { WelcomeSchemaInput } from '~/schemas/welcome.schema'
-import { hash } from 'bcryptjs'
 import { requestSignature } from '../signature/signature.server'
 
 const INVITATION_EXPIRES_IN = '20m'
@@ -40,8 +40,10 @@ export const getEmployeeById = async (employeeId: Employee['id']) => {
       company: true,
       cryptocurrency: true,
       wallet: {
-        include: {
-          network: true,
+        select: {
+          address: true,
+          cryptocurrencyId: true,
+          networkId: true,
         },
       },
       bankAccount: {
@@ -341,7 +343,7 @@ export const updateEmployeeById = async (
           },
         }
       : {
-          delete: true,
+          delete: !!existingEmployee.walletId,
         }
 
   const upsertBankAccount: Prisma.EmployeeUpdateInput['bankAccount'] =
@@ -386,7 +388,7 @@ export const updateEmployeeById = async (
           },
         }
       : {
-          delete: true,
+          delete: !!existingEmployee.bankAccountId,
         }
 
   try {
@@ -511,6 +513,81 @@ export const updateEmployeeByWelcomeForm = async (
     // Todo LOGGER: Log error and save to a file
     console.error(err)
     throw badRequest({ message: 'Ha ocurrido un error' })
+  }
+}
+
+export const updateEmployeeByAccountForm = async (
+  data: EditAccountSchemaInput,
+  employeeId: Employee['id']
+) => {
+  const existingEmployee = await requireEmployee({ where: { id: employeeId } })
+
+  const {
+    birthDay,
+    documentIssueDate,
+    genderId,
+    wallet,
+    countryId,
+    stateId,
+    cityId,
+
+    address,
+    numberOfChildren,
+    phone,
+    user,
+  } = data
+
+  const upsertWallet: Prisma.EmployeeUpdateInput['wallet'] =
+    wallet && wallet?.address && wallet?.cryptoNetworkId
+      ? {
+          upsert: {
+            create: {
+              address: wallet.address,
+              networkId: wallet?.cryptoNetworkId,
+            },
+            update: {
+              address: wallet.address || undefined,
+              networkId: wallet.cryptoNetworkId || null,
+            },
+          },
+        }
+      : {
+          delete: !!existingEmployee.walletId,
+        }
+
+  try {
+    const updatedEmployee = await prisma.employee.update({
+      where: {
+        id: employeeId,
+      },
+      data: {
+        birthDay: dateAsUTC(birthDay),
+        documentIssueDate: dateAsUTC(documentIssueDate),
+        address,
+        phone,
+        numberOfChildren: numberOfChildren || undefined,
+
+        gender: connectOrDisconnect(genderId, !!existingEmployee.genderId),
+        country: connectOrDisconnect(countryId, !!existingEmployee.countryId),
+        state: connectOrDisconnect(stateId, !!existingEmployee.stateId),
+        city: connectOrDisconnect(cityId, !!existingEmployee.cityId),
+
+        wallet: upsertWallet,
+
+        user: {
+          update: {
+            firstName: user?.firstName,
+            lastName: user?.lastName,
+          },
+        },
+      },
+    })
+
+    return updatedEmployee
+  } catch (err) {
+    // Todo LOGGER: Log error and save to a file
+    console.error(err)
+    throw badRequest({ message: 'Ha ocurrido un error inesperado' })
   }
 }
 

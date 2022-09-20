@@ -11,7 +11,7 @@ export const inputErrorStyles =
   'text-red-600 border-red-500 focus:border-red-500 focus:ring-red-500'
 
 export const inputDisabledStyles =
-  'text-gray-500 bg-gray-200 cursor-not-allowed'
+  'text-gray-500 bg-gray-200 cursor-not-allowed focus:border-transparent focus:ring-0'
 
 type TInputProps = {
   name: string

@@ -32,14 +32,34 @@ export const welcomeSchema = z.object({
     ),
   }),
 
-  phone: zfd.text(z.string()),
-  address: zfd.text(z.string()),
+  phone: zfd.text(
+    z.string({
+      required_error: 'Ingrese un número telefónico',
+    })
+  ),
+  address: zfd.text(
+    z.string({
+      required_error: 'Ingrese una dirección',
+    })
+  ),
   numberOfChildren: zfd.numeric(z.number().int().default(0)),
 
-  countryId: zfd.numeric(z.number().int()),
+  countryId: zfd.numeric(
+    z
+      .number({
+        required_error: 'Seleccione un país',
+      })
+      .int()
+  ),
   stateId: zfd.numeric(z.number().int().nullish()),
   cityId: zfd.numeric(z.number().int().nullish()),
-  genderId: zfd.numeric(z.number().int()),
+  genderId: zfd.numeric(
+    z
+      .number({
+        required_error: 'Seleccione un género',
+      })
+      .int()
+  ),
 
   birthDay: zDate(
     z.date({
@@ -50,8 +70,8 @@ export const welcomeSchema = z.object({
 
   documentIssueDate: zDate(
     z.date({
-      invalid_type_error: 'Ingrese la fecha de expedición',
-      required_error: 'Ingrese la fecha de expedición',
+      invalid_type_error: 'Ingrese la fecha de expedición de su documento',
+      required_error: 'Ingrese la fecha de expedición de su documento',
     })
   ),
 
