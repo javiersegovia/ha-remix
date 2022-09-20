@@ -15,7 +15,7 @@ type LoaderData = {
 
 export const meta: MetaFunction = () => {
   return {
-    title: '[Admin] Lista de compañías',
+    title: '[Admin] Lista de compañías | HoyAdelantas',
   }
 }
 

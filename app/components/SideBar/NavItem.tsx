@@ -82,7 +82,7 @@ export const NavItem: React.FC<TNavItemProps> = ({
         <button
           type={type}
           className={clsx(
-            'group flex cursor-pointer items-center rounded-[15px] px-4 py-3 transition',
+            'group flex w-full cursor-pointer items-center rounded-[15px] px-4 py-3 transition',
             isPrimary &&
               (isCurrentPath
                 ? 'bg-steelBlue-600 text-white'

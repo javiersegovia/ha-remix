@@ -28,7 +28,7 @@ const validator = withZod(z.object({ month: z.string() }))
 
 export const meta: MetaFunction = () => {
   return {
-    title: '[Admin] Resumen',
+    title: '[Admin] Resumen | HoyAdelantas',
   }
 }
 
@@ -84,16 +84,19 @@ export default function AdminDashboardIndexRoute() {
             </p>
 
             <div className="space-y-1 font-semibold text-gray-700">
-              <p className="text-xs text-yellow-500">
+              <p className="text-xs text-yellow-600">
                 {overview?.REQUESTED} pendientes
               </p>
-              <p className="text-xs text-purple-600">
+              <p className="text-xs text-blue-700">
                 {overview?.APPROVED} aprobadas
               </p>
               <p className="text-xs text-green-600">
                 {overview?.PAID} desembolsadas
               </p>
-              <p className="text-xs text-red-500">
+              <p className="text-xs text-red-600">
+                {overview?.DENIED} denegadas
+              </p>
+              <p className="text-xs text-orange-600">
                 {overview?.CANCELLED} canceladas
               </p>
             </div>
@@ -112,12 +115,15 @@ export default function AdminDashboardIndexRoute() {
                   CurrencySymbol.COP
                 )}
               </p>
-              <p className="text-xs font-medium">
-                {formatMoney(
-                  overview?.totalRequested.WALLET || 0,
-                  CurrencySymbol.BUSD
-                )}
-              </p>
+
+              {overview?.totalRequested?.WALLET > 0 && (
+                <p className="text-xs font-medium">
+                  {formatMoney(
+                    overview?.totalRequested.WALLET || 0,
+                    CurrencySymbol.BUSD
+                  )}
+                </p>
+              )}
             </div>
           </Box>
 
@@ -135,12 +141,14 @@ export default function AdminDashboardIndexRoute() {
                 )}
               </p>
 
-              <p className="text-xs font-medium">
-                {formatMoney(
-                  overview?.totalPaid.WALLET || 0,
-                  CurrencySymbol.BUSD
-                )}
-              </p>
+              {overview?.totalRequested?.WALLET > 0 && (
+                <p className="text-xs font-medium">
+                  {formatMoney(
+                    overview?.totalPaid.WALLET || 0,
+                    CurrencySymbol.BUSD
+                  )}
+                </p>
+              )}
             </div>
           </Box>
         </section>

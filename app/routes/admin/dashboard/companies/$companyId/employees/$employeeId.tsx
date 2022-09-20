@@ -80,7 +80,7 @@ export const loader: LoaderFunction = async ({ request, params }) => {
 export const meta: MetaFunction = ({ data }) => {
   if (!data) {
     return {
-      title: '[Admin] Colaborador no encontrado',
+      title: '[Admin] Colaborador no encontrado | HoyAdelantas',
     }
   }
 

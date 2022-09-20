@@ -12,7 +12,7 @@ import type { ActionArgs, MetaFunction } from '@remix-run/server-runtime'
 
 export const meta: MetaFunction = () => {
   return {
-    title: 'Confirmar solicitud de adelanto de prima',
+    title: 'Confirmar solicitud de adelanto de prima | HoyAdelantas',
   }
 }
 

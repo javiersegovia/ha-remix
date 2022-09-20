@@ -78,7 +78,7 @@ export const PayrollAdvanceDetails = ({
           {isAdmin && (
             <div className="mt-2 flex flex-col gap-1 text-sm">
               <Link
-                to={`/admin/dashboard/companies/${company.id}`}
+                to={`/admin/dashboard/companies/${company.id}?index`}
                 className="flex cursor-pointer items-center gap-2 font-medium text-gray-900 underline"
               >
                 <HiOutlineOfficeBuilding />

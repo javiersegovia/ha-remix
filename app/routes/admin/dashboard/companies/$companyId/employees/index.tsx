@@ -34,14 +34,14 @@ export const loader: LoaderFunction = async ({ request, params }) => {
 export const meta: MetaFunction = ({ data }) => {
   if (!data) {
     return {
-      title: '[Admin] Compañía no encontrada',
+      title: '[Admin] Compañía no encontrada | HoyAdelantas',
     }
   }
 
   const { companyName } = data as LoaderData
 
   return {
-    title: `[Admin] Colaboradores de ${companyName}`,
+    title: `[Admin] Colaboradores de ${companyName} | HoyAdelantas`,
   }
 }
 

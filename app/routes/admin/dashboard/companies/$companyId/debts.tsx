@@ -33,7 +33,7 @@ export const loader: LoaderFunction = async ({ request, params }) => {
 export const meta: MetaFunction = ({ data }) => {
   if (!data) {
     return {
-      title: '[Admin] Error',
+      title: '[Admin] Error | HoyAdelantas',
     }
   }
 

@@ -1,6 +1,7 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import type { LinksFunction, LoaderArgs, MetaFunction } from '@remix-run/node'
 import { json } from '@remix-run/node'
+import { useDataRefresh } from 'remix-utils'
 import {
   Links,
   LiveReload,
@@ -40,6 +41,25 @@ export async function loader({ request }: LoaderArgs) {
 }
 
 export default function App() {
+  const { refresh } = useDataRefresh()
+
+  useEffect(() => {
+    if (
+      typeof document !== 'undefined' &&
+      typeof window !== 'undefined' &&
+      window.addEventListener
+    ) {
+      window.addEventListener('visibilitychange', refresh, false)
+      window.addEventListener('focus', refresh, false)
+    }
+
+    return () => {
+      // Be sure to unsubscribe if a new handler is set
+      window.removeEventListener('visibilitychange', refresh)
+      window.removeEventListener('focus', refresh)
+    }
+  }, [refresh])
+
   return (
     <html lang="en" className="h-full">
       <head>

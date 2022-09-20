@@ -47,7 +47,7 @@ export const loader: LoaderFunction = async ({ request }) => {
 
 export const meta: MetaFunction = () => {
   return {
-    title: '[Admin] Firma de documentos',
+    title: '[Admin] Firma de documentos | HoyAdelantas',
   }
 }
 

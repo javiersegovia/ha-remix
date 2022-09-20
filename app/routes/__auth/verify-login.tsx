@@ -21,7 +21,7 @@ export async function loader({ request }: LoaderArgs) {
       redirectPath = '/dashboard/welcome'
     }
 
-    return createUserSession({
+    return await createUserSession({
       request,
       userId: user.id,
       redirectTo: redirectPath,

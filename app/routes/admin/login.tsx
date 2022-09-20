@@ -50,7 +50,7 @@ export async function action({ request }: ActionArgs) {
 
 export const meta: MetaFunction = () => {
   return {
-    title: '[Admin] Inicio de sesión',
+    title: '[Admin] Inicio de sesión | HoyAdelantas',
   }
 }
 

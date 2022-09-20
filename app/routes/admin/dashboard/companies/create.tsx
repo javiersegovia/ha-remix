@@ -28,7 +28,7 @@ export const loader: LoaderFunction = async ({ request }) => {
 
 export const meta: MetaFunction = () => {
   return {
-    title: '[Admin] Crear compañía',
+    title: '[Admin] Crear compañía | HoyAdelantas',
   }
 }
 
@@ -55,7 +55,7 @@ export async function action({ request }: ActionArgs) {
     )
   }
 
-  return redirect(`/admin/dashboard/companies/${company.id}`)
+  return redirect(`/admin/dashboard/companies/${company.id}?index`)
 }
 
 export default function AdminDashboardCompaniesCreateRoute() {

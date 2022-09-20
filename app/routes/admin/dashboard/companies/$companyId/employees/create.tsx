@@ -61,7 +61,7 @@ export const loader: LoaderFunction = async ({ request }) => {
 
 export const meta: MetaFunction = () => {
   return {
-    title: '[Admin] Crear colaborador',
+    title: '[Admin] Crear colaborador | HoyAdelantas',
   }
 }
 

@@ -53,7 +53,7 @@ export const loader: LoaderFunction = async ({ request }) => {
 
 export const meta: MetaFunction = () => {
   return {
-    title: '[Admin] Bienvenido',
+    title: '[Admin] Bienvenido | HoyAdelantas',
   }
 }
 
