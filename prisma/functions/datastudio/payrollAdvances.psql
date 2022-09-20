@@ -1,0 +1,17 @@
+SELECT DISTINCT 
+  "PayrollAdvance"."id", 
+  "companyId", 
+  "PayrollAdvance"."employeeId",
+  jsonb_object_agg("PayrollAdvanceHistory"."toStatus", "PayrollAdvanceHistory"."createdAt") history,
+  "PayrollAdvance"."createdAt", 
+  "requestedAmount", 
+  "status"
+  FROM "PayrollAdvance"
+  LEFT JOIN "PayrollAdvanceTax" ON "PayrollAdvance"."id" = "PayrollAdvanceTax"."payrollAdvanceId" 
+  LEFT JOIN "PayrollAdvanceHistory" ON "PayrollAdvance"."id" = "PayrollAdvanceHistory"."payrollAdvanceId"
+  GROUP BY "PayrollAdvance"."id", 
+  "PayrollAdvance"."companyId",
+  "PayrollAdvance"."employeeId",
+  "PayrollAdvance"."createdAt", 
+  "PayrollAdvance"."requestedAmount",
+  "PayrollAdvance"."status";

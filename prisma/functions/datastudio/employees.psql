@@ -1,0 +1,36 @@
+SELECT DISTINCT
+  "Employee"."id",
+  "companyId",
+  "firstName",
+  "lastName",
+  "email",
+  "status",
+  "address",
+  "numberOfChildren",
+  "birthDay",
+  "salaryFiat",
+  "value" as "identityDocumentValue",
+  "IdentityDocumentType"."name" as "identityDocumentType",
+  "advanceAvailableAmount",
+  "advanceMaxAmount",
+  "Bank"."name" as "bank",
+  "BankAccountType"."name" as "bankAccountType",
+  "JobDepartment"."name" as "jobDepartment",
+  "JobPosition"."name" as "jobPosition",
+  "Gender"."name" as "gender",
+  "Country"."name" as "country",
+  "State"."name" as "state",
+  "City"."name" as "city" 
+  FROM "Employee" 
+  INNER JOIN "User" ON "User"."id" = "Employee"."userId" 
+  LEFT JOIN "JobDepartment" ON "JobDepartment"."id" = "Employee"."jobDepartmentId" 
+  LEFT JOIN "JobPosition" ON "JobPosition"."id" = "Employee"."jobPositionId" 
+  LEFT JOIN "Gender" ON "Gender"."id" = "Employee"."genderId" 
+  LEFT JOIN "Country" ON "Country"."id" = "Employee"."countryId" 
+  LEFT JOIN "State" ON "State"."id" = "Employee"."stateId"
+  LEFT JOIN "City" ON "City"."id" = "Employee"."cityId" 
+  LEFT JOIN "BankAccount" ON "BankAccount"."id" = "Employee"."bankAccountId" 
+  LEFT JOIN "Bank" ON "Bank"."id" = "BankAccount"."bankId" 
+  LEFT JOIN "IdentityDocument" ON "IdentityDocument"."id" = "BankAccount"."identityDocumentId" 
+  LEFT JOIN "BankAccountType" ON "BankAccountType"."id" = "BankAccount"."accountTypeId" 
+  LEFT JOIN "IdentityDocumentType" ON "IdentityDocumentType"."id" = "IdentityDocument"."documentTypeId";

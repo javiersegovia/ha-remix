@@ -1,0 +1,18 @@
+SELECT DISTINCT 
+  "Company"."id",
+  "Company"."name", 
+  array_remove(array_agg("CompanyCategory"."name"), NULL) as "categories", 
+  "address",
+  "description",
+  "phone",
+  "status",
+  "paymentDays",
+  "lastRequestDay",
+  "premiumPaymentDays",
+  "premiumLastRequestDay",
+  "Country"."name" as "country" 
+  FROM "Company" 
+  LEFT JOIN "Country" ON "Country"."id" = "Company"."countryId" 
+  LEFT OUTER JOIN "_CompanyToCompanyCategory" ON "Company"."id" = "_CompanyToCompanyCategory"."A" 
+  LEFT JOIN "CompanyCategory" ON "CompanyCategory"."id" = "_CompanyToCompanyCategory"."B" 
+  GROUP BY "Company"."id", "Country"."name";
