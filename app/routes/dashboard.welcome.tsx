@@ -72,7 +72,7 @@ export const action: ActionFunction = async ({ request }) => {
     throw logout(request)
   }
 
-  const signerToken = await updateEmployeeByWelcomeForm(data, user.employee?.id)
+  const signerToken = await updateEmployeeByWelcomeForm(data, user.employee.id)
   return redirect(`/dashboard/verify-signature?token=${signerToken}`, 301)
 }
 

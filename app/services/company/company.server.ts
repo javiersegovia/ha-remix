@@ -1,5 +1,6 @@
 import type { Company, Prisma } from '@prisma/client'
 import { json } from '@remix-run/server-runtime'
+import { badRequest } from 'remix-utils'
 import { prisma } from '~/db.server'
 import type { CompanySchemaInput } from '~/services/company/company.schema'
 import {
@@ -127,9 +128,18 @@ export const updateCompanyById = async (
     ...companyData
   } = formData
 
-  await requireCompany({ where: { id: companyId } })
+  // await requireCompany({ where: { id: companyId } }) // Todo: Make "requireCompany" function return types compatible with Prisma types (e.g, adding an "include")
+  const existingCompany = await prisma.company.findUnique({
+    where: { id: companyId },
+    select: { contactPerson: { select: { id: true } }, countryId: true },
+  })
+
+  if (!existingCompany) {
+    throw badRequest('No se pudo encontrar la compañía')
+  }
 
   const { firstName, lastName, phone } = contactPerson || {}
+
   const upsertContactPerson: Prisma.CompanyUpdateInput['contactPerson'] =
     firstName && lastName && phone
       ? {
@@ -147,7 +157,7 @@ export const updateCompanyById = async (
           },
         }
       : {
-          delete: true,
+          delete: !!existingCompany.contactPerson?.id,
         }
 
   try {
@@ -157,7 +167,7 @@ export const updateCompanyById = async (
       },
       data: {
         ...companyData,
-        country: connectOrDisconnect(countryId),
+        country: connectOrDisconnect(countryId, !!existingCompany.countryId),
 
         categories: setMany(categoriesIds),
         contactPerson: upsertContactPerson,

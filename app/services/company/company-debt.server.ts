@@ -1,4 +1,7 @@
 import type { Company, Employee, PayrollAdvance, Prisma } from '@prisma/client'
+import type { CompanyDebtSchemaInput } from './company-debt.schema'
+
+import { badRequest } from 'remix-utils'
 import { prisma } from '~/db.server'
 import { connect } from '~/utils/relationships'
 
@@ -168,4 +171,72 @@ export const upsertFiatMonthlyDebt = async ({
       },
     },
   })
+}
+
+export const updateCompanyDebt = async (
+  companyDebtId: string,
+  data: CompanyDebtSchemaInput
+) => {
+  const { fiatDebt, cryptoDebt } = data
+
+  const companyDebt = await prisma.companyDebt.findUnique({
+    where: { id: companyDebtId },
+  })
+
+  if (!companyDebt) {
+    throw badRequest({ message: 'Novedad no encontrada' })
+  }
+
+  if (fiatDebt && fiatDebt.currentAmount > fiatDebt.totalAmount) {
+    return {
+      fieldErrors: {
+        'cryptoDebt.currentAmount': '',
+        'fiatDebt.currentAmount':
+          'El monto de novedad actual no puede ser mayor al monto total',
+      },
+    }
+  }
+
+  if (cryptoDebt && cryptoDebt.currentAmount > cryptoDebt.totalAmount) {
+    return {
+      fieldErrors: {
+        'fiatDebt.currentAmount': '',
+        'cryptoDebt.currentAmount':
+          'El monto de novedad actual no puede ser mayor al monto total',
+      },
+    }
+  }
+
+  const updateCryptoDebt: Prisma.CompanyDebtUpdateInput['cryptoDebt'] =
+    cryptoDebt
+      ? {
+          update: {
+            currentAmount: cryptoDebt.currentAmount,
+            amount: cryptoDebt.totalAmount,
+          },
+        }
+      : undefined
+
+  const updateFiatDebt: Prisma.CompanyDebtUpdateInput['fiatDebt'] = fiatDebt
+    ? {
+        update: {
+          currentAmount: fiatDebt.currentAmount,
+          amount: fiatDebt.totalAmount,
+        },
+      }
+    : undefined
+
+  try {
+    return await prisma.companyDebt.update({
+      where: { id: companyDebt.id },
+      data: {
+        cryptoDebt: updateCryptoDebt,
+        fiatDebt: updateFiatDebt,
+      },
+    })
+  } catch (e) {
+    // TODO: Add logger
+    console.error(e)
+    throw badRequest('Ha ocurrido un error inesperado al actualizar la novedad')
+  }
 }

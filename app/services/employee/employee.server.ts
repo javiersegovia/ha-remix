@@ -292,6 +292,8 @@ export const updateEmployeeById = async (
   data: EmployeeSchemaInput,
   employeeId: Employee['id']
 ) => {
+  const existingEmployee = await requireEmployee({ where: { id: employeeId } })
+
   const {
     status = EmployeeStatus.INACTIVE,
 
@@ -407,14 +409,26 @@ export const updateEmployeeById = async (
         numberOfChildren: numberOfChildren || undefined,
         roles: roles || undefined,
 
-        gender: connectOrDisconnect(genderId),
-        country: connectOrDisconnect(countryId),
-        state: connectOrDisconnect(stateId),
-        city: connectOrDisconnect(cityId),
-        jobDepartment: connectOrDisconnect(jobDepartmentId),
-        jobPosition: connectOrDisconnect(jobPositionId),
-        currency: connectOrDisconnect(currencyId),
-        cryptocurrency: connectOrDisconnect(cryptocurrencyId),
+        gender: connectOrDisconnect(genderId, !!existingEmployee.genderId),
+        country: connectOrDisconnect(countryId, !!existingEmployee.countryId),
+        state: connectOrDisconnect(stateId, !!existingEmployee.stateId),
+        city: connectOrDisconnect(cityId, !!existingEmployee.cityId),
+        jobDepartment: connectOrDisconnect(
+          jobDepartmentId,
+          !!existingEmployee.jobDepartmentId
+        ),
+        jobPosition: connectOrDisconnect(
+          jobPositionId,
+          !!existingEmployee.jobPositionId
+        ),
+        currency: connectOrDisconnect(
+          currencyId,
+          !!existingEmployee.currencyId
+        ),
+        cryptocurrency: connectOrDisconnect(
+          cryptocurrencyId,
+          !!existingEmployee.cryptocurrencyId
+        ),
 
         bankAccount: upsertBankAccount,
         wallet: upsertWallet,
@@ -437,6 +451,8 @@ export const updateEmployeeByWelcomeForm = async (
   data: WelcomeSchemaInput,
   employeeId: Employee['id']
 ) => {
+  const existingEmployee = await requireEmployee({ where: { id: employeeId } })
+
   const {
     password,
     birthDay,
@@ -465,10 +481,10 @@ export const updateEmployeeByWelcomeForm = async (
         phone,
         numberOfChildren: numberOfChildren || undefined,
 
-        gender: connectOrDisconnect(genderId),
-        country: connectOrDisconnect(countryId),
-        state: connectOrDisconnect(stateId),
-        city: connectOrDisconnect(cityId),
+        gender: connectOrDisconnect(genderId, !!existingEmployee.genderId),
+        country: connectOrDisconnect(countryId, !!existingEmployee.countryId),
+        state: connectOrDisconnect(stateId, !!existingEmployee.stateId),
+        city: connectOrDisconnect(cityId, !!existingEmployee.cityId),
 
         acceptedPrivacyPolicy: true,
         acceptedTermsOfService: true,

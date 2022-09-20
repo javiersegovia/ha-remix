@@ -1,14 +1,14 @@
-import { useLoaderData } from '@remix-run/react'
 import type {
   ActionFunction,
   LoaderFunction,
   MetaFunction,
 } from '@remix-run/server-runtime'
+
+import { useLoaderData } from '@remix-run/react'
 import { redirect } from '@remix-run/node'
 import { json } from '@remix-run/server-runtime'
 import { badRequest } from 'remix-utils'
 import { validationError } from 'remix-validated-form'
-
 import { FormActions } from '~/components/FormFields/FormActions'
 import { AdminEmployeeForm } from '~/components/Forms/AdminEmployeeForm'
 import { Title } from '~/components/Typography/Title'
@@ -29,7 +29,6 @@ import { getJobPositions } from '~/services/job-position/job-position.server'
 import { requireAdminUserId } from '~/session.server'
 import {
   getEmployeeById,
-  requireEmployee,
   updateEmployeeById,
 } from '~/services/employee/employee.server'
 import { prisma } from '~/db.server'
@@ -109,8 +108,13 @@ export const action: ActionFunction = async ({ request, params }) => {
 
   const { companyId, employeeId } = params
 
-  const employee = await requireEmployee({ where: { id: employeeId } })
-  await updateEmployeeById(data, employee.id)
+  if (!employeeId || !companyId) {
+    throw badRequest({
+      message: 'No se ha encontrado la ID de la compañía o el colaborador',
+    })
+  }
+
+  await updateEmployeeById(data, employeeId)
 
   return redirect(`/admin/dashboard/companies/${companyId}/employees`, 301)
 }

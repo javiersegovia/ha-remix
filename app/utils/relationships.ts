@@ -9,21 +9,25 @@ export function connect(id: string | number | undefined | null) {
 }
 
 type TConnectOrDisconnectRelationshipFn = <T extends string | number>(
-  itemId?: T | null
+  itemId?: T | null,
+  disconnect?: boolean
 ) =>
   | {
       connect: {
         id: T
       }
     }
-  | { disconnect: true }
+  | { disconnect: boolean }
 
-export const connectOrDisconnect: TConnectOrDisconnectRelationshipFn = (id) => {
+export const connectOrDisconnect: TConnectOrDisconnectRelationshipFn = (
+  id,
+  disconnect = false
+) => {
   return id
     ? {
         connect: { id },
       }
-    : { disconnect: true }
+    : { disconnect }
 }
 
 export function connectMany<T extends string[] | number[] | undefined | null>(
