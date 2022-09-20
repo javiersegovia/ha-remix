@@ -13,6 +13,6 @@ SELECT DISTINCT
   "Country"."name" as "country" 
   FROM "Company" 
   LEFT JOIN "Country" ON "Country"."id" = "Company"."countryId" 
-  LEFT OUTER JOIN "_CompanyToCompanyCategory" ON "Company"."id" = "_CompanyToCompanyCategory"."A" 
+  LEFT JOIN "_CompanyToCompanyCategory" ON "Company"."id" = "_CompanyToCompanyCategory"."A" 
   LEFT JOIN "CompanyCategory" ON "CompanyCategory"."id" = "_CompanyToCompanyCategory"."B" 
   GROUP BY "Company"."id", "Country"."name";
