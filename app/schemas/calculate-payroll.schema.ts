@@ -17,6 +17,16 @@ const calculatePayrollSchema = z.object({
       message: 'Seleccione un método de cobro',
     }),
   }),
+
+  requestReasonId: zfd.numeric(
+    z
+      .number({
+        required_error: 'Seleccione un motivo',
+      })
+      .int()
+  ),
+
+  customRequestReason: zfd.text(z.string().nullable().default(null)),
 })
 
 export const calculatePayrollValidator = withZod(calculatePayrollSchema)

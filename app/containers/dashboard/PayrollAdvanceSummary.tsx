@@ -1,6 +1,7 @@
 import type {
   PayrollAdvance,
   PayrollAdvanceBankAccount,
+  PayrollAdvanceRequestReason,
   PayrollAdvanceTax,
   PayrollAdvanceTransfer,
   PayrollAdvanceWallet,
@@ -19,6 +20,7 @@ import { contractAddresses } from '~/services/blockchain/data'
 import { parseDate } from '~/utils/formatDate'
 import { formatMoney } from '~/utils/formatMoney'
 import { PayrollAdvanceSummaryItem } from './PayrollAdvanceSummaryItem'
+import { Fragment } from 'react'
 
 interface WalletDataSummaryProps {
   walletData: Pick<
@@ -84,13 +86,18 @@ const BankAccountDataSummary = ({
 export interface PayrollAdvanceSummaryProps {
   payrollAdvance: Pick<
     PayrollAdvance,
-    'paymentMethod' | 'totalAmount' | 'requestedAmount' | 'status'
+    | 'paymentMethod'
+    | 'totalAmount'
+    | 'requestedAmount'
+    | 'status'
+    | 'customRequestReason'
   > & {
     bankAccountData?: BankAccountDataSummaryProps['bankAccountData'] | null
     walletData?: WalletDataSummaryProps['walletData'] | null
     taxes: Pick<PayrollAdvanceTax, 'id' | 'name' | 'description' | 'value'>[]
     transfers: Pick<PayrollAdvanceTransfer, 'status' | 'transactionHash'>[]
     createdAt: string | Date
+    requestReason?: Pick<PayrollAdvanceRequestReason, 'name'> | null
   }
   isAdmin?: boolean
 }
@@ -108,6 +115,8 @@ export const PayrollAdvanceSummary = ({
     requestedAmount,
     status,
     transfers,
+    requestReason,
+    customRequestReason,
   } = payrollAdvance
 
   const currencySymbol =
@@ -162,15 +171,28 @@ export const PayrollAdvanceSummary = ({
         </p>
       </div>
 
-      <div className="h-[1px] w-full bg-gray-200" />
-
       {createdAt && (
-        <div className="py-4">
-          <PayrollAdvanceSummaryItem
-            label="Fecha de solicitud"
-            value={format(parseDate(createdAt), 'dd/MM/yyyy')}
-          />
-        </div>
+        <>
+          <div className="h-[1px] w-full bg-gray-200" />
+          <div className="py-4">
+            <PayrollAdvanceSummaryItem
+              label="Fecha de solicitud"
+              value={format(parseDate(createdAt), 'dd/MM/yyyy')}
+            />
+          </div>
+        </>
+      )}
+
+      {isAdmin && requestReason && (
+        <>
+          <div className="h-[1px] w-full bg-gray-200" />
+          <div className="py-4">
+            <PayrollAdvanceSummaryItem
+              label="Motivo de solicitud"
+              value={customRequestReason || requestReason.name}
+            />
+          </div>
+        </>
       )}
 
       <div className="h-[1px] w-full bg-gray-200" />
@@ -197,9 +219,8 @@ export const PayrollAdvanceSummary = ({
       />
 
       {payrollAdvance.taxes.map(({ id, name, value, description }) => (
-        <>
+        <Fragment key={id}>
           <PayrollAdvanceSummaryItem
-            key={id}
             label={name}
             value={formatMoney(value, currencySymbol)}
           />
@@ -208,7 +229,7 @@ export const PayrollAdvanceSummary = ({
               {description}
             </span>
           )}
-        </>
+        </Fragment>
       ))}
 
       {/* {paymentMethod === PayrollAdvancePaymentMethod.WALLET &&

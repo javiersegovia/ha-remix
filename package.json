@@ -18,6 +18,7 @@
     "generate:schema": "prisma generate",
     "postgenerate:schema": "npm run lint",
     "lint": "eslint --cache --cache-location ./node_modules/.cache/eslint . --fix",
+    "migrate:dev": "prisma migrate dev",
     "migrate:deploy": "prisma migrate deploy",
     "setup": "prisma generate && prisma migrate deploy && prisma db seed",
     "start": "cross-env NODE_ENV=production node ./build/server.js",

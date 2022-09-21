@@ -27,9 +27,14 @@ const requestPayrollAdvanceFormId = 'RequestedPayrollAdvanceForm'
 export const PayrollAdvanceCalculation = ({
   calculation,
 }: PayrollAdvanceCalculationProps) => {
-  // const [acceptedTerms, setAcceptedTerms] = useState(false)
-
-  const { requestedAmount, taxItems, totalAmount, paymentMethod } = calculation
+  const {
+    requestedAmount,
+    taxItems,
+    totalAmount,
+    paymentMethod,
+    requestReasonId,
+    customRequestReason,
+  } = calculation
 
   // const {
   //   data: estimatedGas,
@@ -69,6 +74,14 @@ export const PayrollAdvanceCalculation = ({
         >
           <input type="hidden" name="paymentMethod" value={paymentMethod} />
           <input type="hidden" name="requestedAmount" value={requestedAmount} />
+          <input type="hidden" name="requestReasonId" value={requestReasonId} />
+          {customRequestReason && (
+            <input
+              type="hidden"
+              name="customRequestReason"
+              value={customRequestReason}
+            />
+          )}
 
           <>
             <PayrollAdvanceSummaryItem

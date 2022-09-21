@@ -5,6 +5,7 @@ import type {
   PayrollAdvance,
   User,
   AdminUser,
+  PayrollAdvanceRequestReason,
 } from '@prisma/client'
 import type { CalculatePayrollSchemaInput } from '~/schemas/calculate-payroll.schema'
 import type { ITaxItem } from './payroll-advance.interface'
@@ -204,6 +205,9 @@ export const getPayrollAdvanceById = async (
       transfers: true,
       bankAccountData: true,
       walletData: true,
+      requestReason: {
+        select: { name: true },
+      },
       employee: {
         select: {
           id: true,
@@ -228,6 +232,14 @@ export const getPayrollAdvanceById = async (
   })
 }
 
+export const getPayrollAdvanceRequestReasons = async () => {
+  return prisma.payrollAdvanceRequestReason.findMany({
+    orderBy: {
+      name: 'asc',
+    },
+  })
+}
+
 interface ICalculatePayrollAdvanceArgs {
   employee: Pick<
     Employee,
@@ -244,12 +256,16 @@ interface ICalculatePayrollAdvanceArgs {
   }
   requestedAmount: number
   paymentMethod: PayrollAdvancePaymentMethod
+  requestReasonId: PayrollAdvanceRequestReason['id']
+  customRequestReason: PayrollAdvance['customRequestReason']
 }
 
 export const calculatePayrollAdvance = async ({
   employee,
   requestedAmount,
   paymentMethod,
+  requestReasonId,
+  customRequestReason,
 }: ICalculatePayrollAdvanceArgs) => {
   const { fieldErrors } =
     (await verifyIfEmployeeCanRequestPayroll({
@@ -276,6 +292,8 @@ export const calculatePayrollAdvance = async ({
         ...payrollCost,
         paymentMethod: PayrollAdvancePaymentMethod.BANK_ACCOUNT,
         bankAccountId: employee.bankAccountId,
+        requestReasonId,
+        customRequestReason,
       },
       fieldErrors: null,
     }
@@ -295,6 +313,8 @@ export const calculatePayrollAdvance = async ({
         ...payrollCost,
         paymentMethod: PayrollAdvancePaymentMethod.WALLET,
         walletId: employee.walletId,
+        requestReasonId,
+        customRequestReason,
       },
       fieldErrors: null,
     }
@@ -302,7 +322,7 @@ export const calculatePayrollAdvance = async ({
 
   throw badRequest({
     message:
-      'Ha ocurrido un error inesperado. Por favor contacta a un administrador.',
+      'Ha ocurrido un error inesperado durante el cálculo del adelanto de nómina. Por favor contacta a un administrador.',
   })
 }
 
@@ -486,7 +506,12 @@ export const createPayrollAdvance = async ({
   companyId: Company['id']
   employeeId: Employee['id']
 }) => {
-  const { requestedAmount, paymentMethod } = data
+  const {
+    requestedAmount,
+    paymentMethod,
+    requestReasonId,
+    customRequestReason,
+  } = data
 
   const isWalletThePaymentMethod =
     paymentMethod === PayrollAdvancePaymentMethod.WALLET
@@ -659,6 +684,8 @@ export const createPayrollAdvance = async ({
       employee: connect(employeeId),
       walletData: connectWalletData,
       bankAccountData: connectBankAccountData,
+      requestReason: connect(requestReasonId),
+      customRequestReason,
 
       taxes: createManyTaxes,
       history: createHistory,

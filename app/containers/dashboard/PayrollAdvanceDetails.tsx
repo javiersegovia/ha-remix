@@ -29,6 +29,7 @@ interface PayrollAdvanceDetailsProps {
     | 'totalAmount'
     | 'requestedAmount'
     | 'status'
+    | 'customRequestReason'
   > & {
     bankAccountData?:
       | PayrollAdvanceSummaryProps['payrollAdvance']['bankAccountData']
@@ -41,6 +42,7 @@ interface PayrollAdvanceDetailsProps {
       Pick<PayrollAdvanceHistory, 'id' | 'actor'>)[]
     transfers: PayrollAdvanceSummaryProps['payrollAdvance']['transfers']
     createdAt: string | Date
+    requestReason: PayrollAdvanceSummaryProps['payrollAdvance']['requestReason']
   }
 
   company: Pick<Company, 'id' | 'name'>

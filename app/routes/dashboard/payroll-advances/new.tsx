@@ -26,6 +26,7 @@ import { getEmployeePaymentOptions } from '~/services/employee/employee.server'
 import {
   calculatePayrollAdvance,
   createPayrollAdvance,
+  getPayrollAdvanceRequestReasons,
 } from '~/services/payroll-advance/payroll-advance.server'
 import { PayrollAdvanceCalculation } from '~/containers/dashboard/PayrollAdvanceCalculation'
 
@@ -34,10 +35,13 @@ import type {
   MetaFunction,
   ActionFunction,
 } from '@remix-run/server-runtime'
+import { Input } from '~/components/FormFields/Input'
+import { useMemo } from 'react'
 
 type LoaderData = {
   employee: Awaited<ReturnType<typeof requireEmployee>>
   paymentOptions: Awaited<ReturnType<typeof getEmployeePaymentOptions>>
+  requestReasons: Awaited<ReturnType<typeof getPayrollAdvanceRequestReasons>>
 }
 
 export const loader: LoaderFunction = async ({ request }) => {
@@ -52,6 +56,7 @@ export const loader: LoaderFunction = async ({ request }) => {
   return json<LoaderData>({
     employee,
     paymentOptions,
+    requestReasons: await getPayrollAdvanceRequestReasons(),
   })
 }
 
@@ -80,11 +85,34 @@ export const action: ActionFunction = async ({ request }) => {
   }
 
   if (subaction === 'calculate') {
+    const requestReasons = await getPayrollAdvanceRequestReasons()
+
+    if (requestReasons.length > 0) {
+      const otherReason = requestReasons.find(
+        (reason) => reason.name === 'Otro'
+      )
+      if (
+        otherReason &&
+        data.requestReasonId === otherReason?.id &&
+        !data.customRequestReason
+      ) {
+        return validationError({
+          fieldErrors: {
+            customRequestReason: 'Describa su motivo de solicitud',
+          },
+          formId,
+          subaction,
+        })
+      }
+    }
+
     const { data: calculationData, fieldErrors } =
       await calculatePayrollAdvance({
         employee,
         requestedAmount: data.requestedAmount,
         paymentMethod: data.paymentMethod,
+        requestReasonId: data.requestReasonId,
+        customRequestReason: data.customRequestReason,
       })
 
     if (fieldErrors) {
@@ -125,7 +153,8 @@ export const meta: MetaFunction = () => {
 
 const calculationFormId = 'CalculationForm'
 export default function PayrollAdvanceNewRoute() {
-  const { employee, paymentOptions } = useLoaderData<LoaderData>()
+  const { employee, paymentOptions, requestReasons } =
+    useLoaderData<LoaderData>()
   const { calculation } = useActionData<ActionData>() || {}
 
   const fiatAvailableAmount = employee.advanceAvailableAmount || 0
@@ -140,6 +169,16 @@ export default function PayrollAdvanceNewRoute() {
   const [paymentMethod] = useControlField<string | undefined>(
     'paymentMethod',
     calculationFormId
+  )
+
+  const [requestReasonId] = useControlField<number | undefined>(
+    'requestReasonId',
+    calculationFormId
+  )
+
+  const otherReason = useMemo(
+    () => requestReasons.find((reason) => reason.name === 'Otro'),
+    [requestReasons]
   )
 
   const currencySymbol =
@@ -175,7 +214,7 @@ export default function PayrollAdvanceNewRoute() {
               <div>
                 <CurrencyInput
                   name="requestedAmount"
-                  label="Monto de la solicitud"
+                  label="¿Cuánto deseas adelantar?"
                   placeholder="Monto a solicitar"
                   symbol={currencySymbol}
                 />
@@ -188,6 +227,28 @@ export default function PayrollAdvanceNewRoute() {
                   options={paymentOptions}
                 />
               </div>
+
+              {requestReasons?.length > 0 && (
+                <div>
+                  <Select
+                    name="requestReasonId"
+                    label="Motivo de solicitud"
+                    placeholder="¿Para qué deseas el adelanto de nómina?"
+                    options={requestReasons}
+                  />
+                </div>
+              )}
+
+              {requestReasonId && requestReasonId === otherReason?.id && (
+                <div>
+                  <Input
+                    type="text"
+                    name="customRequestReason"
+                    label="Describe el motivo"
+                    placeholder="Describe tu propio motivo aquí"
+                  />
+                </div>
+              )}
               <SubmitButton variant="LIGHT">Calcular</SubmitButton>
             </ValidatedForm>
           </Box>

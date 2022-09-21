@@ -468,6 +468,10 @@ model PayrollAdvance {
   bankAccountData PayrollAdvanceBankAccount?
   walletData      PayrollAdvanceWallet?
 
+  requestReason       PayrollAdvanceRequestReason? @relation(fields: [requestReasonId], references: [id])
+  requestReasonId     Int?
+  customRequestReason String?
+
   employee            Employee?          @relation(fields: [employeeId], references: [id])
   employeeId          String?
   company             Company            @relation(fields: [companyId], references: [id], onDelete: Cascade)
@@ -566,6 +570,16 @@ model PayrollAdvanceBankAccount {
   payrollAdvanceId Int            @unique
 }
 
+model PayrollAdvanceRequestReason {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  name String
+
+  payrollAdvances PayrollAdvance[]
+}
+
 model PayrollAdvanceWallet {
   id        String   @id @default(cuid())
   createdAt DateTime @default(now())
@@ -600,8 +614,8 @@ model ZapsignDocument {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  externalToken String
-  signerToken String
+  externalToken  String
+  signerToken    String
   documentStatus ZapsignDocumentStatus @default(pending)
 
   employee   Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade, onUpdate: Cascade)
