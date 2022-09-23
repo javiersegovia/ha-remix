@@ -296,37 +296,38 @@ async function main() {
     })
   )
 
-  const colombia = await prisma.country.findFirst({
-    where: {
-      name: 'Colombia',
-    },
-  })
+  // todo: refactor to an upsert
+  // const colombia = await prisma.country.findFirst({
+  //   where: {
+  //     name: 'Colombia',
+  //   },
+  // })
 
-  if (colombia) {
-    statesAndCitiesOfColombia.map(async (item) => {
-      const { state, cities } = item
-      const stateExists = await prisma.state.findFirst({
-        where: { name: state },
-      })
-      if (stateExists) return
-      return prisma.state.create({
-        data: {
-          name: state,
-          cities: {
-            createMany: {
-              data: cities.map((city) => ({ name: city })),
-              skipDuplicates: true,
-            },
-          },
-          country: {
-            connect: {
-              id: colombia.id,
-            },
-          },
-        },
-      })
-    })
-  }
+  // if (colombia) {
+  //   statesAndCitiesOfColombia.map(async (item) => {
+  //     const { state, cities } = item
+  //     const stateExists = await prisma.state.findFirst({
+  //       where: { name: state },
+  //     })
+  //     if (stateExists) return
+  //     return prisma.state.create({
+  //       data: {
+  //         name: state,
+  //         cities: {
+  //           createMany: {
+  //             data: cities.map((city) => ({ name: city })),
+  //             skipDuplicates: true,
+  //           },
+  //         },
+  //         country: {
+  //           connect: {
+  //             id: colombia.id,
+  //           },
+  //         },
+  //       },
+  //     })
+  //   })
+  // }
 
   const email = 'jack@test.com'
   const hashedPassword = await bcrypt.hash('123123', 10)
