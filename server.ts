@@ -54,7 +54,7 @@ app.all(
       }
 )
 
-const port = process.env.PORT || 3000
+const port = process.env.PORT || 8811
 
 app.listen(port, () => {
   // require the built app so we're ready when the first request comes in
