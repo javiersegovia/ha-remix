@@ -441,7 +441,7 @@ export const updateEmployeeById = async (
   } catch (err) {
     // Todo LOGGER: Log error and save to a file
     console.error(err)
-    throw badRequest({ message: 'Ha ocurrido un error' })
+    throw badRequest('Ha ocurrido un error inesperado')
   }
 }
 
@@ -508,7 +508,7 @@ export const updateEmployeeByWelcomeForm = async (
   } catch (err) {
     // Todo LOGGER: Log error and save to a file
     console.error(err)
-    throw badRequest({ message: 'Ha ocurrido un error' })
+    throw badRequest('Ha ocurrido un error inesperado')
   }
 }
 
@@ -583,7 +583,7 @@ export const updateEmployeeByAccountForm = async (
   } catch (err) {
     // Todo LOGGER: Log error and save to a file
     console.error(err)
-    throw badRequest({ message: 'Ha ocurrido un error inesperado' })
+    throw badRequest('Ha ocurrido un error inesperado')
   }
 }
 
@@ -596,7 +596,7 @@ export const uploadEmployees = async (
   })
 
   if (!company) {
-    throw badRequest({ message: 'No se ha encontrado el ID de la compañía' })
+    throw badRequest('No se ha encontrado el ID de la compañía')
   }
 
   const errorResponses: Record<string, string[]> = {}

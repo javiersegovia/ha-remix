@@ -53,9 +53,7 @@ export const action: ActionFunction = async ({ request, params }) => {
   const { payrollAdvanceId } = params
 
   if (!payrollAdvanceId) {
-    throw badRequest({
-      message: 'No se ha encontrado el ID del adelanto de nómina',
-    })
+    throw badRequest('No se ha encontrado el ID del adelanto de nómina')
   }
 
   const payrollAdvance = await getPayrollAdvanceById(

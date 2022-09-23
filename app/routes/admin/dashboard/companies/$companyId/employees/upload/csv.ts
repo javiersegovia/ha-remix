@@ -14,14 +14,14 @@ export const action: ActionFunction = async ({ request, params }) => {
   const { companyId } = params
 
   if (!companyId) {
-    throw badRequest({ message: 'No se ha encontrado el ID de la compañía' })
+    throw badRequest('No se ha encontrado el ID de la compañía')
   }
 
   const formData = await request.formData()
   const csvFile = formData.get('csvFile') as File
 
   if (!csvFile) {
-    throw badRequest({ message: 'No se ha encontrado el archivo CSV' })
+    throw badRequest('No se ha encontrado el archivo CSV')
   }
 
   const csvString = await csvFile.text()

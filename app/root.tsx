@@ -1,5 +1,10 @@
 import React, { useEffect } from 'react'
-import type { LinksFunction, LoaderArgs, MetaFunction } from '@remix-run/node'
+import type {
+  ErrorBoundaryComponent,
+  LinksFunction,
+  LoaderArgs,
+  MetaFunction,
+} from '@remix-run/node'
 import { json } from '@remix-run/node'
 import { useDataRefresh } from 'remix-utils'
 import {
@@ -9,10 +14,12 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
+  useCatch,
 } from '@remix-run/react'
 
 import { getUser } from './session.server'
 import tailwindStylesheetUrl from './styles/tailwind.css'
+import ErrorContainer from './containers/ErrorContainer'
 
 export const links: LinksFunction = () => {
   return [
@@ -61,7 +68,7 @@ export default function App() {
   }, [refresh])
 
   return (
-    <html lang="en" className="h-full">
+    <html lang="es" className="h-full">
       <head>
         <Meta />
         <Links />
@@ -69,6 +76,53 @@ export default function App() {
       <body className="h-full">
         <Outlet />
         <ScrollRestoration />
+        <Scripts />
+        <LiveReload />
+      </body>
+    </html>
+  )
+}
+
+export const ErrorBoundary: ErrorBoundaryComponent = ({ error }) => {
+  console.error(error)
+  return (
+    <html lang="es" className="h-full">
+      <head>
+        <title>Error | HoyAdelantas</title>
+        <Meta />
+        <Links />
+      </head>
+      <body>
+        <ErrorContainer
+          title="Bueno, esto es inesperado.."
+          errorString={error.message}
+          showSuggestions
+        />
+        <Scripts />
+        <LiveReload />
+      </body>
+    </html>
+  )
+}
+
+export const CatchBoundary = () => {
+  const caught = useCatch()
+  const parsedData = caught?.data && JSON.parse(caught.data)
+  const message = caught.statusText || parsedData?.message || parsedData
+
+  return (
+    <html lang="es" className="h-full">
+      <head>
+        <title>Error | HoyAdelantas</title>
+        <Meta />
+        <Links />
+      </head>
+      <body>
+        <ErrorContainer
+          title="Oops. Error."
+          message={message}
+          status={caught.status}
+        />
         <Scripts />
         <LiveReload />
       </body>

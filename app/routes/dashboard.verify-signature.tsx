@@ -32,7 +32,9 @@ export const loader: LoaderFunction = async ({ request }) => {
       return redirect('/dashboard/overview')
     }
 
-    throw badRequest({ message: 'Ha ocurrido un erro ' })
+    throw badRequest(
+      'No se ha recibido el token necesario para procesar la solicitud'
+    )
   }
 
   const signatureData = await getSignature(token)

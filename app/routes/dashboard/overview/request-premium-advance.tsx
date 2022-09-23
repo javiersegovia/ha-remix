@@ -26,7 +26,9 @@ export async function action({ request }: ActionArgs) {
       employeeId: employee.id,
     })
   } catch (e) {
-    throw badRequest({ message: 'Ha ocurrido un error' })
+    throw badRequest(
+      'Ha ocurrido un error al solicitar tu adelanto de nómina. Por favor, informa de lo sucedido directamente a hoyadelantas@hoytrabajas.com'
+    )
   }
 
   return json<boolean>(true)

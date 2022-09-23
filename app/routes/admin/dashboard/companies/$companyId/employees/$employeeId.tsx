@@ -52,13 +52,13 @@ export const loader: LoaderFunction = async ({ request, params }) => {
   const { employeeId } = params
 
   if (!employeeId) {
-    throw badRequest({ error: 'No pudimos encontrar el ID del empleado' })
+    throw badRequest('No pudimos encontrar el ID del empleado')
   }
   const employeExists = prisma.employee.findUnique({
     where: { id: employeeId },
   })
   if (!employeExists) {
-    throw badRequest({ error: 'No pudimos encontrar el ID del empleado' })
+    throw badRequest('No pudimos encontrar el ID del empleado')
   }
 
   // todo: test Promise.all with remix-utils utility to improve load times

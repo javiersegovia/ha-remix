@@ -72,75 +72,70 @@ export default function LoginRemixRoute() {
   const redirectTo = searchParams.get('redirectTo') || '/dashboard/overview'
 
   return (
-    <section
-      className="min-h-screen bg-gray-100"
-      style={{
-        background:
-          'url(https://ht-assets-images.s3.amazonaws.com/login/home-ingreso.png)',
-        backgroundRepeat: 'no-repeat',
-        backgroundSize: 'cover',
-      }}
-    >
-      <div className="container mx-auto px-0 pt-20 sm:px-4">
-        <img
-          className="mx-auto block"
-          src="/logo/logo_hoyadelantas_white_over_green.png"
-          alt="Logo HoyAdelantas"
-          width="256"
-          height="44.2"
-        />
-
-        <div className="mx-auto mb-6 mt-8 w-full rounded-none bg-white px-4 pb-6 pt-5 shadow-2xl sm:w-10/12 sm:rounded-lg sm:px-6 md:w-6/12 lg:w-5/12 xl:w-4/12 2xl:w-3/12">
-          <Title className="mb-4 text-center">Inicio de sesión</Title>
-
-          <ValidatedForm
-            validator={loginValidator}
-            method="post"
-            className="space-y-4"
-          >
-            <input type="hidden" name="redirectTo" value={redirectTo} />
-
-            <Input
-              name="email"
-              type="email"
-              role="email"
-              label="Correo electrónico"
-              placeholder="Ingresa tu correo"
-            />
-            <Input
-              name="password"
-              type="password"
-              label="Contraseña"
-              placeholder="Ingresa tu contraseña"
-            />
-
-            <SubmitButton data-testid="login-button">Ingresar</SubmitButton>
-
-            <div className="w-full border-b border-gray-300 pt-4" />
-
-            <div className="pt-3">
-              <Button
-                type="button"
-                href="/login-email"
-                variant="LIGHT"
-                className="text-sm"
-                data-testid="login-email-button"
-              >
-                Ingresar usando correo electrónico
-              </Button>
-            </div>
-          </ValidatedForm>
+    <section className="min-h-screen bg-[#43ab89]">
+      <div
+        className="min-h-screen"
+        style={{
+          background:
+            'url(https://ht-assets-images.s3.amazonaws.com/login/home-ingreso.png)',
+          backgroundRepeat: 'no-repeat',
+          backgroundSize: 'cover',
+        }}
+      >
+        <div className="container mx-auto px-0 pt-20 sm:px-4">
+          <img
+            className="mx-auto block"
+            src="/logo/logo_hoyadelantas_white_over_green.png"
+            alt="Logo HoyAdelantas"
+            width="256"
+            height="44.2"
+          />
+          <div className="mx-auto mb-6 mt-8 w-full rounded-none bg-white px-4 pb-6 pt-5 shadow-2xl sm:w-10/12 sm:rounded-lg sm:px-6 md:w-6/12 lg:w-5/12 xl:w-4/12 2xl:w-3/12">
+            <Title className="mb-4 text-center">Inicio de sesión</Title>
+            <ValidatedForm
+              validator={loginValidator}
+              method="post"
+              className="space-y-4"
+            >
+              <input type="hidden" name="redirectTo" value={redirectTo} />
+              <Input
+                name="email"
+                type="email"
+                role="email"
+                label="Correo electrónico"
+                placeholder="Ingresa tu correo"
+              />
+              <Input
+                name="password"
+                type="password"
+                label="Contraseña"
+                placeholder="Ingresa tu contraseña"
+              />
+              <SubmitButton data-testid="login-button">Ingresar</SubmitButton>
+              <div className="w-full border-b border-gray-300 pt-4" />
+              <div className="pt-3">
+                <Button
+                  type="button"
+                  href="/login-email"
+                  variant="LIGHT"
+                  className="text-sm"
+                  data-testid="login-email-button"
+                >
+                  Ingresar usando correo electrónico
+                </Button>
+              </div>
+            </ValidatedForm>
+          </div>
         </div>
-      </div>
-
-      <div className="pb-4 text-center">
-        <Link
-          to="/request-password"
-          type="button"
-          className="text-sm font-semibold text-white"
-        >
-          Recuperar contraseña
-        </Link>
+        <div className="pb-4 text-center">
+          <Link
+            to="/request-password"
+            type="button"
+            className="text-sm font-semibold text-white"
+          >
+            Recuperar contraseña
+          </Link>
+        </div>
       </div>
     </section>
   )

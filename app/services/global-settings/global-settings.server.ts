@@ -26,9 +26,8 @@ export const upsertGlobalSettings = async (data: GlobalSettingsInputSchema) => {
   } catch (e) {
     // todo: Add logger
     console.error(e)
-    throw badRequest({
-      message:
-        'Ha ocurrido un error inesperado al actualizar la configuración general',
-    })
+    throw badRequest(
+      'Ha ocurrido un error inesperado al actualizar la configuración general'
+    )
   }
 }

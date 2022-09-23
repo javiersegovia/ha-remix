@@ -184,7 +184,7 @@ export const updateCompanyDebt = async (
   })
 
   if (!companyDebt) {
-    throw badRequest({ message: 'Novedad no encontrada' })
+    throw badRequest('Novedad no encontrada')
   }
 
   if (fiatDebt && fiatDebt.currentAmount > fiatDebt.totalAmount) {

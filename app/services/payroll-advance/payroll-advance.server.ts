@@ -320,10 +320,9 @@ export const calculatePayrollAdvance = async ({
     }
   }
 
-  throw badRequest({
-    message:
-      'Ha ocurrido un error inesperado durante el cálculo del adelanto de nómina. Por favor contacta a un administrador.',
-  })
+  throw badRequest(
+    'Ha ocurrido un error inesperado durante el cálculo del adelanto de nómina. Por favor contacta a un administrador.'
+  )
 }
 
 type VerifyIfEmployeeCanRequestPayroll = {
@@ -352,18 +351,16 @@ const verifyIfEmployeeCanRequestPayroll = async ({
 }: VerifyIfEmployeeCanRequestPayroll) => {
   // 1. Check if user account is active
   if (employee.status === EmployeeStatus.INACTIVE) {
-    throw badRequest({
-      message:
-        'No puedes solicitar adelantos de nómina porque tu cuenta se encuentra inactiva',
-    })
+    throw badRequest(
+      'No puedes solicitar adelantos de nómina porque tu cuenta se encuentra inactiva'
+    )
   }
 
   // 2. Check if company account is active
   if (company.status === CompanyStatus.INACTIVE) {
-    throw badRequest({
-      message:
-        'No puedes solicitar adelantos de nómina porque la compañía a la que perteneces se encuentra inactiva.',
-    })
+    throw badRequest(
+      'No puedes solicitar adelantos de nómina porque la compañía a la que perteneces se encuentra inactiva.'
+    )
   }
 
   // 3. Check the day of the month
@@ -382,18 +379,17 @@ const verifyIfEmployeeCanRequestPayroll = async ({
     (lastPaymentDay && limitDate >= lastPaymentDay) ||
     (lastRequestDay && currentDate.getUTCDate() > lastRequestDay)
   ) {
-    throw badRequest({
-      message: `No puedes solicitar adelantos de nómina en este momento porque la fecha de pago de nóminas se encuentra muy cerca.`,
-    })
+    throw badRequest(
+      `No puedes solicitar adelantos de nómina en este momento porque la fecha de pago de nóminas se encuentra muy cerca.`
+    )
   }
 
   //  4. Check if the requestedAmount is inside the availableAmount according to the paymentMethod (Wallet | BankAccount)
   if (paymentMethod === PayrollAdvancePaymentMethod.WALLET) {
     if (!employee.advanceCryptoAvailableAmount) {
-      throw badRequest({
-        message:
-          'No posees cupo disponible para solicitar adelantos de criptomonedas',
-      })
+      throw badRequest(
+        'No posees cupo disponible para solicitar adelantos de criptomonedas'
+      )
     }
 
     if (requestedAmount > employee.advanceCryptoAvailableAmount) {
@@ -405,9 +401,7 @@ const verifyIfEmployeeCanRequestPayroll = async ({
     }
   } else if (paymentMethod === PayrollAdvancePaymentMethod.BANK_ACCOUNT) {
     if (!employee.advanceAvailableAmount) {
-      throw badRequest({
-        message: 'No posees cupo disponible para solicitar adelantos',
-      })
+      throw badRequest('No posees cupo disponible para solicitar adelantos')
     }
 
     if (requestedAmount > employee.advanceAvailableAmount) {
@@ -759,15 +753,13 @@ export const updatePayrollAdvanceStatus = async ({
   actor: PayrollAdvanceHistoryActor
 }) => {
   if (payrollAdvance.status === toStatus) {
-    throw badRequest({
-      message: 'El adelanto de nómina ya se encuentra actualizado',
-    })
+    throw badRequest('El adelanto de nómina ya se encuentra actualizado')
   }
 
   if (payrollAdvance.status === PAID) {
-    throw badRequest({
-      message: 'El adelanto de nómina ya fue pagado, no puede actualizarse',
-    })
+    throw badRequest(
+      'El adelanto de nómina ya fue pagado, no puede actualizarse'
+    )
   }
 
   /** We only need to update the employee if we will NOT procceed with the Payroll Advance.
@@ -845,10 +837,9 @@ export const updatePayrollAdvanceStatus = async ({
   } catch (e) {
     // Todo LOGGER: Log error and save to a file
     console.error(e)
-    throw badRequest({
-      message:
-        'Ha ocurrido un error durante la actualización del adelanto de nómina',
-    })
+    throw badRequest(
+      'Ha ocurrido un error durante la actualización del adelanto de nómina'
+    )
   }
 }
 

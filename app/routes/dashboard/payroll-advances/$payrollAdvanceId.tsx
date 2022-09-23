@@ -59,9 +59,7 @@ export const action: ActionFunction = async ({ request, params }) => {
   const { payrollAdvanceId } = params
 
   if (!payrollAdvanceId) {
-    throw badRequest({
-      message: 'No se ha encontrado el ID del adelanto de nómina',
-    })
+    throw badRequest('No se ha encontrado el ID del adelanto de nómina')
   }
 
   const payrollAdvance = await getPayrollAdvanceById(
@@ -69,9 +67,7 @@ export const action: ActionFunction = async ({ request, params }) => {
   )
 
   if (!payrollAdvance) {
-    throw badRequest({
-      message: 'No se ha encontrado el ID del adelanto de nómina',
-    })
+    throw badRequest('No se ha encontrado el ID del adelanto de nómina')
   }
 
   if (employee.id !== payrollAdvance.employeeId) {
@@ -94,9 +90,9 @@ export const action: ActionFunction = async ({ request, params }) => {
     return json(null)
   }
 
-  throw badRequest({
-    message: 'Ha ocurrido un error en la petición',
-  })
+  throw badRequest(
+    'Ha ocurrido un error en los datos subministrados dentro del formulario.'
+  )
 }
 
 // todo: add hotjar script

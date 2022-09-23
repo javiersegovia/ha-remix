@@ -10,7 +10,7 @@ export const loader: LoaderFunction = async ({ request, params }) => {
   const { companyId } = params
 
   if (!companyId) {
-    throw badRequest({ message: 'No se ha encontrado el ID de la compañía' })
+    throw badRequest('No se ha encontrado el ID de la compañía')
   }
 
   return json({ companyId })
