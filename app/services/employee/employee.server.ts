@@ -3,9 +3,9 @@ import type {
   BankAccount,
   Company,
   Employee,
-  Prisma,
   Wallet,
 } from '@prisma/client'
+import { EmployeeRole, Prisma } from '@prisma/client'
 import type { WelcomeSchemaInput } from '~/schemas/welcome.schema'
 import type { EditAccountSchemaInput } from '~/schemas/edit-account.schema'
 import type { EmployeeSchemaInput } from './employee.schema'
@@ -21,6 +21,9 @@ import { generateExpirationDate, generateRandomToken } from '../auth.server'
 import { sendInvitation } from '../email/email.server'
 import { dateAsUTC } from '~/utils/formatDate'
 import { requestSignature } from '../signature/signature.server'
+import type { UploadEmployeeSchemaInput } from '~/schemas/upload-employees.schema'
+import { uploadEmployeeSchema } from '~/schemas/upload-employees.schema'
+import { capitalize } from '~/utils/strings'
 
 const INVITATION_EXPIRES_IN = '20m'
 
@@ -220,14 +223,7 @@ export const createEmployee = async (
       : undefined
 
   try {
-    const loginExpiration = generateExpirationDate(INVITATION_EXPIRES_IN)
-    const loginToken = await generateRandomToken()
-
-    const newUser: Prisma.UserCreateInput = {
-      ...user,
-      loginExpiration,
-      loginToken,
-    }
+    const newUser = await generateCreateUserInput(user)
 
     const employee = await prisma.employee.create({
       data: {
@@ -280,7 +276,7 @@ export const createEmployee = async (
     sendInvitation({
       firstName: user.firstName,
       destination: user.email,
-      token: loginToken,
+      token: newUser.loginToken,
     })
 
     return { employee }
@@ -591,6 +587,290 @@ export const updateEmployeeByAccountForm = async (
   }
 }
 
+export const uploadEmployees = async (
+  data: UploadEmployeeSchemaInput[],
+  companyId: Company['id']
+) => {
+  const company = await prisma.company.findUnique({
+    where: { id: companyId },
+  })
+
+  if (!company) {
+    throw badRequest({ message: 'No se ha encontrado el ID de la compañía' })
+  }
+
+  const errorResponses: Record<string, string[]> = {}
+  let createdUsersCount = 0
+  const usersWithErrors: any[] = []
+
+  const promises = data.map(async (item, itemIndex) => {
+    const parsed = uploadEmployeeSchema.safeParse(item)
+
+    errorResponses[itemIndex] = []
+
+    if (!parsed.success) {
+      console.log(parsed.error.flatten())
+      console.log(parsed.error.issues)
+
+      parsed.error.issues.forEach((issue) =>
+        errorResponses[itemIndex].push(issue.message)
+      )
+      return usersWithErrors.push({
+        ...item,
+        ERRORES: errorResponses[itemIndex].join('\n'),
+      })
+    } else {
+      const {
+        CORREO_ELECTRONICO: email,
+        NOMBRE: firstName,
+        APELLIDO: lastName,
+        ESTADO: status,
+
+        CARGO: jobPositionName,
+        DEPARTAMENTO: jobDepartmentName,
+
+        SALARIO: salary,
+        CUPO_APROBADO: maxAvailableAmount,
+        CUPO_DISPONIBLE: availableAmount,
+
+        PAIS: countryName,
+        BANCO: bankName,
+        TIPO_DE_CUENTA: accountTypeName,
+        NUMERO_DE_CUENTA: accountNumber,
+        TIPO_DE_DOCUMENTO: documentTypeName,
+        DOCUMENTO_DE_IDENTIDAD: documentNumber,
+      } = parsed.data
+
+      const formattedJobDepartmentName = capitalize(jobDepartmentName?.trim())
+      const formattedJobPositionName = capitalize(jobPositionName?.trim())
+
+      try {
+        const country = countryName
+          ? await prisma.country.findFirst({
+              where: {
+                name: {
+                  contains: countryName,
+                  mode: 'insensitive',
+                },
+              },
+            })
+          : null
+
+        if (countryName && !country) {
+          errorResponses[itemIndex].push(`País ${countryName} no encontrado`)
+        }
+
+        const connectCurrencyDefault: Prisma.EmployeeCreateInput['currency'] = {
+          connectOrCreate: {
+            where: {
+              code: 'COP',
+            },
+            create: {
+              code: 'COP',
+              name: 'Peso Colombiano',
+            },
+          },
+        }
+
+        const bank = bankName
+          ? await prisma.bank.findFirst({
+              where: {
+                name: {
+                  contains: bankName,
+                  mode: 'insensitive',
+                },
+              },
+            })
+          : null
+
+        if (bankName && !bank) {
+          errorResponses[itemIndex].push(`Banco ${bankName} no encontrado`)
+        }
+
+        const accountType = accountTypeName
+          ? await prisma.bankAccountType.findFirst({
+              where: {
+                name: {
+                  contains: accountTypeName,
+                  mode: 'insensitive',
+                },
+              },
+            })
+          : null
+
+        if (accountTypeName && !accountType) {
+          errorResponses[itemIndex].push(
+            `Tipo de cuenta ${accountTypeName} no encontrado`
+          )
+        }
+
+        const documentType = documentTypeName
+          ? await prisma.identityDocumentType.findFirst({
+              where: {
+                name: {
+                  contains: documentTypeName,
+                  mode: 'insensitive',
+                },
+              },
+            })
+          : null
+
+        if (documentTypeName && !documentType) {
+          errorResponses[itemIndex].push(
+            `Tipo de documento ${documentTypeName} no encontrado`
+          )
+        }
+
+        const bankAccountFields = [
+          bank,
+          accountType,
+          accountNumber,
+          documentType,
+          documentNumber,
+        ]
+        const bankAccountHasOneValue = bankAccountFields.some(Boolean)
+        const bankAccountHasAllValues = bankAccountFields.every(Boolean)
+
+        if (bankAccountHasOneValue !== bankAccountHasAllValues) {
+          errorResponses[itemIndex].push(
+            'La información de la cuenta bancaria se encuentra incompleta'
+          )
+        }
+
+        const createBankAccount: Prisma.EmployeeCreateInput['bankAccount'] =
+          bankAccountHasAllValues
+            ? {
+                create: {
+                  accountNumber: accountNumber as string,
+                  bank: {
+                    connect: {
+                      id: bank?.id,
+                    },
+                  },
+
+                  accountType: {
+                    connect: {
+                      id: accountType?.id,
+                    },
+                  },
+
+                  identityDocument: {
+                    create: {
+                      value: documentNumber as string,
+                      documentType: {
+                        connect: {
+                          id: documentType?.id,
+                        },
+                      },
+                    },
+                  },
+                },
+              }
+            : {}
+
+        if (errorResponses[itemIndex].length > 0) {
+          return usersWithErrors.push({
+            ...item,
+            ERRORES: errorResponses[itemIndex].join('\n'),
+          })
+        }
+
+        const newUser = await generateCreateUserInput({
+          firstName,
+          lastName,
+          email,
+        })
+
+        const employee = await prisma.employee.create({
+          data: {
+            user: {
+              create: {
+                ...newUser,
+              },
+            },
+            salaryFiat: parseFloat(salary),
+            advanceAvailableAmount: parseFloat(availableAmount),
+            advanceMaxAmount: parseFloat(maxAvailableAmount),
+            roles: [EmployeeRole.MEMBER],
+
+            status:
+              status == EmployeeStatus.ACTIVE
+                ? EmployeeStatus.ACTIVE
+                : EmployeeStatus.INACTIVE,
+
+            company: { connect: { id: company?.id } },
+
+            jobDepartment: formattedJobDepartmentName
+              ? {
+                  connectOrCreate: {
+                    where: {
+                      name: formattedJobDepartmentName,
+                    },
+                    create: {
+                      name: formattedJobDepartmentName,
+                    },
+                  },
+                }
+              : undefined,
+
+            jobPosition: formattedJobPositionName?.trim()
+              ? {
+                  connectOrCreate: {
+                    where: {
+                      name: formattedJobPositionName,
+                    },
+                    create: {
+                      name: formattedJobPositionName,
+                    },
+                  },
+                }
+              : undefined,
+
+            country: country?.id ? { connect: { id: country?.id } } : undefined,
+
+            currency: connectCurrencyDefault,
+            bankAccount: createBankAccount,
+          },
+        })
+
+        if (process.env.NODE_ENV === 'production') {
+          sendInvitation({
+            firstName,
+            destination: email,
+            token: newUser.loginToken,
+          })
+        }
+
+        createdUsersCount++
+
+        return employee
+      } catch (e) {
+        // todo: Add Logger
+        console.error(e)
+        if (
+          e instanceof Prisma.PrismaClientKnownRequestError &&
+          e.code === 'P2002'
+        ) {
+          errorResponses[itemIndex].push(`El correo ya está en uso`)
+        } else if (e instanceof Error) {
+          errorResponses[itemIndex].push(
+            `Error inesperado, favor contactar al equipo de desarrollo: ${e?.message}`
+          )
+        }
+
+        return usersWithErrors.push({
+          ...item,
+          ERRORES: errorResponses[itemIndex].join('\n'),
+        })
+      }
+    }
+  })
+
+  await Promise.all(promises)
+
+  return { createdUsersCount, usersWithErrors }
+}
+
 export const deleteEmployeeById = async (employeeId: Employee['id']) => {
   const employee = await prisma.employee.findUnique({
     where: { id: employeeId },
@@ -666,4 +946,17 @@ export const getEmployeePaymentOptions = ({
   }
 
   return paymentOptions
+}
+
+const generateCreateUserInput = async (user: Prisma.UserCreateInput) => {
+  const loginExpiration = generateExpirationDate(INVITATION_EXPIRES_IN)
+  const loginToken = await generateRandomToken()
+
+  const newUser = {
+    ...user,
+    loginExpiration,
+    loginToken,
+  }
+
+  return newUser
 }

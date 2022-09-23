@@ -18,6 +18,7 @@ export default defineConfig({
         baseUrl: `http://localhost:${port}`,
         video: !process.env.CI,
         screenshotOnRunFailure: !process.env.CI,
+        specPattern: './test/e2e/**/*.{cy,e2e}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}',
       }
 
       // To use this:
@@ -42,7 +43,6 @@ export default defineConfig({
           const response = await createUserSession({
             request: new Request('test://test'),
             userId: employee.userId,
-            remember: false,
             redirectTo: '/',
           })
 

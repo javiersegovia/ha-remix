@@ -11,7 +11,23 @@ export default defineConfig({
     globals: true,
     environment: 'happy-dom',
     setupFiles: ['./test/setup-test-env.ts'],
-    include: ['./app/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
+    coverage: {
+      all: true,
+      reporter: ['html', 'lcov', 'text'],
+      include: ['./app/**/*.{ts,tsx}'],
+      exclude: ['postgres-data/', 'node_modules/', 'build/', 'public/'],
+    },
+    include: [
+      './app/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}',
+      './test/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}',
+    ],
+    exclude: [
+      './cypress',
+      './test/e2e',
+      './node_modules',
+      './build',
+      './public',
+    ],
     watchExclude: [
       '.*\\/node_modules\\/.*',
       '.*\\/build\\/.*',

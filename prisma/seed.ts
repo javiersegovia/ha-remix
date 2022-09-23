@@ -109,6 +109,23 @@ const jobPositions = [
   'Vendedor',
 ]
 
+const statesAndCitiesOfColombia = [
+  {
+    state: 'Amazonas',
+    cities: ['El encanto', 'La chorrera'],
+  },
+  {
+    state: 'Antioquia',
+    cities: ['Medellín'],
+  },
+  {
+    state: 'Bogotá',
+    cities: ['Bogotá'],
+  },
+]
+
+const genders = ['Masculino', 'Femenino', 'Otro']
+
 async function main() {
   console.info('Seeding...')
 
@@ -267,6 +284,50 @@ async function main() {
     })
   )
 
+  const upsertGenders = genders.map((gender) =>
+    prisma.gender.upsert({
+      where: {
+        name: gender,
+      },
+      update: {},
+      create: {
+        name: gender,
+      },
+    })
+  )
+
+  const colombia = await prisma.country.findFirst({
+    where: {
+      name: 'Colombia',
+    },
+  })
+
+  if (colombia) {
+    statesAndCitiesOfColombia.map(async (item) => {
+      const { state, cities } = item
+      const stateExists = await prisma.state.findFirst({
+        where: { name: state },
+      })
+      if (stateExists) return
+      return prisma.state.create({
+        data: {
+          name: state,
+          cities: {
+            createMany: {
+              data: cities.map((city) => ({ name: city })),
+              skipDuplicates: true,
+            },
+          },
+          country: {
+            connect: {
+              id: colombia.id,
+            },
+          },
+        },
+      })
+    })
+  }
+
   const email = 'jack@test.com'
   const hashedPassword = await bcrypt.hash('123123', 10)
   const testUser = await prisma.user.findUnique({ where: { email } })
@@ -304,6 +365,7 @@ async function main() {
   await prisma.$transaction(upsertJobPositions)
   await prisma.$transaction(upsertJobDepartments)
   await prisma.$transaction(upsertCryptocurrencies)
+  await prisma.$transaction(upsertGenders)
 
   console.info(`Seeding finished.`)
 }

@@ -5,6 +5,7 @@
   ],
   "include": [
     "e2e/**/*",
+    "../test/e2e/**/*",
     "support/**/*",
     "../node_modules/cypress",
     "../node_modules/@testing-library/cypress"

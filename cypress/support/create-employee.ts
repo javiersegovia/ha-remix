@@ -15,6 +15,8 @@ export const createEmployee = async (email: string, password: string) => {
         create: {
           email,
           password: await hash(password, 10),
+          firstName: faker.name.firstName(),
+          lastName: faker.name.lastName(),
         },
       },
       company: {

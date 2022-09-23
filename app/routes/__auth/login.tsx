@@ -103,6 +103,7 @@ export default function LoginRemixRoute() {
             <Input
               name="email"
               type="email"
+              role="email"
               label="Correo electrónico"
               placeholder="Ingresa tu correo"
             />
@@ -113,7 +114,7 @@ export default function LoginRemixRoute() {
               placeholder="Ingresa tu contraseña"
             />
 
-            <SubmitButton>Ingresar</SubmitButton>
+            <SubmitButton data-testid="login-button">Ingresar</SubmitButton>
 
             <div className="w-full border-b border-gray-300 pt-4" />
 
@@ -123,6 +124,7 @@ export default function LoginRemixRoute() {
                 href="/login-email"
                 variant="LIGHT"
                 className="text-sm"
+                data-testid="login-email-button"
               >
                 Ingresar usando correo electrónico
               </Button>

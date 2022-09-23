@@ -10,5 +10,8 @@ export const getStatesByCountryId = async (countryId: Country['id']) => {
       id: true,
       name: true,
     },
+    orderBy: {
+      name: 'asc',
+    },
   })
 }
