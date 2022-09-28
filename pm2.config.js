@@ -19,8 +19,8 @@ module.exports = {
       host: "ec2-3-225-58-178.compute-1.amazonaws.com",
       ref: "origin/master",
       repo: "git@github.com:javiersegovia/ha-remix.git",
-      path: "/var/www/remix/",
-      "post-deploy": "npm install && npm run generate:schema && npm run build --force && npm run migrate:deploy && pm2 restart remix",
+      path: "/var/www/remix",
+      "post-deploy": "npm install && npm run generate:schema && npm run build && npm run migrate:deploy && pm2 restart remix",
     },
   },
 };
