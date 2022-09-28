@@ -468,9 +468,9 @@ model PayrollAdvance {
   bankAccountData PayrollAdvanceBankAccount?
   walletData      PayrollAdvanceWallet?
 
-  requestReason       PayrollAdvanceRequestReason? @relation(fields: [requestReasonId], references: [id])
-  requestReasonId     Int?
-  customRequestReason String?
+  requestReason            PayrollAdvanceRequestReason? @relation(fields: [requestReasonId], references: [id])
+  requestReasonId          Int?
+  requestReasonDescription String?
 
   employee            Employee?          @relation(fields: [employeeId], references: [id])
   employeeId          String?

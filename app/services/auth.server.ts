@@ -1,10 +1,14 @@
+import type { User } from '@prisma/client'
+
 import ms from 'ms'
 import { promisify } from 'util'
 import { randomBytes } from 'crypto'
 import { prisma } from '~/db.server'
-import { sendLoginLink } from './email/email.server'
+import { sendLoginLink, sendResetPasswordLink } from './email/email.server'
+import { hash } from 'bcryptjs'
+import { badRequest } from 'remix-utils'
 
-const LOGIN_EXPIRES_IN = '1h'
+const LOGIN_EXPIRES_IN = '1h' as const
 
 export const requestLoginLink = async (email: string) => {
   const user = await prisma.user.findUnique({
@@ -73,6 +77,41 @@ export const verifyLoginLink = async (token: string) => {
     hasAcceptedTerms:
       updatedUser.employee?.acceptedPrivacyPolicy &&
       updatedUser.employee?.acceptedTermsOfService,
+  }
+}
+
+export const requestPasswordChange = async (email: string) => {
+  const loginToken = await generateRandomToken()
+  const loginExpiration = generateExpirationDate(LOGIN_EXPIRES_IN)
+
+  const updatedUser = await prisma.user.update({
+    where: { email },
+    data: {
+      loginExpiration,
+      loginToken,
+    },
+  })
+
+  return sendResetPasswordLink({
+    destination: email,
+    firstName: updatedUser.firstName || '',
+    token: loginToken,
+  })
+}
+
+export const updatePassword = async (userId: User['id'], password: string) => {
+  try {
+    return prisma.user.update({
+      where: { id: userId },
+      data: {
+        password: await hash(password, 10),
+      },
+    })
+  } catch (e) {
+    console.error(e)
+    throw badRequest(
+      'Ha ocurrido un error durante la actualización de la contraseña'
+    )
   }
 }
 

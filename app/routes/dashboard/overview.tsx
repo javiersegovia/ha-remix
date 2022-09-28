@@ -41,43 +41,55 @@ export default function DashboardIndexRoute() {
   const { gender, user } = useLoaderData<LoaderData>()
 
   return (
-    <section className="mx-auto mt-10 w-full max-w-screen-lg px-2 pb-10  sm:px-10">
-      <Title as="h1">
-        ¡Hola, {user.firstName}!{' '}
-        {gender?.name === 'Femenino' ? 'Bienvenida' : 'Bienvenido'} a
-        HoyAdelantas, una nueva alternativa para ti
-      </Title>
+    <>
+      <script
+        async
+        id="hotjar"
+        dangerouslySetInnerHTML={{
+          __html: `
+          (function(h,o,t,j,a,r){
+            h.hj=h.hj||function(){(h.hj.q=h.hj.q||[]).push(arguments)};
+            h._hjSettings={hjid:3148054,hjsv:6};
+            a=o.getElementsByTagName('head')[0];
+            r=o.createElement('script');r.async=1;
+            r.src=t+h._hjSettings.hjid+j+h._hjSettings.hjsv;
+            a.appendChild(r);
+        })(window,document,'https://static.hotjar.com/c/hotjar-','.js?sv=');
+      `,
+        }}
+      />
 
-      <section className="mt-10 flex flex-col items-center gap-5 lg:flex-row lg:items-stretch">
-        <Box className="flex w-full max-w-xs flex-col justify-between space-y-5 p-5">
-          <Title as="h4">Adelantos de Nómina</Title>
-
-          <Button href="/dashboard/payroll-advances/new">Solicitar</Button>
-        </Box>
-
-        <Box className="flex w-full max-w-xs flex-col justify-between space-y-5 p-5">
-          <Title as="h4">Adelantos de Prima</Title>
-
-          <Button href="request-premium-advance" className="mt-auto">
-            Solicitar
-          </Button>
-        </Box>
-
-        <Box className="flex w-full max-w-xs flex-col justify-between space-y-5 p-5">
-          <Title as="h4">Beneficios para ti y tu familia</Title>
-
-          <a
-            className="block"
-            href="http://umany.hoytrabajas.com/"
-            target="_blank"
-            rel="noreferrer noopener"
-          >
-            <Button type="button">Conocer más</Button>
-          </a>
-        </Box>
+      <section className="mx-auto mt-10 w-full max-w-screen-lg px-2 pb-10  sm:px-10">
+        <Title as="h1">
+          ¡Hola, {user.firstName}!{' '}
+          {gender?.name === 'Femenino' ? 'Bienvenida' : 'Bienvenido'} a
+          HoyAdelantas, una nueva alternativa para ti
+        </Title>
+        <section className="mt-10 flex flex-col items-center gap-5 lg:flex-row lg:items-stretch">
+          <Box className="flex w-full max-w-xs flex-col justify-between space-y-5 p-5">
+            <Title as="h4">Adelantos de Nómina</Title>
+            <Button href="/dashboard/payroll-advances/new">Solicitar</Button>
+          </Box>
+          <Box className="flex w-full max-w-xs flex-col justify-between space-y-5 p-5">
+            <Title as="h4">Adelantos de Prima</Title>
+            <Button href="request-premium-advance" className="mt-auto">
+              Solicitar
+            </Button>
+          </Box>
+          <Box className="flex w-full max-w-xs flex-col justify-between space-y-5 p-5">
+            <Title as="h4">Haz realidad tus viajes</Title>
+            <a
+              className="block"
+              href="https://umany.co/tu-paseo/"
+              target="_blank"
+              rel="noreferrer noopener"
+            >
+              <Button type="button">Conocer más</Button>
+            </a>
+          </Box>
+        </section>
+        <Outlet />
       </section>
-
-      <Outlet />
-    </section>
+    </>
   )
 }

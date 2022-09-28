@@ -36,7 +36,6 @@ import type {
   ActionFunction,
 } from '@remix-run/server-runtime'
 import { Input } from '~/components/FormFields/Input'
-import { useMemo } from 'react'
 
 type LoaderData = {
   employee: Awaited<ReturnType<typeof requireEmployee>>
@@ -85,34 +84,13 @@ export const action: ActionFunction = async ({ request }) => {
   }
 
   if (subaction === 'calculate') {
-    const requestReasons = await getPayrollAdvanceRequestReasons()
-
-    if (requestReasons.length > 0) {
-      const otherReason = requestReasons.find(
-        (reason) => reason.name === 'Otro'
-      )
-      if (
-        otherReason &&
-        data.requestReasonId === otherReason?.id &&
-        !data.customRequestReason
-      ) {
-        return validationError({
-          fieldErrors: {
-            customRequestReason: 'Describa su motivo de solicitud',
-          },
-          formId,
-          subaction,
-        })
-      }
-    }
-
     const { data: calculationData, fieldErrors } =
       await calculatePayrollAdvance({
         employee,
         requestedAmount: data.requestedAmount,
         paymentMethod: data.paymentMethod,
         requestReasonId: data.requestReasonId,
-        customRequestReason: data.customRequestReason,
+        requestReasonDescription: data.requestReasonDescription,
       })
 
     if (fieldErrors) {
@@ -169,16 +147,6 @@ export default function PayrollAdvanceNewRoute() {
   const [paymentMethod] = useControlField<string | undefined>(
     'paymentMethod',
     calculationFormId
-  )
-
-  const [requestReasonId] = useControlField<number | undefined>(
-    'requestReasonId',
-    calculationFormId
-  )
-
-  const otherReason = useMemo(
-    () => requestReasons.find((reason) => reason.name === 'Otro'),
-    [requestReasons]
   )
 
   const currencySymbol =
@@ -239,16 +207,15 @@ export default function PayrollAdvanceNewRoute() {
                 </div>
               )}
 
-              {requestReasonId && requestReasonId === otherReason?.id && (
-                <div>
-                  <Input
-                    type="text"
-                    name="customRequestReason"
-                    label="Describe el motivo"
-                    placeholder="Describe tu propio motivo aquí"
-                  />
-                </div>
-              )}
+              <div>
+                <Input
+                  type="text"
+                  name="requestReasonDescription"
+                  label="¿En qué lo vas a usar?"
+                  placeholder="Describe tu motivo aquí"
+                />
+              </div>
+
               <SubmitButton variant="LIGHT">Calcular</SubmitButton>
             </ValidatedForm>
           </Box>

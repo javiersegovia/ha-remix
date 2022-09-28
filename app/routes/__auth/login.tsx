@@ -14,7 +14,7 @@ import { SubmitButton } from '~/components/SubmitButton'
 
 export async function loader({ request }: LoaderArgs) {
   const userId = await getUserIdFromSession(request)
-  if (userId) return redirect('/')
+  if (userId) return redirect('/dashboard')
   return null
 }
 
@@ -130,7 +130,6 @@ export default function LoginRemixRoute() {
         <div className="pb-4 text-center">
           <Link
             to="/request-password"
-            type="button"
             className="text-sm font-semibold text-white"
           >
             Recuperar contraseña

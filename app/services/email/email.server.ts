@@ -236,7 +236,7 @@ const userPayrollNotifications = {
     title: '¡Tu solicitud ha sido recibida!',
   },
   [PayrollAdvanceStatus.DENIED]: {
-    subject: 'Tu solicitud de adelanto ha sido denegado',
+    subject: 'Tu solicitud de adelanto ha sido denegada',
     title: 'Solicitud denegada',
   },
   [PayrollAdvanceStatus.PAID]: {
@@ -270,6 +270,32 @@ export const sendPayrollNotificationToUser = async ({
     info: {
       to: destination,
       subject: userPayrollNotifications[status].subject,
+    },
+    templateData,
+  })
+}
+
+/** Send a link to update current password */
+export const sendResetPasswordLink = async ({
+  destination,
+  firstName,
+  token,
+}: TSendLoginArgs) => {
+  const templateData: TBasicTemplate = {
+    title: 'Recuperación de contraseña',
+    firstLine: `Hola ${firstName},`,
+    secondLine:
+      'Recibes este correo porque solicitaste recuperar tu contraseña.',
+    thirdLine: 'Por favor, haz click en el siguiente botón para actualizarla.',
+    button: 'Cambiar contraseña',
+    buttonHref: `${CLIENT_URL}/verify-login?token=${token}&updatePassword=true`,
+  }
+
+  return sendEmail({
+    templateName: 'basic',
+    info: {
+      to: destination,
+      subject: 'Recuperación de contraseña',
     },
     templateData,
   })

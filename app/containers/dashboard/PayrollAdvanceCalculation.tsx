@@ -33,7 +33,7 @@ export const PayrollAdvanceCalculation = ({
     totalAmount,
     paymentMethod,
     requestReasonId,
-    customRequestReason,
+    requestReasonDescription,
   } = calculation
 
   // const {
@@ -75,13 +75,11 @@ export const PayrollAdvanceCalculation = ({
           <input type="hidden" name="paymentMethod" value={paymentMethod} />
           <input type="hidden" name="requestedAmount" value={requestedAmount} />
           <input type="hidden" name="requestReasonId" value={requestReasonId} />
-          {customRequestReason && (
-            <input
-              type="hidden"
-              name="customRequestReason"
-              value={customRequestReason}
-            />
-          )}
+          <input
+            type="hidden"
+            name="requestReasonDescription"
+            value={requestReasonDescription || undefined}
+          />
 
           <>
             <PayrollAdvanceSummaryItem

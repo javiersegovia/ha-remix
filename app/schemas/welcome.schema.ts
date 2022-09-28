@@ -5,8 +5,20 @@ import { bankAccountSchema } from '~/services/bank/bank.schema'
 import { zDate } from './helpers'
 
 export const welcomeSchema = z.object({
-  password: z.string().min(6),
-  confirmPassword: z.string().min(6),
+  password: z
+    .string({
+      required_error: 'Ingrese una contraseña',
+    })
+    .min(6, {
+      message: 'La contraseña debe poseer mínimo 6 caracteres',
+    }),
+  confirmPassword: z
+    .string({
+      required_error: 'Confirme su contraseña',
+    })
+    .min(6, {
+      message: 'La contraseña debe poseer mínimo 6 caracteres',
+    }),
 
   acceptedPrivacyPolicyAndTermsOfService: zfd.checkbox(),
 

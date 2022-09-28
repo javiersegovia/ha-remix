@@ -90,7 +90,7 @@ export interface PayrollAdvanceSummaryProps {
     | 'totalAmount'
     | 'requestedAmount'
     | 'status'
-    | 'customRequestReason'
+    | 'requestReasonDescription'
   > & {
     bankAccountData?: BankAccountDataSummaryProps['bankAccountData'] | null
     walletData?: WalletDataSummaryProps['walletData'] | null
@@ -116,7 +116,7 @@ export const PayrollAdvanceSummary = ({
     status,
     transfers,
     requestReason,
-    customRequestReason,
+    requestReasonDescription,
   } = payrollAdvance
 
   const currencySymbol =
@@ -183,14 +183,23 @@ export const PayrollAdvanceSummary = ({
         </>
       )}
 
-      {isAdmin && requestReason && (
+      {isAdmin && (requestReason || requestReasonDescription) && (
         <>
           <div className="h-[1px] w-full bg-gray-200" />
           <div className="py-4">
-            <PayrollAdvanceSummaryItem
-              label="Motivo de solicitud"
-              value={customRequestReason || requestReason.name}
-            />
+            {requestReason && (
+              <PayrollAdvanceSummaryItem
+                label="Motivo de solicitud"
+                value={requestReason.name}
+              />
+            )}
+
+            {requestReasonDescription && (
+              <PayrollAdvanceSummaryItem
+                label="Descripción del motivo"
+                value={requestReasonDescription}
+              />
+            )}
           </div>
         </>
       )}

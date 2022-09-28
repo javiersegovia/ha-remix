@@ -29,7 +29,7 @@ interface PayrollAdvanceDetailsProps {
     | 'totalAmount'
     | 'requestedAmount'
     | 'status'
-    | 'customRequestReason'
+    | 'requestReasonDescription'
   > & {
     bankAccountData?:
       | PayrollAdvanceSummaryProps['payrollAdvance']['bankAccountData']

@@ -1,7 +1,7 @@
 import type { ActionArgs, LoaderArgs, MetaFunction } from '@remix-run/node'
 import { redirect } from '@remix-run/node'
 
-import { requestLoginLink } from '~/services/auth.server'
+import { requestPasswordChange } from '~/services/auth.server'
 import { getUserIdFromSession } from '~/session.server'
 import { loginEmailValidator } from '~/schemas/login.schema'
 import { Input } from '~/components/FormFields/Input'
@@ -9,7 +9,6 @@ import { Button } from '~/components/Button'
 import { Title } from '~/components/Typography/Title'
 import { ValidatedForm, validationError } from 'remix-validated-form'
 import { SubmitButton } from '~/components/SubmitButton'
-import { Link } from '@remix-run/react'
 
 export async function loader({ request }: LoaderArgs) {
   const userId = await getUserIdFromSession(request)
@@ -26,7 +25,7 @@ export async function action({ request }: ActionArgs) {
     return validationError(error, submittedData)
   }
 
-  await requestLoginLink(data.email)
+  await requestPasswordChange(data.email)
   return redirect('/login-requested')
 }
 
@@ -57,7 +56,12 @@ export default function LoginEmailRoute() {
         />
 
         <div className="mx-auto mb-6 mt-8 w-full rounded-none bg-white px-4 pb-6 pt-5 shadow-2xl sm:w-10/12 sm:rounded-lg sm:px-6 md:w-6/12 lg:w-5/12 xl:w-4/12 2xl:w-3/12">
-          <Title className="mb-8 text-center">Inicio de sesión</Title>
+          <Title className="mb-8 text-center">Recuperar contraseña</Title>
+
+          <p className="pb-7 text-center text-sm">
+            Para recuperar tu contraseña, haz click en el enlace que enviaremos
+            a tu correo electrónico
+          </p>
 
           <ValidatedForm
             validator={loginEmailValidator}
@@ -71,7 +75,7 @@ export default function LoginEmailRoute() {
               placeholder="Ingresa tu correo"
             />
 
-            <SubmitButton>Solicitar enlace de ingreso</SubmitButton>
+            <SubmitButton>Solicitar enlace de recuperación</SubmitButton>
 
             <div className="w-full border-b border-gray-300 pt-4" />
 
@@ -86,14 +90,6 @@ export default function LoginEmailRoute() {
               </Button>
             </div>
           </ValidatedForm>
-        </div>
-        <div className="pb-4 text-center">
-          <Link
-            to="/request-password"
-            className="text-sm font-semibold text-white"
-          >
-            Recuperar contraseña
-          </Link>
         </div>
       </div>
     </section>

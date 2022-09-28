@@ -7,7 +7,7 @@ import { Title } from '~/components/Typography/Title'
 
 export async function loader({ request }: LoaderArgs) {
   const userId = await getUserIdFromSession(request)
-  if (userId) return redirect('/')
+  if (userId) return redirect('/dashboard')
   return null
 }
 

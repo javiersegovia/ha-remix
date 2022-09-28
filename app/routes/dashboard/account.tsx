@@ -248,7 +248,7 @@ export default function DashboardAccountRoute() {
             <FormGridItem>
               <Label htmlFor={''} description="Contraseña" />
               <Link
-                to="/edit-password"
+                to="/update-password"
                 className="mt-auto text-sm font-medium text-steelBlue-600 underline"
               >
                 Modificar contraseña

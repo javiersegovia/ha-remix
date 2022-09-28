@@ -6,7 +6,7 @@ import { zfd } from 'zod-form-data'
 const calculatePayrollSchema = z.object({
   requestedAmount: zfd.numeric(
     z.number({
-      required_error: 'Ingresa el monto a solicitar',
+      required_error: 'Ingrese el monto a solicitar',
     })
   ),
 
@@ -26,7 +26,11 @@ const calculatePayrollSchema = z.object({
       .int()
   ),
 
-  customRequestReason: zfd.text(z.string().nullable().default(null)),
+  requestReasonDescription: zfd.text(
+    z.string({
+      required_error: 'Describa el motivo de la solicitud',
+    })
+  ),
 })
 
 export const calculatePayrollValidator = withZod(calculatePayrollSchema)

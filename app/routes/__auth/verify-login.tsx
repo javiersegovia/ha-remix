@@ -7,6 +7,7 @@ import { createUserSession } from '~/session.server'
 export async function loader({ request }: LoaderArgs) {
   const url = new URL(request.url)
   const token = url.searchParams.get('token')
+  const updatePassword = url.searchParams.get('updatePassword')
 
   if (!token) {
     return null
@@ -16,6 +17,10 @@ export async function loader({ request }: LoaderArgs) {
 
   try {
     const { user, hasPassword, hasAcceptedTerms } = await verifyLoginLink(token)
+
+    if (updatePassword) {
+      redirectPath = '/update-password'
+    }
 
     if (!hasPassword || !hasAcceptedTerms) {
       redirectPath = '/dashboard/welcome'
@@ -53,7 +58,7 @@ export default function VerifyLoginRoute() {
 
         <div className="mx-auto mb-6 mt-8 w-full rounded-none bg-white px-4 pb-6 pt-5 shadow-2xl sm:w-10/12 sm:rounded-lg sm:px-6 md:w-6/12 lg:w-5/12 xl:w-4/12 2xl:w-3/12">
           <Title className="mb-4 text-center text-lg text-red-500">
-            Tu enlace de ingreso es inválido o ha expirado
+            Tu enlace es inválido o ha expirado
           </Title>
 
           <Button href="/login-email" className="mt-6 text-sm" variant="LIGHT">

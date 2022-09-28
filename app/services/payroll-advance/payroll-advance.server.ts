@@ -257,7 +257,7 @@ interface ICalculatePayrollAdvanceArgs {
   requestedAmount: number
   paymentMethod: PayrollAdvancePaymentMethod
   requestReasonId: PayrollAdvanceRequestReason['id']
-  customRequestReason: PayrollAdvance['customRequestReason']
+  requestReasonDescription: PayrollAdvance['requestReasonDescription']
 }
 
 export const calculatePayrollAdvance = async ({
@@ -265,7 +265,7 @@ export const calculatePayrollAdvance = async ({
   requestedAmount,
   paymentMethod,
   requestReasonId,
-  customRequestReason,
+  requestReasonDescription,
 }: ICalculatePayrollAdvanceArgs) => {
   const { fieldErrors } =
     (await verifyIfEmployeeCanRequestPayroll({
@@ -293,7 +293,7 @@ export const calculatePayrollAdvance = async ({
         paymentMethod: PayrollAdvancePaymentMethod.BANK_ACCOUNT,
         bankAccountId: employee.bankAccountId,
         requestReasonId,
-        customRequestReason,
+        requestReasonDescription,
       },
       fieldErrors: null,
     }
@@ -314,7 +314,7 @@ export const calculatePayrollAdvance = async ({
         paymentMethod: PayrollAdvancePaymentMethod.WALLET,
         walletId: employee.walletId,
         requestReasonId,
-        customRequestReason,
+        requestReasonDescription,
       },
       fieldErrors: null,
     }
@@ -504,7 +504,7 @@ export const createPayrollAdvance = async ({
     requestedAmount,
     paymentMethod,
     requestReasonId,
-    customRequestReason,
+    requestReasonDescription,
   } = data
 
   const isWalletThePaymentMethod =
@@ -679,7 +679,7 @@ export const createPayrollAdvance = async ({
       walletData: connectWalletData,
       bankAccountData: connectBankAccountData,
       requestReason: connect(requestReasonId),
-      customRequestReason,
+      requestReasonDescription,
 
       taxes: createManyTaxes,
       history: createHistory,
