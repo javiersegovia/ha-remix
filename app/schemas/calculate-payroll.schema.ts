@@ -14,7 +14,7 @@ const calculatePayrollSchema = z.object({
     // Here we use errorMap because it seems like required_error and
     // invalid_type are not working properly with enums
     errorMap: () => ({
-      message: 'Seleccione un método de cobro',
+      message: 'Seleccione un método de pago',
     }),
   }),
 

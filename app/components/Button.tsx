@@ -54,7 +54,7 @@ export const ButtonElement = ({
       type={type}
       disabled={disabled}
       className={clsx(
-        'flex w-full transform items-center justify-center rounded-[15px] text-center text-base font-semibold shadow-md transition duration-100 active:scale-95',
+        'flex w-full transform items-center justify-center rounded-lg text-center text-base font-medium transition duration-100 active:scale-95',
 
         size === 'MD' && 'px-6 py-4',
         size === 'SM' && 'px-10 py-2',

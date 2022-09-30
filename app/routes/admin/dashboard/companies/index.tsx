@@ -34,7 +34,7 @@ export default function CompanyIndexRoute() {
       {companies?.length > 0 ? (
         <>
           <div className="mb-8 mt-2 flex flex-col items-center px-2 sm:items-start lg:flex-row lg:items-center lg:justify-between">
-            <Title>Compañías</Title>
+            <Title>Listado de compañías</Title>
             <ManagementButtons />
           </div>
 

@@ -49,15 +49,16 @@ export default function RequestPremiumAdvanceModalRoute() {
                 Si estás interesado en solicitar un adelanto de prima, por favor
                 haz click en el siguiente botón y nos comunicaremos contigo.
               </p>
-              <Form method="post">
-                <Button
-                  type="submit"
-                  disabled={
-                    transition.state === 'submitting' ||
-                    transition.state === 'loading'
-                  }
-                >
+              <Form method="post" className="flex flex-col gap-4">
+                <Button type="submit" disabled={transition.state !== 'idle'}>
                   Solicitar adelanto de prima
+                </Button>
+                <Button
+                  variant="LIGHT"
+                  href="/dashboard/overview"
+                  disabled={transition.state !== 'idle'}
+                >
+                  Cancelar
                 </Button>
               </Form>
             </>

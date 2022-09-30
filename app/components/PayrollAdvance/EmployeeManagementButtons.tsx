@@ -14,8 +14,7 @@ export const EmployeeManagementButtons = ({
   // todo Javier: add toast notification for success
 
   const transition = useTransition()
-  const isSubmitting =
-    transition.state === 'submitting' || transition.state === 'loading'
+  const isSubmitting = transition.state !== 'idle'
 
   return status === REQUESTED ? (
     <div className="ml-auto inline-flex gap-4">

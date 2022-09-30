@@ -1,17 +1,42 @@
 import type { PropsWithChildren } from 'react'
-import { useRef, useState } from 'react'
-import { Transition } from '@headlessui/react'
 import type { IconType } from 'react-icons'
-import { HiLogout } from 'react-icons/hi'
+
+import clsx from 'clsx'
+import { useEffect, useRef, useState } from 'react'
+import { Form as RemixForm, Link, useTransition } from '@remix-run/react'
+import { Transition } from '@headlessui/react'
+import { HiLogout, HiMenu } from 'react-icons/hi'
+import { RiCloseFill } from 'react-icons/ri'
 
 import { useOnClickOutside } from '~/hooks/useOnClickOutside'
 import { NavDropdownItem } from './NavDropdownItem'
-import { Form as RemixForm, Link } from '@remix-run/react'
-import clsx from 'clsx'
-
-import { DashboardNavbar } from '~/components/Navbar/DashboardNavbar'
 import { NavItem } from './NavItem'
-import type { AdminUser, User } from '@prisma/client'
+
+const LogoPoweredBy = ({
+  href,
+  className,
+}: {
+  href: string
+  className?: string
+}) => {
+  return (
+    <Link
+      to={href}
+      className={clsx(
+        'flex cursor-pointer flex-col items-center justify-center object-contain text-center text-white',
+        className
+      )}
+    >
+      <img
+        src="/logo/logo_hoyadelantas_white_over_blue.png"
+        alt="Logo HoyAdelantas"
+        width="168"
+        height="29"
+      />
+      <span className="text-xs font-light">Powered by HoyTrabajas</span>
+    </Link>
+  )
+}
 
 export type INavPath =
   | {
@@ -30,10 +55,8 @@ export type INavPath =
 export type DashboardColorVariant = 'PRIMARY' | 'DARK'
 
 interface DashboardSideBarProps {
-  user: Pick<User, 'firstName' | 'email'> | Pick<AdminUser, 'email'>
   paths: INavPath[]
   logoHref: string
-  isAdmin?: boolean
   variant?: DashboardColorVariant
 }
 
@@ -42,13 +65,19 @@ export const DashboardSideBar = ({
   variant = 'PRIMARY',
   logoHref,
   paths,
-  user,
-  isAdmin = false,
 }: PropsWithChildren<DashboardSideBarProps>) => {
-  const [showSideBar, setShowSideBar] = useState(false)
+  const transition = useTransition()
+  const [showMobileMenu, setShowMobileMenu] = useState(false)
 
   const navRef = useRef(null)
-  useOnClickOutside(navRef, () => setShowSideBar(false))
+  useOnClickOutside(navRef, () => setShowMobileMenu(false))
+
+  // Close mobile menu if open on client navigation
+  useEffect(() => {
+    if (showMobileMenu && transition.state !== 'idle') {
+      setShowMobileMenu(false)
+    }
+  }, [transition.state, showMobileMenu, setShowMobileMenu])
 
   return (
     <>
@@ -58,60 +87,71 @@ export const DashboardSideBar = ({
           variant === 'DARK' && 'bg-gray-900'
         )}
       >
+        {/* Mobile Navbar */}
+        <section className="flex items-center justify-between px-5 py-2 md:hidden">
+          <LogoPoweredBy href={logoHref} />
+
+          <button
+            type="button"
+            onClick={() => setShowMobileMenu(true)}
+            className="flex h-full items-center text-3xl text-white md:hidden"
+          >
+            <span className="sr-only">Menu</span>
+            <HiMenu />
+          </button>
+        </section>
+
         <nav
           ref={navRef}
           className={clsx(
-            'fixed left-0 top-0 z-20 h-full w-60 origin-left transform overflow-y-auto overflow-x-hidden bg-steelBlue-900 pb-10 transition md:translate-x-0',
-            showSideBar ? 'translate-x-0' : '-translate-x-full',
+            'fixed left-0 top-0 z-20 flex w-full origin-left transform flex-col items-stretch overflow-y-auto overflow-x-hidden bg-steelBlue-900 px-3 pb-10 md:h-full md:w-56 md:translate-y-0',
+            showMobileMenu ? 'translate-y-0' : '-translate-y-full',
             variant === 'DARK' && 'bg-gray-900'
           )}
         >
-          <Link
-            to={logoHref}
-            className="mx-auto flex w-[200px] cursor-pointer items-center object-contain px-4 pt-5 text-white"
+          <button
+            type="button"
+            onClick={() => setShowMobileMenu(false)}
+            className="mt-4 mb-6 ml-auto flex items-center pr-2 text-3xl text-white md:hidden"
           >
-            <img
-              src="/logo/logo_hoyadelantas_white_over_blue.png"
-              alt="Logo HoyAdelantas"
-              width="168"
-              height="29"
-            />
-          </Link>
+            <span className="sr-only">Close Menu</span>
+            <RiCloseFill />
+          </button>
 
-          <div className="pb-10" />
-
-          <nav
-            className="flex flex-col text-sm font-medium text-gray-200"
+          <div
+            className="flex flex-1 flex-col text-sm font-medium text-gray-200 md:pt-16"
             aria-label="Main Navigation"
           >
-            {paths.map(({ title, icon, path, subPaths }) => {
-              if (subPaths?.length) {
+            <div className="space-y-4">
+              {paths.map(({ title, icon, path, subPaths }) => {
+                if (subPaths?.length) {
+                  return (
+                    <NavDropdownItem
+                      key={title}
+                      title={title}
+                      icon={icon}
+                      path={path}
+                      subPaths={subPaths}
+                      variant={variant}
+                    />
+                  )
+                }
                 return (
-                  <NavDropdownItem
+                  <NavItem
                     key={title}
                     title={title}
                     icon={icon}
                     path={path}
-                    subPaths={subPaths}
                     variant={variant}
                   />
                 )
-              }
-              return (
-                <NavItem
-                  key={title}
-                  title={title}
-                  icon={icon}
-                  path={path}
-                  variant={variant}
-                />
-              )
-            })}
+              })}
+            </div>
 
             <RemixForm
               action="/logout"
               method="post"
-              className="absolute bottom-2 mt-auto w-full"
+              className="bottom-2 mt-4 w-full md:mt-auto"
             >
               <NavItem
                 title="Cerrar sesión"
@@ -120,31 +160,18 @@ export const DashboardSideBar = ({
                 type="submit"
               />
             </RemixForm>
-          </nav>
+          </div>
+
+          <div className="my-4 h-[0.5px] w-full bg-gray-500" />
+          <LogoPoweredBy href={logoHref} className="mx-auto w-[200px]" />
         </nav>
 
-        <div className="ml-0 flex flex-1 flex-col px-3 py-6 transition md:ml-60 md:p-4 md:pl-0">
-          <DashboardNavbar
-            setShowSideBar={setShowSideBar}
-            user={user}
-            isAdmin={isAdmin}
-          />
-
-          <div className="flex flex-1 flex-col rounded-b-[15px] bg-gray-100 p-4">
-            {children}
-          </div>
+        <div className="ml-0 flex flex-1 flex-col bg-gray-100 transition md:ml-56">
+          {children}
         </div>
 
-        <Transition
-          show={showSideBar}
-          enter="transition ease-out duration-150"
-          enterFrom="opacity-0 translate-y-1"
-          enterTo="opacity-100 translate-y-0"
-          leave="transition ease-in duration-100"
-          leaveFrom="opacity-100 translate-y-0"
-          leaveTo="opacity-0 translate-y-1"
-        >
-          <div className="fixed inset-0 z-10 h-screen w-screen bg-black bg-opacity-25 md:hidden" />
+        <Transition show={showMobileMenu}>
+          <div className="fixed inset-0 top-0 z-10 h-screen w-screen bg-gray-900 bg-opacity-70 md:hidden" />
         </Transition>
       </section>
     </>

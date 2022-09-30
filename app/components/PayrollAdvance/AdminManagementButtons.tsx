@@ -23,8 +23,7 @@ export const AdminManagementButtons = ({
   // todo Javier: add toast notification for success
 
   const transition = useTransition()
-  const isSubmitting =
-    transition.state === 'submitting' || transition.state === 'loading'
+  const isSubmitting = transition.state !== 'idle'
 
   return (
     <div className="ml-auto inline-flex gap-4">

@@ -102,7 +102,7 @@ export const action: ActionFunction = async ({ request }) => {
 
 export const meta: MetaFunction = () => {
   return {
-    title: 'Mi cuenta | HoyAdelantas',
+    title: 'Mi perfil | HoyAdelantas',
   }
 }
 
@@ -204,7 +204,7 @@ export default function DashboardAccountRoute() {
   }
 
   return (
-    <section className="mx-auto w-full max-w-screen-lg px-2 pb-10 sm:px-10">
+    <section className="mx-auto w-full max-w-screen-lg px-2 py-10 sm:px-10">
       <ValidatedForm
         id={formId}
         method="put"
@@ -212,8 +212,8 @@ export default function DashboardAccountRoute() {
         defaultValues={formDefaultValues}
       >
         <Box className="p-5">
-          <Title as="h4" className="pb-4 pt-3">
-            Cuenta de usuario
+          <Title as="h1" className="pb-4 pt-3">
+            Mi perfil
           </Title>
 
           <FormGridWrapper>
@@ -245,7 +245,7 @@ export default function DashboardAccountRoute() {
               />
             </FormGridItem>
 
-            <FormGridItem>
+            <FormGridItem className="mb-6 lg:mb-0">
               <Label htmlFor={''} description="Contraseña" />
               <Link
                 to="/update-password"
@@ -256,7 +256,7 @@ export default function DashboardAccountRoute() {
             </FormGridItem>
           </FormGridWrapper>
 
-          <Title as="h4" className="pb-4 pt-3">
+          <Title as="h2" className="pb-4 pt-3">
             Información complementaria
           </Title>
 
@@ -361,7 +361,7 @@ export default function DashboardAccountRoute() {
             </FormGridItem>
           </FormGridWrapper>
 
-          <Title as="h4" className="pb-4 pt-3">
+          <Title as="h2" className="pb-4 pt-3">
             Cuenta bancaria
           </Title>
 
@@ -417,7 +417,7 @@ export default function DashboardAccountRoute() {
             </FormGridItem>
           </FormGridWrapper>
 
-          <Title as="h4" className="pb-4 pt-3">
+          <Title as="h2" className="pb-4 pt-3">
             Billetera cripto
           </Title>
 

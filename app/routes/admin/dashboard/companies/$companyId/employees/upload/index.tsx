@@ -19,8 +19,7 @@ export const loader: LoaderFunction = async ({ request, params }) => {
 export default function AdminDashboardEmployeesUploadRoute() {
   const { companyId } = useLoaderData()
   const transition = useTransition()
-  const inProcess =
-    transition.state === 'submitting' || transition.state === 'loading'
+  const inProcess = transition.state !== 'idle'
 
   return (
     <section>

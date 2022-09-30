@@ -15,7 +15,7 @@ export const Title = ({
   return (
     <Element
       className={clsx(
-        'block text-2xl font-bold text-steelBlue-600',
+        'block text-2xl font-bold text-steelBlue-800',
         (Element === 'h4' || Element === 'h5') && `text-lg`,
         className
       )}

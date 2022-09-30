@@ -49,10 +49,10 @@ export default function AdminDashboardIndexRoute() {
   return (
     <>
       <section className="mx-auto w-full max-w-screen-lg">
-        <div className="my-2 flex items-center justify-between">
-          <Title>Resumen del mes</Title>
+        <div className="my-2 flex flex-col items-center justify-between gap-6 lg:flex-row">
+          <Title as="h1">Resumen del mes</Title>
 
-          <div className="w-72">
+          <div className="w-full md:w-72">
             <ValidatedForm
               validator={validator}
               id="CompanyFormId"
@@ -76,10 +76,11 @@ export default function AdminDashboardIndexRoute() {
           </div>
         </div>
 
-        <section className="grid grid-cols-3 gap-6">
-          <Box className="flex flex-col items-center p-6">
+        <section className="grid grid-cols-2 gap-4 sm:gap-6 lg:grid-cols-3">
+          <Box className="flex flex-col items-center p-4 sm:p-6">
             <RiMoneyDollarCircleLine className="mb-3 text-5xl text-blue-500" />
-            <p className="letter-spacing[1px] mb-2 text-sm font-semibold">
+
+            <p className="letter-spacing[1px] mb-2 text-center text-sm font-semibold">
               Cantidad de solicitudes
             </p>
 
@@ -104,7 +105,8 @@ export default function AdminDashboardIndexRoute() {
 
           <Box className="flex flex-col items-center p-6">
             <FaHandHolding className="mb-3 text-5xl text-yellow-500" />
-            <p className="letter-spacing[1px] mb-2 text-sm font-semibold">
+
+            <p className="letter-spacing[1px] mb-2 text-center text-sm font-semibold">
               Total solicitado
             </p>
 
@@ -129,7 +131,7 @@ export default function AdminDashboardIndexRoute() {
 
           <Box className="flex flex-col items-center p-6">
             <FaHandHoldingUsd className="mb-3 text-5xl text-green-600" />
-            <p className="letter-spacing[1px] mb-2 text-sm font-semibold">
+            <p className="letter-spacing[1px] mb-2 text-center text-sm font-semibold">
               Total desembolsado
             </p>
 

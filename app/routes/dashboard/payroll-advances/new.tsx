@@ -158,7 +158,7 @@ export default function PayrollAdvanceNewRoute() {
 
   return (
     <>
-      <div className="mx-auto mt-10 w-full max-w-screen-lg">
+      <div className="mx-auto mt-10 w-full max-w-screen-lg px-10">
         <Title as="h1">Solicitud de Adelanto</Title>
 
         <section className="flex gap-6">
@@ -190,8 +190,8 @@ export default function PayrollAdvanceNewRoute() {
               <div>
                 <Select
                   name="paymentMethod"
-                  label="Método de cobro"
-                  placeholder="Metodo de cobro para recibir el adelanto"
+                  label="Método de pago"
+                  placeholder="Metodo de pago para recibir el adelanto"
                   options={paymentOptions}
                 />
               </div>

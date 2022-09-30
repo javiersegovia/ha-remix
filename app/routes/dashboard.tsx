@@ -1,8 +1,9 @@
 import type { LoaderFunction, MetaFunction } from '@remix-run/server-runtime'
-import { Outlet, useLoaderData } from '@remix-run/react'
+import { Outlet } from '@remix-run/react'
 import { json } from '@remix-run/node'
 import { HiOutlineHome } from 'react-icons/hi'
-import { RiFileList3Line } from 'react-icons/ri'
+import { MdPersonOutline } from 'react-icons/md'
+import { RiFileList2Line } from 'react-icons/ri'
 
 import type { INavPath } from '~/components/SideBar/DashboardSideBar'
 import { DashboardSideBar } from '~/components/SideBar/DashboardSideBar'
@@ -33,17 +34,20 @@ const navPaths: INavPath[] = [
     title: 'Inicio',
   },
   {
-    icon: RiFileList3Line,
+    icon: MdPersonOutline,
+    path: '/dashboard/account',
+    title: 'Mi perfil',
+  },
+  {
+    icon: RiFileList2Line,
     path: '/dashboard/payroll-advances',
-    title: 'Mis solicitudes',
+    title: 'Movimientos',
   },
 ]
 
 export default function AdminDashboardRoute() {
-  const { user } = useLoaderData<LoaderData>()
-
   return (
-    <DashboardSideBar paths={navPaths} user={user} logoHref="/dashboard">
+    <DashboardSideBar paths={navPaths} logoHref="/dashboard">
       <Outlet />
     </DashboardSideBar>
   )

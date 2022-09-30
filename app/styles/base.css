@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+body {
+  @apply w-full max-w-full;
+}
+
 #nprogress .bar {
   @apply rounded-md;
 }

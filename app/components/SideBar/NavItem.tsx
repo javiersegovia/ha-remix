@@ -23,23 +23,25 @@ type TNavItemProps =
 
 interface INavItemContentProps extends Omit<TNavItemProps, 'path' | 'onClick'> {
   isCurrentPath: boolean
+  isDark: boolean
 }
 
 export const NavItemContent = ({
   icon: Icon,
   title,
   isCurrentPath,
+  isDark,
 }: INavItemContentProps) => (
   <>
     {Icon && (
       <Icon
         className={clsx(
-          'mr-2 h-5 w-5 flex-shrink-0 transition',
-          isCurrentPath ? 'text-gray-300' : 'text-gray-400'
+          'mr-2 h-5 w-5 flex-shrink-0',
+          isCurrentPath && (isDark ? 'text-white' : 'text-steelBlue-400')
         )}
       />
     )}
-    <span>{title}</span>
+    <span className="mt-[2px] whitespace-nowrap">{title}</span>
   </>
 )
 
@@ -58,16 +60,16 @@ export const NavItem: React.FC<TNavItemProps> = ({
   const isDark = variant === 'DARK'
 
   return (
-    <div className="px-2 py-1" {...props}>
+    <div {...props}>
       {path ? (
         <Link
           to={path}
           className={clsx(
-            'group flex cursor-pointer items-center rounded-[15px] px-4 py-3 transition',
+            'group flex cursor-pointer items-center rounded-2xl py-3 pl-6 text-base font-bold transition',
             isPrimary &&
               (isCurrentPath
-                ? 'bg-steelBlue-600 text-white'
-                : 'hover:bg-steelBlue-600'),
+                ? 'bg-steelBlue-200 text-steelBlue-400'
+                : 'hover:bg-steelBlue-200 hover:text-steelBlue-400'),
             isDark &&
               (isCurrentPath ? 'bg-gray-700 text-white' : 'hover:bg-gray-700')
           )}
@@ -76,17 +78,18 @@ export const NavItem: React.FC<TNavItemProps> = ({
             icon={icon}
             title={title}
             isCurrentPath={isCurrentPath}
+            isDark={isDark}
           />
         </Link>
       ) : (
         <button
           type={type}
           className={clsx(
-            'group flex w-full cursor-pointer items-center rounded-[15px] px-4 py-3 transition',
+            'group flex w-full cursor-pointer items-center rounded-2xl py-3 pl-6 text-base font-bold transition',
             isPrimary &&
               (isCurrentPath
-                ? 'bg-steelBlue-600 text-white'
-                : 'hover:bg-steelBlue-600'),
+                ? 'bg-steelBlue-200 text-steelBlue-400'
+                : 'hover:bg-steelBlue-200 hover:text-steelBlue-400'),
             isDark &&
               (isCurrentPath ? 'bg-gray-700 text-white' : 'hover:bg-gray-700')
           )}
@@ -95,6 +98,7 @@ export const NavItem: React.FC<TNavItemProps> = ({
             icon={icon}
             title={title}
             isCurrentPath={isCurrentPath}
+            isDark={isDark}
           />
         </button>
       )}

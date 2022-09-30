@@ -8,7 +8,7 @@ interface BoxProps extends PropsWithChildren {
 export const Box = ({ children, className, ...otherProps }: BoxProps) => {
   return (
     <div
-      className={clsx('relative rounded-[15px] bg-white shadow', className)}
+      className={clsx('relative rounded-xl bg-white shadow', className)}
       {...otherProps}
     >
       {children}

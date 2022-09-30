@@ -27,7 +27,9 @@ module.exports = {
         cyan: colors.cyan,
         steelBlue: {
           100: '#c2d6e7',
+          200: '#62BAEA',
           300: '#4884b8',
+          400: '#0068A3',
           500: '#0b5aa0',
           600: '#004a87',
           800: '#00365F',
