@@ -21,7 +21,7 @@
     "postgenerate:schema": "npm run lint",
     "lint": "eslint --cache --cache-location ./node_modules/.cache/eslint . --fix",
     "migrate:dev": "prisma migrate dev",
-    "migrate:deploy": "dotenv -e .env prisma migrate deploy",
+    "migrate:deploy": "prisma migrate deploy",
     "setup": "prisma generate && prisma migrate deploy && prisma db seed",
     "start": "cross-env NODE_ENV=production node ./build/server.js",
     "start:mocks": "cross-env NODE_ENV=production node --require ./mocks --require dotenv/config ./build/server.js",
