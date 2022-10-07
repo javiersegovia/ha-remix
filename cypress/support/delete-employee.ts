@@ -29,7 +29,7 @@ export async function deleteEmployee(email: string) {
       error instanceof PrismaClientKnownRequestError &&
       error.code === 'P2025'
     ) {
-      console.log('Company user or company not found')
+      console.error('Company user or company not found')
     } else {
       throw error
     }

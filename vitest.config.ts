@@ -8,25 +8,32 @@ import tsconfigPaths from 'vite-tsconfig-paths'
 export default defineConfig({
   plugins: [react(), tsconfigPaths()],
   test: {
+    cache: false,
     globals: true,
     environment: 'happy-dom',
     setupFiles: ['./test/setup-test-env.ts'],
+    includeSource: ['./app/**/**.{test,spec}.{js,ts,jsx,tsx}'],
     coverage: {
       all: true,
+      provider: 'c8',
       reporter: ['html', 'lcov', 'text'],
-      include: ['./app/**/*.{ts,tsx}'],
-      exclude: ['postgres-data/', 'node_modules/', 'build/', 'public/'],
+      include: ['**/app/**/*.{js,ts,tsx}'],
+      exclude: [
+        '**/*.{test,spec}.{ts,tsx,js,jsx}',
+        'postgres-data/',
+        'node_modules/',
+        'build/',
+        'public/',
+        'test/',
+      ],
     },
-    include: [
-      './app/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}',
-      './test/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}',
-    ],
     exclude: [
       './cypress',
       './test/e2e',
       './node_modules',
       './build',
       './public',
+      './postgres-data',
     ],
     watchExclude: [
       '.*\\/node_modules\\/.*',

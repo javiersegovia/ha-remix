@@ -19,8 +19,8 @@ export const sessionStorage = createCookieSessionStorage({
   },
 })
 
-const USER_SESSION_KEY = 'userId'
-const ADMIN_SESSION_KEY = 'adminUserId'
+export const USER_SESSION_KEY = 'userId'
+export const ADMIN_SESSION_KEY = 'adminUserId'
 
 export async function getSession(request: Request) {
   const cookie = request.headers.get('Cookie')
@@ -111,6 +111,7 @@ export async function requireUserId(
   redirectTo: string = new URL(request.url).pathname
 ) {
   const userId = await getUserIdFromSession(request)
+
   if (!userId) {
     const searchParams = new URLSearchParams([['redirectTo', redirectTo]])
     throw redirect(`/login?${searchParams}`)

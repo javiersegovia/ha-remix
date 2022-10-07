@@ -8,8 +8,8 @@ beforeEach(async () => {
 
 // todo: the tests are slow, check how to mock DB in order to make them faster
 
-describe('StateLoader', () => {
-  test('should return an array of cities', async () => {
+describe('LOADER /__api/states', () => {
+  test('should return an array of states', async () => {
     const country = await prisma.country.create({
       data: {
         name: 'My country',

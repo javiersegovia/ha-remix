@@ -6,12 +6,8 @@ const loginForm = {
 }
 
 describe('Authentication flow', () => {
-  // afterEach(() => {
-  //   cy.cleanUp({ email: loginForm.email })
-  // })
-
   describe('as an employee', () => {
-    it.only('should be able to log in and complete the welcome form', () => {
+    it('should be able to login, complete the welcome form, navigate to dashboard and logout', () => {
       cy.createEmployee({
         email: loginForm.email,
         password: loginForm.password,
@@ -26,13 +22,13 @@ describe('Authentication flow', () => {
       cy.findByLabelText(/país/i).click()
       cy.findByText(/colombia/i).click()
 
-      cy.findByLabelText(/departamento/i).click()
-      cy.findByText(/antioquia/i).click()
+      // cy.findByLabelText(/departamento/i).click()
+      // cy.findByText(/antioquia/i).click()
 
-      cy.findByLabelText(/ciudad/i).click()
-      cy.findByText(/medellín/i, {
-        selector: 'div',
-      }).click()
+      // cy.findByLabelText(/ciudad/i).click()
+      // cy.findByText(/medellín/i, {
+      //   selector: 'div',
+      // }).click()
 
       cy.findByLabelText(/dirección/i).type('This is a custom address #35')
       cy.findByLabelText(/número de celular/i).type('+530119292')
@@ -57,24 +53,27 @@ describe('Authentication flow', () => {
         /he leído y estoy de acuerdo con la política de privacidad y los términos y condiciones/i
       ).click()
 
-      // cy.wait(200)
-
       cy.findByRole('button', { name: /continuar/i }).click()
-      cy.get('button[type=submit').click()
-      // cy.get('form').submit()
 
-      // cy.url().should('include', 'verify-signature')
-      cy.findByText(/verificar documento/i).should('exist')
+      /** We are using MSW to mock the sign status of the ZapsignDocument, so we can skip this part and get redirected to the dashboard */
+
+      cy.findByText(
+        /bienvenido a hoyadelantas, una nueva alternativa para ti/i
+      ).should('exist')
+
+      cy.findByRole('button', { name: /cerrar sesión/i }).click()
+
+      cy.findByText(/user log in/i).should('exist')
     })
 
-    it('should allow to log in and log out part two', () => {
-      cy.login({ email: loginForm.email })
+    // it('should allow to log in and log out part two', () => {
+    //   cy.login({ email: loginForm.email })
 
-      cy.visitAndCheck('/')
-      cy.findByRole('link', { name: /view dashboard/i }).click()
+    //   cy.visitAndCheck('/')
+    //   cy.findByRole('link', { name: /view dashboard/i }).click()
 
-      cy.findByRole('button', { name: /logout/i }).click()
-      cy.findByRole('link', { name: /log in/i })
-    })
+    //   cy.findByRole('button', { name: /logout/i }).click()
+    //   cy.findByRole('link', { name: /log in/i })
+    // })
   })
 })

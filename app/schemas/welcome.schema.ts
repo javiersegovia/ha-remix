@@ -87,7 +87,7 @@ export const welcomeSchema = z.object({
     })
   ),
 
-  bankAccount: bankAccountSchema,
+  bankAccount: bankAccountSchema.nullish(),
 })
 
 export const welcomeValidator = withZod(welcomeSchema)

@@ -12,12 +12,12 @@ import { Title } from '~/components/Typography/Title'
 import { prisma } from '~/db.server'
 import { logout, requireUserId } from '~/session.server'
 
-type LoaderData = {
+export type DashboardIndexLoaderData = {
   gender: Pick<Gender, 'name'> | null
   user: Pick<User, 'firstName'>
 }
 
-export const loader: LoaderFunction = async ({ request }) => {
+export const loader: LoaderFunction = async ({ request, context: ctx }) => {
   const userId = await requireUserId(request)
   const data = await prisma.employee.findFirst({
     where: {
@@ -33,16 +33,14 @@ export const loader: LoaderFunction = async ({ request }) => {
 
   if (!data) throw await logout(request)
 
-  return json<LoaderData>({
+  return json<DashboardIndexLoaderData>({
     gender: data.gender,
     user: data.user,
   })
 }
 
-// todo: add Hotjar script
-
 export default function DashboardIndexRoute() {
-  const { gender, user } = useLoaderData<LoaderData>()
+  const { gender, user } = useLoaderData<DashboardIndexLoaderData>()
 
   return (
     <>

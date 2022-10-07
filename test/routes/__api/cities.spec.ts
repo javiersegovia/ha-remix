@@ -6,9 +6,7 @@ beforeEach(async () => {
   await truncateDB()
 })
 
-// todo: the tests are slow, check how to mock DB in order to make them faster
-
-describe('CityLoader', () => {
+describe('LOADER /__api/cities', () => {
   test('should return an array of cities', async () => {
     const country = await prisma.country.create({
       data: {

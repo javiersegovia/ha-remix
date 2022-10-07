@@ -1,6 +1,5 @@
 import type { Company, Prisma } from '@prisma/client'
-import { json } from '@remix-run/server-runtime'
-import { badRequest } from 'remix-utils'
+import { notFound } from 'remix-utils'
 import { prisma } from '~/db.server'
 import type { CompanySchemaInput } from '~/services/company/company.schema'
 import {
@@ -40,7 +39,7 @@ export const requireCompany = async (
   })
 
   if (!company) {
-    throw json({ error: 'La compañía no ha sido encontrada', status: 404 })
+    throw notFound('La compañía no ha sido encontrada')
   }
 
   return company
@@ -135,7 +134,7 @@ export const updateCompanyById = async (
   })
 
   if (!existingCompany) {
-    throw badRequest('No se pudo encontrar la compañía')
+    throw notFound('La compañía no ha sido encontrada')
   }
 
   const { firstName, lastName, phone } = contactPerson || {}

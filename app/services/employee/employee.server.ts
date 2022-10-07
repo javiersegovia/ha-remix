@@ -609,9 +609,6 @@ export const uploadEmployees = async (
     errorResponses[itemIndex] = []
 
     if (!parsed.success) {
-      console.log(parsed.error.flatten())
-      console.log(parsed.error.issues)
-
       parsed.error.issues.forEach((issue) =>
         errorResponses[itemIndex].push(issue.message)
       )
