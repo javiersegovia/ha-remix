@@ -33,7 +33,7 @@ export default function CompanyIndexRoute() {
     <>
       {companies?.length > 0 ? (
         <>
-          <div className="mb-8 mt-2 flex flex-col items-center px-2 sm:items-start lg:flex-row lg:items-center lg:justify-between">
+          <div className="mb-8 mt-2 flex flex-col items-center lg:flex-row lg:items-center lg:justify-between">
             <Title>Listado de compañías</Title>
             <ManagementButtons />
           </div>
@@ -56,7 +56,7 @@ export default function CompanyIndexRoute() {
 
 const ManagementButtons = () => {
   return (
-    <div className="mt-4 flex items-center justify-center gap-4 lg:mt-0">
+    <div className="mt-4 flex w-full items-center justify-center gap-4 md:w-auto lg:mt-0">
       <Button
         href="/admin/dashboard/companies/create"
         className="flex items-center px-4"

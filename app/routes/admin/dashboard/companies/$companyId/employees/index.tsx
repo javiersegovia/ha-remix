@@ -73,11 +73,10 @@ export default function AdminDashboardCompanyEmployees() {
 
 const ManagementButtons = () => {
   return (
-    <div className="mb-8 mt-2 flex flex-col items-center px-2 sm:items-start lg:flex-row lg:justify-end">
-      <div className="mt-4 flex items-center justify-end gap-4 lg:mt-0">
+    <div className="mb-8 mt-2 flex flex-col items-center sm:items-start lg:flex-row lg:justify-end">
+      <div className="flex w-full flex-col items-center justify-end gap-4 sm:w-auto sm:flex-row">
         <Button
-          size="SM"
-          className="flex items-center whitespace-nowrap px-4"
+          className="flex w-full items-center whitespace-nowrap sm:w-auto"
           href="create"
         >
           <HiPlus className="mr-3" />
@@ -85,8 +84,7 @@ const ManagementButtons = () => {
         </Button>
 
         <Button
-          size="SM"
-          className="flex items-center whitespace-nowrap px-4"
+          className="flex w-full items-center whitespace-nowrap sm:w-auto"
           href="upload"
           variant="LIGHT"
         >

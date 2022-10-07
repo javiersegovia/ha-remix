@@ -204,7 +204,7 @@ export default function DashboardAccountRoute() {
   }
 
   return (
-    <section className="mx-auto w-full max-w-screen-lg px-2 py-10 sm:px-10">
+    <section className="mx-auto w-full max-w-screen-lg px-2 py-10 sm:px-8">
       <ValidatedForm
         id={formId}
         method="put"

@@ -17,8 +17,12 @@ export const EmployeeManagementButtons = ({
   const isSubmitting = transition.state !== 'idle'
 
   return status === REQUESTED ? (
-    <div className="ml-auto inline-flex gap-4">
-      <Form method="put" action={`/dashboard/payroll-advances/${id}`}>
+    <div className="inline-flex w-full gap-4 md:ml-auto md:w-auto">
+      <Form
+        method="put"
+        action={`/dashboard/payroll-advances/${id}`}
+        className="w-full"
+      >
         <>
           <input type="hidden" name="subaction" value={CANCELLED} />
           <Button type="submit" variant="LIGHT" disabled={isSubmitting}>

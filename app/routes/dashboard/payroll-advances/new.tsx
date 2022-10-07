@@ -1,13 +1,19 @@
-import { useActionData, useLoaderData } from '@remix-run/react'
-import { json, redirect } from '@remix-run/server-runtime'
-import { Title } from '~/components/Typography/Title'
-import { requireEmployee } from '~/session.server'
+import type {
+  LoaderFunction,
+  MetaFunction,
+  ActionFunction,
+} from '@remix-run/server-runtime'
 
+import { useEffect, useRef } from 'react'
 import {
   useControlField,
   ValidatedForm,
   validationError,
 } from 'remix-validated-form'
+import { useActionData, useLoaderData } from '@remix-run/react'
+import { json, redirect } from '@remix-run/server-runtime'
+import { Title } from '~/components/Typography/Title'
+import { requireEmployee } from '~/session.server'
 import { PayrollAdvanceAvailableAmount } from '~/containers/dashboard/PayrollAdvanceAvailableAmount'
 import { Box } from '~/components/Layout/Box'
 import {
@@ -29,12 +35,6 @@ import {
   getPayrollAdvanceRequestReasons,
 } from '~/services/payroll-advance/payroll-advance.server'
 import { PayrollAdvanceCalculation } from '~/containers/dashboard/PayrollAdvanceCalculation'
-
-import type {
-  LoaderFunction,
-  MetaFunction,
-  ActionFunction,
-} from '@remix-run/server-runtime'
 import { Input } from '~/components/FormFields/Input'
 
 type LoaderData = {
@@ -135,6 +135,17 @@ export default function PayrollAdvanceNewRoute() {
     useLoaderData<LoaderData>()
   const { calculation } = useActionData<ActionData>() || {}
 
+  const calculationRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (calculation && calculationRef.current) {
+      calculationRef.current.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start',
+      })
+    }
+  }, [calculation])
+
   const fiatAvailableAmount = employee.advanceAvailableAmount || 0
   const cryptoAvailableAmount = employee.advanceCryptoAvailableAmount || 0
   const hasAnAvailableAmount =
@@ -158,70 +169,75 @@ export default function PayrollAdvanceNewRoute() {
 
   return (
     <>
-      <div className="mx-auto mt-10 w-full max-w-screen-lg px-10">
-        <Title as="h1">Solicitud de Adelanto</Title>
-
-        <section className="flex gap-6">
-          <Box className="mt-8 block w-full max-w-lg p-6">
-            <PayrollAdvanceAvailableAmount
-              hasActiveAccount={hasActiveAccount}
-              hasActiveCompany={hasActiveCompany}
-              hasAnAvailableAmount={hasAnAvailableAmount}
-              hasAvailableBothAmounts={hasAvailableBothAmounts}
-              fiatAvailableAmount={employee.advanceAvailableAmount || 0}
-              cryptoAvailableAmount={cryptoAvailableAmount}
-            />
-            <ValidatedForm
-              className="space-y-6"
-              method="post"
-              id={calculationFormId}
-              validator={calculatePayrollValidator}
-              subaction="calculate"
-              autoComplete="off"
-            >
-              <div>
-                <CurrencyInput
-                  name="requestedAmount"
-                  label="¿Cuánto deseas adelantar?"
-                  placeholder="Monto a solicitar"
-                  symbol={currencySymbol}
-                />
-              </div>
-              <div>
-                <Select
-                  name="paymentMethod"
-                  label="Método de pago"
-                  placeholder="Metodo de pago para recibir el adelanto"
-                  options={paymentOptions}
-                />
-              </div>
-
-              {requestReasons?.length > 0 && (
+      <div className="mx-auto mt-10 w-full max-w-screen-lg px-2 sm:px-8">
+        <section className="flex flex-col gap-6 xl:flex-row">
+          <div className="mx-auto w-full max-w-lg">
+            <Title as="h1" className="text-center xl:text-left">
+              Solicitud de Adelanto
+            </Title>
+            <Box className="mt-8 block p-6">
+              <PayrollAdvanceAvailableAmount
+                hasActiveAccount={hasActiveAccount}
+                hasActiveCompany={hasActiveCompany}
+                hasAnAvailableAmount={hasAnAvailableAmount}
+                hasAvailableBothAmounts={hasAvailableBothAmounts}
+                fiatAvailableAmount={employee.advanceAvailableAmount || 0}
+                cryptoAvailableAmount={cryptoAvailableAmount}
+              />
+              <ValidatedForm
+                className="space-y-6"
+                method="post"
+                id={calculationFormId}
+                validator={calculatePayrollValidator}
+                subaction="calculate"
+                autoComplete="off"
+              >
                 <div>
-                  <Select
-                    name="requestReasonId"
-                    label="Motivo de solicitud"
-                    placeholder="¿Para qué deseas el adelanto de nómina?"
-                    options={requestReasons}
+                  <CurrencyInput
+                    name="requestedAmount"
+                    label="¿Cuánto deseas adelantar?"
+                    placeholder="Monto a solicitar"
+                    symbol={currencySymbol}
                   />
                 </div>
-              )}
-
-              <div>
-                <Input
-                  type="text"
-                  name="requestReasonDescription"
-                  label="¿En qué lo vas a usar?"
-                  placeholder="Describe tu motivo aquí"
-                />
-              </div>
-
-              <SubmitButton variant="LIGHT">Calcular</SubmitButton>
-            </ValidatedForm>
-          </Box>
+                <div>
+                  <Select
+                    name="paymentMethod"
+                    label="Método de pago"
+                    placeholder="Metodo de pago para recibir el adelanto"
+                    options={paymentOptions}
+                  />
+                </div>
+                {requestReasons?.length > 0 && (
+                  <div>
+                    <Select
+                      name="requestReasonId"
+                      label="Motivo de solicitud"
+                      placeholder="¿Para qué deseas el adelanto de nómina?"
+                      options={requestReasons}
+                    />
+                  </div>
+                )}
+                <div>
+                  <Input
+                    type="text"
+                    name="requestReasonDescription"
+                    label="¿En qué lo vas a usar?"
+                    placeholder="Describe tu motivo aquí"
+                  />
+                </div>
+                <SubmitButton variant={!calculation ? 'PRIMARY' : 'LIGHT'}>
+                  Calcular
+                </SubmitButton>
+              </ValidatedForm>
+            </Box>
+          </div>
 
           {calculation && (
-            <div className="mt-8 w-full">
+            <div
+              className="mx-auto mb-8 w-full max-w-lg xl:mt-8"
+              ref={calculationRef}
+            >
               <PayrollAdvanceCalculation calculation={calculation} />
             </div>
           )}

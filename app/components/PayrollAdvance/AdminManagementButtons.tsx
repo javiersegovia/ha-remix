@@ -26,7 +26,7 @@ export const AdminManagementButtons = ({
   const isSubmitting = transition.state !== 'idle'
 
   return (
-    <div className="ml-auto inline-flex gap-4">
+    <div className="flex w-full flex-col justify-end gap-4 sm:flex-row">
       {/* We group together those two status to avoid a button jumping when changing states and refreshing the page */}
       {(status === REQUESTED || status === APPROVED) && (
         <Form method="put" action={`/admin/dashboard/payroll-advances/${id}`}>

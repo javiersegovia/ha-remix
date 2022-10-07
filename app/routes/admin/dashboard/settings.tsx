@@ -61,7 +61,7 @@ export const meta: MetaFunction = () => {
 
 export default function AdminSettingsRoute() {
   return (
-    <section className="mx-auto w-full max-w-screen-lg px-2 pb-10 sm:px-10">
+    <section className="mx-auto w-full max-w-screen-lg pb-10">
       <ValidatedForm
         id={globalSettingsFormId}
         method="post"

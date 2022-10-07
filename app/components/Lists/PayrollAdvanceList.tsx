@@ -86,7 +86,13 @@ export const PayrollAdvanceList = ({
                   ({ employee, company, ...payrollAdvance }) => (
                     <tr key={payrollAdvance.id} className="hover:bg-gray-100">
                       <td className="whitespace-nowrap px-6 py-4">
-                        <Link to={`${payrollAdvance.id}`}>
+                        <Link
+                          to={
+                            isAdmin
+                              ? `/admin/dashboard/payroll-advances/${payrollAdvance.id}`
+                              : `/dashboard/payroll-advances/${payrollAdvance.id}`
+                          }
+                        >
                           {isAdmin && employee ? (
                             <>
                               <EmployeeNameTitle

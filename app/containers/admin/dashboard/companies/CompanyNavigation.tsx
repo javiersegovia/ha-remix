@@ -50,7 +50,7 @@ export const CompanyNavigation = ({
 
   return (
     <>
-      <section className="mx-auto w-full max-w-screen-lg px-2 pb-10 sm:px-10">
+      <section className="mx-auto w-full max-w-screen-lg pb-10">
         <div className="mt-8">
           <Title>{company?.name || 'Detalles de compañía'}</Title>
           <p className="mt-1 block text-xs uppercase text-gray-500">
@@ -69,7 +69,7 @@ export const CompanyNavigation = ({
                         key={navPath.title}
                         to={navPath.path}
                         className={clsx(
-                          'col-span-1 flex cursor-pointer items-center justify-center p-5 font-medium text-gray-500',
+                          'col-span-1 flex cursor-pointer items-center justify-center p-5 text-sm font-medium text-gray-500',
                           currentLocationIsInsideNavPath(
                             `${pathname}${search}`,
                             navPath.path,

@@ -36,10 +36,10 @@ export default function PayrollAdvancesIndexRoute() {
   const { payrollAdvances } = useLoaderData<LoaderData>()
 
   return (
-    <div className="m-6">
+    <div className="p-2 sm:p-8">
       {payrollAdvances?.length > 0 ? (
         <>
-          <div className="mb-8 mt-2 flex flex-col items-center sm:items-start md:flex-row lg:items-center lg:justify-between">
+          <div className="mb-8 mt-2 flex flex-col items-center gap-4 lg:flex-row lg:items-center lg:justify-between">
             <Title
               as="h1"
               className="flex-1 whitespace-nowrap text-center lg:text-left"
@@ -47,12 +47,11 @@ export default function PayrollAdvancesIndexRoute() {
               Mis movimientos
             </Title>
 
-            <Button
-              href="new"
-              className="ml-0 mt-6 inline-block w-full md:ml-auto md:mt-0 md:w-auto"
-            >
-              Solicitar nuevo adelanto
-            </Button>
+            <div className="mx-auto inline-block w-full sm:w-auto lg:ml-auto">
+              <Button href="new" className=" w-full md:w-auto">
+                Solicitar nuevo adelanto
+              </Button>
+            </div>
           </div>
           <PayrollAdvanceList payrollAdvances={payrollAdvances} />
         </>

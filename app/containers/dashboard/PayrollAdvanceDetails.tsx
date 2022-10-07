@@ -69,9 +69,9 @@ export const PayrollAdvanceDetails = ({
       : employeeFullName || 'El colaborador'
 
   return (
-    <div className="mx-auto mt-8 flex w-full justify-center gap-10">
+    <div className="mx-auto mt-8 flex w-full justify-center gap-10 px-2 sm:px-8">
       <div className="mx-auto w-full max-w-4xl lg:flex">
-        <div className="w-full max-w-xl">
+        <div className="mx-auto w-full max-w-xl">
           <Title>
             <span>Solicitud de </span>
             {employeeFullName || 'adelanto'}
@@ -119,7 +119,7 @@ export const PayrollAdvanceDetails = ({
           </div>
         </div>
 
-        <div className="ml-4 mt-10 lg:mt-0">
+        <div className="mx-auto mt-10 max-w-xl lg:ml-4 lg:mt-0">
           <Title className="pb-8">Historial</Title>
 
           <div className="space-y-3">

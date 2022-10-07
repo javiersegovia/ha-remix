@@ -54,7 +54,7 @@ export default function AdminDashboardRoute() {
       paths={navPaths}
       logoHref="/admin/dashboard"
     >
-      <div className="p-4">
+      <div className="p-2 sm:p-8">
         <Outlet />
       </div>
     </DashboardSideBar>

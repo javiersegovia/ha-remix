@@ -62,7 +62,7 @@ export default function AdminDashboardCompaniesCreateRoute() {
   const { countries, companyCategories } = useLoaderData<LoaderData>()
 
   return (
-    <section className="mx-auto w-full max-w-screen-lg px-2 pb-10 sm:px-10">
+    <section className="mx-auto w-full max-w-screen-lg px-2 pb-10 sm:px-8">
       <Title>Crear nueva compañía</Title>
 
       <div className="mt-5">
