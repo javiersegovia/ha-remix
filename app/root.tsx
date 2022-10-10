@@ -31,10 +31,19 @@ import ErrorContainer from './containers/ErrorContainer'
 
 export const links: LinksFunction = () => {
   return [
+    {
+      rel: 'preconnect',
+      href: 'https://fonts.gstatic.com',
+      crossOrigin: 'anonymous',
+    },
+    {
+      rel: 'preconnect',
+      href: 'https://fonts.googleapis.com',
+      crossOrigin: 'anonymous',
+    },
     { rel: 'shortcut icon', href: '/favicon.png' },
     { rel: 'stylesheet', href: nProgressStyles },
     { rel: 'stylesheet', href: tailwindStylesheetUrl },
-    { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
     {
       rel: 'stylesheet',
       href: 'https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700&display=swap',
