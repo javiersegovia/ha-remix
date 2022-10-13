@@ -15,6 +15,8 @@ export const MOCK_USER = {
   email: 'jack@sparrow.com',
 }
 
+// todo: create MOCK_EMPLOYEE object with common missing data: ID and COMPANY_ID
+
 export const createMockEmployee = async () => {
   return await prisma.employee.create({
     data: {

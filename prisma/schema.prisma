@@ -32,8 +32,9 @@ model AdminUser {
 
   email                   String                   @unique
   password                String
+  payrollAdvanceTransfers PayrollAdvanceTransfer[]
   payrollAdvanceHistories PayrollAdvanceHistory[]
-  PayrollAdvanceTransfer  PayrollAdvanceTransfer[]
+  premiumAdvanceHistories PremiumAdvanceHistory[]
 }
 
 model Company {
@@ -57,15 +58,17 @@ model Company {
   premiumPaymentDays    Int[]
   premiumLastRequestDay Int?   @default(25)
 
-  country            Country?              @relation(fields: [countryId], references: [id])
-  countryId          Int?
-  employees          Employee[]
-  banks              Bank[]
-  categories         CompanyCategory[]
-  contactPerson      CompanyContactPerson?
-  cryptocurrencies   Cryptocurrency[]
-  companyTaxes       CompanyTax[]
-  payrollAdvances    PayrollAdvance[]
+  country          Country?              @relation(fields: [countryId], references: [id])
+  countryId        Int?
+  employees        Employee[]
+  banks            Bank[]
+  categories       CompanyCategory[]
+  contactPerson    CompanyContactPerson?
+  cryptocurrencies Cryptocurrency[]
+  companyTaxes     CompanyTax[]
+  payrollAdvances  PayrollAdvance[]
+  premiumAdvances  PremiumAdvance[]
+
   companyFiatDebts   CompanyFiatDebt[]
   companyCryptoDebts CompanyCryptoDebt[]
   companyDebts       CompanyDebt[]
@@ -204,10 +207,15 @@ model Employee {
   city      City?    @relation(fields: [cityId], references: [id])
   cityId    Int?
 
-  companyTaxes            CompanyTax[]
+  zapsignDocuments ZapsignDocument[]
+
+  companyTaxes CompanyTax[]
+
   payrollAdvances         PayrollAdvance[]
+  premiumAdvances         PremiumAdvance[]
+
   payrollAdvanceHistories PayrollAdvanceHistory[]
-  zapsignDocuments        ZapsignDocument[]
+  premiumAdvanceHistories PremiumAdvanceHistory[]
 }
 
 enum EmployeeRole {
@@ -620,4 +628,46 @@ model ZapsignDocument {
 
   employee   Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   employeeId String
+}
+
+model PremiumAdvance {
+  id        String                  @id @default(cuid())
+  createdAt DateTime                @default(now())
+  updatedAt DateTime                @updatedAt
+  status    PayrollAdvanceStatus    @default(REQUESTED)
+  history   PremiumAdvanceHistory[]
+
+  employee   Employee? @relation(fields: [employeeId], references: [id])
+  employeeId String?
+  company    Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  companyId  String
+}
+
+enum PremiumAdvanceStatus {
+  REQUESTED
+  APPROVED
+  PAID
+  CANCELLED
+  DENIED
+}
+
+model PremiumAdvanceHistory {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  toStatus PremiumAdvanceStatus
+  actor    PremiumAdvanceHistoryActor
+
+  premiumAdvance   PremiumAdvance @relation(fields: [premiumAdvanceId], references: [id], onDelete: Cascade)
+  premiumAdvanceId String
+  employee         Employee?      @relation(fields: [employeeId], references: [id])
+  employeeId       String?
+  adminUser        AdminUser?     @relation(fields: [adminUserId], references: [id])
+  adminUserId      String?
+}
+
+enum PremiumAdvanceHistoryActor {
+  ADMIN
+  EMPLOYEE
 }
