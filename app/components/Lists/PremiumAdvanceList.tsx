@@ -1,24 +1,13 @@
-import { PayrollAdvancePaymentMethod } from '@prisma/client'
+import type { Company, User, PremiumAdvance } from '@prisma/client'
+
 import { Link } from '@remix-run/react'
 import { formatDate } from '~/utils/formatDate'
-import { formatMoney } from '~/utils/formatMoney'
-import { CurrencySymbol } from '../FormFields/CurrencyInput'
 import { AdvanceStatusPill } from '../Pills/AdvanceStatusPill'
 import { TableData } from './TableData'
 import { TableHeading } from './TableHeading'
 
-import type { Company, PayrollAdvance, User } from '@prisma/client'
-
-export interface PayrollAdvanceListProps {
-  payrollAdvances: (Pick<
-    PayrollAdvance,
-    | 'id'
-    | 'requestedAmount'
-    | 'paymentMethod'
-    | 'totalAmount'
-    | 'requestedAmount'
-    | 'status'
-  > & {
+export interface PremiumAdvanceListProps {
+  premiumAdvances: (Pick<PremiumAdvance, 'id' | 'status'> & {
     createdAt: string | Date
     company: Pick<Company, 'name'>
     employee?: {
@@ -50,18 +39,11 @@ const EmployeeNameTitle = ({ employee, companyName }: EmployeeNameProps) => {
   )
 }
 
-const getPayrollAdvanceCurrencySymbol = (
-  paymentMethod: PayrollAdvancePaymentMethod
-) =>
-  paymentMethod === PayrollAdvancePaymentMethod.WALLET
-    ? CurrencySymbol.BUSD
-    : CurrencySymbol.COP
-
-export const PayrollAdvanceList = ({
-  payrollAdvances,
+export const PremiumAdvanceList = ({
+  premiumAdvances,
   hideColumns,
   isAdmin = false,
-}: PayrollAdvanceListProps) => {
+}: PremiumAdvanceListProps) => {
   return (
     <div className="flex flex-col">
       <div className="-my-2 overflow-x-auto xl:-mx-8">
@@ -71,8 +53,6 @@ export const PayrollAdvanceList = ({
               <thead className="bg-gray-50">
                 <tr>
                   <TableHeading title="Colaborador" />
-                  <TableHeading title="Monto solicitado" isCentered />
-                  <TableHeading title="Monto total" isCentered />
                   <TableHeading title="Fecha de solicitud" isCentered />
 
                   {!hideColumns?.status && (
@@ -82,15 +62,15 @@ export const PayrollAdvanceList = ({
               </thead>
 
               <tbody className="divide-y divide-gray-200 bg-white">
-                {payrollAdvances.map(
-                  ({ employee, company, ...payrollAdvance }) => (
-                    <tr key={payrollAdvance.id} className="hover:bg-gray-100">
+                {premiumAdvances.map(
+                  ({ employee, company, ...premiumAdvance }) => (
+                    <tr key={premiumAdvance.id} className="hover:bg-gray-100">
                       <td className="whitespace-nowrap px-6 py-4">
                         <Link
                           to={
                             isAdmin
-                              ? `/admin/dashboard/payroll-advances/${payrollAdvance.id}`
-                              : `/dashboard/payroll-advances/${payrollAdvance.id}`
+                              ? `/admin/dashboard/premium-advances/${premiumAdvance.id}`
+                              : `/dashboard/premium-advances/${premiumAdvance.id}`
                           }
                         >
                           {isAdmin && employee ? (
@@ -102,12 +82,7 @@ export const PayrollAdvanceList = ({
                             </>
                           ) : (
                             <div className="text-sm font-medium text-gray-900 underline hover:text-cyan-600">
-                              {`Solicitud de ${formatMoney(
-                                payrollAdvance.totalAmount,
-                                getPayrollAdvanceCurrencySymbol(
-                                  payrollAdvance.paymentMethod
-                                )
-                              )}`}
+                              {`Solicitud de adelanto`}
                             </div>
                           )}
                         </Link>
@@ -115,37 +90,15 @@ export const PayrollAdvanceList = ({
 
                       <TableData isCentered>
                         <div className="text-sm text-gray-900">
-                          {formatMoney(
-                            payrollAdvance.requestedAmount,
-                            getPayrollAdvanceCurrencySymbol(
-                              payrollAdvance.paymentMethod
-                            )
-                          )}
-                        </div>
-                      </TableData>
-
-                      <TableData isCentered>
-                        <div className="text-sm text-gray-900">
-                          {formatMoney(
-                            payrollAdvance.totalAmount,
-                            getPayrollAdvanceCurrencySymbol(
-                              payrollAdvance.paymentMethod
-                            )
-                          )}
-                        </div>
-                      </TableData>
-
-                      <TableData isCentered>
-                        <div className="text-sm text-gray-900">
                           {formatDate(
-                            new Date(Date.parse(`${payrollAdvance.createdAt}`))
+                            new Date(Date.parse(`${premiumAdvance.createdAt}`))
                           )}
                         </div>
                       </TableData>
 
                       {!hideColumns?.status && (
                         <TableData isCentered>
-                          <AdvanceStatusPill status={payrollAdvance.status} />
+                          <AdvanceStatusPill status={premiumAdvance.status} />
                         </TableData>
                       )}
                     </tr>

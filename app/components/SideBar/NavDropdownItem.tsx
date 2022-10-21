@@ -52,6 +52,7 @@ export const NavDropdownItem: React.FC<NavDropdownItemProps> = ({
           icon={icon}
           title={title}
           isCurrentPath={insideCurrentPath}
+          isDark={variant === 'DARK'}
         />
         <div
           className={clsx(

@@ -1,16 +1,15 @@
 import type { Gender, User } from '@prisma/client'
 import type { LoaderFunction } from '@remix-run/server-runtime'
+import type { BenefitCardProps } from '~/components/Cards/BenefitCard'
+
 import { Outlet, useLoaderData } from '@remix-run/react'
 import { json } from '@remix-run/server-runtime'
-import { BiDollarCircle } from 'react-icons/bi'
-import { MdOutlineSavings } from 'react-icons/md'
-import { IoAirplaneOutline } from 'react-icons/io5'
 
-import { Button } from '~/components/Button'
+import { logout, requireUserId } from '~/session.server'
+import { prisma } from '~/db.server'
 import { Box } from '~/components/Layout/Box'
 import { Title } from '~/components/Typography/Title'
-import { prisma } from '~/db.server'
-import { logout, requireUserId } from '~/session.server'
+import { BenefitCard } from '~/components/Cards/BenefitCard'
 
 export type DashboardIndexLoaderData = {
   gender: Pick<Gender, 'name'> | null
@@ -38,6 +37,69 @@ export const loader: LoaderFunction = async ({ request, context: ctx }) => {
     user: data.user,
   })
 }
+
+const benefits: BenefitCardProps[] = [
+  {
+    title: 'Adelantos de Nómina',
+    icon: 'dollar',
+    button: {
+      text: 'Solicitar',
+      href: '/dashboard/payroll-advances/new',
+    },
+  },
+  {
+    title: 'Adelantos de Prima',
+    icon: 'savings',
+    button: {
+      text: 'Solicitar',
+      href: 'request-premium-advance',
+    },
+  },
+  {
+    title: 'Haz realidad tus viajes',
+    icon: 'airplane',
+    button: {
+      text: 'Solicitar',
+      href: 'https://umany.co/tu-paseo/',
+      external: true,
+    },
+  },
+  {
+    title: 'Educación financiera',
+    icon: 'book',
+    button: {
+      text: 'Próximamente',
+    },
+  },
+  {
+    title: 'Salud',
+    icon: 'health',
+    button: {
+      text: 'Próximamente',
+    },
+  },
+  {
+    title: 'Seguros',
+    icon: 'insurance',
+    button: {
+      text: 'Próximamente',
+    },
+  },
+  {
+    title: 'Descuentos',
+    icon: 'discount',
+    button: {
+      text: 'Próximamente',
+    },
+  },
+  {
+    title: 'Mercado de Frutas y Verduras',
+    icon: 'food',
+    button: {
+      text: 'Próximamente',
+    },
+  },
+]
 
 export default function DashboardIndexRoute() {
   const { gender, user } = useLoaderData<DashboardIndexLoaderData>()
@@ -89,33 +151,14 @@ export default function DashboardIndexRoute() {
           </Box>
 
           <section className="mt-10 grid grid-cols-2 items-center gap-4 text-center md:gap-5 lg:grid-cols-3 lg:items-stretch">
-            <Box className="flex h-full w-full max-w-xs flex-1 flex-col justify-between space-y-5 p-5 shadow-xl">
-              <Title as="h4">Adelantos de Nómina</Title>
-              <BiDollarCircle className="mx-auto text-8xl text-steelBlue-800" />
-              <Button href="/dashboard/payroll-advances/new">Solicitar</Button>
-            </Box>
-
-            <Box className="flex h-full w-full max-w-xs flex-1 flex-col justify-between space-y-5 p-5 shadow-xl">
-              <Title as="h4">Adelantos de Prima</Title>
-              <MdOutlineSavings className="mx-auto text-8xl text-steelBlue-800" />
-
-              <Button href="request-premium-advance" className="mt-auto">
-                Solicitar
-              </Button>
-            </Box>
-
-            <Box className="flex h-full w-full max-w-xs flex-1 flex-col justify-between space-y-5 p-5 shadow-xl">
-              <Title as="h4">Haz realidad tus viajes</Title>
-              <IoAirplaneOutline className="mx-auto text-8xl text-steelBlue-800" />
-              <a
-                className="block"
-                href="https://umany.co/tu-paseo/"
-                target="_blank"
-                rel="noreferrer noopener"
-              >
-                <Button type="button">Solicitar</Button>
-              </a>
-            </Box>
+            {benefits.map((benefit) => (
+              <BenefitCard
+                key={benefit.title}
+                title={benefit.title}
+                button={benefit.button}
+                icon={benefit.icon}
+              />
+            ))}
           </section>
           <Outlet />
         </section>

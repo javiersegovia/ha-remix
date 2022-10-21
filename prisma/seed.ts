@@ -329,9 +329,11 @@ async function main() {
   //   })
   // }
 
-  const email = 'jack@test.com'
+  const testUserEmail = 'user@test.com'
+  const testUser = await prisma.user.findUnique({
+    where: { email: testUserEmail },
+  })
   const hashedPassword = await bcrypt.hash('123123', 10)
-  const testUser = await prisma.user.findUnique({ where: { email } })
 
   if (!testUser) {
     await prisma.employee.create({
@@ -348,17 +350,46 @@ async function main() {
           create: {
             firstName: 'Jack',
             lastName: 'Sparrow',
-            email,
-            password: hashedPassword, // equals to 123123
+            email: testUserEmail,
+            password: hashedPassword,
           },
         },
       },
     })
   }
 
+  await prisma.adminUser.upsert({
+    where: {
+      email: 'admin@test.com',
+    },
+    create: {
+      email: 'admin@test.com',
+      password: hashedPassword,
+    },
+    update: {},
+  })
+
+  const upsertRequestReason = async () => {
+    const requestReasonName = 'Emergencia'
+    const exists = await prisma.payrollAdvanceRequestReason.findFirst({
+      where: {
+        name: requestReasonName,
+      },
+    })
+
+    if (!exists) {
+      return await prisma.payrollAdvanceRequestReason.create({
+        data: {
+          name: requestReasonName,
+        },
+      })
+    }
+  }
+
   /** We make every upsert in a separate transaction to make sure that they don't
    *  interfere with each other.
    */
+  await upsertRequestReason()
   await prisma.$transaction(upsertBankAccountTypes)
   await prisma.$transaction(upsertCompanyCategories)
   await prisma.$transaction(upsertCurrencies)

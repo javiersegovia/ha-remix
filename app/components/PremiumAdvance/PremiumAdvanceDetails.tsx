@@ -1,48 +1,32 @@
+import type { PremiumAdvanceHistoryItemProps } from '~/containers/dashboard/AdvanceHistoryItem'
 import type {
   Company,
   Employee,
-  PayrollAdvance,
-  PayrollAdvanceHistory,
+  PremiumAdvance,
+  PremiumAdvanceHistory,
   User,
 } from '@prisma/client'
-import type { PayrollAdvanceHistoryItemProps } from './AdvanceHistoryItem'
-import type { PayrollAdvanceSummaryProps } from './PayrollAdvanceSummary'
+
+import { PremiumAdvanceHistoryActor } from '@prisma/client'
 
 import { Link } from '@remix-run/react'
-import { FaUserTie } from 'react-icons/fa'
-import { PayrollAdvanceHistoryActor } from '@prisma/client'
 import { HiOutlineOfficeBuilding } from 'react-icons/hi'
+import { FaUserTie } from 'react-icons/fa'
+
 import { Title } from '~/components/Typography/Title'
+import { AdvanceHistoryItem } from '~/containers/dashboard/AdvanceHistoryItem'
+import { PremiumAdvanceSummary } from '~/containers/dashboard/PremiumAdvanceSummary'
+import { AdminManagementButtons } from '~/containers/dashboard/PremiumAdvance/AdminManagementButtons'
+import { EmployeeManagementButtons } from '~/containers/dashboard/PremiumAdvance/EmployeeManagementButtons'
 
-import { AdminManagementButtons } from '~/components/PayrollAdvance/AdminManagementButtons'
-import { EmployeeManagementButtons } from '~/components/PayrollAdvance/EmployeeManagementButtons'
-import { PayrollAdvanceSummary } from './PayrollAdvanceSummary'
-import { AdvanceHistoryItem } from './AdvanceHistoryItem'
-
-interface PayrollAdvanceDetailsProps {
-  payrollAdvance: Pick<
-    PayrollAdvance,
-    | 'id'
-    | 'companyId'
-    | 'employeeId'
-    | 'paymentMethod'
-    | 'totalAmount'
-    | 'requestedAmount'
-    | 'status'
-    | 'requestReasonDescription'
+interface PremiumAdvanceDetailsProps {
+  premiumAdvance: Pick<
+    PremiumAdvance,
+    'id' | 'companyId' | 'employeeId' | 'status'
   > & {
-    bankAccountData?:
-      | PayrollAdvanceSummaryProps['payrollAdvance']['bankAccountData']
-      | null
-    walletData?:
-      | PayrollAdvanceSummaryProps['payrollAdvance']['walletData']
-      | null
-    taxes: PayrollAdvanceSummaryProps['payrollAdvance']['taxes']
-    history: (PayrollAdvanceHistoryItemProps['history'] &
-      Pick<PayrollAdvanceHistory, 'id' | 'actor'>)[]
-    transfers: PayrollAdvanceSummaryProps['payrollAdvance']['transfers']
+    history: (PremiumAdvanceHistoryItemProps['history'] &
+      Pick<PremiumAdvanceHistory, 'id' | 'actor'>)[]
     createdAt: string | Date
-    requestReason: PayrollAdvanceSummaryProps['payrollAdvance']['requestReason']
   }
 
   company: Pick<Company, 'id' | 'name'>
@@ -51,20 +35,20 @@ interface PayrollAdvanceDetailsProps {
   isAdmin?: boolean
 }
 
-export const PayrollAdvanceDetails = ({
-  payrollAdvance,
+export const PremiumAdvanceDetails = ({
+  premiumAdvance,
   company,
   employee,
   user,
   isAdmin = false,
-}: PayrollAdvanceDetailsProps) => {
-  const { history } = payrollAdvance
+}: PremiumAdvanceDetailsProps) => {
+  const { history } = premiumAdvance
 
   const employeeFullName =
     user?.firstName && user?.lastName && `${user.firstName} ${user.lastName}`
 
-  const formatHistoryActorName = (actor: PayrollAdvanceHistoryActor) =>
-    actor === PayrollAdvanceHistoryActor.ADMIN
+  const formatHistoryActorName = (actor: PremiumAdvanceHistoryActor) =>
+    actor === PremiumAdvanceHistoryActor.ADMIN
       ? 'El administrador'
       : employeeFullName || 'El colaborador'
 
@@ -103,8 +87,8 @@ export const PayrollAdvanceDetails = ({
 
           <div className="pb-8" />
 
-          <PayrollAdvanceSummary
-            payrollAdvance={payrollAdvance}
+          <PremiumAdvanceSummary
+            premiumAdvance={premiumAdvance}
             isAdmin={isAdmin}
           />
 
@@ -112,9 +96,9 @@ export const PayrollAdvanceDetails = ({
 
           <div className="ml-auto flex gap-4">
             {isAdmin ? (
-              <AdminManagementButtons payrollAdvance={payrollAdvance} />
+              <AdminManagementButtons premiumAdvance={premiumAdvance} />
             ) : (
-              <EmployeeManagementButtons payrollAdvance={payrollAdvance} />
+              <EmployeeManagementButtons premiumAdvance={premiumAdvance} />
             )}
           </div>
         </div>
@@ -126,7 +110,7 @@ export const PayrollAdvanceDetails = ({
             {history.map((historyItem) => (
               <AdvanceHistoryItem
                 key={historyItem.id}
-                type="PAYROLL_ADVANCE"
+                type="PREMIUM_ADVANCE"
                 history={historyItem}
                 historyActorName={formatHistoryActorName(historyItem.actor)}
               />

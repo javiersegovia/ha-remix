@@ -40,7 +40,7 @@ const navPaths: INavPath[] = [
   },
   {
     icon: RiFileList2Line,
-    path: '/dashboard/payroll-advances',
+    path: '/dashboard/history/payroll-advances',
     title: 'Movimientos',
   },
 ]

@@ -208,16 +208,16 @@ export default function PayrollAdvanceNewRoute() {
                     options={paymentOptions}
                   />
                 </div>
-                {requestReasons?.length > 0 && (
-                  <div>
-                    <Select
-                      name="requestReasonId"
-                      label="Motivo de solicitud"
-                      placeholder="¿Para qué deseas el adelanto de nómina?"
-                      options={requestReasons}
-                    />
-                  </div>
-                )}
+
+                <div>
+                  <Select
+                    name="requestReasonId"
+                    label="Motivo de solicitud"
+                    placeholder="¿Para qué deseas el adelanto de nómina?"
+                    options={requestReasons}
+                  />
+                </div>
+
                 <div>
                   <Input
                     type="text"

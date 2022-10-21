@@ -1,78 +1,74 @@
-import type { PayrollAdvanceStatus } from '@prisma/client'
+import type { PremiumAdvanceStatus } from '@prisma/client'
+import { PremiumAdvanceHistoryActor } from '@prisma/client'
 import type {
   ActionFunction,
   LoaderFunction,
   MetaFunction,
 } from '@remix-run/server-runtime'
 
-import { PayrollAdvanceHistoryActor } from '@prisma/client'
 import { useLoaderData } from '@remix-run/react'
 import { json } from '@remix-run/server-runtime'
 import { badRequest, notFound } from 'remix-utils'
-import { PayrollAdvanceDetails } from '~/containers/dashboard/PayrollAdvanceDetails'
-import {
-  getPayrollAdvanceById,
-  updatePayrollAdvanceStatus,
-} from '~/services/payroll-advance/payroll-advance.server'
 import { requireAdminUser, requireAdminUserId } from '~/session.server'
+import { PremiumAdvanceDetails } from '~/components/PremiumAdvance/PremiumAdvanceDetails'
+import {
+  getPremiumAdvanceById,
+  updatePremiumAdvanceStatus,
+} from '~/services/premium-advance/premium-advance.server'
 
 type LoaderData = {
-  payrollAdvance: NonNullable<Awaited<ReturnType<typeof getPayrollAdvanceById>>>
+  premiumAdvance: NonNullable<Awaited<ReturnType<typeof getPremiumAdvanceById>>>
 }
 
 export const loader: LoaderFunction = async ({ request, params }) => {
   await requireAdminUserId(request)
-  const { payrollAdvanceId } = params
+  const { premiumAdvanceId } = params
 
-  if (!payrollAdvanceId) {
+  if (!premiumAdvanceId) {
     return badRequest({
       message: 'No se ha encontrado el ID del adelanto de nómina',
     })
   }
 
-  const payrollAdvance = await getPayrollAdvanceById(
-    parseFloat(payrollAdvanceId)
-  )
+  const premiumAdvance = await getPremiumAdvanceById(premiumAdvanceId)
 
-  if (!payrollAdvance) {
+  if (!premiumAdvance) {
     return notFound({
       message: 'No se ha encontrado información sobre el adelanto de nómina',
     })
   }
 
   return json<LoaderData>({
-    payrollAdvance,
+    premiumAdvance,
   })
 }
 
 export const action: ActionFunction = async ({ request, params }) => {
   const adminUser = await requireAdminUser(request)
   const formData = await request.formData()
-  const subaction = formData.get('subaction') as PayrollAdvanceStatus
+  const subaction = formData.get('subaction') as PremiumAdvanceStatus
 
-  const { payrollAdvanceId } = params
+  const { premiumAdvanceId } = params
 
-  if (!payrollAdvanceId) {
+  if (!premiumAdvanceId) {
     throw badRequest('No se ha encontrado el ID del adelanto de nómina')
   }
 
-  const payrollAdvance = await getPayrollAdvanceById(
-    parseFloat(payrollAdvanceId)
-  )
+  const premiumAdvance = await getPremiumAdvanceById(premiumAdvanceId)
 
-  if (!payrollAdvance || !payrollAdvance?.employee?.user) {
+  if (!premiumAdvance || !premiumAdvance?.employee?.user) {
     throw badRequest({
       message: 'No se han encontrado todos los datos del adelanto de nómina',
     })
   }
 
-  await updatePayrollAdvanceStatus({
-    employee: payrollAdvance.employee,
-    payrollAdvance,
-    actor: PayrollAdvanceHistoryActor.ADMIN,
+  await updatePremiumAdvanceStatus({
+    premiumAdvance,
+    employee: premiumAdvance.employee,
+    actor: PremiumAdvanceHistoryActor.ADMIN,
     adminUser,
     toStatus: subaction,
-    user: payrollAdvance.employee.user,
+    user: premiumAdvance.employee.user,
   })
 
   // We don't need to return anything here. By returning null,
@@ -87,9 +83,9 @@ export const meta: MetaFunction = ({ data }) => {
     }
   }
 
-  const { payrollAdvance } = data as LoaderData
+  const { premiumAdvance } = data as LoaderData
 
-  const { employee } = payrollAdvance
+  const { employee } = premiumAdvance
   const { user } = employee || {}
   const { firstName, lastName } = user || {}
 
@@ -100,20 +96,20 @@ export const meta: MetaFunction = ({ data }) => {
   }
 
   return {
-    title: `Solicitud de ${payrollAdvance.totalAmount} | HoyAdelantas`,
+    title: `Solicitud de adelanto | HoyAdelantas`,
   }
 }
 
-export default function AdminPayrollAdvanceDetailsRoute() {
-  const { payrollAdvance } = useLoaderData<LoaderData>()
+export default function AdminPremiumAdvanceDetailsRoute() {
+  const { premiumAdvance } = useLoaderData<LoaderData>()
 
   return (
-    <PayrollAdvanceDetails
+    <PremiumAdvanceDetails
       isAdmin
-      payrollAdvance={payrollAdvance}
-      company={payrollAdvance.company}
-      employee={payrollAdvance.employee}
-      user={payrollAdvance.employee?.user}
+      premiumAdvance={premiumAdvance}
+      company={premiumAdvance.company}
+      employee={premiumAdvance.employee}
+      user={premiumAdvance.employee?.user}
     />
   )
 }

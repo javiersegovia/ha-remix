@@ -15,11 +15,24 @@ export const MOCK_USER = {
   email: 'jack@sparrow.com',
 }
 
+export const MOCK_COMPANY = {
+  id: faker.datatype.uuid(),
+  name: faker.company.name(),
+}
+
 // todo: create MOCK_EMPLOYEE object with common missing data: ID and COMPANY_ID
+export const MOCK_EMPLOYEE = {
+  id: faker.datatype.uuid(),
+  user: MOCK_USER,
+  userId: MOCK_USER.id,
+  company: MOCK_COMPANY,
+  companyId: MOCK_COMPANY.id,
+}
 
 export const createMockEmployee = async () => {
   return await prisma.employee.create({
     data: {
+      id: MOCK_EMPLOYEE.id,
       user: {
         create: {
           ...MOCK_USER,
@@ -27,7 +40,7 @@ export const createMockEmployee = async () => {
       },
       company: {
         create: {
-          name: faker.company.name(),
+          ...MOCK_COMPANY,
         },
       },
     },

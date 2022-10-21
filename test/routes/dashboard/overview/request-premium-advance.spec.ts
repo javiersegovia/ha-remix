@@ -1,4 +1,4 @@
-import { createMockEmployee, MOCK_USER } from 'test/setup-test-env'
+import { createMockEmployee, MOCK_EMPLOYEE } from 'test/setup-test-env'
 import { vi } from 'vitest'
 import { truncateDB } from 'test/helpers/truncateDB'
 import { action as requestPremiumAdvanceAction } from '~/routes/dashboard/overview/request-premium-advance'
@@ -8,7 +8,7 @@ import { PremiumAdvanceStatus } from '@prisma/client'
 
 vi.mock('~/session.server', async () => {
   return {
-    requireEmployee: () => MOCK_USER.id,
+    requireEmployee: () => MOCK_EMPLOYEE,
   }
 })
 
@@ -41,7 +41,7 @@ describe('ACTION /dashboard/request-premium-advance', () => {
     })
 
     expect(premiumAdvance).toBeDefined()
-    expect(response.status).toBe(301)
+    expect(response.status).toBe(302)
     expect(response.headers.get('Location')).toBe(
       `/dashboard/premium-advances/${premiumAdvance!.id}`
     )

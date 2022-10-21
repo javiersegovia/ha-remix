@@ -1,14 +1,13 @@
-import { Form, useActionData, useTransition } from '@remix-run/react'
-import { json } from '@remix-run/server-runtime'
-import { badRequest } from 'remix-utils'
+import type { ActionArgs, MetaFunction } from '@remix-run/server-runtime'
+
+import { redirect } from '@remix-run/node'
+import { Form, useTransition } from '@remix-run/react'
 import { Button } from '~/components/Button'
 import Modal from '~/components/Dialog/Modal'
 import { Box } from '~/components/Layout/Box'
 import { Title } from '~/components/Typography/Title'
-import { sendPremiumAdvanceNotificationToAdmin } from '~/services/email/email.server'
 import { requireEmployee } from '~/session.server'
-
-import type { ActionArgs, MetaFunction } from '@remix-run/server-runtime'
+import { createPremiumAdvance } from '~/services/premium-advance/premium-advance.server'
 
 export const meta: MetaFunction = () => {
   return {
@@ -19,64 +18,42 @@ export const meta: MetaFunction = () => {
 export async function action({ request }: ActionArgs) {
   const employee = await requireEmployee(request)
 
-  try {
-    await sendPremiumAdvanceNotificationToAdmin({
-      employeeFullName: `${employee.user.firstName} ${employee.user.lastName}`,
-      companyId: employee.companyId,
-      employeeId: employee.id,
-    })
-  } catch (e) {
-    throw badRequest(
-      'Ha ocurrido un error al solicitar tu adelanto de nómina. Por favor, informa de lo sucedido directamente a hoyadelantas@hoytrabajas.com'
-    )
-  }
+  const premiumAdvance = await createPremiumAdvance({
+    user: employee.user,
+    companyId: employee.companyId,
+    employeeId: employee.id,
+  })
 
-  return json<boolean>(true)
+  return redirect(`/dashboard/premium-advances/${premiumAdvance.id}`)
 }
 
 export default function RequestPremiumAdvanceModalRoute() {
-  const actionData = useActionData<boolean>()
   const transition = useTransition()
 
   return (
     <Modal onCloseRedirectTo="/dashboard/overview">
       <div className="m-auto w-full max-w-lg">
         <Box className="space-y-5 p-5">
-          {!actionData ? (
-            <>
-              <Title>Confirmar solicitud</Title>
-              <p>
-                Si estás interesado en solicitar un adelanto de prima, por favor
-                haz click en el siguiente botón y nos comunicaremos contigo.
-              </p>
-              <Form method="post" className="flex flex-col gap-4">
-                <Button type="submit" disabled={transition.state !== 'idle'}>
-                  Solicitar adelanto de prima
-                </Button>
-                <Button
-                  variant="LIGHT"
-                  href="/dashboard/overview"
-                  disabled={transition.state !== 'idle'}
-                >
-                  Cancelar
-                </Button>
-              </Form>
-            </>
-          ) : (
-            <>
-              <Title>Solicitud realizada</Title>
-
-              <p>
-                ¡Gracias por realizar tu solicitud!
-                <br />
-                Nos comunicaremos contigo lo más pronto posible vía WhatsApp
-              </p>
-
-              <Button className="mt-5" href="/dashboard/overview">
-                Cerrar
+          <>
+            <Title>Confirmar solicitud</Title>
+            <p>
+              Si estás interesado en solicitar un adelanto de prima, por favor
+              haz click en el siguiente botón y nos comunicaremos contigo.
+            </p>
+            <Form method="post" className="flex flex-col gap-4">
+              <Button type="submit" disabled={transition.state !== 'idle'}>
+                Solicitar adelanto de prima
               </Button>
-            </>
-          )}
+
+              <Button
+                variant="LIGHT"
+                href="/dashboard/overview"
+                disabled={transition.state !== 'idle'}
+              >
+                Cancelar
+              </Button>
+            </Form>
+          </>
         </Box>
       </div>
     </Modal>

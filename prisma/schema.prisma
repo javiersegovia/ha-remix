@@ -211,8 +211,8 @@ model Employee {
 
   companyTaxes CompanyTax[]
 
-  payrollAdvances         PayrollAdvance[]
-  premiumAdvances         PremiumAdvance[]
+  payrollAdvances PayrollAdvance[]
+  premiumAdvances PremiumAdvance[]
 
   payrollAdvanceHistories PayrollAdvanceHistory[]
   premiumAdvanceHistories PremiumAdvanceHistory[]

@@ -1,9 +1,6 @@
 import { json } from '@remix-run/server-runtime'
 import { badRequest, notFound, unauthorized } from 'remix-utils'
-import {
-  getPayrollAdvanceById,
-  updatePayrollAdvanceStatus,
-} from '~/services/payroll-advance/payroll-advance.server'
+
 import { requireEmployee } from '~/session.server'
 
 import type {
@@ -12,42 +9,43 @@ import type {
   ActionFunction,
 } from '@remix-run/server-runtime'
 import { useLoaderData } from '@remix-run/react'
-import { PayrollAdvanceDetails } from '~/containers/dashboard/PayrollAdvanceDetails'
+import type { PayrollAdvanceStatus } from '@prisma/client'
+import { PremiumAdvanceHistoryActor } from '@prisma/client'
+import { PremiumAdvanceStatus } from '@prisma/client'
 import {
-  PayrollAdvanceStatus,
-  PayrollAdvanceHistoryActor,
-} from '@prisma/client'
+  getPremiumAdvanceById,
+  updatePremiumAdvanceStatus,
+} from '~/services/premium-advance/premium-advance.server'
+import { PremiumAdvanceDetails } from '~/components/PremiumAdvance/PremiumAdvanceDetails'
 
 type LoaderData = {
-  payrollAdvance: NonNullable<Awaited<ReturnType<typeof getPayrollAdvanceById>>>
+  premiumAdvance: NonNullable<Awaited<ReturnType<typeof getPremiumAdvanceById>>>
 }
 
 export const loader: LoaderFunction = async ({ request, params }) => {
   const employee = await requireEmployee(request)
-  const { payrollAdvanceId } = params
+  const { premiumAdvanceId } = params
 
-  if (!payrollAdvanceId) {
+  if (!premiumAdvanceId) {
     return badRequest({
-      message: 'No se ha encontrado el ID del adelanto de nómina',
+      message: 'No se ha encontrado el ID del adelanto de prima',
     })
   }
 
-  const payrollAdvance = await getPayrollAdvanceById(
-    parseFloat(payrollAdvanceId)
-  )
+  const premiumAdvance = await getPremiumAdvanceById(premiumAdvanceId)
 
-  if (!payrollAdvance) {
+  if (!premiumAdvance) {
     return notFound({
-      message: 'No se ha encontrado información sobre el adelanto de nómina',
+      message: 'No se ha encontrado información sobre el adelanto de prima',
     })
   }
 
-  if (employee.id !== payrollAdvance.employeeId) {
+  if (employee.id !== premiumAdvance.employeeId) {
     return unauthorized({ message: 'No estás autorizado' })
   }
 
   return json<LoaderData>({
-    payrollAdvance,
+    premiumAdvance,
   })
 }
 
@@ -56,31 +54,29 @@ export const action: ActionFunction = async ({ request, params }) => {
   const formData = await request.formData()
   const subaction = formData.get('subaction') as PayrollAdvanceStatus
 
-  const { payrollAdvanceId } = params
+  const { premiumAdvanceId } = params
 
-  if (!payrollAdvanceId) {
-    throw badRequest('No se ha encontrado el ID del adelanto de nómina')
+  if (!premiumAdvanceId) {
+    throw badRequest('No se ha encontrado el ID del adelanto de prima')
   }
 
-  const payrollAdvance = await getPayrollAdvanceById(
-    parseFloat(payrollAdvanceId)
-  )
+  const premiumAdvance = await getPremiumAdvanceById(premiumAdvanceId)
 
-  if (!payrollAdvance) {
-    throw badRequest('No se ha encontrado el ID del adelanto de nómina')
+  if (!premiumAdvance) {
+    throw badRequest('No se ha encontrado el ID del adelanto de prima')
   }
 
-  if (employee.id !== payrollAdvance.employeeId) {
+  if (employee.id !== premiumAdvance.employeeId) {
     throw unauthorized({
       message: 'No tienes permisos para ejecutar esta acción',
     })
   }
 
-  if (subaction === PayrollAdvanceStatus.CANCELLED) {
-    await updatePayrollAdvanceStatus({
+  if (subaction === PremiumAdvanceStatus.CANCELLED) {
+    await updatePremiumAdvanceStatus({
       employee,
-      payrollAdvance,
-      actor: PayrollAdvanceHistoryActor.EMPLOYEE,
+      premiumAdvance,
+      actor: PremiumAdvanceHistoryActor.EMPLOYEE,
       toStatus: subaction,
       user: employee.user,
     })
@@ -101,8 +97,10 @@ export const meta: MetaFunction = () => {
   }
 }
 
-export default function PayrollAdvanceDetailsRoute() {
-  const { payrollAdvance } = useLoaderData<LoaderData>()
+export default function PremiumAdvanceDetailsRoute() {
+  const { premiumAdvance } = useLoaderData<LoaderData>()
+
+  // todo: premiumAdvance details
 
   return (
     <>
@@ -123,11 +121,11 @@ export default function PayrollAdvanceDetailsRoute() {
         }}
       />
 
-      <PayrollAdvanceDetails
-        payrollAdvance={payrollAdvance}
-        company={payrollAdvance.company}
-        employee={payrollAdvance.employee}
-        user={payrollAdvance.employee?.user}
+      <PremiumAdvanceDetails
+        premiumAdvance={premiumAdvance}
+        company={premiumAdvance.company}
+        employee={premiumAdvance.employee}
+        user={premiumAdvance.employee?.user}
       />
     </>
   )

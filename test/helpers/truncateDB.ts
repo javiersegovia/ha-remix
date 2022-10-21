@@ -12,7 +12,7 @@ export async function truncateDB() {
           `TRUNCATE TABLE "advance_api"."${tablename}" CASCADE;`
         )
       } catch (error) {
-        console.log({ error })
+        console.error(error)
       }
     }
   })

@@ -25,6 +25,7 @@ import {
   sendPayrollNotificationToUser,
 } from '../email/email.server'
 import { upsertFiatMonthlyDebt } from '../company/company-debt.server'
+// import { sendSMS } from '../sms/sms.service'
 
 export type TPayrollContent = {
   [key in PayrollAdvanceStatus]?: {
@@ -216,6 +217,7 @@ export const getPayrollAdvanceById = async (
           advanceCryptoAvailableAmount: true,
           advanceCryptoMaxAmount: true,
           advanceMaxAmount: true,
+          phone: true,
           user: {
             select: { firstName: true, lastName: true, email: true },
           },
@@ -719,7 +721,7 @@ export const createPayrollAdvance = async ({
   return payroll
 }
 
-const { CANCELLED, DENIED, PAID } = PayrollAdvanceStatus
+const { CANCELLED, DENIED, APPROVED, PAID } = PayrollAdvanceStatus
 const { BANK_ACCOUNT, WALLET } = PayrollAdvancePaymentMethod
 export const updatePayrollAdvanceStatus = async ({
   employee,
@@ -737,6 +739,7 @@ export const updatePayrollAdvanceStatus = async ({
     | 'advanceCryptoAvailableAmount'
     | 'advanceCryptoMaxAmount'
     | 'currencyId'
+    | 'phone'
   >
   adminUser?: Pick<AdminUser, 'id'>
   user: Pick<User, 'firstName' | 'lastName' | 'email'>
@@ -803,34 +806,79 @@ export const updatePayrollAdvanceStatus = async ({
       },
     })
 
-    if (toStatus === PAID) {
-      if (payrollAdvance.paymentMethod === BANK_ACCOUNT) {
-        await upsertFiatMonthlyDebt({
-          payrollAdvance,
-          employee,
-          companyId: payrollAdvance.companyId,
+    switch (toStatus) {
+      case DENIED: {
+        sendPayrollNotificationToUser({
+          destination: user.email,
+          payrollId: payrollAdvance.id,
+          status: toStatus,
         })
+
+        // console.log('DENIED', employee.phone)
+
+        // if (employee.phone) {
+        //   console.log('will call sendSMS ~~~~~~~~~~')
+
+        //   await sendSMS({
+        //     PhoneNumber: employee.phone,
+        //     Message:
+        //       'Tu solicitud no pudo ser aprobada :disappointed: ¿Necesitas más información? Ingresa a https://hoyadelantas.com',
+        //   })
+        // }
+        break
       }
 
-      if (payrollAdvance.paymentMethod === WALLET) {
-        // to do: add Crypto payment
+      case CANCELLED: {
+        sendPayrollNotificationToAdmin({
+          payrollId: payrollAdvance.id,
+          status: toStatus,
+          employeeFullName: `${user.firstName} ${user.lastName}`,
+        })
+        break
       }
-    }
 
-    // The CANCELLED status is triggered by the user. We will be notify admins.
-    if (toStatus === CANCELLED) {
-      sendPayrollNotificationToAdmin({
-        payrollId: payrollAdvance.id,
-        status: toStatus,
-        employeeFullName: `${user.firstName} ${user.lastName}`,
-      })
-      // The DENIED/PAID statuses are triggered by the admin. We will be notify the user.
-    } else if (toStatus === DENIED || toStatus === PAID) {
-      sendPayrollNotificationToUser({
-        destination: user.email,
-        payrollId: payrollAdvance.id,
-        status: toStatus,
-      })
+      case APPROVED: {
+        // if (employee.phone) {
+        //   await sendSMS({
+        //     PhoneNumber: employee.phone,
+        //     Message:
+        //       '¡Tu solicitud de adelanto de nómina acaba de ser aprobada, en minutos desembolsaremos el dinero a tu cuenta!',
+        //   })
+        // }
+        break
+      }
+
+      case PAID: {
+        sendPayrollNotificationToUser({
+          destination: user.email,
+          payrollId: payrollAdvance.id,
+          status: toStatus,
+        })
+
+        if (payrollAdvance.paymentMethod === BANK_ACCOUNT) {
+          await upsertFiatMonthlyDebt({
+            payrollAdvance,
+            employee,
+            companyId: payrollAdvance.companyId,
+          })
+        }
+
+        if (payrollAdvance.paymentMethod === WALLET) {
+          // to do: add Crypto payment
+        }
+
+        // if (employee.phone) {
+        //   await sendSMS({
+        //     PhoneNumber: employee.phone,
+        //     Message:
+        //       '¡Tu solicitud de adelanto ha sido desembolsada! En unas horas el dinero se verá reflejado en tu cuenta :grinning:',
+        //   })
+        // }
+        break
+      }
+
+      default:
+        break
     }
 
     return updatedPayroll

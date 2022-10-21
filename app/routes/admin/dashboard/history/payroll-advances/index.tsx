@@ -1,14 +1,14 @@
+import type { LoaderFunction, MetaFunction } from '@remix-run/server-runtime'
+
 import { useLoaderData } from '@remix-run/react'
 import { json } from '@remix-run/server-runtime'
-import { PayrollAdvanceList } from '~/components/Lists/PayrollAdvanceList'
 import { Title } from '~/components/Typography/Title'
 import { requireAdminUserId } from '~/session.server'
 import { getPayrollAdvances } from '~/services/payroll-advance/payroll-advance.server'
-
-import type { LoaderFunction, MetaFunction } from '@remix-run/server-runtime'
+import { PayrollAdvanceList } from '~/components/Lists/PayrollAdvanceList'
 
 type LoaderData = {
-  payrollAdvances: Awaited<ReturnType<any>>
+  payrollAdvances: Awaited<ReturnType<typeof getPayrollAdvances>>
 }
 
 export const loader: LoaderFunction = async ({ request }) => {
@@ -34,8 +34,13 @@ export default function AdminPayrollAdvancesIndexRoute() {
     <>
       {payrollAdvances?.length > 0 ? (
         <>
-          <div className="mb-8 mt-2 flex flex-col items-center px-2 sm:items-start lg:flex-row lg:items-center lg:justify-between">
-            <Title as="h1">Solicitudes de Adelanto de Nómina</Title>
+          <div className="my-8 flex flex-col items-center gap-4 lg:flex-row lg:items-center lg:justify-between">
+            <Title
+              as="h1"
+              className="ml-1 flex-1 whitespace-nowrap text-center lg:text-left"
+            >
+              Adelantos de Nómina
+            </Title>
           </div>
 
           <PayrollAdvanceList payrollAdvances={payrollAdvances} isAdmin />

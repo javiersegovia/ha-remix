@@ -6,21 +6,22 @@ import type {
   PayrollAdvanceTransfer,
   PayrollAdvanceWallet,
 } from '@prisma/client'
+
 import {
   PayrollAdvancePaymentMethod,
   PayrollAdvanceStatus,
   PayrollAdvanceTransferStatus,
 } from '@prisma/client'
 import { format } from 'date-fns'
+import { Fragment } from 'react'
 
-import { PayrollAdvanceStatusPill } from '~/components/Pills/PayrollAdvanceStatusPill'
 import { CurrencySymbol } from '~/components/FormFields/CurrencyInput'
 import { Box } from '~/components/Layout/Box'
 import { contractAddresses } from '~/services/blockchain/data'
 import { parseDate } from '~/utils/formatDate'
 import { formatMoney } from '~/utils/formatMoney'
 import { PayrollAdvanceSummaryItem } from './PayrollAdvanceSummaryItem'
-import { Fragment } from 'react'
+import { AdvanceStatusPill } from '~/components/Pills/AdvanceStatusPill'
 
 interface WalletDataSummaryProps {
   walletData: Pick<
@@ -165,9 +166,7 @@ export const PayrollAdvanceSummary = ({
         </p>
 
         <p className="font-medium">
-          <PayrollAdvanceStatusPill
-            payrollAdvanceStatus={payrollAdvance.status}
-          />
+          <AdvanceStatusPill status={payrollAdvance.status} />
         </p>
       </div>
 

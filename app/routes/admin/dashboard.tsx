@@ -37,7 +37,7 @@ const navPaths: INavPath[] = [
   },
   {
     icon: MdAttachMoney,
-    path: '/admin/dashboard/payroll-advances',
+    path: '/admin/dashboard/history/payroll-advances',
     title: 'Adelantos',
   },
   {

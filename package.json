@@ -53,8 +53,9 @@
     "/postgres-data"
   ],
   "dependencies": {
-    "@aws-sdk/client-ses": "^3.163.0",
-    "@aws-sdk/credential-provider-node": "^3.163.0",
+    "@aws-sdk/client-ses": "^3.188.0",
+    "@aws-sdk/client-sns": "^3.188.0",
+    "@aws-sdk/credential-provider-node": "^3.188.0",
     "@headlessui/react": "^1.6.6",
     "@prisma/client": "^4.4.0",
     "@remix-run/express": "^1.7.0",
@@ -91,6 +92,7 @@
     "zod-form-data": "^1.2.1"
   },
   "devDependencies": {
+    "@aws-sdk/types": "^3.188.0",
     "@faker-js/faker": "^7.4.0",
     "@remix-run/dev": "^1.7.0",
     "@remix-run/eslint-config": "^1.7.0",
