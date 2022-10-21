@@ -61,11 +61,8 @@ export default function PremiumAdvancesIndexRoute() {
           <PremiumAdvanceList premiumAdvances={premiumAdvances} />
         </>
       ) : (
-        <section className="m-auto flex flex-col items-center justify-center pb-20 text-center">
+        <section className="m-auto mt-10 flex flex-col items-center justify-center pb-20 text-center">
           <Title as="h1">Todavía no posees solicitudes</Title>
-          <Button href="new" className="mx-auto mt-4 w-auto">
-            Solicitar mi primer adelanto de nómina
-          </Button>
         </section>
       )}
     </>
