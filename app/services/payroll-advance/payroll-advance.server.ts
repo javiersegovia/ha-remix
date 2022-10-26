@@ -616,7 +616,7 @@ export const createPayrollAdvance = async ({
     },
   })
 
-  const connectBankAccountData: Prisma.PayrollAdvanceCreateInput['bankAccountData'] =
+  const createBankAccountData: Prisma.PayrollAdvanceCreateInput['bankAccountData'] =
     isBankAccountThePaymentMethod && bankAccount
       ? {
           create: {
@@ -679,7 +679,7 @@ export const createPayrollAdvance = async ({
       company: connect(companyId),
       employee: connect(employeeId),
       walletData: connectWalletData,
-      bankAccountData: connectBankAccountData,
+      bankAccountData: createBankAccountData,
       requestReason: connect(requestReasonId),
       requestReasonDescription,
 
