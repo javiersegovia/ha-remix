@@ -1,22 +1,21 @@
 import { StrictMode } from 'react'
-import { hydrateRoot } from 'react-dom/client'
+import { hydrate } from 'react-dom'
 import { RemixBrowser } from '@remix-run/react'
 
-const hydrate = () => {
-  hydrateRoot(
-    document,
+const runHydrate = () => {
+  hydrate(
     <StrictMode>
       <RemixBrowser />
-    </StrictMode>
+    </StrictMode>,
+    document
   )
 }
 
 // This is the recommended hydration method used inside the Remix official stacks.
-// The problem is that this "startTransition" causes some unexpected bugs related to React minified bundle,
-// that in the end, crashes our styling with React-Select components.
-// We will get rid of startTransition until further investigation.
+// The problem is that the new "hydrateRoot" used in React Suspense is causing unexpected bugs with React-Select styling.
+// We will use the previous "hydrate" method until further investigation.
 
-// const hydrate = () => {
+// const runHydrate = () => {
 //   startTransition(() => {
 //     hydrateRoot(
 //       document,
@@ -28,9 +27,9 @@ const hydrate = () => {
 // }
 
 if (window.requestIdleCallback) {
-  window.requestIdleCallback(hydrate)
+  window.requestIdleCallback(runHydrate)
 } else {
   // Safari doesn't support requestIdleCallback
   // https://caniuse.com/requestidlecallback
-  window.setTimeout(hydrate, 1)
+  window.setTimeout(runHydrate, 1)
 }
