@@ -65,6 +65,9 @@ type LoaderData = {
   gaTrackingId: string | undefined
 }
 
+const isLocalDev =
+  process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test'
+
 export async function loader({ request }: LoaderArgs) {
   return json({
     user: await getUser(request),
@@ -79,7 +82,7 @@ export default function App() {
   const { gaTrackingId } = useLoaderData<LoaderData>()
 
   useEffect(() => {
-    if (gaTrackingId?.length) {
+    if (!isLocalDev && gaTrackingId?.length) {
       gtag.pageview(location.pathname, gaTrackingId)
     }
   }, [location, gaTrackingId])
@@ -127,9 +130,7 @@ export default function App() {
       </head>
 
       <body className="h-full">
-        {process.env.NODE_ENV === 'development' ||
-        process.env.NODE_ENV === 'test' ||
-        !gaTrackingId ? null : (
+        {isLocalDev || !gaTrackingId ? null : (
           <>
             <script
               async

@@ -104,11 +104,12 @@ export default function PremiumAdvanceDetailsRoute() {
 
   return (
     <>
-      <script
-        async
-        id="hotjar"
-        dangerouslySetInnerHTML={{
-          __html: `
+      {typeof document !== 'undefined' && (
+        <script
+          async
+          id="hotjar"
+          dangerouslySetInnerHTML={{
+            __html: `
           (function(h,o,t,j,a,r){
             h.hj=h.hj||function(){(h.hj.q=h.hj.q||[]).push(arguments)};
             h._hjSettings={hjid:3148054,hjsv:6};
@@ -118,8 +119,9 @@ export default function PremiumAdvanceDetailsRoute() {
             a.appendChild(r);
         })(window,document,'https://static.hotjar.com/c/hotjar-','.js?sv=');
       `,
-        }}
-      />
+          }}
+        />
+      )}
 
       <PremiumAdvanceDetails
         premiumAdvance={premiumAdvance}

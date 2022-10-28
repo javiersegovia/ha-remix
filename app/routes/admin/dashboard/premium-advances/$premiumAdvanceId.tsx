@@ -73,7 +73,7 @@ export const action: ActionFunction = async ({ request, params }) => {
 
   // We don't need to return anything here. By returning null,
   // Remix will automatically update all the route loaders.
-  return json(null)
+  return null
 }
 
 export const meta: MetaFunction = ({ data }) => {
