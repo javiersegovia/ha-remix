@@ -60,13 +60,13 @@ export const meta: MetaFunction = () => ({
   viewport: 'width=device-width,initial-scale=1',
 })
 
+const isLocalDev =
+  process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test'
+
 type LoaderData = {
   user: Awaited<ReturnType<typeof getUser>>
   gaTrackingId: string | undefined
 }
-
-const isLocalDev =
-  process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test'
 
 export async function loader({ request }: LoaderArgs) {
   return json({
