@@ -13,8 +13,6 @@ beforeEach(async () => {
   await truncateDB()
 })
 
-// TODO: Change format of "History"
-
 describe('DATASTUDIO PayrollAdvances Query', () => {
   test('should return a list of payroll advances', async () => {
     const employee = await prisma.employee.create({
@@ -64,10 +62,22 @@ describe('DATASTUDIO PayrollAdvances Query', () => {
             paymentMethod: PayrollAdvancePaymentMethod.BANK_ACCOUNT,
 
             history: {
-              create: {
-                toStatus: PayrollAdvanceStatus.REQUESTED,
-                actor: PayrollAdvanceHistoryActor.EMPLOYEE,
-                employeeId: employee.id,
+              createMany: {
+                data: [
+                  {
+                    toStatus: PayrollAdvanceStatus.REQUESTED,
+                    actor: PayrollAdvanceHistoryActor.EMPLOYEE,
+                    employeeId: employee.id,
+                  },
+                  {
+                    toStatus: PayrollAdvanceStatus.APPROVED,
+                    actor: PayrollAdvanceHistoryActor.ADMIN,
+                  },
+                  {
+                    toStatus: PayrollAdvanceStatus.PAID,
+                    actor: PayrollAdvanceHistoryActor.ADMIN,
+                  },
+                ],
               },
             },
 
@@ -77,7 +87,7 @@ describe('DATASTUDIO PayrollAdvances Query', () => {
               },
             },
 
-            status: PayrollAdvanceStatus.REQUESTED,
+            status: PayrollAdvanceStatus.PAID,
 
             requestReasonDescription: 'Motivo personalizado',
 
@@ -100,28 +110,32 @@ describe('DATASTUDIO PayrollAdvances Query', () => {
     await Promise.all(createPayrollAdvancesPromises)
 
     const queryResult = await prisma.$queryRaw<PayrollAdvance[]>`SELECT DISTINCT
-    "PayrollAdvance"."id",
-    "companyId",
-    "PayrollAdvance"."employeeId",
-    jsonb_object_agg("PayrollAdvanceHistory"."toStatus", "PayrollAdvanceHistory"."createdAt") history,
-    "PayrollAdvance"."createdAt",
-    "requestedAmount",
-    "totalAmount",
-    "status",
-    "PayrollAdvanceRequestReason"."name" as "requestReason",
-    "requestReasonDescription"
-    FROM "advance_api"."PayrollAdvance"
-    LEFT JOIN "advance_api"."PayrollAdvanceTax" ON "PayrollAdvance"."id" = "PayrollAdvanceTax"."payrollAdvanceId"
-    LEFT JOIN "advance_api"."PayrollAdvanceHistory" ON "PayrollAdvance"."id" = "PayrollAdvanceHistory"."payrollAdvanceId"
-    LEFT JOIN "advance_api"."PayrollAdvanceRequestReason" ON "PayrollAdvance"."requestReasonId" = "PayrollAdvanceRequestReason"."id"
-    GROUP BY "PayrollAdvance"."id",
-    "PayrollAdvance"."companyId",
-    "PayrollAdvance"."employeeId",
-    "PayrollAdvance"."createdAt",
-    "PayrollAdvance"."requestedAmount",
-    "PayrollAdvance"."totalAmount",
-    "PayrollAdvance"."status",
-    "PayrollAdvanceRequestReason"."name";`
+      "PayrollAdvance"."id",
+      "companyId",
+      "Company"."name" as "companyName",
+      "PayrollAdvance"."employeeId",
+      jsonb_object_agg("PayrollAdvanceHistory"."toStatus", "PayrollAdvanceHistory"."createdAt") history,
+      "PayrollAdvance"."createdAt",
+      "requestedAmount",
+      "totalAmount",
+      "PayrollAdvance"."status",
+      "PayrollAdvanceRequestReason"."name" as "requestReason",
+      "requestReasonDescription"
+      FROM "advance_api"."PayrollAdvance"
+      LEFT JOIN "advance_api"."PayrollAdvanceTax" ON "PayrollAdvance"."id" = "PayrollAdvanceTax"."payrollAdvanceId"
+      LEFT JOIN "advance_api"."Company" ON "PayrollAdvance"."companyId" = "Company"."id"
+      LEFT JOIN "advance_api"."PayrollAdvanceHistory" ON "PayrollAdvance"."id" = "PayrollAdvanceHistory"."payrollAdvanceId"
+      LEFT JOIN "advance_api"."PayrollAdvanceRequestReason" ON "PayrollAdvance"."requestReasonId" = "PayrollAdvanceRequestReason"."id"
+      GROUP BY 
+        "PayrollAdvance"."id",
+        "Company"."name",
+        "PayrollAdvance"."companyId",
+        "PayrollAdvance"."employeeId",
+        "PayrollAdvance"."createdAt",
+        "PayrollAdvance"."requestedAmount",
+        "PayrollAdvance"."totalAmount",
+        "PayrollAdvance"."status",
+        "PayrollAdvanceRequestReason"."name";`
 
     expect(queryResult.length).toBe(5)
     expect(queryResult[0]).toEqual<
@@ -136,23 +150,29 @@ describe('DATASTUDIO PayrollAdvances Query', () => {
         | 'status'
         | 'requestReasonDescription'
       > & {
+        companyName: string
         requestReason: string
         history: {
           REQUESTED: string
+          APPROVED: string
+          PAID: string
         }
       }
     >({
       id: expect.any(Number),
       companyId: expect.any(String),
+      companyName: expect.any(String),
       employeeId: expect.any(String),
       requestedAmount: expect.any(Number),
       totalAmount: expect.any(Number),
       createdAt: expect.any(Date),
-      status: PayrollAdvanceStatus.REQUESTED,
+      status: PayrollAdvanceStatus.PAID,
       requestReason: requestReason.name,
       requestReasonDescription: 'Motivo personalizado',
       history: {
         REQUESTED: expect.any(String),
+        APPROVED: expect.any(String),
+        PAID: expect.any(String),
       },
     })
   })

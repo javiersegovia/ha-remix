@@ -19,6 +19,16 @@ describe('DATASTUDIO Companies Query', () => {
       },
     })
 
+    const category = await prisma.companyCategory.upsert({
+      where: {
+        name: 'Tecnología',
+      },
+      create: {
+        name: 'Tecnología',
+      },
+      update: {},
+    })
+
     const createCompanyData = {
       name: faker.company.name(),
       country: {
@@ -35,11 +45,14 @@ describe('DATASTUDIO Companies Query', () => {
       premiumPaymentDays: [15, 25],
       premiumLastRequestDay: 30,
       categories: {
+        connect: {
+          id: category.id,
+        },
         connectOrCreate: {
-          where: {
+          create: {
             name: 'Ventas',
           },
-          create: {
+          where: {
             name: 'Ventas',
           },
         },
@@ -50,7 +63,9 @@ describe('DATASTUDIO Companies Query', () => {
 
     for (let i = 0; i < 5; i++) {
       createCompaniesPromises.push(
-        prisma.company.create({ data: createCompanyData })
+        prisma.company.create({
+          data: createCompanyData,
+        })
       )
     }
 
@@ -60,14 +75,14 @@ describe('DATASTUDIO Companies Query', () => {
     "Company"."id",
     "Company"."name", 
     "Company"."createdAt",
-    array_remove(array_agg("CompanyCategory"."name"), NULL) as "categories", 
+    string_agg("CompanyCategory"."name", ', ') as "categories",
     "address",
     "description",
     "phone",
     "status",
-    "paymentDays",
+    array_to_string("paymentDays", ', ') as "paymentDays",
     "lastRequestDay",
-    "premiumPaymentDays",
+    array_to_string("premiumPaymentDays", ', ') as "premiumPaymentDays",
     "premiumLastRequestDay",
     "Country"."name" as "country" 
     FROM "advance_api"."Company" 
@@ -99,13 +114,13 @@ describe('DATASTUDIO Companies Query', () => {
         | 'description'
         | 'phone'
         | 'status'
-        | 'paymentDays'
         | 'lastRequestDay'
-        | 'premiumPaymentDays'
         | 'premiumLastRequestDay'
       > & {
+        paymentDays: string
+        premiumPaymentDays: string
         country: string
-        categories: string[]
+        categories: string
       }
     >({
       id: expect.any(String),
@@ -115,12 +130,12 @@ describe('DATASTUDIO Companies Query', () => {
       description,
       phone,
       status,
-      paymentDays,
+      paymentDays: paymentDays.join(', '),
+      premiumPaymentDays: premiumPaymentDays.join(', '),
       lastRequestDay,
-      premiumPaymentDays,
       premiumLastRequestDay,
       country: country.name,
-      categories: ['Ventas'],
+      categories: 'Tecnología, Ventas',
     })
   })
 })
