@@ -75,7 +75,7 @@ describe('DATASTUDIO Companies Query', () => {
     "Company"."id",
     "Company"."name", 
     "Company"."createdAt",
-    string_agg("CompanyCategory"."name", ', ') as "categories",
+    string_agg("CompanyCategory"."name", ', ' order by "CompanyCategory"."name") as "categories",
     "address",
     "description",
     "phone",

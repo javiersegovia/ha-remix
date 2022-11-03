@@ -10,7 +10,7 @@ import { json } from '@remix-run/server-runtime'
 import { CompanyForm } from '~/components/Forms/CompanyForm'
 import { FormActions } from '~/components/FormFields/FormActions'
 import { validator } from '~/services/company/company.schema'
-import { getCompanyCategories } from '~/services/company/company-category.server'
+import { getCompanyCategories } from '~/services/company-category/company-category.server'
 import {
   requireCompany,
   updateCompanyById,

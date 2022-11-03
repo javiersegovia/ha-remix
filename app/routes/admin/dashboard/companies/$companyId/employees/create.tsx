@@ -11,12 +11,7 @@ import { FormActions } from '~/components/FormFields/FormActions'
 import { AdminEmployeeForm } from '~/components/Forms/AdminEmployeeForm'
 import { Title } from '~/components/Typography/Title'
 import { employeeValidator } from '~/services/employee/employee.schema'
-import {
-  getBankAccountTypes,
-  getBanks,
-  getIdentityDocumentTypes,
-  validateBankAccount,
-} from '~/services/bank/bank.server'
+import { getBanks, validateBankAccount } from '~/services/bank/bank.server'
 import { requireCompany } from '~/services/company/company.server'
 import { getCountries } from '~/services/country/country.server'
 import { getCryptocurrencies } from '~/services/crypto-currency/crypto-currency.server'
@@ -27,6 +22,8 @@ import { getJobDepartments } from '~/services/job-department/job-department.serv
 import { getJobPositions } from '~/services/job-position/job-position.server'
 import { requireAdminUserId } from '~/session.server'
 import { createEmployee } from '~/services/employee/employee.server'
+import { getBankAccountTypes } from '~/services/bank-account-type/bank-account-type.server'
+import { getIdentityDocumentTypes } from '~/services/identity-document-type/identity-document-type.server'
 
 type LoaderData = {
   countries: Awaited<ReturnType<typeof getCountries>>

@@ -2,13 +2,9 @@ import * as companyService from './company.server'
 import { prisma } from '~/db.server'
 import { vi } from 'vitest'
 import { CompanyFactory } from './company.factory'
-import { CountryFactory } from '../country/country.factory'
-import { CompanyCategoryFactory } from './company-category.factory'
-import { truncateDB } from 'test/helpers/truncateDB'
 
 afterAll(async () => {
   vi.restoreAllMocks()
-  await truncateDB()
 })
 
 describe('getCompanies', () => {
@@ -51,33 +47,8 @@ describe('requireCompany', () => {
     }
 
     expect((result as Response).status).toEqual(404)
-  })
-})
-
-describe('createCompany', () => {
-  test('should create a company with relationships', async () => {
-    const contactPerson = {
-      firstName: 'Luke',
-      lastName: 'Skywalker',
-      phone: '+1 234 2323512',
-    }
-    const country = await CountryFactory.create()
-    const companyCategories = await CompanyCategoryFactory.createList(2)
-
-    const companyData = CompanyFactory.build(
-      {},
-      {
-        associations: {
-          contactPerson,
-          country,
-          categories: companyCategories,
-        },
-      }
+    expect((result as Response).statusText).toEqual(
+      'La compañía no ha sido encontrada'
     )
-    const response = await companyService.createCompany(companyData)
-
-    expect(response).toMatchObject<
-      Awaited<ReturnType<typeof companyService.createCompany>>
-    >({ company: { id: companyData.id } })
   })
 })

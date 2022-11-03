@@ -13,12 +13,7 @@ import { FormActions } from '~/components/FormFields/FormActions'
 import { AdminEmployeeForm } from '~/components/Forms/AdminEmployeeForm'
 import { Title } from '~/components/Typography/Title'
 import { employeeValidator } from '~/services/employee/employee.schema'
-import {
-  getBankAccountTypes,
-  getBanks,
-  getIdentityDocumentTypes,
-  validateBankAccount,
-} from '~/services/bank/bank.server'
+import { getBanks, validateBankAccount } from '~/services/bank/bank.server'
 import { getCountries } from '~/services/country/country.server'
 import { getCryptocurrencies } from '~/services/crypto-currency/crypto-currency.server'
 import { getCryptoNetworks } from '~/services/crypto-network/crypto-network.server'
@@ -31,6 +26,8 @@ import {
   getEmployeeById,
   updateEmployeeById,
 } from '~/services/employee/employee.server'
+import { getBankAccountTypes } from '~/services/bank-account-type/bank-account-type.server'
+import { getIdentityDocumentTypes } from '~/services/identity-document-type/identity-document-type.server'
 import { prisma } from '~/db.server'
 
 type LoaderData = {

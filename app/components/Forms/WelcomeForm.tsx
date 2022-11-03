@@ -4,15 +4,13 @@ import type {
   IdentityDocument,
   User,
 } from '@prisma/client'
+import type { getBankAccountTypes } from '~/services/bank-account-type/bank-account-type.server'
+import type { getIdentityDocumentTypes } from '~/services/identity-document-type/identity-document-type.server'
 import type { StateLoader } from '~/routes/__api/states'
 import type { CityLoader } from '~/routes/__api/cities'
 import type { getCountries } from '~/services/country/country.server'
 import type { getGenders } from '~/services/gender/gender.server'
-import type {
-  getBankAccountTypes,
-  getBanks,
-  getIdentityDocumentTypes,
-} from '~/services/bank/bank.server'
+import type { getBanks } from '~/services/bank/bank.server'
 
 import { useControlField, ValidatedForm } from 'remix-validated-form'
 import { welcomeValidator } from '~/schemas/welcome.schema'

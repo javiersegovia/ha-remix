@@ -39,7 +39,9 @@ export const requireCompany = async (
   })
 
   if (!company) {
-    throw notFound('La compañía no ha sido encontrada')
+    throw notFound(null, {
+      statusText: 'La compañía no ha sido encontrada',
+    })
   }
 
   return company

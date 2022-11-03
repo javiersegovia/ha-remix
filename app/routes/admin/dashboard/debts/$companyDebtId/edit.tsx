@@ -1,22 +1,25 @@
 import type { ActionFunction } from '@remix-run/server-runtime'
 import type { CompanyDebtLoaderData } from '../$companyDebtId'
 
+import { redirect } from '@remix-run/server-runtime'
+import { badRequest } from 'remix-utils'
 import { ValidatedForm, validationError } from 'remix-validated-form'
+
 import Modal from '~/components/Dialog/Modal'
+import { Button } from '~/components/Button'
 import { SubmitButton } from '~/components/SubmitButton'
-import { useMatchesData } from '~/utils/utils'
 import { Box } from '~/components/Layout/Box'
 import { Title } from '~/components/Typography/Title'
 import {
   CurrencyInput,
   CurrencySymbol,
 } from '~/components/FormFields/CurrencyInput'
-import { Button } from '~/components/Button'
-import { companyDebtValidator } from '~/services/company/company-debt.schema'
-import { redirect } from '@remix-run/server-runtime'
+
+import { useMatchesData } from '~/utils/utils'
+
+import { companyDebtValidator } from '~/services/company-debt/company-debt.schema'
+import { updateCompanyDebt } from '~/services/company-debt/company-debt.server'
 import { requireAdminUserId } from '~/session.server'
-import { updateCompanyDebt } from '~/services/company/company-debt.server'
-import { badRequest } from 'remix-utils'
 
 export const action: ActionFunction = async ({ request, params }) => {
   await requireAdminUserId(request)

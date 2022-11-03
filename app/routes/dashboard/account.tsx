@@ -26,11 +26,7 @@ import { Box } from '~/components/Layout/Box'
 import { Title } from '~/components/Typography/Title'
 import { useCleanForm } from '~/hooks/useCleanForm'
 import { editAccountValidator } from '~/schemas/edit-account.schema'
-import {
-  getBankAccountTypes,
-  getBanks,
-  getIdentityDocumentTypes,
-} from '~/services/bank/bank.server'
+import { getBanks } from '~/services/bank/bank.server'
 import { getCountries } from '~/services/country/country.server'
 import { getCryptocurrencies } from '~/services/crypto-currency/crypto-currency.server'
 import { getCryptoNetworks } from '~/services/crypto-network/crypto-network.server'
@@ -38,6 +34,8 @@ import { getGenders } from '~/services/gender/gender.server'
 import { requireEmployee } from '~/session.server'
 import { formatMDYDate } from '~/utils/formatDate'
 import { updateEmployeeByAccountForm } from '~/services/employee/employee.server'
+import { getBankAccountTypes } from '~/services/bank-account-type/bank-account-type.server'
+import { getIdentityDocumentTypes } from '~/services/identity-document-type/identity-document-type.server'
 
 type LoaderData = {
   employee: Awaited<ReturnType<typeof requireEmployee>>

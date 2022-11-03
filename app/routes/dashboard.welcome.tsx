@@ -16,12 +16,10 @@ import {
   getEmployeeById,
   updateEmployeeByWelcomeForm,
 } from '~/services/employee/employee.server'
-import {
-  getBankAccountTypes,
-  getBanks,
-  getIdentityDocumentTypes,
-} from '~/services/bank/bank.server'
+import { getBanks } from '~/services/bank/bank.server'
 import { welcomeValidator } from '~/schemas/welcome.schema'
+import { getBankAccountTypes } from '~/services/bank-account-type/bank-account-type.server'
+import { getIdentityDocumentTypes } from '~/services/identity-document-type/identity-document-type.server'
 
 type LoaderData = {
   employee: Awaited<ReturnType<typeof getEmployeeById>>

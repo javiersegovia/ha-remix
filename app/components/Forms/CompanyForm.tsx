@@ -9,7 +9,7 @@ import type { Validator } from 'remix-validated-form'
 import { ValidatedForm } from 'remix-validated-form'
 
 import type { CompanySchemaInput } from '~/services/company/company.schema'
-import type { getCompanyCategories } from '~/services/company/company-category.server'
+import type { getCompanyCategories } from '~/services/company-category/company-category.server'
 import type { getCountries } from '~/services/country/country.server'
 
 import type { EnumOption } from '~/schemas/helpers'

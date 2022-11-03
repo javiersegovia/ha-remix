@@ -20,11 +20,11 @@ import {
 import { badRequest } from 'remix-utils'
 import { prisma } from '~/db.server'
 import { connect } from '~/utils/relationships'
+import { upsertFiatMonthlyDebt } from '~/services/company-debt/company-debt.server'
 import {
   sendPayrollNotificationToAdmin,
   sendPayrollNotificationToUser,
 } from '../email/email.server'
-import { upsertFiatMonthlyDebt } from '../company/company-debt.server'
 // import { sendSMS } from '../sms/sms.service'
 
 export type TPayrollContent = {

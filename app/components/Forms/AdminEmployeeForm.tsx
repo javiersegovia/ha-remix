@@ -6,11 +6,7 @@ import type {
   User,
   Wallet,
 } from '@prisma/client'
-import type {
-  getBankAccountTypes,
-  getBanks,
-  getIdentityDocumentTypes,
-} from '~/services/bank/bank.server'
+import type { getBanks } from '~/services/bank/bank.server'
 import type { CityLoader } from '~/routes/__api/cities'
 import type { StateLoader } from '~/routes/__api/states'
 import type { Validator } from 'remix-validated-form'
@@ -23,6 +19,8 @@ import type { getCryptocurrencies } from '~/services/crypto-currency/crypto-curr
 import type { getGenders } from '~/services/gender/gender.server'
 import type { getJobDepartments } from '~/services/job-department/job-department.server'
 import type { getJobPositions } from '~/services/job-position/job-position.server'
+import type { getBankAccountTypes } from '~/services/bank-account-type/bank-account-type.server'
+import type { getIdentityDocumentTypes } from '~/services/identity-document-type/identity-document-type.server'
 
 import { useEffect } from 'react'
 import { EmployeeStatus } from '@prisma/client'

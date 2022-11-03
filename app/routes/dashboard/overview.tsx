@@ -41,7 +41,7 @@ export const loader: LoaderFunction = async ({ request, context: ctx }) => {
 const benefits: BenefitCardProps[] = [
   {
     title: 'Adelantos de Nómina',
-    icon: 'dollar',
+    imageUrl: '/images/icon/icon_benefit_dollar.svg',
     button: {
       text: 'Solicitar',
       href: '/dashboard/payroll-advances/new',
@@ -49,7 +49,7 @@ const benefits: BenefitCardProps[] = [
   },
   {
     title: 'Adelantos de Prima',
-    icon: 'savings',
+    imageUrl: '/images/icon/icon_benefit_savings.svg',
     button: {
       text: 'Solicitar',
       href: 'request-premium-advance',
@@ -57,7 +57,7 @@ const benefits: BenefitCardProps[] = [
   },
   {
     title: 'Haz realidad tus viajes',
-    icon: 'airplane',
+    imageUrl: '/images/icon/icon_benefit_travel.svg',
     button: {
       text: 'Solicitar',
       href: 'https://umany.co/tu-paseo/',
@@ -66,35 +66,35 @@ const benefits: BenefitCardProps[] = [
   },
   {
     title: 'Educación financiera',
-    icon: 'book',
+    imageUrl: '/images/icon/icon_benefit_study.svg',
     button: {
       text: 'Próximamente',
     },
   },
   {
     title: 'Salud',
-    icon: 'health',
+    imageUrl: '/images/icon/icon_benefit_health.svg',
     button: {
       text: 'Próximamente',
     },
   },
   {
     title: 'Seguros',
-    icon: 'insurance',
+    imageUrl: '/images/icon/icon_benefit_insurance.svg',
     button: {
       text: 'Próximamente',
     },
   },
   {
     title: 'Descuentos',
-    icon: 'discount',
+    imageUrl: '/images/icon/icon_benefit_discount.svg',
     button: {
       text: 'Próximamente',
     },
   },
   {
     title: 'Mercado de Frutas y Verduras',
-    icon: 'food',
+    imageUrl: '/images/icon/icon_benefit_groceries.svg',
     button: {
       text: 'Próximamente',
     },
@@ -127,12 +127,12 @@ export default function DashboardIndexRoute() {
 
       <div className="relative w-full flex-1">
         <img
-          className="absolute top-0 left-0"
+          className="absolute top-0 left-0 opacity-[15%]"
           src="/images/block_dashboard_overview_yellow.png"
-          alt="Bloque Verde"
+          alt="Bloque Amarillo"
         />
         <img
-          className="absolute bottom-0 right-0"
+          className="absolute bottom-0 right-0 opacity-[15%]"
           src="/images/block_dashboard_overview_green.png"
           alt="Bloque Verde"
         />
@@ -158,7 +158,7 @@ export default function DashboardIndexRoute() {
                 key={benefit.title}
                 title={benefit.title}
                 button={benefit.button}
-                icon={benefit.icon}
+                imageUrl={benefit.imageUrl}
               />
             ))}
           </section>

@@ -2,7 +2,7 @@ import { useLoaderData } from '@remix-run/react'
 import type { LoaderFunction, MetaFunction } from '@remix-run/server-runtime'
 import { json } from '@remix-run/server-runtime'
 import { CompanyDebtList } from '~/components/Lists/CompanyDebtList'
-import { getCompanyDebtsByCompanyId } from '~/services/company/company-debt.server'
+import { getCompanyDebtsByCompanyId } from '~/services/company-debt/company-debt.server'
 import { requireCompany } from '~/services/company/company.server'
 import { requireAdminUserId } from '~/session.server'
 

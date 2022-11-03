@@ -32,11 +32,20 @@ export const CompanyFactory = Factory.define<
   ExtendedCompanyResult
 >(({ onCreate, associations }) => {
   onCreate((company) => {
-    const { countryId: _, ...companyData } = company
+    const { countryId: _, contactPerson, ...companyData } = company
 
     return prisma.company.create({
       data: {
         ...companyData,
+
+        contactPerson: contactPerson
+          ? {
+              create: {
+                ...contactPerson,
+              },
+            }
+          : undefined,
+
         country: connect(associations?.country?.id),
 
         banks: connectMany(associations?.banks?.map((bank) => bank.id)),

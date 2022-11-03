@@ -11,24 +11,6 @@ export const getBanks = () => {
   })
 }
 
-export const getBankAccountTypes = () => {
-  return prisma.bankAccountType.findMany({
-    select: {
-      id: true,
-      name: true,
-    },
-  })
-}
-
-export const getIdentityDocumentTypes = () => {
-  return prisma.identityDocumentType.findMany({
-    select: {
-      id: true,
-      name: true,
-    },
-  })
-}
-
 export const validateBankAccount = (
   bankAccount: EmployeeSchemaInput['bankAccount'],
   formId?: string
