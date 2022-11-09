@@ -66,7 +66,7 @@ export const PayrollAdvanceList = ({
     <div className="flex flex-col">
       <div className="-my-2 overflow-x-auto xl:-mx-8">
         <div className="inline-block min-w-full py-2 align-middle xl:px-8">
-          <div className="overflow-hidden border-b border-gray-200 shadow sm:rounded-lg">
+          <div className="overflow-hidden border-b border-gray-200 shadow-md sm:rounded-lg">
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>

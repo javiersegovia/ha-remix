@@ -1,5 +1,5 @@
-import clsx from 'clsx'
 import type { PropsWithChildren } from 'react'
+import { twMerge } from 'tailwind-merge'
 
 interface BoxProps extends PropsWithChildren {
   className?: string
@@ -8,7 +8,7 @@ interface BoxProps extends PropsWithChildren {
 export const Box = ({ children, className, ...otherProps }: BoxProps) => {
   return (
     <div
-      className={clsx('relative rounded-xl bg-white shadow', className)}
+      className={twMerge('relative rounded-xl bg-white shadow-xl', className)}
       {...otherProps}
     >
       {children}

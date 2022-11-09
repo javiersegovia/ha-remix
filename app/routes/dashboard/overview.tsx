@@ -68,7 +68,8 @@ const benefits: BenefitCardProps[] = [
     title: 'Educación financiera',
     imageUrl: '/images/icon/icon_benefit_study.svg',
     button: {
-      text: 'Próximamente',
+      text: 'Visitar',
+      href: '/dashboard/education',
     },
   },
   {
@@ -149,7 +150,11 @@ export default function DashboardIndexRoute() {
               </p>
             </div>
 
-            <img className="w-20" src="/images/bito.png" alt="Robot BitO" />
+            <img
+              className="w-20"
+              src="/images/bito/bito_1.png"
+              alt="Robot BitO"
+            />
           </Box>
 
           <section className="mt-10 grid grid-cols-2 items-center gap-4 text-center md:gap-5 lg:grid-cols-3 lg:items-stretch">

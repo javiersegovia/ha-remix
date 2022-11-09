@@ -88,6 +88,7 @@
     "react-select": "^5.4.0",
     "remix-utils": "^3.3.0",
     "remix-validated-form": "^4.5.5",
+    "tailwind-merge": "^1.8.0",
     "tiny-invariant": "^1.2.0",
     "zod": "^3.18.0",
     "zod-form-data": "^1.2.1"

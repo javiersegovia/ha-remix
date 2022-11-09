@@ -214,6 +214,10 @@ export default function DashboardAccountRoute() {
             Mi perfil
           </Title>
 
+          <Title as="h2" className="pb-4 pt-3">
+            Información principal
+          </Title>
+
           <FormGridWrapper>
             <FormGridItem>
               <Input
@@ -415,7 +419,7 @@ export default function DashboardAccountRoute() {
             </FormGridItem>
           </FormGridWrapper>
 
-          <Title as="h2" className="pb-4 pt-3">
+          {/* <Title as="h2" className="pb-4 pt-3">
             Billetera cripto
           </Title>
 
@@ -438,7 +442,7 @@ export default function DashboardAccountRoute() {
                 isClearable
               />
             </FormGridItem>
-          </FormGridWrapper>
+          </FormGridWrapper> */}
 
           <FormActions title="Guardar" />
         </Box>
