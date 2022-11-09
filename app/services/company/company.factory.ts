@@ -73,6 +73,7 @@ export const CompanyFactory = Factory.define<
     address: null,
     phone: null,
     countryId: associations?.country?.id || null,
+    categories: associations?.categories || undefined,
 
     lastRequestDay: 32,
     paymentDays: [],

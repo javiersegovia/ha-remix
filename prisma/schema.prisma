@@ -671,3 +671,11 @@ enum PremiumAdvanceHistoryActor {
   ADMIN
   EMPLOYEE
 }
+
+model Benefit {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  name String
+}
