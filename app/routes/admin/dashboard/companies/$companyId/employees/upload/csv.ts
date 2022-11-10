@@ -78,5 +78,5 @@ export const action: ActionFunction = async ({ request, params }) => {
     console.error(e)
   }
 
-  return null
+  return badRequest('Ha ocurrido un error inesperado.')
 }

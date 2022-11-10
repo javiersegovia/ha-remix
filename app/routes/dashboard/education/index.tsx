@@ -1,16 +1,16 @@
-import React from 'react'
+import { Link } from '@remix-run/react'
 import { Container } from '~/components/Layout/Container'
 import { BiArrowBack } from 'react-icons/bi'
 import { Title } from '~/components/Typography/Title'
 import { Box } from '~/components/Layout/Box'
-import { Link } from '@remix-run/react'
 
 // Todo: should be dynamic
 const video = {
-  title: 'Dios proveerá',
+  title: 'Diosito proveerá',
   author: 'HoyTrabajas',
-  description:
-    'El mejor amigo de la inversión es el buen ahorro con justa causa, en este vídeo hablaremos de la importancia del ahorro 60%—20%—20%',
+  description: `Hoy te presentamos ¿Cómo viajar? Y organizarte financieramente.
+    Cami y Leo nos cuentan a lo largo de este capítulo, cómo pudieron organizar su vida financiera para cumplir con sus viajes soñados.
+    Recuerda que la buena planeación es la clave`,
 }
 
 export default function DashboardEducationRoute() {
@@ -57,14 +57,16 @@ export default function DashboardEducationRoute() {
         <section className="mt-10 px-4">
           <Title as="h4">{video.title}</Title>
           <p className="text-steelBlue-400">{video.author}</p>
-          <p className="mt-3 hidden lg:block">{video.description}</p>
+          <p className="mt-3 hidden whitespace-pre-line lg:block">
+            {video.description}
+          </p>
         </section>
 
         <div className="my-7 h-[2px] w-full bg-gray-200 lg:my-10" />
 
         <aside>
           <Title as="h4" className="text-center lg:text-left">
-            Encuentra el mejor contenido con nosotros para cuidar tu bolsillo
+            Encuentra el mejor contenido aquí
           </Title>
 
           <Box className="mt-6 flex items-center gap-4 p-8 !shadow-xl sm:gap-14">
