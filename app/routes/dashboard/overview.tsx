@@ -60,7 +60,7 @@ const benefits: BenefitCardProps[] = [
     imageUrl: '/images/icon/icon_benefit_travel.svg',
     button: {
       text: 'Solicitar',
-      href: 'https://umany.co/tu-paseo/',
+      href: 'https://tu.hoyadelantas.com/viajes',
       external: true,
     },
   },
@@ -70,6 +70,14 @@ const benefits: BenefitCardProps[] = [
     button: {
       text: 'Visitar',
       href: '/dashboard/education',
+    },
+  },
+  {
+    title: 'Mercado de Frutas y Verduras',
+    imageUrl: '/images/icon/icon_benefit_groceries.svg',
+    button: {
+      text: 'Ir a la tienda',
+      href: '/dashboard/overview/visit-groceries',
     },
   },
   {
@@ -89,13 +97,6 @@ const benefits: BenefitCardProps[] = [
   {
     title: 'Descuentos',
     imageUrl: '/images/icon/icon_benefit_discount.svg',
-    button: {
-      text: 'Próximamente',
-    },
-  },
-  {
-    title: 'Mercado de Frutas y Verduras',
-    imageUrl: '/images/icon/icon_benefit_groceries.svg',
     button: {
       text: 'Próximamente',
     },

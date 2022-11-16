@@ -15,6 +15,7 @@ export type TButtonVariants =
 
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   href?: string
+  external?: boolean
   targetBlank?: boolean
   isLoading?: boolean
   showCheckOnSuccess?: boolean
@@ -22,11 +23,30 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: TButtonVariants
 }
 
-export const Button = ({ href, ...props }: ButtonProps) =>
+export const Button = ({
+  href,
+  external = false,
+  targetBlank,
+  ...props
+}: ButtonProps) =>
   href ? (
-    <Link to={href} className="w-full">
-      <ButtonElement {...props} />
-    </Link>
+    external ? (
+      <>
+        <a
+          className="block w-full"
+          href={href}
+          {...(targetBlank
+            ? { target: '_blank', rel: 'noreferrer noopener' }
+            : {})}
+        >
+          <ButtonElement {...props} />
+        </a>
+      </>
+    ) : (
+      <Link to={href} className="w-full">
+        <ButtonElement {...props} />
+      </Link>
+    )
   ) : (
     <ButtonElement {...props} />
   )
