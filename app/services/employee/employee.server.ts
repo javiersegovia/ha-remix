@@ -791,7 +791,8 @@ export const uploadEmployees = async (
             roles: [EmployeeRole.MEMBER],
 
             status:
-              status == EmployeeStatus.ACTIVE
+              status?.toLowerCase() == EmployeeStatus.ACTIVE.toLowerCase() ||
+              status?.toLowerCase() == 'activo'
                 ? EmployeeStatus.ACTIVE
                 : EmployeeStatus.INACTIVE,
 
