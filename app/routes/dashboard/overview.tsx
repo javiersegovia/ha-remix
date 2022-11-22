@@ -68,8 +68,10 @@ const benefits: BenefitCardProps[] = [
     title: 'Educación financiera',
     imageUrl: '/images/icon/icon_benefit_study.svg',
     button: {
+      // text: 'Visitar',
+      // href: '/dashboard/education',
       text: 'Visitar',
-      href: '/dashboard/education',
+      href: 'https://tu.hoyadelantas.com/edfinanciera',
     },
   },
   {
