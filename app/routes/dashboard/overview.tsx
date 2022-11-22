@@ -72,6 +72,7 @@ const benefits: BenefitCardProps[] = [
       // href: '/dashboard/education',
       text: 'Visitar',
       href: 'https://tu.hoyadelantas.com/edfinanciera',
+      external: true,
     },
   },
   {
