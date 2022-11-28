@@ -109,20 +109,20 @@ const jobPositions = [
   'Vendedor',
 ]
 
-const statesAndCitiesOfColombia = [
-  {
-    state: 'Amazonas',
-    cities: ['El encanto', 'La chorrera'],
-  },
-  {
-    state: 'Antioquia',
-    cities: ['Medellín'],
-  },
-  {
-    state: 'Bogotá',
-    cities: ['Bogotá'],
-  },
-]
+// const statesAndCitiesOfColombia = [
+//   {
+//     state: 'Amazonas',
+//     cities: ['El encanto', 'La chorrera'],
+//   },
+//   {
+//     state: 'Antioquia',
+//     cities: ['Medellín'],
+//   },
+//   {
+//     state: 'Bogotá',
+//     cities: ['Bogotá'],
+//   },
+// ]
 
 const genders = ['Masculino', 'Femenino', 'Otro']
 

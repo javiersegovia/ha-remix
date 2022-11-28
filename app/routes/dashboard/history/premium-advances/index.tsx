@@ -1,6 +1,5 @@
 import { useLoaderData } from '@remix-run/react'
 import { json } from '@remix-run/server-runtime'
-import { Button } from '~/components/Button'
 import { Title } from '~/components/Typography/Title'
 import { requireEmployee } from '~/session.server'
 

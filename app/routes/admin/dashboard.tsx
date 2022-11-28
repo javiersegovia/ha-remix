@@ -2,7 +2,7 @@ import type { LoaderFunction, MetaFunction } from '@remix-run/server-runtime'
 import { Outlet } from '@remix-run/react'
 import { json } from '@remix-run/node'
 import { HiOutlineHome, HiOutlineOfficeBuilding } from 'react-icons/hi'
-import { TbStars } from 'react-icons/tb'
+// import { TbStars } from 'react-icons/tb'
 import { MdAttachMoney } from 'react-icons/md'
 import { FiSettings } from 'react-icons/fi'
 

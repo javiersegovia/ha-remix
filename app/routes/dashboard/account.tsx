@@ -44,8 +44,6 @@ type LoaderData = {
   banks: Awaited<ReturnType<typeof getBanks>>
   bankAccountTypes: Awaited<ReturnType<typeof getBankAccountTypes>>
   identityDocumentTypes: Awaited<ReturnType<typeof getIdentityDocumentTypes>>
-
-  cryptoNetworks: Awaited<ReturnType<typeof getCryptoNetworks>>
   cryptocurrencies: Awaited<ReturnType<typeof getCryptocurrencies>>
 }
 
@@ -58,7 +56,6 @@ export const loader: LoaderFunction = async ({ request }) => {
     banks,
     bankAccountTypes,
     identityDocumentTypes,
-    cryptoNetworks,
     cryptocurrencies,
   ] = await Promise.all([
     getCountries(),
@@ -77,7 +74,6 @@ export const loader: LoaderFunction = async ({ request }) => {
     banks,
     bankAccountTypes,
     identityDocumentTypes,
-    cryptoNetworks,
     cryptocurrencies,
   })
 }
@@ -113,7 +109,6 @@ export default function DashboardAccountRoute() {
     banks,
     bankAccountTypes,
     identityDocumentTypes,
-    cryptoNetworks,
   } = useLoaderData<LoaderData>()
 
   const {
