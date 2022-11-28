@@ -69,6 +69,10 @@ model Company {
   payrollAdvances  PayrollAdvance[]
   premiumAdvances  PremiumAdvance[]
 
+  benefits     Benefit[]
+  membership   Membership? @relation(fields: [membershipId], references: [id])
+  membershipId Int?
+
   companyFiatDebts   CompanyFiatDebt[]
   companyCryptoDebts CompanyCryptoDebt[]
   companyDebts       CompanyDebt[]
@@ -678,4 +682,18 @@ model Benefit {
   updatedAt DateTime @updatedAt
 
   name String
+
+  companies  Company[]
+  membership Membership[]
+}
+
+model Membership {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  name String
+
+  companies Company[]
+  benefits  Benefit[]
 }

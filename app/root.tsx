@@ -127,6 +127,28 @@ export default function App() {
       <head>
         <Meta />
         <Links />
+
+        {typeof document !== 'undefined' &&
+          (location.pathname === '/dashboard/overview' ||
+            location.pathname.includes('/dashboard/payroll-advances/') ||
+            location.pathname.includes('/dashboard/premium-advances/')) && (
+            <script
+              async
+              id="hotjar"
+              dangerouslySetInnerHTML={{
+                __html: `
+          (function(h,o,t,j,a,r){
+            h.hj=h.hj||function(){(h.hj.q=h.hj.q||[]).push(arguments)};
+            h._hjSettings={hjid:3148054,hjsv:6};
+            a=o.getElementsByTagName('head')[0];
+            r=o.createElement('script');r.async=1;
+            r.src=t+h._hjSettings.hjid+j+h._hjSettings.hjsv;
+            a.appendChild(r);
+        })(window,document,'https://static.hotjar.com/c/hotjar-','.js?sv=');
+      `,
+              }}
+            />
+          )}
       </head>
 
       <body className="h-full">
