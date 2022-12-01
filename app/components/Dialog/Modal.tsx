@@ -9,14 +9,14 @@ interface ModalProps extends PropsWithChildren {
   onCloseRedirectTo: string
 }
 
-export default function Modal({ onCloseRedirectTo, children }: ModalProps) {
+export function Modal({ onCloseRedirectTo, children }: ModalProps) {
   const navigate = useNavigate()
 
   return (
     <ClientOnly
       fallback={
         <div className="fixed inset-0 z-50 overflow-y-auto">
-          <div className="flex min-h-screen flex-col px-4 text-center">
+          <div className="flex min-h-screen flex-col">
             <Link
               to={onCloseRedirectTo}
               className="fixed inset-0 w-full bg-gray-900 bg-opacity-70 text-transparent"
@@ -37,7 +37,7 @@ export default function Modal({ onCloseRedirectTo, children }: ModalProps) {
             }}
             className="fixed inset-0 z-50 overflow-y-auto"
           >
-            <div className="flex min-h-screen flex-col px-4 text-center">
+            <div className="flex min-h-screen flex-col">
               <Transition.Child
                 as={Fragment}
                 enter="ease-out duration-300"

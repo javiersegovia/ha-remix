@@ -1,8 +1,8 @@
 import type { ButtonHTMLAttributes } from 'react'
-import clsx from 'clsx'
 import { Link } from '@remix-run/react'
 import { HiCheck } from 'react-icons/hi'
 import { Spinner } from '~/components/Spinner'
+import { twMerge } from 'tailwind-merge'
 
 export type TButtonSizes = 'XS' | 'SM' | 'MD' | 'LG' | 'XL'
 export type TButtonVariants =
@@ -73,7 +73,7 @@ export const ButtonElement = ({
     <button
       type={type}
       disabled={disabled}
-      className={clsx(
+      className={twMerge(
         'flex w-full transform items-center justify-center rounded-lg text-center text-base font-medium transition duration-100 active:scale-95',
 
         size === 'MD' && 'px-6 py-4',
@@ -93,8 +93,8 @@ export const ButtonElement = ({
         isLight && 'bg-blue-100 text-cyan-600',
         isLight && !disabled && 'hover:bg-blue-200',
 
-        isWarning && 'bg-red-500 text-white',
-        isWarning && !disabled && 'hover:bg-red-600',
+        isWarning && 'bg-red-100 text-red-600',
+        isWarning && !disabled && 'hover:bg-red-200',
 
         isSuccess && 'bg-green-400 text-white',
         isSuccess && !disabled && 'hover:bg-green-600',

@@ -5,7 +5,7 @@ import { redirect } from '@remix-run/server-runtime'
 import { badRequest } from 'remix-utils'
 import { ValidatedForm, validationError } from 'remix-validated-form'
 
-import Modal from '~/components/Dialog/Modal'
+import { Modal } from '~/components/Dialog/Modal'
 import { Button } from '~/components/Button'
 import { SubmitButton } from '~/components/SubmitButton'
 import { Box } from '~/components/Layout/Box'

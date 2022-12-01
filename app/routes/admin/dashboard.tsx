@@ -2,9 +2,10 @@ import type { LoaderFunction, MetaFunction } from '@remix-run/server-runtime'
 import { Outlet } from '@remix-run/react'
 import { json } from '@remix-run/node'
 import { HiOutlineHome, HiOutlineOfficeBuilding } from 'react-icons/hi'
-// import { TbStars } from 'react-icons/tb'
+import { TbStars } from 'react-icons/tb'
 import { MdAttachMoney } from 'react-icons/md'
 import { FiSettings } from 'react-icons/fi'
+import { AiOutlineThunderbolt } from 'react-icons/ai'
 
 import { requireAdminUser } from '~/session.server'
 import type { INavPath } from '~/components/SideBar/DashboardSideBar'
@@ -41,11 +42,16 @@ const navPaths: INavPath[] = [
     path: '/admin/dashboard/history/payroll-advances',
     title: 'Adelantos',
   },
-  // {
-  //   icon: TbStars,
-  //   path: '/admin/dashboard/benefits',
-  //   title: 'Beneficios',
-  // },
+  {
+    icon: TbStars,
+    path: '/admin/dashboard/benefits',
+    title: 'Beneficios',
+  },
+  {
+    icon: AiOutlineThunderbolt,
+    path: '/admin/dashboard/memberships',
+    title: 'Membresías',
+  },
   {
     icon: FiSettings,
     path: '/admin/dashboard/settings',

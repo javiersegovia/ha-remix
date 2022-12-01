@@ -11,3 +11,4 @@ export const benefitSchema = z.object({
 })
 
 export const benefitValidator = withZod(benefitSchema)
+export type BenefitInputSchema = z.infer<typeof benefitSchema>

@@ -1,13 +1,12 @@
-import React from 'react'
 import { Button } from '~/components/Button'
-import Modal from '~/components/Dialog/Modal'
+import { Modal } from '~/components/Dialog/Modal'
 import { Box } from '~/components/Layout/Box'
 import { Title } from '~/components/Typography/Title'
 
 export default function VisitGroceriesModalRoute() {
   return (
     <Modal onCloseRedirectTo="/dashboard/overview">
-      <div className="m-auto w-full max-w-lg">
+      <div className="m-auto w-full max-w-lg text-center">
         <Box className="space-y-5 p-5">
           <>
             <Title>¡Disfruta lo mejor del campo colombiano aquí!</Title>
