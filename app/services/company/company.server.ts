@@ -29,6 +29,10 @@ export const getCompanies = async () => {
   })
 }
 
+// TODO: RequireCompany should be a wrapper around findFirst.
+// Right now, the return types are not correct if we add "select" or "include"
+// We have to refactor this function to make it work with types.
+// https://github.com/prisma/prisma/issues/3372
 export const requireCompany = async (
   queryOptions: Prisma.CompanyFindFirstArgs & {
     where: Prisma.CompanyFindFirstArgs['where']
@@ -52,6 +56,7 @@ export const createCompany = async (formData: CompanySchemaInput) => {
     countryId,
     contactPerson,
     categoriesIds,
+    benefitsIds,
     status,
     paymentDays,
     dispersion,
@@ -59,7 +64,10 @@ export const createCompany = async (formData: CompanySchemaInput) => {
     premiumPaymentDays,
     premiumDispersion,
     premiumLastRequestDay,
-    ...companyData
+    description,
+    name,
+    address,
+    phone: companyPhone,
   } = formData
 
   const { firstName, lastName, phone } = contactPerson || {}
@@ -79,10 +87,16 @@ export const createCompany = async (formData: CompanySchemaInput) => {
   try {
     const company = await prisma.company.create({
       data: {
-        ...companyData,
+        description,
+        name,
+        address,
+        phone: companyPhone,
+
         country: connect(countryId),
 
         categories: connectMany(categoriesIds),
+        benefits: connectMany(benefitsIds),
+
         contactPerson: createContactPerson,
         status,
 
@@ -118,6 +132,7 @@ export const updateCompanyById = async (
   const {
     countryId,
     categoriesIds,
+    benefitsIds,
     contactPerson,
     status,
     paymentDays,
@@ -171,6 +186,8 @@ export const updateCompanyById = async (
         country: connectOrDisconnect(countryId, !!existingCompany.countryId),
 
         categories: setMany(categoriesIds),
+        benefits: setMany(benefitsIds),
+
         contactPerson: upsertContactPerson,
         status,
 

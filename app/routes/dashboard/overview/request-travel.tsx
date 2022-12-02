@@ -11,20 +11,8 @@ import { createPremiumAdvance } from '~/services/premium-advance/premium-advance
 
 export const meta: MetaFunction = () => {
   return {
-    title: 'Confirmar solicitud de adelanto de prima | HoyAdelantas',
+    title: 'Confirmar solicitud de viaje | HoyAdelantas',
   }
-}
-
-export async function action({ request }: ActionArgs) {
-  const employee = await requireEmployee(request)
-
-  const premiumAdvance = await createPremiumAdvance({
-    user: employee.user,
-    companyId: employee.companyId,
-    employeeId: employee.id,
-  })
-
-  return redirect(`/dashboard/premium-advances/${premiumAdvance.id}`)
 }
 
 export default function RequestPremiumAdvanceModalRoute() {
@@ -37,13 +25,14 @@ export default function RequestPremiumAdvanceModalRoute() {
           <>
             <Title>Confirmar solicitud</Title>
             <p>
-              Si estás interesado en solicitar un adelanto de prima, por favor
-              haz click en el siguiente botón y nos comunicaremos contigo.
+              Si estás interesado en conocer más sobre el servicio de viajes,
+              por favor haz click en el siguiente botón y comunícate con
+              nosotros vía WhatsApp.
             </p>
             <Form method="post" className="flex flex-col gap-4">
-              <Button type="submit" disabled={transition.state !== 'idle'}>
-                Solicitar adelanto de prima
-              </Button>
+              <a href="https://bit.ly/arma_tu_viaje" rel="noopener noreferrer">
+                <Button>Ir a WhatsApp</Button>
+              </a>
 
               <Button
                 variant="LIGHT"

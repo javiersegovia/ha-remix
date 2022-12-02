@@ -26,6 +26,7 @@ import {
   getEmployeeById,
   updateEmployeeById,
 } from '~/services/employee/employee.server'
+import { getMemberships } from '~/services/membership/membership.server'
 import { getBankAccountTypes } from '~/services/bank-account-type/bank-account-type.server'
 import { getIdentityDocumentTypes } from '~/services/identity-document-type/identity-document-type.server'
 import { prisma } from '~/db.server'
@@ -42,6 +43,7 @@ type LoaderData = {
   currencies: Awaited<ReturnType<typeof getCurrencies>>
   cryptoNetworks: Awaited<ReturnType<typeof getCryptoNetworks>>
   cryptocurrencies: Awaited<ReturnType<typeof getCryptocurrencies>>
+  memberships: Awaited<ReturnType<typeof getMemberships>>
 }
 
 export const loader: LoaderFunction = async ({ request, params }) => {
@@ -71,6 +73,7 @@ export const loader: LoaderFunction = async ({ request, params }) => {
     currencies: await getCurrencies(),
     cryptoNetworks: await getCryptoNetworks(),
     cryptocurrencies: await getCryptocurrencies(),
+    memberships: await getMemberships(),
   })
 }
 
@@ -129,6 +132,7 @@ export default function AdminDashboardCompanyUpdateEmployeeRoute() {
     currencies,
     cryptocurrencies,
     cryptoNetworks,
+    memberships,
   } = useLoaderData<LoaderData>()
 
   return (
@@ -149,6 +153,7 @@ export default function AdminDashboardCompanyUpdateEmployeeRoute() {
             jobPositions={jobPositions}
             jobDepartments={jobDepartments}
             banks={banks}
+            memberships={memberships}
             bankAccountTypes={bankAccountTypes}
             identityDocumentTypes={identityDocumentTypes}
             genders={genders}

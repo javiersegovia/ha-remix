@@ -60,8 +60,7 @@ const benefits: BenefitCardProps[] = [
     imageUrl: '/images/icon/icon_benefit_travel.svg',
     button: {
       text: 'Solicitar',
-      href: 'https://tu.hoyadelantas.com/viajes',
-      external: true,
+      href: 'request-travel',
     },
   },
   {

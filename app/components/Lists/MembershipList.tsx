@@ -18,7 +18,8 @@ export function MembershipList({ memberships }: MembershipListProps) {
               <thead className="bg-gray-50">
                 <tr>
                   <TableHeading title="Nombre" />
-                  <TableHeading title="Cantidad de Beneficios" isCentered />
+                  <TableHeading title="Beneficios asociados" isCentered />
+                  <TableHeading title="Colaboradores asociados" isCentered />
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200 bg-white">
@@ -35,6 +36,9 @@ export function MembershipList({ memberships }: MembershipListProps) {
 
                     <TableData isCentered>
                       {membership._count.benefits}
+                    </TableData>
+                    <TableData isCentered>
+                      {membership._count.employees}
                     </TableData>
                   </tr>
                 ))}

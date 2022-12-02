@@ -97,6 +97,11 @@ export const getEmployeesByCompanyId = async (
       advanceCryptoMaxAmount: true,
       advanceAvailableAmount: true,
       advanceCryptoAvailableAmount: true,
+      membership: {
+        select: {
+          name: true,
+        },
+      },
       user: {
         select: {
           id: true,
@@ -138,6 +143,7 @@ export const createEmployee = async (
     birthDay,
     documentIssueDate,
 
+    membershipId,
     genderId,
     countryId,
     jobDepartmentId,
@@ -245,6 +251,7 @@ export const createEmployee = async (
         country: connect(countryId),
         state: connect(stateId),
         city: connect(cityId),
+        membership: connect(membershipId),
 
         user: {
           create: {
@@ -282,6 +289,7 @@ export const createEmployee = async (
     return { employee }
   } catch (err) {
     // Todo LOGGER: Log error and save to a file
+    console.error(err)
     return { error: err, employee: null }
   }
 }
@@ -306,6 +314,7 @@ export const updateEmployeeById = async (
     cryptocurrencyId,
     stateId,
     cityId,
+    membershipId,
 
     address,
     numberOfChildren,
@@ -407,6 +416,7 @@ export const updateEmployeeById = async (
         numberOfChildren: numberOfChildren || undefined,
         roles: roles || undefined,
 
+        membership: connect(membershipId),
         gender: connectOrDisconnect(genderId, !!existingEmployee.genderId),
         country: connectOrDisconnect(countryId, !!existingEmployee.countryId),
         state: connectOrDisconnect(stateId, !!existingEmployee.stateId),

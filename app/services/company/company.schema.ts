@@ -34,6 +34,7 @@ const companySchema = z.object({
 
   countryId: zfd.numeric(z.number().nullish()),
   categoriesIds: z.array(zfd.numeric(z.number())).nullish(),
+  benefitsIds: z.array(zfd.numeric(z.number())).nullish(),
 
   contactPerson: z
     .object({

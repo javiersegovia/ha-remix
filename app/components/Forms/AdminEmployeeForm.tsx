@@ -21,6 +21,7 @@ import type { getJobDepartments } from '~/services/job-department/job-department
 import type { getJobPositions } from '~/services/job-position/job-position.server'
 import type { getBankAccountTypes } from '~/services/bank-account-type/bank-account-type.server'
 import type { getIdentityDocumentTypes } from '~/services/identity-document-type/identity-document-type.server'
+import type { getMemberships } from '~/services/membership/membership.server'
 
 import { useEffect } from 'react'
 import { EmployeeStatus } from '@prisma/client'
@@ -51,6 +52,7 @@ interface AdminEmployeeFormProps<T = EmployeeSchemaInput> {
   bankAccountTypes: Awaited<ReturnType<typeof getBankAccountTypes>>
   identityDocumentTypes: Awaited<ReturnType<typeof getIdentityDocumentTypes>>
   genders: Awaited<ReturnType<typeof getGenders>>
+  memberships: Awaited<ReturnType<typeof getMemberships>>
   currencies: Awaited<ReturnType<typeof getCurrencies>>
   cryptoNetworks: Awaited<ReturnType<typeof getCryptoNetworks>>
   cryptocurrencies: Awaited<ReturnType<typeof getCryptocurrencies>>
@@ -73,6 +75,7 @@ interface AdminEmployeeFormProps<T = EmployeeSchemaInput> {
     | 'cityId'
     | 'genderId'
     | 'currencyId'
+    | 'membershipId'
     | 'cryptocurrencyId'
     | 'jobDepartmentId'
     | 'jobPositionId'
@@ -97,6 +100,7 @@ export const AdminEmployeeForm = ({
   actions,
   jobPositions,
   jobDepartments,
+  memberships,
   banks,
   bankAccountTypes,
   identityDocumentTypes,
@@ -125,6 +129,7 @@ export const AdminEmployeeForm = ({
     genderId,
     currencyId,
     cryptocurrencyId,
+    membershipId,
     jobDepartmentId,
     jobPositionId,
     documentIssueDate,
@@ -153,6 +158,7 @@ export const AdminEmployeeForm = ({
     currencyId,
     cryptocurrencyId,
     jobDepartmentId,
+    membershipId: membershipId || undefined,
     jobPositionId,
     documentIssueDate,
     birthDay,
@@ -268,6 +274,15 @@ export const AdminEmployeeForm = ({
               label="Estado"
               placeholder="Estado"
               options={employeeStatusList}
+            />
+          </FormGridItem>
+
+          <FormGridItem>
+            <Select
+              name="membershipId"
+              label="Membresía"
+              placeholder="Membresía"
+              options={memberships}
             />
           </FormGridItem>
         </FormGridWrapper>

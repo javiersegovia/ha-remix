@@ -203,6 +203,8 @@ model Employee {
   jobDepartmentId Int?
   jobPosition     JobPosition?   @relation(fields: [jobPositionId], references: [id])
   jobPositionId   Int?
+  membership      Membership?    @relation(fields: [membershipId], references: [id])
+  membershipId    Int?
 
   country   Country? @relation(fields: [countryId], references: [id])
   countryId Int?
@@ -695,5 +697,6 @@ model Membership {
   name String
 
   companies Company[]
+  employees Employee[]
   benefits  Benefit[]
 }

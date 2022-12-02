@@ -1,18 +1,20 @@
+import type { CompanySchemaInput } from '~/services/company/company.schema'
+import type { getCompanyCategories } from '~/services/company-category/company-category.server'
+import type { getCountries } from '~/services/country/country.server'
+import type { getBenefits } from '~/services/benefit/benefit.server'
+import type { EnumOption } from '~/schemas/helpers'
 import type {
+  Benefit,
   Company,
   CompanyCategory,
   CompanyContactPerson,
   Country,
 } from '@prisma/client'
-import { CompanyStatus } from '@prisma/client'
 import type { Validator } from 'remix-validated-form'
+
+import { CompanyStatus } from '@prisma/client'
 import { ValidatedForm } from 'remix-validated-form'
 
-import type { CompanySchemaInput } from '~/services/company/company.schema'
-import type { getCompanyCategories } from '~/services/company-category/company-category.server'
-import type { getCountries } from '~/services/country/country.server'
-
-import type { EnumOption } from '~/schemas/helpers'
 import { Box } from '../Layout/Box'
 import { Title } from '../Typography/Title'
 import { Input } from '../FormFields/Input'
@@ -30,6 +32,7 @@ interface CompanyFormProps<T = CompanySchemaInput> {
   actions: JSX.Element
   companyCategories: Awaited<ReturnType<typeof getCompanyCategories>>
   countries: Awaited<ReturnType<typeof getCountries>>
+  benefits: Awaited<ReturnType<typeof getBenefits>>
   validator: Validator<T>
   defaultValues?: Pick<
     Company,
@@ -48,6 +51,7 @@ interface CompanyFormProps<T = CompanySchemaInput> {
   > & {
     country?: Pick<Country, 'id'>
     categories?: Pick<CompanyCategory, 'id'>[]
+    benefits?: Pick<Benefit, 'id'>[]
     contactPerson?: Pick<
       CompanyContactPerson,
       'firstName' | 'lastName' | 'phone'
@@ -60,6 +64,7 @@ export const CompanyForm = ({
   actions,
   companyCategories,
   countries,
+  benefits,
   validator,
 }: CompanyFormProps) => {
   const {
@@ -75,6 +80,7 @@ export const CompanyForm = ({
     status,
     name,
     categories,
+    benefits: companyBenefits,
     countryId,
     contactPerson,
   } = defaultValues || {}
@@ -98,6 +104,7 @@ export const CompanyForm = ({
           status: status || CompanyStatus.INACTIVE,
           name,
           categoriesIds: categories?.map((cat) => cat.id),
+          benefitsIds: companyBenefits?.map((benefit) => benefit.id),
           countryId,
           contactPerson,
         }}
@@ -150,6 +157,7 @@ export const CompanyForm = ({
                 options={companyCategories}
               />
             </FormGridItem>
+
             <FormGridItem>
               <Select
                 name="countryId"
@@ -158,12 +166,22 @@ export const CompanyForm = ({
                 options={countries}
               />
             </FormGridItem>
+
             <FormGridItem>
               <Select
                 name="status"
                 label="Estado"
                 placeholder="Estado"
                 options={companyStatusList}
+              />
+            </FormGridItem>
+
+            <FormGridItem>
+              <SelectMultiple
+                name="benefitsIds"
+                label="Beneficios habilitados"
+                placeholder="Beneficios habilitados para la empresa"
+                options={benefits}
               />
             </FormGridItem>
           </FormGridWrapper>

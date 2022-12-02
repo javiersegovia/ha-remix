@@ -1,11 +1,20 @@
 import type {
+  Benefit,
+  Company,
+  CompanyCategory,
+  CompanyContactPerson,
+  Country,
+} from '@prisma/client'
+import type {
   ActionArgs,
   LoaderFunction,
   MetaFunction,
 } from '@remix-run/server-runtime'
+
 import { useLoaderData } from '@remix-run/react'
 import { redirect } from '@remix-run/server-runtime'
 import { json } from '@remix-run/server-runtime'
+import { validationError } from 'remix-validated-form'
 
 import { CompanyForm } from '~/components/Forms/CompanyForm'
 import { FormActions } from '~/components/FormFields/FormActions'
@@ -17,12 +26,21 @@ import {
 } from '~/services/company/company.server'
 import { getCountries } from '~/services/country/country.server'
 import { requireAdminUserId } from '~/session.server'
-import { validationError } from 'remix-validated-form'
+import { getBenefits } from '~/services/benefit/benefit.server'
 
 type LoaderData = {
-  company: Awaited<ReturnType<typeof requireCompany>>
+  company: Company & {
+    benefits: Pick<Benefit, 'id'>[]
+    country: Pick<Country, 'id'>
+    categories: Pick<CompanyCategory, 'id'>[]
+    contactPerson: Pick<
+      CompanyContactPerson,
+      'firstName' | 'lastName' | 'phone'
+    >
+  }
   companyCategories: Awaited<ReturnType<typeof getCompanyCategories>>
   countries: Awaited<ReturnType<typeof getCountries>>
+  benefits: Awaited<ReturnType<typeof getBenefits>>
 }
 
 export const loader: LoaderFunction = async ({ request, params }) => {
@@ -30,19 +48,22 @@ export const loader: LoaderFunction = async ({ request, params }) => {
 
   const { companyId } = params
 
-  const company = await requireCompany({
+  // todo: refactor function to avoid assert when whe refactor the return types of requireCompany
+  const company = (await requireCompany({
     where: { id: companyId },
     include: {
-      country: true,
+      benefits: true,
       categories: true,
+      country: true,
       contactPerson: true,
     },
-  })
+  })) as LoaderData['company']
 
   return json<LoaderData>({
     company,
     companyCategories: await getCompanyCategories(),
     countries: await getCountries(),
+    benefits: await getBenefits(),
   })
 }
 
@@ -98,11 +119,13 @@ export async function action({ request, params }: ActionArgs) {
 }
 
 export default function AdminDashboardCompanyDetailsRoute() {
-  const { company, countries, companyCategories } = useLoaderData<LoaderData>()
+  const { company, countries, benefits, companyCategories } =
+    useLoaderData<LoaderData>()
 
   return (
     <CompanyForm
       defaultValues={company}
+      benefits={benefits}
       countries={countries}
       companyCategories={companyCategories}
       validator={validator}

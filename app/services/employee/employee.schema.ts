@@ -47,6 +47,14 @@ export const employeeSchema = z.object({
   cityId: zfd.numeric(z.number().int().nullish()),
   genderId: zfd.numeric(z.number().int().nullish()),
 
+  membershipId: zfd.numeric(
+    z
+      .number({
+        required_error: 'Por favor, selecciona una membresía',
+        invalid_type_error: 'Por favor, selecciona una membresía',
+      })
+      .int()
+  ),
   currencyId: zfd.numeric(z.number().int().nullish()),
   cryptocurrencyId: zfd.numeric(z.number().int().nullish()),
   jobDepartmentId: zfd.numeric(z.number().int().nullish()),

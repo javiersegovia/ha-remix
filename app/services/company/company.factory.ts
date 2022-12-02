@@ -1,10 +1,12 @@
 import type {
   Bank,
+  Benefit,
   Company,
   CompanyCategory,
   CompanyContactPerson,
   Country,
   Cryptocurrency,
+  Membership,
 } from '@prisma/client'
 
 import { Factory } from 'fishery'
@@ -15,8 +17,10 @@ import { connect, connectMany } from '~/utils/relationships'
 
 type ExtendedCompany = Company & {
   country?: Country
+  membership?: Membership
   banks?: Bank[]
   categories?: Pick<CompanyCategory, 'id' | 'name'>[]
+  benefits?: Pick<Benefit, 'id' | 'name'>[]
   contactPerson?: Pick<CompanyContactPerson, 'firstName' | 'lastName' | 'phone'>
   cryptocurrencies?: Cryptocurrency[]
 }
@@ -32,7 +36,12 @@ export const CompanyFactory = Factory.define<
   ExtendedCompanyResult
 >(({ onCreate, associations }) => {
   onCreate((company) => {
-    const { countryId: _, contactPerson, ...companyData } = company
+    const {
+      countryId: _,
+      membershipId: _2,
+      contactPerson,
+      ...companyData
+    } = company
 
     return prisma.company.create({
       data: {
@@ -54,6 +63,10 @@ export const CompanyFactory = Factory.define<
           associations?.categories?.map((category) => category.id)
         ),
 
+        benefits: connectMany(
+          associations?.benefits?.map((benefit) => benefit.id)
+        ),
+
         cryptocurrencies: connectMany(
           associations?.cryptocurrencies?.map(
             (cryptocurrency) => cryptocurrency.id
@@ -72,8 +85,12 @@ export const CompanyFactory = Factory.define<
     description: null,
     address: null,
     phone: null,
+
     countryId: associations?.country?.id || null,
+    membershipId: associations?.membership?.id || null,
+
     categories: associations?.categories || undefined,
+    benefits: associations?.benefits || undefined,
 
     lastRequestDay: 32,
     paymentDays: [],

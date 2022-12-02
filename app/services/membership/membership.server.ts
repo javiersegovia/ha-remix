@@ -12,6 +12,7 @@ export const getMemberships = async () => {
       _count: {
         select: {
           benefits: true,
+          employees: true,
         },
       },
     },

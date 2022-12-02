@@ -1,10 +1,14 @@
+import { CompanyStatus } from '@prisma/client'
+import { truncateDB } from 'test/helpers/truncateDB'
+
 import * as companyService from '~/services/company/company.server'
 import { CompanyCategoryFactory } from '~/services/company-category/company-category.factory'
 import { CompanyFactory } from '~/services/company/company.factory'
 import { CountryFactory } from '~/services/country/country.factory'
-
-import { truncateDB } from 'test/helpers/truncateDB'
-import { CompanyStatus } from '@prisma/client'
+import { BenefitFactory } from '~/services/benefit/benefit.factory'
+import { prisma } from '~/db.server'
+import { MembershipFactory } from '~/services/membership/membership.factory'
+import type { CompanySchemaInput } from '~/services/company/company.schema'
 
 beforeEach(async () => {
   await truncateDB()
@@ -18,47 +22,70 @@ describe('createCompany', () => {
       phone: '+1 234 2323512',
     }
     const country = await CountryFactory.create()
+    const membership = await MembershipFactory.create()
     const companyCategories = await CompanyCategoryFactory.createList(2)
+    const benefits = await BenefitFactory.createList(3)
 
-    const companyData = CompanyFactory.build(
-      {},
-      {
-        associations: {
-          contactPerson,
-          country,
-          categories: companyCategories,
-        },
-      }
-    )
-    const response = await companyService.createCompany(companyData)
+    const companyData = CompanyFactory.build(undefined, {
+      associations: {
+        contactPerson,
+        country,
+        membership,
+      },
+    })
+
+    const response = await companyService.createCompany({
+      ...companyData,
+      categoriesIds: companyCategories?.map((c) => c.id),
+      benefitsIds: benefits?.map((b) => b.id),
+    })
+
+    const createdCompany = await prisma.company.findUnique({
+      where: { id: response.company?.id },
+      include: {
+        contactPerson: true,
+        country: true,
+        categories: true,
+        benefits: true,
+      },
+    })
 
     expect(response).toMatchObject<
       Awaited<ReturnType<typeof companyService.createCompany>>
-    >({ company: { id: companyData.id } })
+    >({ company: { id: expect.any(String) } })
+
+    expect(createdCompany?.categories).toHaveLength(2)
+    expect(createdCompany?.benefits).toHaveLength(3)
+    expect(createdCompany?.country).toMatchObject(country)
+    expect(createdCompany?.contactPerson).toMatchObject(contactPerson)
   })
 })
 
 describe('updateCompanyById', () => {
-  test('should update a company', async () => {
+  test('should update a company with relationships', async () => {
     const contactPerson = {
       firstName: 'Luke',
       lastName: 'Skywalker',
       phone: '+1 234 2323512',
     }
-    const country = await CountryFactory.create()
+    const country = await CountryFactory.createList(2)
     const companyCategories = await CompanyCategoryFactory.createList(2)
+    const benefits = await BenefitFactory.createList(4)
+    const previousBenefits = benefits.slice(0, 1)
+    const newBenefits = benefits.slice(2, 3)
 
     const company = await CompanyFactory.create(
       {},
       {
         associations: {
-          country,
+          country: country[0],
           categories: companyCategories,
+          benefits: previousBenefits,
         },
       }
     )
 
-    const updateData = {
+    const updateData: CompanySchemaInput = {
       name: 'New name',
       status: CompanyStatus.INACTIVE,
       address: 'New Address',
@@ -71,6 +98,8 @@ describe('updateCompanyById', () => {
       premiumLastRequestDay: 30,
       premiumPaymentDays: [2, 10],
       contactPerson,
+      benefitsIds: newBenefits.map((b) => b.id),
+      countryId: country[1].id,
     }
 
     const response = await companyService.updateCompanyById(
@@ -81,5 +110,22 @@ describe('updateCompanyById', () => {
     expect(response).toMatchObject<
       Awaited<ReturnType<typeof companyService.updateCompanyById>>
     >({ company: { id: company.id } })
+
+    const createdCompany = await prisma.company.findUnique({
+      where: { id: company.id },
+      include: {
+        contactPerson: true,
+        country: true,
+        categories: true,
+        benefits: true,
+      },
+    })
+
+    expect(createdCompany?.categories).toHaveLength(0)
+    expect(createdCompany?.benefits).toMatchObject(
+      newBenefits.sort((a, b) => a.name.localeCompare(b.name))
+    )
+    expect(createdCompany?.country).toMatchObject(country[1])
+    expect(createdCompany?.contactPerson).toMatchObject(contactPerson)
   })
 })

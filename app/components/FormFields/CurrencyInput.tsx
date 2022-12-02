@@ -60,7 +60,12 @@ export const CurrencyInput = ({
           className={clsx(inputBaseStyles, !!fieldError && inputErrorStyles)}
         />
 
-        <input value={value} name={name} type="hidden" readOnly />
+        <input
+          type="hidden"
+          value={value || ''} // The value should always be defined, even as an empty string instead of undefined
+          name={name}
+          readOnly
+        />
       </>
       <ErrorMessage>{fieldError}</ErrorMessage>
     </Label>

@@ -25,6 +25,7 @@ export function EmployeeList({ employees }: EmployeeListProps) {
                   <TableHeading title="Nombre completo" />
                   <TableHeading title="Cupo aprobado" isCentered />
                   <TableHeading title="Cupo disponible" isCentered />
+                  <TableHeading title="Membresía" isCentered />
                   <TableHeading title="Estado" isCentered />
                 </tr>
               </thead>
@@ -102,6 +103,12 @@ export function EmployeeList({ employees }: EmployeeListProps) {
                       {!employee.advanceAvailableAmount &&
                         !employee.advanceCryptoAvailableAmount &&
                         '-'}
+                    </TableData>
+
+                    <TableData isCentered>
+                      <p className="text-xs font-semibold text-gray-700">
+                        {employee.membership?.name || '-'}
+                      </p>
                     </TableData>
 
                     <TableData isCentered>

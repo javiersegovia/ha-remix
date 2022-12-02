@@ -1,9 +1,10 @@
-import { useLoaderData } from '@remix-run/react'
 import type {
   ActionFunction,
   LoaderFunction,
   MetaFunction,
 } from '@remix-run/server-runtime'
+
+import { useLoaderData } from '@remix-run/react'
 import { redirect } from '@remix-run/node'
 import { json } from '@remix-run/server-runtime'
 import { validationError } from 'remix-validated-form'
@@ -24,6 +25,7 @@ import { requireAdminUserId } from '~/session.server'
 import { createEmployee } from '~/services/employee/employee.server'
 import { getBankAccountTypes } from '~/services/bank-account-type/bank-account-type.server'
 import { getIdentityDocumentTypes } from '~/services/identity-document-type/identity-document-type.server'
+import { getMemberships } from '~/services/membership/membership.server'
 
 type LoaderData = {
   countries: Awaited<ReturnType<typeof getCountries>>
@@ -36,6 +38,7 @@ type LoaderData = {
   currencies: Awaited<ReturnType<typeof getCurrencies>>
   cryptoNetworks: Awaited<ReturnType<typeof getCryptoNetworks>>
   cryptocurrencies: Awaited<ReturnType<typeof getCryptocurrencies>>
+  memberships: Awaited<ReturnType<typeof getMemberships>>
 }
 
 export const loader: LoaderFunction = async ({ request }) => {
@@ -53,6 +56,7 @@ export const loader: LoaderFunction = async ({ request }) => {
     currencies: await getCurrencies(),
     cryptoNetworks: await getCryptoNetworks(),
     cryptocurrencies: await getCryptocurrencies(),
+    memberships: await getMemberships(),
   })
 }
 
@@ -104,6 +108,7 @@ export default function AdminDashboardCompanyCreateEmployeeRoute() {
     bankAccountTypes,
     identityDocumentTypes,
     genders,
+    memberships,
     currencies,
     cryptocurrencies,
     cryptoNetworks,
@@ -120,6 +125,7 @@ export default function AdminDashboardCompanyCreateEmployeeRoute() {
             jobPositions,
             jobDepartments,
             banks,
+            memberships,
             bankAccountTypes,
             identityDocumentTypes,
             genders,
