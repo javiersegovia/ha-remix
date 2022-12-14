@@ -4,32 +4,38 @@ import { Title } from '../Typography/Title'
 
 export interface BenefitCardProps {
   title: string
-  imageUrl: string
-  button: {
-    text: string
-    href?: string
-    external?: boolean
-  }
+  imageUrl?: string | null
+  buttonText?: string | null
+  buttonHref?: string | null
 }
 
-export const BenefitCard = ({ title, imageUrl, button }: BenefitCardProps) => {
+export const BenefitCard = ({
+  title,
+  imageUrl,
+  buttonText,
+  buttonHref,
+}: BenefitCardProps) => {
   return (
     <Box className="flex h-full w-full max-w-xs flex-1 flex-col justify-between space-y-5 p-5 shadow-xl">
       <Title as="h4">{title}</Title>
-      <img className="mx-auto" src={imageUrl} alt="Icon" />
+      {imageUrl && <img className="mx-auto" src={imageUrl} alt="Icon" />}
 
-      {button.href && button.external ? (
+      {buttonHref && buttonHref.includes('http') ? (
         <a
           className="block"
-          href={button.href}
+          href={buttonHref}
           target="_blank"
           rel="noreferrer noopener"
         >
-          <Button type="button">{button.text}</Button>
+          <Button type="button">{buttonText || 'Próximamente'}</Button>
         </a>
       ) : (
-        <Button href={button.href} type="button" disabled={!button.href}>
-          {button.text}
+        <Button
+          href={buttonHref || undefined}
+          type="button"
+          disabled={!buttonHref}
+        >
+          {buttonText}
         </Button>
       )}
     </Box>

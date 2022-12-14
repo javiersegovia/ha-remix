@@ -8,6 +8,10 @@ export const benefitSchema = z.object({
       required_error: 'Por favor, ingrese un nombre',
     })
   ),
+
+  imageUrl: zfd.text(z.string().nullish()),
+  buttonText: zfd.text(z.string().nullish()),
+  buttonHref: zfd.text(z.string().nullish()),
 })
 
 export const benefitValidator = withZod(benefitSchema)

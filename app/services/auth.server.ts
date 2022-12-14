@@ -1,23 +1,26 @@
 import type { User } from '@prisma/client'
 
 import ms from 'ms'
-import { promisify } from 'util'
+import { badRequest } from 'remix-utils'
 import { randomBytes } from 'crypto'
+import { hash } from 'bcryptjs'
+import { promisify } from 'util'
+
 import { prisma } from '~/db.server'
 import { sendLoginLink, sendResetPasswordLink } from './email/email.server'
-import { hash } from 'bcryptjs'
-import { badRequest } from 'remix-utils'
 
 const LOGIN_EXPIRES_IN = '1h' as const
 
 export const requestLoginLink = async (email: string) => {
   const user = await prisma.user.findUnique({
     where: {
-      email,
+      email: email.toLowerCase(),
     },
   })
 
   if (!user) {
+    // We don't throw here because we should not inform the user that
+    // the email does not exist.
     return
   }
 
@@ -84,8 +87,16 @@ export const requestPasswordChange = async (email: string) => {
   const loginToken = await generateRandomToken()
   const loginExpiration = generateExpirationDate(LOGIN_EXPIRES_IN)
 
+  const userToUpdate = await prisma.user.findUnique({
+    where: { email: email.toLowerCase() },
+  })
+
+  if (!userToUpdate) {
+    return
+  }
+
   const updatedUser = await prisma.user.update({
-    where: { email },
+    where: { id: userToUpdate.id },
     data: {
       loginExpiration,
       loginToken,
@@ -93,7 +104,7 @@ export const requestPasswordChange = async (email: string) => {
   })
 
   return sendResetPasswordLink({
-    destination: email,
+    destination: email.toLowerCase(),
     firstName: updatedUser.firstName || '',
     token: loginToken,
   })

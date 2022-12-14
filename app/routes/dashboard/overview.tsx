@@ -1,6 +1,5 @@
 import type { Gender, User } from '@prisma/client'
 import type { LoaderFunction } from '@remix-run/server-runtime'
-import type { BenefitCardProps } from '~/components/Cards/BenefitCard'
 
 import { Outlet, useLoaderData } from '@remix-run/react'
 import { json } from '@remix-run/server-runtime'
@@ -14,6 +13,7 @@ import { BenefitCard } from '~/components/Cards/BenefitCard'
 export type DashboardIndexLoaderData = {
   gender: Pick<Gender, 'name'> | null
   user: Pick<User, 'firstName'>
+  benefits: Awaited<ReturnType<typeof prisma.benefit.findMany>>
 }
 
 export const loader: LoaderFunction = async ({ request, context: ctx }) => {
@@ -30,83 +30,90 @@ export const loader: LoaderFunction = async ({ request, context: ctx }) => {
     },
   })
 
+  const benefits = await prisma.benefit.findMany({
+    orderBy: {
+      name: 'asc',
+    },
+  })
+
   if (!data) throw await logout(request)
 
   return json<DashboardIndexLoaderData>({
     gender: data.gender,
     user: data.user,
+    benefits,
   })
 }
 
-const benefits: BenefitCardProps[] = [
-  {
-    title: 'Adelantos de Nómina',
-    imageUrl: '/images/icon/icon_benefit_dollar.svg',
-    button: {
-      text: 'Solicitar',
-      href: '/dashboard/payroll-advances/new',
-    },
-  },
-  {
-    title: 'Adelantos de Prima',
-    imageUrl: '/images/icon/icon_benefit_savings.svg',
-    button: {
-      text: 'Solicitar',
-      href: 'request-premium-advance',
-    },
-  },
-  {
-    title: 'Haz realidad tus viajes',
-    imageUrl: '/images/icon/icon_benefit_travel.svg',
-    button: {
-      text: 'Solicitar',
-      href: 'request-travel',
-    },
-  },
-  {
-    title: 'Educación financiera',
-    imageUrl: '/images/icon/icon_benefit_study.svg',
-    button: {
-      // text: 'Visitar',
-      // href: '/dashboard/education',
-      text: 'Visitar',
-      href: 'https://tu.hoyadelantas.com/edfinanciera',
-      external: true,
-    },
-  },
-  {
-    title: 'Mercado de Frutas y Verduras',
-    imageUrl: '/images/icon/icon_benefit_groceries.svg',
-    button: {
-      text: 'Ir a la tienda',
-      href: '/dashboard/overview/visit-groceries',
-    },
-  },
-  {
-    title: 'Salud',
-    imageUrl: '/images/icon/icon_benefit_health.svg',
-    button: {
-      text: 'Próximamente',
-    },
-  },
-  {
-    title: 'Seguros',
-    imageUrl: '/images/icon/icon_benefit_insurance.svg',
-    button: {
-      text: 'Próximamente',
-    },
-  },
-  {
-    title: 'Descuentos',
-    imageUrl: '/images/icon/icon_benefit_discount.svg',
-    button: {
-      text: 'Próximamente',
-    },
-  },
-]
+// const benefits: BenefitCardProps[] = [
+//   {
+//     title: 'Adelantos de Nómina',
+//     imageUrl: '/images/icon/icon_benefit_dollar.svg',
+//     button: {
+//       text: 'Solicitar',
+//       href: '/dashboard/payroll-advances/new',
+//     },
+//   },
+//   {
+//     title: 'Adelantos de Prima',
+//     imageUrl: '/images/icon/icon_benefit_savings.svg',
+//     button: {
+//       text: 'Solicitar',
+//       href: 'request-premium-advance',
+//     },
+//   },
+//   {
+//     title: 'Haz realidad tus viajes',
+//     imageUrl: '/images/icon/icon_benefit_travel.svg',
+//     button: {
+//       text: 'Solicitar',
+//       href: 'request-travel',
+//     },
+//   },
+//   {
+//     title: 'Educación financiera',
+//     imageUrl: '/images/icon/icon_benefit_study.svg',
+//     button: {
+//       // text: 'Visitar',
+//       // href: '/dashboard/education',
+//       text: 'Visitar',
+//       href: 'https://tu.hoyadelantas.com/edfinanciera',
+//       external: true,
+//     },
+//   },
+//   {
+//     title: 'Mercado de Frutas y Verduras',
+//     imageUrl: '/images/icon/icon_benefit_groceries.svg',
+//     button: {
+//       text: 'Ir a la tienda',
+//       href: '/dashboard/overview/visit-groceries',
+//     },
+//   },
+//   {
+//     title: 'Salud',
+//     imageUrl: '/images/icon/icon_benefit_health.svg',
+//     button: {
+//       text: 'Próximamente',
+//     },
+//   },
+//   {
+//     title: 'Seguros',
+//     imageUrl: '/images/icon/icon_benefit_insurance.svg',
+//     button: {
+//       text: 'Próximamente',
+//     },
+//   },
+//   {
+//     title: 'Descuentos',
+//     imageUrl: '/images/icon/icon_benefit_discount.svg',
+//     button: {
+//       text: 'Próximamente',
+//     },
+//   },
+// ]
 
 export default function DashboardIndexRoute() {
-  const { gender, user } = useLoaderData<DashboardIndexLoaderData>()
+  const { gender, user, benefits } = useLoaderData<DashboardIndexLoaderData>()
 
   return (
     <>
@@ -142,12 +149,13 @@ export default function DashboardIndexRoute() {
           </Box>
 
           <section className="mt-10 grid grid-cols-2 items-center gap-4 text-center md:gap-5 lg:grid-cols-3 lg:items-stretch">
-            {benefits.map((benefit) => (
+            {benefits.map(({ name, buttonHref, buttonText, imageUrl }) => (
               <BenefitCard
-                key={benefit.title}
-                title={benefit.title}
-                button={benefit.button}
-                imageUrl={benefit.imageUrl}
+                key={name}
+                title={name}
+                buttonText={buttonText}
+                buttonHref={buttonHref}
+                imageUrl={imageUrl}
               />
             ))}
           </section>

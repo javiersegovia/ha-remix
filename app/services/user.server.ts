@@ -1,9 +1,7 @@
 import type { User } from '@prisma/client'
+
 import bcrypt from 'bcryptjs'
-
 import { prisma } from '~/db.server'
-
-export type { User } from '@prisma/client'
 
 export async function getUserById(id: User['id']) {
   return prisma.user.findUnique({
@@ -30,7 +28,7 @@ export async function getUserById(id: User['id']) {
 
 export async function verifyUserLogin(email: User['email'], password: string) {
   const user = await prisma.user.findUnique({
-    where: { email },
+    where: { email: email.toLowerCase() },
     include: {
       employee: true,
     },
