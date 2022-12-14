@@ -81,9 +81,9 @@ export const updateBenefitById = async (
     },
     data: {
       name,
-      imageUrl,
-      buttonText,
-      buttonHref,
+      imageUrl: imageUrl || null,
+      buttonText: buttonText || null,
+      buttonHref: buttonHref || null,
     },
     select: {
       id: true,
