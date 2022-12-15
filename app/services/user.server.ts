@@ -27,8 +27,13 @@ export async function getUserById(id: User['id']) {
 }
 
 export async function verifyUserLogin(email: User['email'], password: string) {
-  const user = await prisma.user.findUnique({
-    where: { email: email.toLowerCase() },
+  const user = await prisma.user.findFirst({
+    where: {
+      email: {
+        contains: email.toLowerCase(),
+        mode: 'insensitive',
+      },
+    },
     include: {
       employee: true,
     },

@@ -16,8 +16,13 @@ export async function verifyAdminUserLogin(
   email: AdminUser['email'],
   password: string
 ) {
-  const adminUser = await prisma.adminUser.findUnique({
-    where: { email: email.toLowerCase() },
+  const adminUser = await prisma.adminUser.findFirst({
+    where: {
+      email: {
+        contains: email.toLowerCase(),
+        mode: 'insensitive',
+      },
+    },
   })
 
   if (!adminUser || !adminUser?.password) {
