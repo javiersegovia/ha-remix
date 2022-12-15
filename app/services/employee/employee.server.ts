@@ -25,7 +25,7 @@ import type { UploadEmployeeSchemaInput } from '~/schemas/upload-employees.schem
 import { uploadEmployeeSchema } from '~/schemas/upload-employees.schema'
 import { capitalize } from '~/utils/strings'
 
-const INVITATION_EXPIRES_IN = '20m'
+const INVITATION_EXPIRES_IN = '20d' as const
 
 export const getEmployeeById = async (employeeId: Employee['id']) => {
   return prisma.employee.findUnique({

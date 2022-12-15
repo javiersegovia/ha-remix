@@ -9,7 +9,7 @@ import { promisify } from 'util'
 import { prisma } from '~/db.server'
 import { sendLoginLink, sendResetPasswordLink } from './email/email.server'
 
-const LOGIN_EXPIRES_IN = '1h' as const
+const LOGIN_EXPIRES_IN = '24h' as const
 
 export const requestLoginLink = async (email: string) => {
   const user = await prisma.user.findUnique({
