@@ -46,15 +46,7 @@ export const createMockEmployee = async () => {
     },
     include: {
       user: true,
+      company: true,
     },
   })
 }
-
-// export const getMockUserSession = async ({
-//   employee = mockedEmployee,
-// } = {}) => {
-//   const session = await testSessionStorage.getSession()
-//   session.set(USER_SESSION_KEY, employee.user.id)
-//   const cookie = await testSessionStorage.commitSession(session)
-//   return parse(cookie)._session
-// }

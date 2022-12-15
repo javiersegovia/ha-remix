@@ -40,12 +40,38 @@ export const CompanyFactory = Factory.define<
       countryId: _,
       membershipId: _2,
       contactPerson,
-      ...companyData
+      id,
+      createdAt,
+      updatedAt,
+      name,
+      status,
+      description,
+      address,
+      phone,
+      dispersion,
+      paymentDays,
+      lastRequestDay,
+      premiumDispersion,
+      premiumPaymentDays,
+      premiumLastRequestDay,
     } = company
 
     return prisma.company.create({
       data: {
-        ...companyData,
+        id,
+        createdAt,
+        updatedAt,
+        name,
+        status,
+        description,
+        address,
+        phone,
+        dispersion,
+        paymentDays,
+        lastRequestDay,
+        premiumDispersion,
+        premiumPaymentDays,
+        premiumLastRequestDay,
 
         contactPerson: contactPerson
           ? {
@@ -66,6 +92,8 @@ export const CompanyFactory = Factory.define<
         benefits: connectMany(
           associations?.benefits?.map((benefit) => benefit.id)
         ),
+
+        membership: connect(associations?.membership?.id),
 
         cryptocurrencies: connectMany(
           associations?.cryptocurrencies?.map(

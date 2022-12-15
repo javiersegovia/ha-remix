@@ -18,99 +18,59 @@ export type DashboardIndexLoaderData = {
 
 export const loader: LoaderFunction = async ({ request, context: ctx }) => {
   const userId = await requireUserId(request)
-  const data = await prisma.employee.findFirst({
+  const employeeData = await prisma.employee.findFirst({
     where: {
       user: {
         id: userId,
       },
     },
     select: {
+      company: {
+        select: {
+          benefits: {
+            select: {
+              id: true,
+            },
+          },
+        },
+      },
+      membership: {
+        select: { id: true, name: true, benefits: { select: { id: true } } },
+      },
       gender: { select: { name: true } },
       user: { select: { firstName: true } },
     },
   })
 
+  const membershipBenefitsIds =
+    employeeData?.membership?.benefits?.map((m) => m.id) || []
+
+  const companyBenefitsIds =
+    employeeData?.company.benefits?.map((c) => c.id) || []
+
+  const benefitsIds = membershipBenefitsIds.filter((id) =>
+    companyBenefitsIds.includes(id)
+  )
+
   const benefits = await prisma.benefit.findMany({
     orderBy: {
       name: 'asc',
     },
+    where: {
+      id: {
+        in: benefitsIds,
+      },
+    },
   })
 
-  if (!data) throw await logout(request)
+  if (!employeeData) throw await logout(request)
 
   return json<DashboardIndexLoaderData>({
-    gender: data.gender,
-    user: data.user,
+    gender: employeeData.gender,
+    user: employeeData.user,
     benefits,
   })
 }
-
-// const benefits: BenefitCardProps[] = [
-//   {
-//     title: 'Adelantos de Nómina',
-//     imageUrl: '/images/icon/icon_benefit_dollar.svg',
-//     button: {
-//       text: 'Solicitar',
-//       href: '/dashboard/payroll-advances/new',
-//     },
-//   },
-//   {
-//     title: 'Adelantos de Prima',
-//     imageUrl: '/images/icon/icon_benefit_savings.svg',
-//     button: {
-//       text: 'Solicitar',
-//       href: 'request-premium-advance',
-//     },
-//   },
-//   {
-//     title: 'Haz realidad tus viajes',
-//     imageUrl: '/images/icon/icon_benefit_travel.svg',
-//     button: {
-//       text: 'Solicitar',
-//       href: 'request-travel',
-//     },
-//   },
-//   {
-//     title: 'Educación financiera',
-//     imageUrl: '/images/icon/icon_benefit_study.svg',
-//     button: {
-//       // text: 'Visitar',
-//       // href: '/dashboard/education',
-//       text: 'Visitar',
-//       href: 'https://tu.hoyadelantas.com/edfinanciera',
-//       external: true,
-//     },
-//   },
-//   {
-//     title: 'Mercado de Frutas y Verduras',
-//     imageUrl: '/images/icon/icon_benefit_groceries.svg',
-//     button: {
-//       text: 'Ir a la tienda',
-//       href: '/dashboard/overview/visit-groceries',
-//     },
-//   },
-//   {
-//     title: 'Salud',
-//     imageUrl: '/images/icon/icon_benefit_health.svg',
-//     button: {
-//       text: 'Próximamente',
-//     },
-//   },
-//   {
-//     title: 'Seguros',
-//     imageUrl: '/images/icon/icon_benefit_insurance.svg',
-//     button: {
-//       text: 'Próximamente',
-//     },
-//   },
-//   {
-//     title: 'Descuentos',
-//     imageUrl: '/images/icon/icon_benefit_discount.svg',
-//     button: {
-//       text: 'Próximamente',
-//     },
-//   },
-// ]
 
 export default function DashboardIndexRoute() {
   const { gender, user, benefits } = useLoaderData<DashboardIndexLoaderData>()

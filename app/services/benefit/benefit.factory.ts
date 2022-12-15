@@ -1,22 +1,38 @@
-import type { Benefit } from '@prisma/client'
+import type { Benefit, Membership } from '@prisma/client'
 
 import { faker } from '@faker-js/faker'
 import { Factory } from 'fishery'
 import { prisma } from '~/db.server'
+import { connect } from '~/utils/relationships'
 
-export const BenefitFactory = Factory.define<Benefit>(({ onCreate }) => {
-  onCreate(({ id: _, ...benefitData }) => {
-    return prisma.benefit.create({
-      data: {
-        ...benefitData,
-      },
+type ExtendedBenefit = Benefit & {
+  membership?: Pick<Membership, 'id'>
+}
+
+export const BenefitFactory = Factory.define<ExtendedBenefit>(
+  ({ onCreate, associations }) => {
+    onCreate(({ id: _, ...benefitData }) => {
+      return prisma.benefit.create({
+        data: {
+          ...benefitData,
+
+          membership: associations?.membership
+            ? connect(associations?.membership?.id)
+            : undefined,
+        },
+      })
     })
-  })
 
-  return {
-    id: faker.datatype.number(),
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    name: faker.commerce.productName(),
+    return {
+      id: faker.datatype.number(),
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      name: faker.commerce.productName(),
+      imageUrl: faker.image.imageUrl(),
+      buttonHref: faker.internet.url(),
+      buttonText: faker.datatype.string(),
+
+      membership: associations?.membership,
+    }
   }
-})
+)
