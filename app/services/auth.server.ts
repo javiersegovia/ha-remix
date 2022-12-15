@@ -12,9 +12,12 @@ import { sendLoginLink, sendResetPasswordLink } from './email/email.server'
 const LOGIN_EXPIRES_IN = '24h' as const
 
 export const requestLoginLink = async (email: string) => {
-  const user = await prisma.user.findUnique({
+  const user = await prisma.user.findFirst({
     where: {
-      email: email.toLowerCase(),
+      email: {
+        contains: email.toLowerCase(),
+        mode: 'insensitive',
+      },
     },
   })
 
@@ -87,7 +90,7 @@ export const requestPasswordChange = async (email: string) => {
   const loginToken = await generateRandomToken()
   const loginExpiration = generateExpirationDate(LOGIN_EXPIRES_IN)
 
-  const userToUpdate = await prisma.user.findUnique({
+  const userToUpdate = await prisma.user.findFirst({
     where: { email: email.toLowerCase() },
   })
 
