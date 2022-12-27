@@ -35,14 +35,14 @@ export default function RequestPremiumAdvanceModalRoute() {
       <div className="m-auto w-full max-w-lg">
         <Box className="space-y-5 p-5 text-center">
           <>
-            <Title>Confirmar solicitud</Title>
+            <Title>Adelanta tu prima</Title>
             <p>
-              Si estás interesado en solicitar un adelanto de prima, por favor
-              haz click en el siguiente botón y nos comunicaremos contigo.
+              Recibe rápidamente el dinero de tu prima, sin importar el mes del
+              año.
             </p>
             <Form method="post" className="flex flex-col gap-4">
               <Button type="submit" disabled={transition.state !== 'idle'}>
-                Solicitar adelanto de prima
+                Solicitar
               </Button>
 
               <Button

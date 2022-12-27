@@ -1,4 +1,4 @@
-import type { Gender, User } from '@prisma/client'
+import type { Company, Gender, User } from '@prisma/client'
 import type { LoaderFunction } from '@remix-run/server-runtime'
 
 import { Outlet, useLoaderData } from '@remix-run/react'
@@ -14,6 +14,7 @@ export type DashboardIndexLoaderData = {
   gender: Pick<Gender, 'name'> | null
   user: Pick<User, 'firstName'>
   benefits: Awaited<ReturnType<typeof prisma.benefit.findMany>>
+  company: Pick<Company, 'name'>
 }
 
 export const loader: LoaderFunction = async ({ request, context: ctx }) => {
@@ -27,6 +28,7 @@ export const loader: LoaderFunction = async ({ request, context: ctx }) => {
     select: {
       company: {
         select: {
+          name: true,
           benefits: {
             select: {
               id: true,
@@ -69,11 +71,13 @@ export const loader: LoaderFunction = async ({ request, context: ctx }) => {
     gender: employeeData.gender,
     user: employeeData.user,
     benefits,
+    company: employeeData.company,
   })
 }
 
 export default function DashboardIndexRoute() {
-  const { gender, user, benefits } = useLoaderData<DashboardIndexLoaderData>()
+  const { gender, user, benefits, company } =
+    useLoaderData<DashboardIndexLoaderData>()
 
   return (
     <>
@@ -93,11 +97,12 @@ export default function DashboardIndexRoute() {
           <Box className="flex items-center gap-5 px-10 py-10 shadow-xl md:px-10 xl:px-40">
             <div>
               <Title as="h1" className="!font-semibold">
-                ¡Hola, {user.firstName}!
+                Hola, {user.firstName}
               </Title>
               <p className="mt-2 text-xl font-medium text-steelBlue-900">
-                {gender?.name === 'Femenino' ? 'Bienvenida' : 'Bienvenido'} a
-                HoyAdelantas, una nueva alternativa para ti
+                ¡Tu eres {gender?.name === 'Femenino' ? 'valiosa' : 'valioso'}{' '}
+                para {company.name}! Así que disfruta de todo lo bueno que{' '}
+                {company.name} tiene que ofrecerte.
               </p>
             </div>
 

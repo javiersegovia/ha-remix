@@ -206,11 +206,11 @@ export default function DashboardAccountRoute() {
       >
         <Box className="p-5">
           <Title as="h1" className="pb-4 pt-3">
-            Mi perfil
+            Mis datos
           </Title>
 
           <Title as="h2" className="pb-4 pt-3">
-            Información principal
+            Mis datos de contacto
           </Title>
 
           <FormGridWrapper>
@@ -254,7 +254,7 @@ export default function DashboardAccountRoute() {
           </FormGridWrapper>
 
           <Title as="h2" className="pb-4 pt-3">
-            Información complementaria
+            Mis datos personales
           </Title>
 
           <FormGridWrapper>
@@ -359,7 +359,7 @@ export default function DashboardAccountRoute() {
           </FormGridWrapper>
 
           <Title as="h2" className="pb-4 pt-3">
-            Cuenta bancaria
+            Mis datos bancarios
           </Title>
 
           <FormGridWrapper>

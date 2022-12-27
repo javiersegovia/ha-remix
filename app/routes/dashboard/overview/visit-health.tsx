@@ -10,10 +10,14 @@ export default function VisitGroceriesModalRoute() {
         <Box className="space-y-5 p-5">
           <>
             <Title>¡Tu salud nos importa!</Title>
-            <p>Cuida de ti y tu familia con Sekure, tu nuevo apoyo en salud.</p>
+
+            <p>
+              Cuida de ti y tu familia con Sekure, tu nuevo apoyo en consultas
+              digitales.
+            </p>
+
             <p className="text-sm italic">
-              * Sekure es un aliado de HoyTrabajas con el que tienes grandes
-              beneficios.
+              *Sekure es un aliado de HoyTrabajas con el que atiendes tu salud.
             </p>
 
             <div className="flex flex-col gap-4">

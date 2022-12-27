@@ -9,16 +9,17 @@ export default function VisitGroceriesModalRoute() {
       <div className="m-auto w-full max-w-lg text-center">
         <Box className="space-y-5 p-5">
           <>
-            <Title>¡Disfruta lo mejor del campo colombiano aquí!</Title>
-            <p>
-              A partir de este momento vas a disfrutar de la experiencia de
-              nuestro aliado TocToc.
+            <Title>¡Haz tu mercado en TocToc!</Title>
+            <p>Del campo a tu mesa, productos frescos y al mejor precio.</p>
+
+            <p className="text-sm italic">
+              *TocToc es un aliado de HoyTrabajas con el que tienes grandes
+              beneficios.
             </p>
-            <p>No olvides activar tu cuenta e iniciar sesión.</p>
 
             <div className="flex flex-col gap-4">
               <Button href="https://bit.ly/beneficiomercadohoyad" external>
-                Ir a la tienda de TocToc
+                Ir a TocToc
               </Button>
 
               <Button variant="LIGHT" href="/dashboard/overview">
