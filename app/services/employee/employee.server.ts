@@ -611,6 +611,7 @@ export const uploadEmployees = async (
 
   const errorResponses: Record<string, string[]> = {}
   let createdUsersCount = 0
+  let updatedUsersCount = 0
   const usersWithErrors: any[] = []
 
   const promises = data.map(async (item, itemIndex) => {
@@ -646,7 +647,30 @@ export const uploadEmployees = async (
         NUMERO_DE_CUENTA: accountNumber,
         TIPO_DE_DOCUMENTO: documentTypeName,
         DOCUMENTO_DE_IDENTIDAD: documentNumber,
+        MEMBRESIA: membershipName,
       } = parsed.data
+
+      const existingUser = await prisma.user.findFirst({
+        where: {
+          email,
+        },
+        select: {
+          id: true,
+          employee: {
+            select: {
+              id: true,
+              bankAccount: {
+                select: {
+                  id: true,
+                  accountTypeId: true,
+                  bankId: true,
+                  identityDocumentId: true,
+                },
+              },
+            },
+          },
+        },
+      })
 
       const formattedJobDepartmentName = capitalize(jobDepartmentName?.trim())
       const formattedJobPositionName = capitalize(jobPositionName?.trim())
@@ -662,6 +686,17 @@ export const uploadEmployees = async (
               },
             })
           : null
+
+        const membership = membershipName
+          ? await prisma.membership.findFirst({
+              where: {
+                name: {
+                  contains: membershipName,
+                  mode: 'insensitive',
+                },
+              },
+            })
+          : undefined
 
         if (countryName && !country) {
           errorResponses[itemIndex].push(`País ${countryName} no encontrado`)
@@ -744,36 +779,57 @@ export const uploadEmployees = async (
           )
         }
 
-        const createBankAccount: Prisma.EmployeeCreateInput['bankAccount'] =
+        const createBankAccount: Prisma.BankAccountCreateInput | undefined =
           bankAccountHasAllValues
             ? {
-                create: {
-                  accountNumber: accountNumber as string,
-                  bank: {
-                    connect: {
-                      id: bank?.id,
-                    },
+                accountNumber: accountNumber as string,
+                bank: {
+                  connect: {
+                    id: bank?.id,
                   },
+                },
 
-                  accountType: {
-                    connect: {
-                      id: accountType?.id,
-                    },
+                accountType: {
+                  connect: {
+                    id: accountType?.id,
                   },
+                },
 
-                  identityDocument: {
-                    create: {
-                      value: documentNumber as string,
-                      documentType: {
-                        connect: {
-                          id: documentType?.id,
-                        },
+                identityDocument: {
+                  create: {
+                    value: documentNumber as string,
+                    documentType: {
+                      connect: {
+                        id: documentType?.id,
                       },
                     },
                   },
                 },
               }
-            : {}
+            : undefined
+
+        const updateBankAccount: Prisma.BankAccountUpdateInput | undefined =
+          bankAccountHasAllValues
+            ? {
+                accountNumber: accountNumber as string,
+                bank: connect(bank?.id),
+
+                accountType: connect(accountType?.id),
+
+                identityDocument: {
+                  upsert: {
+                    create: {
+                      value: documentNumber as string,
+                      documentType: connect(documentType?.id as number),
+                    },
+                    update: {
+                      value: documentNumber as string,
+                      documentType: connect(documentType?.id as number),
+                    },
+                  },
+                },
+              }
+            : undefined
 
         if (errorResponses[itemIndex].length > 0) {
           return usersWithErrors.push({
@@ -788,8 +844,61 @@ export const uploadEmployees = async (
           email,
         })
 
-        const employee = await prisma.employee.create({
-          data: {
+        const employee = await prisma.employee.upsert({
+          where: {
+            id: existingUser?.id,
+          },
+          create: {
+            user: {
+              create: {
+                ...newUser,
+              },
+            },
+            salaryFiat: parseFloat(salary),
+            advanceAvailableAmount: parseFloat(availableAmount),
+            advanceMaxAmount: parseFloat(maxAvailableAmount),
+            roles: [EmployeeRole.MEMBER],
+
+            status:
+              status?.toLowerCase() == EmployeeStatus.ACTIVE.toLowerCase() ||
+              status?.toLowerCase() == 'activo'
+                ? EmployeeStatus.ACTIVE
+                : EmployeeStatus.INACTIVE,
+
+            company: connect(company?.id),
+
+            jobDepartment: formattedJobDepartmentName
+              ? {
+                  connectOrCreate: {
+                    where: {
+                      name: formattedJobDepartmentName,
+                    },
+                    create: {
+                      name: formattedJobDepartmentName,
+                    },
+                  },
+                }
+              : undefined,
+
+            jobPosition: formattedJobPositionName?.trim()
+              ? {
+                  connectOrCreate: {
+                    where: {
+                      name: formattedJobPositionName,
+                    },
+                    create: {
+                      name: formattedJobPositionName,
+                    },
+                  },
+                }
+              : undefined,
+
+            country: connect(country?.id),
+            membership: connect(membership?.id),
+            currency: connectCurrencyDefault,
+            bankAccount: { create: createBankAccount },
+          },
+          update: {
             user: {
               create: {
                 ...newUser,
@@ -834,14 +943,21 @@ export const uploadEmployees = async (
                 }
               : undefined,
 
-            country: country?.id ? { connect: { id: country?.id } } : undefined,
-
+            country: connectOrDisconnect(country?.id),
+            membership: connectOrDisconnect(membership?.id),
             currency: connectCurrencyDefault,
-            bankAccount: createBankAccount,
+
+            bankAccount: createBankAccount &&
+              updateBankAccount && {
+                upsert: {
+                  create: createBankAccount,
+                  update: updateBankAccount,
+                },
+              },
           },
         })
 
-        if (process.env.NODE_ENV === 'production') {
+        if (process.env.NODE_ENV === 'production' && !existingUser) {
           sendInvitation({
             firstName,
             destination: email,
@@ -849,7 +965,11 @@ export const uploadEmployees = async (
           })
         }
 
-        createdUsersCount++
+        if (!existingUser) {
+          createdUsersCount++
+        } else {
+          updatedUsersCount++
+        }
 
         return employee
       } catch (e) {
@@ -876,7 +996,7 @@ export const uploadEmployees = async (
 
   await Promise.all(promises)
 
-  return { createdUsersCount, usersWithErrors }
+  return { createdUsersCount, updatedUsersCount, usersWithErrors }
 }
 
 export const deleteEmployeeById = async (employeeId: Employee['id']) => {
