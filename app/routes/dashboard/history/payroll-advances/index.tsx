@@ -52,7 +52,7 @@ export default function PayrollAdvancesIndexRoute() {
                 href="/dashboard/payroll-advances/new"
                 className=" w-full md:w-auto"
               >
-                Solicitar nuevo adelanto de nómina
+                Solicitar nuevamente
               </Button>
             </div>
           </div>

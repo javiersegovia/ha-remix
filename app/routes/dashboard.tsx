@@ -31,17 +31,17 @@ const navPaths: INavPath[] = [
   {
     icon: HiOutlineHome,
     path: '/dashboard/overview',
-    title: 'Inicio',
+    title: 'Beneficios',
   },
   {
     icon: MdPersonOutline,
     path: '/dashboard/account',
-    title: 'Mi perfil',
+    title: 'Datos del perfil',
   },
   {
     icon: RiFileList2Line,
     path: '/dashboard/history/payroll-advances',
-    title: 'Movimientos',
+    title: 'Historial',
   },
 ]
 

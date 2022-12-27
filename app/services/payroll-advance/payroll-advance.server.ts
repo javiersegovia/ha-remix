@@ -472,7 +472,7 @@ const calculatePayrollCost = async ({
     }/${currentDate.getFullYear()}`
 
     taxItems.push({
-      name: 'Tasa de Interés (E.A)',
+      name: 'Intereses',
       description: `Tasa calculada el ${dateString}, a ${annualInterestRate}%, considerando un plazo de ${periodOfDays} días`,
       value: totalInterestBasedOnDays,
     })
@@ -481,7 +481,7 @@ const calculatePayrollCost = async ({
   if (dispersion) {
     const dispersionFee = (requestedAmount * 4) / 1000 + dispersion
     taxItems.push({
-      name: 'GMF y dispersión',
+      name: '4x1000 y costo transacción',
       description: `Dispersión calculada utilizando ${dispersion} como base`,
       value: dispersionFee,
     })

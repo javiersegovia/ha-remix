@@ -47,7 +47,7 @@ export const PayrollAdvanceAvailableAmount = ({
         ) : !hasActiveCompany ? (
           <ErrorText>La cuenta de tu compañía se encuentra inactiva</ErrorText>
         ) : hasAnAvailableAmount ? (
-          <span>Monto disponible para adelantos:</span>
+          <span>Saldo disponible</span>
         ) : (
           <ErrorText>
             No posees cupo disponible para solicitar adelantos

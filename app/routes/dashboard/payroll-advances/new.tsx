@@ -173,7 +173,7 @@ export default function PayrollAdvanceNewRoute() {
         <section className="flex flex-col gap-6 xl:flex-row">
           <div className="mx-auto w-full max-w-lg">
             <Title as="h1" className="text-center xl:text-left">
-              Solicitud de Adelanto
+              Calcula tu próximo adelanto
             </Title>
             <Box className="mt-8 block p-6">
               <PayrollAdvanceAvailableAmount
@@ -212,7 +212,7 @@ export default function PayrollAdvanceNewRoute() {
                 <div>
                   <Select
                     name="requestReasonId"
-                    label="Motivo de solicitud"
+                    label="Motivo"
                     placeholder="¿Para qué deseas el adelanto de nómina?"
                     options={requestReasons}
                   />

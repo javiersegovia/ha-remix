@@ -83,7 +83,7 @@ export const PayrollAdvanceCalculation = ({
 
           <>
             <PayrollAdvanceSummaryItem
-              label="Monto solicitado"
+              label="Dinero solicitado"
               value={formatMoney(requestedAmount, currencySymbol)}
             />
 
@@ -103,11 +103,7 @@ export const PayrollAdvanceCalculation = ({
             )} */}
 
             <PayrollAdvanceSummaryItem
-              label={
-                <div className="font-semibold">
-                  Monto total a descontar del salario
-                </div>
-              }
+              label={<div className="font-semibold">Descontamos</div>}
               value={
                 <div className="font-semibold">
                   {formatMoney(totalCost, currencySymbol)}
@@ -131,7 +127,7 @@ export const PayrollAdvanceCalculation = ({
 
             <Checkbox
               name="acceptedTerms"
-              label="Estoy de acuerdo con que el monto total de esta cotización sea descontado de mi próxima nómina"
+              label="Estoy de acuerdo con que el monto total de esta cotización sea descontado de mi próximo salario."
             />
 
             <SubmitButton className="mt-6" disabled={!acceptedTerms}>

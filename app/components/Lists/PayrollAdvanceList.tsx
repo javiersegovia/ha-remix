@@ -70,9 +70,9 @@ export const PayrollAdvanceList = ({
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
-                  <TableHeading title="Colaborador" />
-                  <TableHeading title="Monto solicitado" isCentered />
-                  <TableHeading title="Monto total" isCentered />
+                  <TableHeading title="Asunto" />
+                  <TableHeading title="Dinero solicitado" isCentered />
+                  <TableHeading title="Total solicitado" isCentered />
                   <TableHeading title="Fecha de solicitud" isCentered />
 
                   {!hideColumns?.status && (

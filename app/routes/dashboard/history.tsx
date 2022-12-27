@@ -19,7 +19,7 @@ export default function DashboardHistoryRoute() {
                 : 'bg-transparent hover:bg-transparent'
             )}
           >
-            Adelantos de Nómina
+            Adelantos de nómina
           </Button>
 
           <Button
@@ -30,7 +30,7 @@ export default function DashboardHistoryRoute() {
                 : 'bg-transparent hover:bg-transparent'
             )}
           >
-            Adelantos de Prima
+            Adelantos de prima
           </Button>
         </div>
 

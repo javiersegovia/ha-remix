@@ -57,9 +57,7 @@ describe('Authentication flow', () => {
 
       /** We are using MSW to mock the sign status of the ZapsignDocument, so we can skip this part and get redirected to the dashboard */
 
-      cy.findByText(
-        /bienvenido a hoyadelantas, una nueva alternativa para ti/i
-      ).should('exist')
+      cy.findByText(/tu eres valioso/i).should('exist')
 
       cy.findByRole('button', { name: /cerrar sesión/i }).click()
 
