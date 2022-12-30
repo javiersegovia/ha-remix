@@ -202,6 +202,10 @@ const userPayrollNotifications = {
     subject: 'Tu solicitud de adelanto ha sido denegada',
     title: 'Solicitud denegada',
   },
+  [PayrollAdvanceStatus.APPROVED]: {
+    subject: '¡Tu desembolso ha sido aprobado!',
+    title: '¡Desembolso aprobado!',
+  },
   [PayrollAdvanceStatus.PAID]: {
     subject: '¡Tu desembolso ha sido procesado!',
     title: '¡Desembolso realizado!',
@@ -211,7 +215,10 @@ const userPayrollNotifications = {
 type TSendPayrollNotificationArgs = {
   destination: string
   payrollId: string | number
-  status: Extract<PayrollAdvanceStatus, 'DENIED' | 'REQUESTED' | 'PAID'>
+  status: Extract<
+    PayrollAdvanceStatus,
+    'DENIED' | 'REQUESTED' | 'PAID' | 'APPROVED'
+  >
 }
 
 /** Notify the user about PayrollAdvance updates */

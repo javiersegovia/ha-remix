@@ -41,8 +41,8 @@ describe('ACTION /dashboard/request-premium-advance', () => {
     })
 
     expect(premiumAdvance).toBeDefined()
-    expect(response.status).toBe(302)
-    expect(response.headers.get('Location')).toBe(
+    expect(response.status).toEqual(302)
+    expect(response.headers.get('Location')).toEqual(
       `/dashboard/premium-advances/${premiumAdvance!.id}`
     )
 

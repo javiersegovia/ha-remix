@@ -144,6 +144,9 @@ export default function AdminDashboardCompanyUpdateEmployeeRoute() {
           <AdminEmployeeForm
             defaultValues={{
               ...employee,
+              inactivatedAt: employee.inactivatedAt
+                ? new Date(employee.inactivatedAt)
+                : null,
               birthDay: employee.birthDay ? new Date(employee.birthDay) : null,
               documentIssueDate: employee.documentIssueDate
                 ? new Date(employee.documentIssueDate)

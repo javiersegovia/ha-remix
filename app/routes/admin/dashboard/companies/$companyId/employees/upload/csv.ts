@@ -35,28 +35,28 @@ export const action: ActionFunction = async ({ request, params }) => {
 
     const { usersWithErrors } = await uploadEmployees(result, companyId)
 
-    const columns: Array<keyof UploadEmployeeSchemaInput | 'ERRORES'> = [
-      'CORREO_ELECTRONICO',
-      'NOMBRE',
-      'APELLIDO',
-      'ESTADO',
-      'CARGO',
-      'DEPARTAMENTO',
-      'SALARIO',
-      'CUPO_APROBADO',
-      'CUPO_DISPONIBLE',
-      'PAIS',
-      'BANCO',
-      'TIPO_DE_CUENTA',
-      'NUMERO_DE_CUENTA',
-      'TIPO_DE_DOCUMENTO',
-      'DOCUMENTO_DE_IDENTIDAD',
-      'ERRORES',
-    ]
-
     let csv: string | null = null
 
     if (usersWithErrors?.length > 0) {
+      const columns: Array<keyof UploadEmployeeSchemaInput | 'ERRORES'> = [
+        'CORREO_ELECTRONICO',
+        'NOMBRE',
+        'APELLIDO',
+        'ESTADO',
+        'CARGO',
+        'DEPARTAMENTO',
+        'SALARIO',
+        'CUPO_APROBADO',
+        'CUPO_DISPONIBLE',
+        'PAIS',
+        'BANCO',
+        'TIPO_DE_CUENTA',
+        'NUMERO_DE_CUENTA',
+        'TIPO_DE_DOCUMENTO',
+        'DOCUMENTO_DE_IDENTIDAD',
+        'ERRORES',
+      ]
+
       csv = stringify(usersWithErrors, {
         columns,
         header: true,
@@ -76,7 +76,6 @@ export const action: ActionFunction = async ({ request, params }) => {
     return redirect(`/admin/dashboard/companies/${companyId}/employees`)
   } catch (e) {
     console.error(e)
+    return badRequest('Ha ocurrido un error inesperado.')
   }
-
-  return badRequest('Ha ocurrido un error inesperado.')
 }

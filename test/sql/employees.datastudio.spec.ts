@@ -222,7 +222,7 @@ describe('DATASTUDIO Employees Query', () => {
       LEFT JOIN "advance_api"."BankAccountType" ON "BankAccountType"."id" = "BankAccount"."accountTypeId"
       LEFT JOIN "advance_api"."IdentityDocumentType" ON "IdentityDocumentType"."id" = "IdentityDocument"."documentTypeId";`
 
-    expect(queryResult.length).toBe(3)
+    expect(queryResult.length).toEqual(3)
     expect(queryResult[0]).toEqual<
       Pick<
         Employee,

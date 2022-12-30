@@ -93,7 +93,7 @@ describe('LOADER /dashboard/overview', () => {
       params: {},
       context: {},
     })
-    expect(response.status).toBe(200)
+    expect(response.status).toEqual(200)
 
     const data = await response.json()
 
@@ -103,6 +103,9 @@ describe('LOADER /dashboard/overview', () => {
         firstName: employee.user.firstName,
       },
       benefits: [],
+      company: {
+        name: employee.company.name,
+      },
     })
   })
 
@@ -143,7 +146,7 @@ describe('LOADER /dashboard/overview', () => {
       params: {},
       context: {},
     })
-    expect(response.status).toBe(200)
+    expect(response.status).toEqual(200)
 
     const data = await response.json()
 
@@ -197,7 +200,7 @@ describe('LOADER /dashboard/overview', () => {
       params: {},
       context: {},
     })
-    expect(response.status).toBe(200)
+    expect(response.status).toEqual(200)
 
     const data = await response.json()
 

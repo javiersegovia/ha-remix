@@ -158,13 +158,13 @@ model CompanyCategory {
 }
 
 model Employee {
-  id        String   @id @default(cuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id            String    @id @default(cuid())
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  inactivatedAt DateTime?
 
   status EmployeeStatus @default(INACTIVE)
   roles  EmployeeRole[]
-  salary Float?
 
   acceptedPrivacyPolicy  Boolean @default(false)
   acceptedTermsOfService Boolean @default(false)
@@ -469,6 +469,11 @@ model PayrollAdvance {
   status          PayrollAdvanceStatus        @default(REQUESTED)
   paymentMethod   PayrollAdvancePaymentMethod
   paymentTermDays Int? // 
+
+  approvedAt  DateTime?
+  paidAt      DateTime?
+  cancelledAt DateTime?
+  deniedAt    DateTime?
 
   paymentDate  Int? // [!] Timestamp
   periodOfDays Int? // Period of days between the payroll request and the next payday.

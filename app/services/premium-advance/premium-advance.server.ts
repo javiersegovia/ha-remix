@@ -182,17 +182,6 @@ export const updatePremiumAdvanceStatus = async ({
           status: toStatus,
         })
 
-        // console.log('DENIED', employee.phone)
-
-        // if (employee.phone) {
-        //   console.log('will call sendSMS ~~~~~~~~~~')
-
-        //   await sendSMS({
-        //     PhoneNumber: employee.phone,
-        //     Message:
-        //       'Tu solicitud no pudo ser aprobada :disappointed: ¿Necesitas más información? Ingresa a https://hoyadelantas.com',
-        //   })
-        // }
         break
       }
 
@@ -206,13 +195,11 @@ export const updatePremiumAdvanceStatus = async ({
       }
 
       case APPROVED: {
-        // if (employee.phone) {
-        //   await sendSMS({
-        //     PhoneNumber: employee.phone,
-        //     Message:
-        //       '¡Tu solicitud de adelanto de nómina acaba de ser aprobada, en minutos desembolsaremos el dinero a tu cuenta!',
-        //   })
-        // }
+        sendPremiumAdvanceNotificationToUser({
+          destination: user.email,
+          premiumAdvanceId: updatedPremiumAdvance.id,
+          status: toStatus,
+        })
         break
       }
 
@@ -259,6 +246,10 @@ const userPremiumAdvanceNotifications = {
     subject: 'Tu solicitud de adelanto ha sido denegada',
     title: 'Solicitud denegada',
   },
+  [PremiumAdvanceStatus.APPROVED]: {
+    subject: '¡Tu desembolso ha sido aprobado!',
+    title: '¡Desembolso aprobado!',
+  },
   [PremiumAdvanceStatus.PAID]: {
     subject: '¡Tu desembolso ha sido procesado!',
     title: '¡Desembolso realizado!',
@@ -268,7 +259,10 @@ const userPremiumAdvanceNotifications = {
 type TSendPremiumAdvanceNotificationToUserArgs = {
   destination: string
   premiumAdvanceId: string | number
-  status: Extract<PremiumAdvanceStatus, 'DENIED' | 'REQUESTED' | 'PAID'>
+  status: Extract<
+    PremiumAdvanceStatus,
+    'DENIED' | 'REQUESTED' | 'PAID' | 'APPROVED'
+  >
 }
 
 /** Notify the user about PremiumAdvance updates */

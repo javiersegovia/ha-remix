@@ -22,6 +22,7 @@ export const uploadEmployeeSchema = z.object({
       required_error: 'Ingrese un apellido',
     })
   ),
+  MEMBRESIA: zfd.text(z.string().nullish()),
   ESTADO: zfd.text(z.string().nullable().default(EmployeeStatus.INACTIVE)),
 
   CARGO: zfd.text(z.string().nullish()),

@@ -17,7 +17,7 @@ export const CountryFactory = Factory.define<Country>(
 
     return {
       id: sequence,
-      name: faker.datatype.string(20),
+      name: faker.address.country(),
       code2: faker.datatype.string(20),
       phoneCode: faker.datatype.string(),
     }
