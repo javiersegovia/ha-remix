@@ -35,6 +35,13 @@ export const parseDate = (date: Date | string) => {
 
 export function dateAsUTC(date?: Date | null) {
   return date
-    ? new Date(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate())
+    ? new Date(
+        date.getUTCFullYear(),
+        date.getUTCMonth(),
+        date.getUTCDate(),
+        date.getUTCHours(),
+        date.getUTCMinutes(),
+        date.getUTCSeconds()
+      )
     : null
 }

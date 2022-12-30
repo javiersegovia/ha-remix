@@ -42,7 +42,7 @@ describe('LOADER /__api/cities', () => {
       context: {},
     })
 
-    expect(response.status).toBe(200)
+    expect(response.status).toEqual(200)
     expect(await response.json()).toMatchObject({
       cities: [
         { id: expect.any(Number), name: 'A_City_2' },
@@ -58,7 +58,7 @@ describe('LOADER /__api/cities', () => {
       context: {},
     })
 
-    expect(response.status).toBe(200)
+    expect(response.status).toEqual(200)
     expect(await response.json()).toMatchObject({
       cities: [],
     })

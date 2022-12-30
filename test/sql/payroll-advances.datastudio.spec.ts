@@ -61,6 +61,11 @@ describe('DATASTUDIO PayrollAdvances Query', () => {
             totalAmount: requestedAmount,
             paymentMethod: PayrollAdvancePaymentMethod.BANK_ACCOUNT,
 
+            approvedAt: new Date(),
+            paidAt: new Date(),
+            cancelledAt: new Date(),
+            deniedAt: new Date(),
+
             history: {
               createMany: {
                 data: [
@@ -111,11 +116,16 @@ describe('DATASTUDIO PayrollAdvances Query', () => {
 
     const queryResult = await prisma.$queryRaw<PayrollAdvance[]>`SELECT DISTINCT
       "PayrollAdvance"."id",
-      "companyId",
+      "PayrollAdvance"."companyId",
       "Company"."name" as "companyName",
       "PayrollAdvance"."employeeId",
+      "User"."email" as "employeeEmail",
       jsonb_object_agg("PayrollAdvanceHistory"."toStatus", "PayrollAdvanceHistory"."createdAt") history,
       "PayrollAdvance"."createdAt",
+      "approvedAt",
+      "deniedAt",
+      "paidAt",
+      "cancelledAt",
       "requestedAmount",
       "totalAmount",
       "PayrollAdvance"."status",
@@ -124,10 +134,13 @@ describe('DATASTUDIO PayrollAdvances Query', () => {
       FROM "advance_api"."PayrollAdvance"
       LEFT JOIN "advance_api"."PayrollAdvanceTax" ON "PayrollAdvance"."id" = "PayrollAdvanceTax"."payrollAdvanceId"
       LEFT JOIN "advance_api"."Company" ON "PayrollAdvance"."companyId" = "Company"."id"
+      LEFT JOIN "advance_api"."Employee" ON "PayrollAdvance"."employeeId" = "Employee"."id"
+      LEFT JOIN "advance_api"."User" ON "Employee"."userId" = "User"."id"
       LEFT JOIN "advance_api"."PayrollAdvanceHistory" ON "PayrollAdvance"."id" = "PayrollAdvanceHistory"."payrollAdvanceId"
       LEFT JOIN "advance_api"."PayrollAdvanceRequestReason" ON "PayrollAdvance"."requestReasonId" = "PayrollAdvanceRequestReason"."id"
       GROUP BY 
         "PayrollAdvance"."id",
+        "User"."email",
         "Company"."name",
         "PayrollAdvance"."companyId",
         "PayrollAdvance"."employeeId",
@@ -137,7 +150,7 @@ describe('DATASTUDIO PayrollAdvances Query', () => {
         "PayrollAdvance"."status",
         "PayrollAdvanceRequestReason"."name";`
 
-    expect(queryResult.length).toBe(5)
+    expect(queryResult.length).toEqual(5)
     expect(queryResult[0]).toEqual<
       Pick<
         PayrollAdvance,
@@ -149,8 +162,13 @@ describe('DATASTUDIO PayrollAdvances Query', () => {
         | 'totalAmount'
         | 'status'
         | 'requestReasonDescription'
+        | 'approvedAt'
+        | 'paidAt'
+        | 'deniedAt'
+        | 'cancelledAt'
       > & {
         companyName: string
+        employeeEmail: string
         requestReason: string
         history: {
           REQUESTED: string
@@ -162,10 +180,15 @@ describe('DATASTUDIO PayrollAdvances Query', () => {
       id: expect.any(Number),
       companyId: expect.any(String),
       companyName: expect.any(String),
+      employeeEmail: expect.any(String),
       employeeId: expect.any(String),
       requestedAmount: expect.any(Number),
       totalAmount: expect.any(Number),
       createdAt: expect.any(Date),
+      approvedAt: expect.any(Date),
+      paidAt: expect.any(Date),
+      deniedAt: expect.any(Date),
+      cancelledAt: expect.any(Date),
       status: PayrollAdvanceStatus.PAID,
       requestReason: requestReason.name,
       requestReasonDescription: 'Motivo personalizado',

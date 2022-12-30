@@ -103,7 +103,7 @@ describe('DATASTUDIO Companies Query', () => {
       premiumLastRequestDay,
     } = createCompanyData
 
-    expect(queryResult.length).toBe(5)
+    expect(queryResult.length).toEqual(5)
     expect(queryResult[0]).toEqual<
       Pick<
         Company,

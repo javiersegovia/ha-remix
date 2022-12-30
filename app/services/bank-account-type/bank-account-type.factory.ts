@@ -18,7 +18,7 @@ export const BankAccountTypeFactory = Factory.define<BankAccountType>(
 
     return {
       id: faker.datatype.number(),
-      name: faker.datatype.string(20),
+      name: faker.word.noun(),
       createdAt: new Date(),
       updatedAt: new Date(),
     }

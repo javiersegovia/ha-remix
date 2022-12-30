@@ -90,6 +90,17 @@ export const employeeSchema = z.object({
     .nullish(),
 
   bankAccount: bankAccountSchema,
+
+  inactivatedAt: zDate(
+    z
+      .date({
+        invalid_type_error: 'Ingrese la fecha de retiro',
+        required_error: 'Ingrese la fecha de retiro',
+      })
+      .nullish()
+  )
+    .nullable()
+    .default(null),
 })
 
 export const employeeValidator = withZod(employeeSchema)

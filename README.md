@@ -88,15 +88,15 @@ _**TO DO:** Add or link example of Unit Testing here._
 
 ### Integration Testing
 
-- They should be placed in the `test` directory. There are multiple integration tests that we can add.
+- They should be placed inside the `test` directory or the `app/services` folder, it depends on the type of the test.
 - The naming should follow a convention of `{name}.spec.ts`
 - We should try to test only the happy paths of our functions here, because testing all paths would be too resource-expensive. If there is a valid reason, we can test alternative paths of our functions to make sure they work as they should, but we should rely on unit tests for this whenever possible.
 - Inside `tests/routes`, we will add tests for the loaders and actions of our Remix routes.
 - Inside `tests/sql`, we will add tests for any raw sql function that we use to interact with our database inside or outside the app. (e.g. datastudio).
-- Inside `tests/services`, we will add tests for any function inside our service that we want to test without mocking the database. (e.g. Testing relationships)
+- Inside `app/services/{service_name}`, we will add tests for any function inside our service that we want to test without mocking the database. (e.g. Testing relationships and complex functions)
 - We have DOM-specific assertion helpers via [`@testing-library/jest-dom`](https://testing-library.com/jest-dom)
 
-If the test interact with the database, don't forget to reset it inside the `beforeEach` hook.
+If the test interact with the database, don't forget to reset it inside the `beforeEach` hook:
 
 ```ts
 import { truncateDB } from 'test/helpers/truncateDB'
@@ -109,6 +109,8 @@ beforeEach(async () => {
 _**TO DO:** Add or link example of Integration Testing here._
 
 ### End to End Testing
+
+_**TO DO:** Replace Cypress examples with Playwright._
 
 - They should be placed in the `test/e2e` directory.
 - The naming should follow a convention of `{name}.cy.ts` or `{name}.e2e.ts`

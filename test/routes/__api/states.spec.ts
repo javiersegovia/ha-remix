@@ -38,7 +38,7 @@ describe('LOADER /__api/states', () => {
       context: {},
     })
 
-    expect(response.status).toBe(200)
+    expect(response.status).toEqual(200)
     expect(await response.json()).toMatchObject({
       states: [
         { id: expect.any(Number), name: 'Amazonas' },
@@ -54,7 +54,7 @@ describe('LOADER /__api/states', () => {
       context: {},
     })
 
-    expect(response.status).toBe(200)
+    expect(response.status).toEqual(200)
     expect(await response.json()).toMatchObject({
       states: [],
     })

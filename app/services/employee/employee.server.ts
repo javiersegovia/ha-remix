@@ -164,6 +164,7 @@ export const createEmployee = async (
     advanceCryptoAvailableAmount,
     advanceCryptoMaxAmount,
     advanceMaxAmount,
+    inactivatedAt,
   } = data
 
   const userExists = await prisma.user.findUnique({
@@ -233,6 +234,7 @@ export const createEmployee = async (
 
     const employee = await prisma.employee.create({
       data: {
+        inactivatedAt,
         salaryFiat,
         salaryCrypto,
         advanceAvailableAmount,
@@ -331,6 +333,8 @@ export const updateEmployeeById = async (
     user,
     bankAccount,
     wallet,
+
+    inactivatedAt,
   } = data
 
   const upsertWallet: Prisma.EmployeeUpdateInput['wallet'] =
@@ -397,11 +401,18 @@ export const updateEmployeeById = async (
         }
 
   try {
+    const newInactivatedAt =
+      existingEmployee.status === EmployeeStatus.ACTIVE &&
+      status === EmployeeStatus.INACTIVE
+        ? new Date()
+        : inactivatedAt
+
     return await prisma.employee.update({
       where: {
         id: employeeId,
       },
       data: {
+        inactivatedAt: dateAsUTC(newInactivatedAt),
         salaryFiat,
         salaryCrypto,
         advanceAvailableAmount,
@@ -614,6 +625,33 @@ export const uploadEmployees = async (
   let updatedUsersCount = 0
   const usersWithErrors: any[] = []
 
+  const jobDepartments = data
+    .map((item) =>
+      item.DEPARTAMENTO
+        ? { name: capitalize(item.DEPARTAMENTO.trim()) }
+        : undefined
+    )
+    .filter(Boolean) as { name: string }[]
+
+  const jobPositions = data
+    .map((item) =>
+      item.CARGO ? { name: capitalize(item.CARGO.trim()) } : undefined
+    )
+    .filter(Boolean) as { name: string }[]
+
+  if (jobDepartments.length > 0) {
+    await prisma.jobDepartment.createMany({
+      data: jobDepartments,
+      skipDuplicates: true,
+    })
+  }
+  if (jobPositions.length > 0) {
+    await prisma.jobPosition.createMany({
+      data: jobPositions,
+      skipDuplicates: true,
+    })
+  }
+
   const promises = data.map(async (item, itemIndex) => {
     const parsed = uploadEmployeeSchema.safeParse(item)
 
@@ -650,6 +688,9 @@ export const uploadEmployees = async (
         MEMBRESIA: membershipName,
       } = parsed.data
 
+      const formattedJobDepartmentName = capitalize(jobDepartmentName?.trim())
+      const formattedJobPositionName = capitalize(jobPositionName?.trim())
+
       const existingUser = await prisma.user.findFirst({
         where: {
           email,
@@ -659,6 +700,7 @@ export const uploadEmployees = async (
           employee: {
             select: {
               id: true,
+              status: true,
               bankAccount: {
                 select: {
                   id: true,
@@ -671,9 +713,6 @@ export const uploadEmployees = async (
           },
         },
       })
-
-      const formattedJobDepartmentName = capitalize(jobDepartmentName?.trim())
-      const formattedJobPositionName = capitalize(jobPositionName?.trim())
 
       try {
         const country = countryName
@@ -691,12 +730,12 @@ export const uploadEmployees = async (
           ? await prisma.membership.findFirst({
               where: {
                 name: {
-                  contains: membershipName,
+                  contains: membershipName.toLowerCase(),
                   mode: 'insensitive',
                 },
               },
             })
-          : undefined
+          : null
 
         if (countryName && !country) {
           errorResponses[itemIndex].push(`País ${countryName} no encontrado`)
@@ -846,7 +885,7 @@ export const uploadEmployees = async (
 
         const employee = await prisma.employee.upsert({
           where: {
-            id: existingUser?.id,
+            id: existingUser?.employee?.id || '',
           },
           create: {
             user: {
@@ -869,26 +908,16 @@ export const uploadEmployees = async (
 
             jobDepartment: formattedJobDepartmentName
               ? {
-                  connectOrCreate: {
-                    where: {
-                      name: formattedJobDepartmentName,
-                    },
-                    create: {
-                      name: formattedJobDepartmentName,
-                    },
+                  connect: {
+                    name: formattedJobDepartmentName,
                   },
                 }
               : undefined,
 
-            jobPosition: formattedJobPositionName?.trim()
+            jobPosition: formattedJobPositionName
               ? {
-                  connectOrCreate: {
-                    where: {
-                      name: formattedJobPositionName,
-                    },
-                    create: {
-                      name: formattedJobPositionName,
-                    },
+                  connect: {
+                    name: formattedJobPositionName,
                   },
                 }
               : undefined,
@@ -900,7 +929,7 @@ export const uploadEmployees = async (
           },
           update: {
             user: {
-              create: {
+              update: {
                 ...newUser,
               },
             },
@@ -908,6 +937,12 @@ export const uploadEmployees = async (
             advanceAvailableAmount: parseFloat(availableAmount),
             advanceMaxAmount: parseFloat(maxAvailableAmount),
             roles: [EmployeeRole.MEMBER],
+
+            inactivatedAt:
+              existingUser?.employee?.status === EmployeeStatus.ACTIVE &&
+              status?.toLowerCase() == 'inactivo'
+                ? dateAsUTC(new Date())
+                : undefined,
 
             status:
               status?.toLowerCase() == EmployeeStatus.ACTIVE.toLowerCase() ||

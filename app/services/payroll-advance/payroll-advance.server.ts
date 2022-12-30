@@ -25,6 +25,7 @@ import {
   sendPayrollNotificationToAdmin,
   sendPayrollNotificationToUser,
 } from '../email/email.server'
+import { dateAsUTC } from '~/utils/formatDate'
 // import { sendSMS } from '../sms/sms.service'
 
 export type TPayrollContent = {
@@ -795,12 +796,21 @@ export const updatePayrollAdvanceStatus = async ({
   }
 
   try {
+    const currentDate = dateAsUTC(new Date())
     const updatedPayroll = await prisma.payrollAdvance.update({
       where: {
         id: payrollAdvance.id,
       },
       data: {
         status: toStatus,
+        approvedAt:
+          toStatus === PayrollAdvanceStatus.APPROVED ? currentDate : undefined,
+        paidAt:
+          toStatus === PayrollAdvanceStatus.PAID ? currentDate : undefined,
+        cancelledAt:
+          toStatus === PayrollAdvanceStatus.CANCELLED ? currentDate : undefined,
+        deniedAt:
+          toStatus === PayrollAdvanceStatus.DENIED ? currentDate : undefined,
         employee: updateEmployee,
         history: createHistory,
       },
@@ -813,18 +823,6 @@ export const updatePayrollAdvanceStatus = async ({
           payrollId: payrollAdvance.id,
           status: toStatus,
         })
-
-        // console.log('DENIED', employee.phone)
-
-        // if (employee.phone) {
-        //   console.log('will call sendSMS ~~~~~~~~~~')
-
-        //   await sendSMS({
-        //     PhoneNumber: employee.phone,
-        //     Message:
-        //       'Tu solicitud no pudo ser aprobada :disappointed: ¿Necesitas más información? Ingresa a https://hoyadelantas.com',
-        //   })
-        // }
         break
       }
 
@@ -838,13 +836,11 @@ export const updatePayrollAdvanceStatus = async ({
       }
 
       case APPROVED: {
-        // if (employee.phone) {
-        //   await sendSMS({
-        //     PhoneNumber: employee.phone,
-        //     Message:
-        //       '¡Tu solicitud de adelanto de nómina acaba de ser aprobada, en minutos desembolsaremos el dinero a tu cuenta!',
-        //   })
-        // }
+        sendPayrollNotificationToUser({
+          destination: user.email,
+          payrollId: payrollAdvance.id,
+          status: toStatus,
+        })
         break
       }
 
@@ -866,14 +862,6 @@ export const updatePayrollAdvanceStatus = async ({
         if (payrollAdvance.paymentMethod === WALLET) {
           // to do: add Crypto payment
         }
-
-        // if (employee.phone) {
-        //   await sendSMS({
-        //     PhoneNumber: employee.phone,
-        //     Message:
-        //       '¡Tu solicitud de adelanto ha sido desembolsada! En unas horas el dinero se verá reflejado en tu cuenta :grinning:',
-        //   })
-        // }
         break
       }
 
