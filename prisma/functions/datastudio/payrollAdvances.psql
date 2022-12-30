@@ -1,17 +1,35 @@
-SELECT DISTINCT 
-  "PayrollAdvance"."id", 
-  "companyId", 
-  "PayrollAdvance"."employeeId",
-  jsonb_object_agg("PayrollAdvanceHistory"."toStatus", "PayrollAdvanceHistory"."createdAt") history,
-  "PayrollAdvance"."createdAt", 
-  "requestedAmount", 
-  "status"
-  FROM "PayrollAdvance"
-  LEFT JOIN "PayrollAdvanceTax" ON "PayrollAdvance"."id" = "PayrollAdvanceTax"."payrollAdvanceId" 
-  LEFT JOIN "PayrollAdvanceHistory" ON "PayrollAdvance"."id" = "PayrollAdvanceHistory"."payrollAdvanceId"
-  GROUP BY "PayrollAdvance"."id", 
+SELECT DISTINCT
+  "PayrollAdvance"."id",
   "PayrollAdvance"."companyId",
+  "Company"."name" as "companyName",
   "PayrollAdvance"."employeeId",
-  "PayrollAdvance"."createdAt", 
-  "PayrollAdvance"."requestedAmount",
-  "PayrollAdvance"."status";
+  "User"."email" as "employeeEmail",
+  jsonb_object_agg("PayrollAdvanceHistory"."toStatus", "PayrollAdvanceHistory"."createdAt") history,
+  "PayrollAdvance"."createdAt",
+  "approvedAt",
+  "deniedAt",
+  "paidAt",
+  "cancelledAt",
+  "requestedAmount",
+  "totalAmount",
+  "PayrollAdvance"."status",
+  "PayrollAdvanceRequestReason"."name" as "requestReason",
+  "requestReasonDescription"
+  FROM "advance_api"."PayrollAdvance"
+  LEFT JOIN "advance_api"."PayrollAdvanceTax" ON "PayrollAdvance"."id" = "PayrollAdvanceTax"."payrollAdvanceId"
+  LEFT JOIN "advance_api"."Company" ON "PayrollAdvance"."companyId" = "Company"."id"
+  LEFT JOIN "advance_api"."Employee" ON "PayrollAdvance"."employeeId" = "Employee"."id"
+  LEFT JOIN "advance_api"."User" ON "Employee"."userId" = "User"."id"
+  LEFT JOIN "advance_api"."PayrollAdvanceHistory" ON "PayrollAdvance"."id" = "PayrollAdvanceHistory"."payrollAdvanceId"
+  LEFT JOIN "advance_api"."PayrollAdvanceRequestReason" ON "PayrollAdvance"."requestReasonId" = "PayrollAdvanceRequestReason"."id"
+  GROUP BY 
+    "PayrollAdvance"."id",
+    "User"."email",
+    "Company"."name",
+    "PayrollAdvance"."companyId",
+    "PayrollAdvance"."employeeId",
+    "PayrollAdvance"."createdAt",
+    "PayrollAdvance"."requestedAmount",
+    "PayrollAdvance"."totalAmount",
+    "PayrollAdvance"."status",
+    "PayrollAdvanceRequestReason"."name";

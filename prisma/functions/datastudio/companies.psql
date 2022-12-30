@@ -1,18 +1,19 @@
 SELECT DISTINCT 
   "Company"."id",
   "Company"."name", 
-  array_remove(array_agg("CompanyCategory"."name"), NULL) as "categories", 
+  "Company"."createdAt",
+  string_agg("CompanyCategory"."name", ', ' order by "CompanyCategory"."name") as "categories",
   "address",
   "description",
   "phone",
   "status",
-  "paymentDays",
+  array_to_string("paymentDays", ', ') as "paymentDays",
   "lastRequestDay",
-  "premiumPaymentDays",
+  array_to_string("premiumPaymentDays", ', ') as "premiumPaymentDays",
   "premiumLastRequestDay",
   "Country"."name" as "country" 
-  FROM "Company" 
-  LEFT JOIN "Country" ON "Country"."id" = "Company"."countryId" 
-  LEFT JOIN "_CompanyToCompanyCategory" ON "Company"."id" = "_CompanyToCompanyCategory"."A" 
-  LEFT JOIN "CompanyCategory" ON "CompanyCategory"."id" = "_CompanyToCompanyCategory"."B" 
+  FROM "advance_api"."Company" 
+  LEFT JOIN "advance_api"."Country" ON "Country"."id" = "Company"."countryId" 
+  LEFT OUTER JOIN "advance_api"."_CompanyToCompanyCategory" ON "Company"."id" = "_CompanyToCompanyCategory"."A" 
+  LEFT JOIN "advance_api"."CompanyCategory" ON "CompanyCategory"."id" = "_CompanyToCompanyCategory"."B" 
   GROUP BY "Company"."id", "Country"."name";

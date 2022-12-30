@@ -218,9 +218,9 @@ describe('DATASTUDIO Employee_PayrollAdvances Query', () => {
     "Country"."name" as "country",
     "State"."name" as "state",
     "City"."name" as "city",
-    (SELECT jsonb_agg(
+    COALESCE(jsonb_agg(
       jsonb_build_object(
-        'id', "PayrollAdvance"."id", 
+        'id', "PayrollAdvance"."id",
         'requestedAmount', "PayrollAdvance"."requestedAmount",
         'totalAmount', "PayrollAdvance"."totalAmount",
         'status', "PayrollAdvance"."status",
@@ -229,11 +229,10 @@ describe('DATASTUDIO Employee_PayrollAdvances Query', () => {
         'paidAt', "PayrollAdvance"."paidAt",
         'cancelledAt', "PayrollAdvance"."cancelledAt",
         'deniedAt', "PayrollAdvance"."deniedAt",
-        'requestReason', (SELECT "PayrollAdvanceRequestReason"."name" FROM "PayrollAdvanceRequestReason" WHERE "PayrollAdvanceRequestReason"."id" = "PayrollAdvance"."requestReasonId"),
+        'requestReason', "PayrollAdvanceRequestReason"."name",
         'requestReasonDescription', "PayrollAdvance"."requestReasonDescription"
       )
-    ) FROM "PayrollAdvance" 
-    WHERE "PayrollAdvance"."employeeId" = "Employee"."id") as "payrollAdvances"
+    ) FILTER (WHERE "PayrollAdvance"."id" IS NOT NULL), '[]') as "payrollAdvances"
     FROM "advance_api"."Employee"
     INNER JOIN "advance_api"."User" ON "advance_api"."User"."id" = "Employee"."userId"
     LEFT JOIN "advance_api"."Company" ON "Company"."id" = "Employee"."companyId"
@@ -265,7 +264,7 @@ describe('DATASTUDIO Employee_PayrollAdvances Query', () => {
       "Gender"."name",
       "Country"."name",
       "State"."name",
-      "City"."name";`
+      "City"."name"`
 
     expect(queryResult.length).toEqual(3)
     expect(queryResult[0]).toEqual<
@@ -345,3 +344,78 @@ describe('DATASTUDIO Employee_PayrollAdvances Query', () => {
     })
   })
 })
+
+// SELECT DISTINCT
+//     "Employee"."id",
+//     "Employee"."createdAt",
+//     "inactivatedAt",
+//     "Employee"."companyId",
+//     "Company"."name" as "companyName",
+//     "firstName",
+//     "lastName",
+//     "email",
+//     "Employee"."status",
+//     "Employee"."address",
+//     "numberOfChildren",
+//     "birthDay",
+//     "salaryFiat",
+//     "value" as "identityDocumentValue",
+//     "IdentityDocumentType"."name" as "identityDocumentType",
+//     "advanceAvailableAmount",
+//     "advanceMaxAmount",
+//     "Bank"."name" as "bank",
+//     "BankAccountType"."name" as "bankAccountType",
+//     "JobDepartment"."name" as "jobDepartment",
+//     "JobPosition"."name" as "jobPosition",
+//     "Gender"."name" as "gender",
+//     "Country"."name" as "country",
+//     "State"."name" as "state",
+//     "City"."name" as "city",
+//     (SELECT jsonb_agg(
+//       jsonb_build_object(
+//         'id', "PayrollAdvance"."id",
+//         'requestedAmount', "PayrollAdvance"."requestedAmount",
+//         'totalAmount', "PayrollAdvance"."totalAmount",
+//         'status', "PayrollAdvance"."status",
+//         'createdAt', "PayrollAdvance"."createdAt",
+//         'approvedAt', "PayrollAdvance"."approvedAt",
+//         'paidAt', "PayrollAdvance"."paidAt",
+//         'cancelledAt', "PayrollAdvance"."cancelledAt",
+//         'deniedAt', "PayrollAdvance"."deniedAt",
+//         'requestReason', (SELECT "PayrollAdvanceRequestReason"."name" FROM "PayrollAdvanceRequestReason" WHERE "PayrollAdvanceRequestReason"."id" = "PayrollAdvance"."requestReasonId"),
+//         'requestReasonDescription', "PayrollAdvance"."requestReasonDescription"
+//       )
+//     ) FROM "PayrollAdvance"
+//     WHERE "PayrollAdvance"."employeeId" = "Employee"."id") as "payrollAdvances"
+//     FROM "advance_api"."Employee"
+//     INNER JOIN "advance_api"."User" ON "advance_api"."User"."id" = "Employee"."userId"
+//     LEFT JOIN "advance_api"."Company" ON "Company"."id" = "Employee"."companyId"
+//     LEFT JOIN "advance_api"."JobDepartment" ON "JobDepartment"."id" = "Employee"."jobDepartmentId"
+//     LEFT JOIN "advance_api"."JobPosition" ON "JobPosition"."id" = "Employee"."jobPositionId"
+//     LEFT JOIN "advance_api"."Gender" ON "Gender"."id" = "Employee"."genderId"
+//     LEFT JOIN "advance_api"."Country" ON "Country"."id" = "Employee"."countryId"
+//     LEFT JOIN "advance_api"."State" ON "State"."id" = "Employee"."stateId"
+//     LEFT JOIN "advance_api"."City" ON "City"."id" = "Employee"."cityId"
+//     LEFT JOIN "advance_api"."BankAccount" ON "BankAccount"."id" = "Employee"."bankAccountId"
+//     LEFT JOIN "advance_api"."Bank" ON "Bank"."id" = "BankAccount"."bankId"
+//     LEFT JOIN "advance_api"."IdentityDocument" ON "IdentityDocument"."id" = "BankAccount"."identityDocumentId"
+//     LEFT JOIN "advance_api"."BankAccountType" ON "BankAccountType"."id" = "BankAccount"."accountTypeId"
+//     LEFT JOIN "advance_api"."IdentityDocumentType" ON "IdentityDocumentType"."id" = "IdentityDocument"."documentTypeId"
+//     LEFT JOIN "advance_api"."PayrollAdvance" ON "PayrollAdvance"."employeeId" = "Employee"."id"
+//     LEFT JOIN "advance_api"."PayrollAdvanceRequestReason" ON "PayrollAdvance"."requestReasonId" = "PayrollAdvanceRequestReason"."id"
+//     GROUP BY
+//       "Employee"."id",
+//       "Company"."name",
+//       "User"."firstName",
+//       "User"."lastName",
+//       "User"."email",
+//       "IdentityDocument"."value",
+//       "IdentityDocumentType"."name",
+//       "Bank"."name",
+//       "BankAccountType"."name",
+//       "JobDepartment"."name",
+//       "JobPosition"."name",
+//       "Gender"."name",
+//       "Country"."name",
+//       "State"."name",
+//       "City"."name";
