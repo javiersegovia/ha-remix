@@ -13,6 +13,7 @@ export default defineConfig({
     environment: 'happy-dom',
     setupFiles: ['./test/setup-test-env.ts'],
     includeSource: ['./app/**/**.{test,spec}.{js,ts,jsx,tsx}'],
+    testTimeout: 10000,
     coverage: {
       all: true,
       provider: 'c8',

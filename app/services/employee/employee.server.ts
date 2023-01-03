@@ -698,7 +698,10 @@ export const uploadEmployees = async (
 
       const existingUser = await prisma.user.findFirst({
         where: {
-          email,
+          email: {
+            equals: email,
+            mode: 'insensitive',
+          },
         },
         select: {
           id: true,
@@ -891,6 +894,9 @@ export const uploadEmployees = async (
         const employee = await prisma.employee.upsert({
           where: {
             id: existingUser?.employee?.id || '',
+          },
+          include: {
+            user: true,
           },
           create: {
             user: {

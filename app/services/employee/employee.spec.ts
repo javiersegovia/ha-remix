@@ -67,9 +67,9 @@ describe('uploadEmployees', () => {
     expect(response.usersWithErrors.length).toEqual(0)
 
     const expectedUser = dummyCsvData[0]
-    const createdUser = await prisma.user.findUnique({
+    const createdUser = await prisma.user.findFirst({
       where: {
-        email: expectedUser.CORREO_ELECTRONICO,
+        email: { equals: expectedUser.CORREO_ELECTRONICO, mode: 'insensitive' },
       },
       include: {
         employee: {
@@ -189,9 +189,9 @@ describe('uploadEmployees', () => {
     expect(updatedUsersCount).toEqual(1)
     expect(usersWithErrors.length).toEqual(0)
 
-    const createdUser = await prisma.user.findUnique({
+    const createdUser = await prisma.user.findFirst({
       where: {
-        email: updatedUser.CORREO_ELECTRONICO,
+        email: { equals: updatedUser.CORREO_ELECTRONICO, mode: 'insensitive' },
       },
       include: {
         employee: {
