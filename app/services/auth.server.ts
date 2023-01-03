@@ -15,7 +15,7 @@ export const requestLoginLink = async (email: string) => {
   const user = await prisma.user.findFirst({
     where: {
       email: {
-        contains: email.toLowerCase(),
+        equals: email,
         mode: 'insensitive',
       },
     },
@@ -91,7 +91,12 @@ export const requestPasswordChange = async (email: string) => {
   const loginExpiration = generateExpirationDate(LOGIN_EXPIRES_IN)
 
   const userToUpdate = await prisma.user.findFirst({
-    where: { email: email.toLowerCase() },
+    where: {
+      email: {
+        equals: email,
+        mode: 'insensitive',
+      },
+    },
   })
 
   if (!userToUpdate) {

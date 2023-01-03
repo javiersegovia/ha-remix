@@ -19,7 +19,7 @@ export async function verifyAdminUserLogin(
   const adminUser = await prisma.adminUser.findFirst({
     where: {
       email: {
-        contains: email.toLowerCase(),
+        equals: email,
         mode: 'insensitive',
       },
     },

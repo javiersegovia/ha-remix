@@ -30,7 +30,7 @@ export async function verifyUserLogin(email: User['email'], password: string) {
   const user = await prisma.user.findFirst({
     where: {
       email: {
-        contains: email.toLowerCase(),
+        equals: email,
         mode: 'insensitive',
       },
     },

@@ -167,8 +167,13 @@ export const createEmployee = async (
     inactivatedAt,
   } = data
 
-  const userExists = await prisma.user.findUnique({
-    where: { email: user.email },
+  const userExists = await prisma.user.findFirst({
+    where: {
+      email: {
+        equals: user.email,
+        mode: 'insensitive',
+      },
+    },
   })
 
   if (userExists) {
@@ -730,7 +735,7 @@ export const uploadEmployees = async (
           ? await prisma.membership.findFirst({
               where: {
                 name: {
-                  contains: membershipName.toLowerCase(),
+                  contains: membershipName,
                   mode: 'insensitive',
                 },
               },
@@ -1117,6 +1122,7 @@ const generateCreateUserInput = async (user: Prisma.UserCreateInput) => {
 
   const newUser = {
     ...user,
+    email: user.email.toLowerCase(),
     loginExpiration,
     loginToken,
   }
