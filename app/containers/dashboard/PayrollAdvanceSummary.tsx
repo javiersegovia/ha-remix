@@ -57,14 +57,26 @@ const WalletDataSummary = ({ walletData }: WalletDataSummaryProps) => {
 interface BankAccountDataSummaryProps {
   bankAccountData: Pick<
     PayrollAdvanceBankAccount,
-    'currencyName' | 'accountNumber' | 'accountType' | 'bankName'
+    | 'currencyName'
+    | 'accountNumber'
+    | 'accountType'
+    | 'bankName'
+    | 'identityDocumentType'
+    | 'identityDocumentValue'
   >
 }
 
 const BankAccountDataSummary = ({
   bankAccountData,
 }: BankAccountDataSummaryProps) => {
-  const { currencyName, accountNumber, accountType, bankName } = bankAccountData
+  const {
+    currencyName,
+    accountNumber,
+    accountType,
+    bankName,
+    identityDocumentType,
+    identityDocumentValue,
+  } = bankAccountData
 
   return (
     <div className="space-y-1 py-4">
@@ -80,6 +92,16 @@ const BankAccountDataSummary = ({
       <PayrollAdvanceSummaryItem label="Tipo de cuenta" value={accountType} />
 
       <PayrollAdvanceSummaryItem label="Banco" value={bankName} />
+
+      <PayrollAdvanceSummaryItem
+        label="Tipo de documento"
+        value={identityDocumentType}
+      />
+
+      <PayrollAdvanceSummaryItem
+        label="Documento"
+        value={identityDocumentValue}
+      />
     </div>
   )
 }
