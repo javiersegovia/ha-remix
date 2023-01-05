@@ -34,6 +34,7 @@ describe('getBenefitById', () => {
       buttonHref: existingBenefit.buttonHref,
       buttonText: existingBenefit.buttonText,
       imageUrl: existingBenefit.imageUrl,
+      slug: existingBenefit.slug,
     })
   })
 })

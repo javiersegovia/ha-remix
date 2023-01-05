@@ -26,6 +26,7 @@ export const getBenefitById = async (benefitId: Benefit['id']) => {
       imageUrl: true,
       buttonText: true,
       buttonHref: true,
+      slug: true,
     },
   })
 }
@@ -35,6 +36,7 @@ export const createBenefit = async ({
   imageUrl,
   buttonText,
   buttonHref,
+  slug,
 }: BenefitInputSchema) => {
   try {
     return prisma.benefit.create({
@@ -43,6 +45,7 @@ export const createBenefit = async ({
         imageUrl,
         buttonText,
         buttonHref,
+        slug,
       },
       select: {
         id: true,
@@ -73,7 +76,7 @@ export const updateBenefitById = async (
     })
   }
 
-  const { name, imageUrl, buttonText, buttonHref } = data
+  const { name, imageUrl, buttonText, buttonHref, slug } = data
 
   return prisma.benefit.update({
     where: {
@@ -84,6 +87,7 @@ export const updateBenefitById = async (
       imageUrl: imageUrl || null,
       buttonText: buttonText || null,
       buttonHref: buttonHref || null,
+      slug: slug || null,
     },
     select: {
       id: true,

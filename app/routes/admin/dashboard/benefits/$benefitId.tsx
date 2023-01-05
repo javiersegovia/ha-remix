@@ -78,7 +78,7 @@ export default function UpdateBenefitRoute() {
   const { benefit } = useLoaderData<LoaderData>()
   const onCloseRedirectTo = '/admin/dashboard/benefits'
 
-  const { name, imageUrl, buttonText, buttonHref } = benefit
+  const { name, imageUrl, buttonText, buttonHref, slug } = benefit
 
   return (
     <Modal onCloseRedirectTo={onCloseRedirectTo}>
@@ -92,6 +92,7 @@ export default function UpdateBenefitRoute() {
           imageUrl,
           buttonText,
           buttonHref,
+          slug,
         }}
       />
     </Modal>

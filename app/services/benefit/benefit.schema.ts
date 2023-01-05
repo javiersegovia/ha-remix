@@ -12,6 +12,7 @@ export const benefitSchema = z.object({
   imageUrl: zfd.text(z.string().nullish()),
   buttonText: zfd.text(z.string().nullish()),
   buttonHref: zfd.text(z.string().nullish()),
+  slug: zfd.text(z.string().nullish()),
 })
 
 export const benefitValidator = withZod(benefitSchema)

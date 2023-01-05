@@ -17,7 +17,7 @@ interface BenefitFormProps {
   onCloseRedirectTo: string
   defaultValues?: Pick<
     Benefit,
-    'name' | 'imageUrl' | 'buttonText' | 'buttonHref'
+    'name' | 'imageUrl' | 'buttonText' | 'buttonHref' | 'slug'
   >
   showDelete?: boolean
 }
@@ -63,6 +63,10 @@ export const BenefitForm = ({
 
             <FormGridItem className="lg:col-span-12">
               <Input name="buttonHref" label="URL del botón" type="text" />
+            </FormGridItem>
+
+            <FormGridItem className="lg:col-span-12">
+              <Input name="slug" label="Slug (identificador)" type="text" />
             </FormGridItem>
 
             <FormGridItem className="lg:col-span-12">

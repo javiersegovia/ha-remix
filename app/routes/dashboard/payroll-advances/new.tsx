@@ -36,6 +36,7 @@ import {
 } from '~/services/payroll-advance/payroll-advance.server'
 import { PayrollAdvanceCalculation } from '~/containers/dashboard/PayrollAdvanceCalculation'
 import { Input } from '~/components/FormFields/Input'
+import { canUseBenefit } from '~/services/permissions/permissions.server'
 
 type LoaderData = {
   employee: Awaited<ReturnType<typeof requireEmployee>>
@@ -45,6 +46,19 @@ type LoaderData = {
 
 export const loader: LoaderFunction = async ({ request }) => {
   const employee = await requireEmployee(request)
+
+  const benefits = await canUseBenefit(
+    employee.membership?.benefits,
+    employee.company.benefits
+  )
+
+  const canUsePayrollAdvances = process.env.SLUG_PAYROLL_ADVANCE
+    ? benefits.some((b) => b.slug === process.env.SLUG_PAYROLL_ADVANCE)
+    : true
+
+  if (!canUsePayrollAdvances) {
+    return redirect('/')
+  }
 
   const paymentOptions = getEmployeePaymentOptions({
     employee,

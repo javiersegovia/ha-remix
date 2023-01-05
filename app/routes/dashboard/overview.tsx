@@ -9,6 +9,7 @@ import { prisma } from '~/db.server'
 import { Box } from '~/components/Layout/Box'
 import { Title } from '~/components/Typography/Title'
 import { BenefitCard } from '~/components/Cards/BenefitCard'
+import { canUseBenefit } from '~/services/permissions/permissions.server'
 
 export type DashboardIndexLoaderData = {
   gender: Pick<Gender, 'name'> | null
@@ -44,26 +45,10 @@ export const loader: LoaderFunction = async ({ request, context: ctx }) => {
     },
   })
 
-  const membershipBenefitsIds =
-    employeeData?.membership?.benefits?.map((m) => m.id) || []
-
-  const companyBenefitsIds =
-    employeeData?.company.benefits?.map((c) => c.id) || []
-
-  const benefitsIds = membershipBenefitsIds.filter((id) =>
-    companyBenefitsIds.includes(id)
+  const benefits = await canUseBenefit(
+    employeeData?.membership?.benefits,
+    employeeData?.company.benefits
   )
-
-  const benefits = await prisma.benefit.findMany({
-    orderBy: {
-      name: 'asc',
-    },
-    where: {
-      id: {
-        in: benefitsIds,
-      },
-    },
-  })
 
   if (!employeeData) throw await logout(request)
 
