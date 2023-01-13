@@ -3,7 +3,6 @@ import { prisma } from '~/db.server'
 import { CompanyFactory } from '../company/company.factory'
 import { faker } from '@faker-js/faker'
 import { MembershipFactory } from '../membership/membership.factory'
-import { uploadEmployees } from './employee.server'
 
 afterAll(async () => {
   vi.restoreAllMocks()
@@ -38,5 +37,7 @@ describe('uploadEmployees', () => {
 
     vi.spyOn(prisma.company, 'findUnique').mockResolvedValue(company)
     vi.spyOn(prisma.user, 'findFirst').mockResolvedValue(null)
+
+    // TODO: Finish test
   })
 })

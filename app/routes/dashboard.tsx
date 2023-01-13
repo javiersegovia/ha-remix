@@ -9,7 +9,7 @@ import type { INavPath } from '~/components/SideBar/DashboardSideBar'
 import { DashboardSideBar } from '~/components/SideBar/DashboardSideBar'
 import { requireUser } from '~/session.server'
 import { prisma } from '~/db.server'
-import { canUseBenefit } from '~/services/permissions/permissions.server'
+import { getEmployeeEnabledBenefits } from '~/services/permissions/permissions.server'
 
 export type DashboardLoaderData = {
   user: Awaited<ReturnType<typeof requireUser>>
@@ -48,7 +48,7 @@ export const loader: LoaderFunction = async ({ request }) => {
     },
   })
 
-  const benefits = await canUseBenefit(
+  const benefits = await getEmployeeEnabledBenefits(
     employeeData?.membership?.benefits,
     employeeData?.company.benefits
   )

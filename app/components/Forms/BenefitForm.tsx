@@ -66,7 +66,12 @@ export const BenefitForm = ({
             </FormGridItem>
 
             <FormGridItem className="lg:col-span-12">
-              <Input name="slug" label="Slug (identificador)" type="text" />
+              <Input
+                name="slug"
+                label="Slug (identificador)"
+                type="text"
+                disabled={process.env.NODE_ENV !== 'development'}
+              />
             </FormGridItem>
 
             <FormGridItem className="lg:col-span-12">

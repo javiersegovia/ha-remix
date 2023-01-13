@@ -1,11 +1,5 @@
-import type { PremiumAdvanceHistoryItemProps } from '~/containers/dashboard/AdvanceHistoryItem'
-import type {
-  Company,
-  Employee,
-  PremiumAdvance,
-  PremiumAdvanceHistory,
-  User,
-} from '@prisma/client'
+import type { getPremiumAdvanceById } from '~/services/premium-advance/premium-advance.server'
+import type { Company, Employee, User } from '@prisma/client'
 
 import { PremiumAdvanceHistoryActor } from '@prisma/client'
 
@@ -20,14 +14,7 @@ import { AdminManagementButtons } from '~/containers/dashboard/PremiumAdvance/Ad
 import { EmployeeManagementButtons } from '~/containers/dashboard/PremiumAdvance/EmployeeManagementButtons'
 
 interface PremiumAdvanceDetailsProps {
-  premiumAdvance: Pick<
-    PremiumAdvance,
-    'id' | 'companyId' | 'employeeId' | 'status'
-  > & {
-    history: (PremiumAdvanceHistoryItemProps['history'] &
-      Pick<PremiumAdvanceHistory, 'id' | 'actor'>)[]
-    createdAt: string | Date
-  }
+  premiumAdvance: NonNullable<Awaited<ReturnType<typeof getPremiumAdvanceById>>>
 
   company: Pick<Company, 'id' | 'name'>
   employee?: Pick<Employee, 'id'> | null

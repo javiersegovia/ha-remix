@@ -1,7 +1,6 @@
 import type {
   PayrollAdvance,
-  PayrollAdvanceBankAccount,
-  PayrollAdvanceRequestReason,
+  RequestReason,
   PayrollAdvanceTax,
   PayrollAdvanceTransfer,
   PayrollAdvanceWallet,
@@ -20,8 +19,10 @@ import { Box } from '~/components/Layout/Box'
 import { contractAddresses } from '~/services/blockchain/data'
 import { parseDate } from '~/utils/formatDate'
 import { formatMoney } from '~/utils/formatMoney'
-import { PayrollAdvanceSummaryItem } from './PayrollAdvanceSummaryItem'
+import { AdvanceSummaryItem } from './Advances/AdvanceSummaryItem'
 import { AdvanceStatusPill } from '~/components/Pills/AdvanceStatusPill'
+import type { BankAccountDataSummaryProps } from './Advances/BankAccountDataSummary'
+import { BankAccountDataSummary } from './Advances/BankAccountDataSummary'
 
 interface WalletDataSummaryProps {
   walletData: Pick<
@@ -44,64 +45,12 @@ const WalletDataSummary = ({ walletData }: WalletDataSummaryProps) => {
 
   return (
     <div className="space-y-1 py-4">
-      <PayrollAdvanceSummaryItem
+      <AdvanceSummaryItem
         label="Criptomoneda"
         value={`${cryptocurrencyName} (${cryptocurrencyAcronym})`}
       />
-      <PayrollAdvanceSummaryItem label="Red" value={cryptoNetworkName} />
-      <PayrollAdvanceSummaryItem label="Billetera cripto" value={address} />
-    </div>
-  )
-}
-
-interface BankAccountDataSummaryProps {
-  bankAccountData: Pick<
-    PayrollAdvanceBankAccount,
-    | 'currencyName'
-    | 'accountNumber'
-    | 'accountType'
-    | 'bankName'
-    | 'identityDocumentType'
-    | 'identityDocumentValue'
-  >
-}
-
-const BankAccountDataSummary = ({
-  bankAccountData,
-}: BankAccountDataSummaryProps) => {
-  const {
-    currencyName,
-    accountNumber,
-    accountType,
-    bankName,
-    identityDocumentType,
-    identityDocumentValue,
-  } = bankAccountData
-
-  return (
-    <div className="space-y-1 py-4">
-      {currencyName && (
-        <PayrollAdvanceSummaryItem label="Moneda" value={currencyName} />
-      )}
-
-      <PayrollAdvanceSummaryItem
-        label="Número de cuenta"
-        value={`${accountNumber}`}
-      />
-
-      <PayrollAdvanceSummaryItem label="Tipo de cuenta" value={accountType} />
-
-      <PayrollAdvanceSummaryItem label="Banco" value={bankName} />
-
-      <PayrollAdvanceSummaryItem
-        label="Tipo de documento"
-        value={identityDocumentType}
-      />
-
-      <PayrollAdvanceSummaryItem
-        label="Documento"
-        value={identityDocumentValue}
-      />
+      <AdvanceSummaryItem label="Red" value={cryptoNetworkName} />
+      <AdvanceSummaryItem label="Billetera cripto" value={address} />
     </div>
   )
 }
@@ -120,7 +69,7 @@ export interface PayrollAdvanceSummaryProps {
     taxes: Pick<PayrollAdvanceTax, 'id' | 'name' | 'description' | 'value'>[]
     transfers: Pick<PayrollAdvanceTransfer, 'status' | 'transactionHash'>[]
     createdAt: string | Date
-    requestReason?: Pick<PayrollAdvanceRequestReason, 'name'> | null
+    requestReason?: Pick<RequestReason, 'name'> | null
   }
   isAdmin?: boolean
 }
@@ -196,7 +145,7 @@ export const PayrollAdvanceSummary = ({
         <>
           <div className="h-[1px] w-full bg-gray-200" />
           <div className="py-4">
-            <PayrollAdvanceSummaryItem
+            <AdvanceSummaryItem
               label="Fecha de solicitud"
               value={format(parseDate(createdAt), 'dd/MM/yyyy')}
             />
@@ -209,14 +158,14 @@ export const PayrollAdvanceSummary = ({
           <div className="h-[1px] w-full bg-gray-200" />
           <div className="py-4">
             {requestReason && (
-              <PayrollAdvanceSummaryItem
+              <AdvanceSummaryItem
                 label="Motivo de solicitud"
                 value={requestReason.name}
               />
             )}
 
             {requestReasonDescription && (
-              <PayrollAdvanceSummaryItem
+              <AdvanceSummaryItem
                 label="Descripción del motivo"
                 value={requestReasonDescription}
               />
@@ -243,14 +192,14 @@ export const PayrollAdvanceSummary = ({
 
       <div className="pb-4" />
 
-      <PayrollAdvanceSummaryItem
+      <AdvanceSummaryItem
         label="Anticipo solicitado"
         value={formatMoney(requestedAmount, currencySymbol)}
       />
 
       {payrollAdvance.taxes.map(({ id, name, value, description }) => (
         <Fragment key={id}>
-          <PayrollAdvanceSummaryItem
+          <AdvanceSummaryItem
             label={name}
             value={formatMoney(value, currencySymbol)}
           />
@@ -264,7 +213,7 @@ export const PayrollAdvanceSummary = ({
 
       {/* {paymentMethod === PayrollAdvancePaymentMethod.WALLET &&
         walletData?.address && (
-          <PayrollAdvanceSummaryItem
+          <AdvanceSummaryItem
             label={
               !hasBeenPaid
                 ? 'Costo aproximado de transferencia (*)'
@@ -281,7 +230,7 @@ export const PayrollAdvanceSummary = ({
           />
         )} */}
 
-      <PayrollAdvanceSummaryItem
+      <AdvanceSummaryItem
         label={<div className="font-semibold">Total a descontar de nómina</div>}
         value={
           <div className="font-semibold">

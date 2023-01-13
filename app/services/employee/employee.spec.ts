@@ -57,6 +57,8 @@ describe('uploadEmployees', () => {
         SALARIO: faker.datatype.number().toString(),
         CUPO_APROBADO: faker.datatype.number().toString(),
         CUPO_DISPONIBLE: faker.datatype.number().toString(),
+        FECHA_DE_INGRESO: '2020-12-20',
+        FECHA_DE_RETIRO: undefined,
       })
     }
 

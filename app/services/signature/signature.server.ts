@@ -1,52 +1,10 @@
 import type { Employee, ZapsignDocument } from '@prisma/client'
+import type { SignatureDetailsResponse } from './signature.interface'
+
 import { ZapsignDocumentStatus } from '@prisma/client'
 import { fetch } from '@remix-run/node'
 import { badRequest, serverError } from 'remix-utils'
 import { prisma } from '~/db.server'
-
-import type { SignatureDetailsResponse } from './signature.interface'
-
-export const getSignature = async (
-  signerToken: string,
-  zapsignDocument: ZapsignDocument | null = null
-): Promise<SignatureDetailsResponse> => {
-  if (!zapsignDocument) {
-    zapsignDocument = await prisma.zapsignDocument.findFirst({
-      where: {
-        signerToken,
-      },
-    })
-  }
-
-  if (!zapsignDocument) {
-    throw badRequest('Token inválido')
-  }
-
-  if (zapsignDocument.externalToken) {
-    const response = await fetch(
-      `https://api.zapsign.com.br/api/v1/docs/${zapsignDocument.externalToken}/?api_token=${process.env.ZAPSIGN_ACCESS_TOKEN}`
-    ).catch((err) => {
-      throw serverError(err.response.data)
-    })
-
-    const data = await response.json()
-
-    if (data?.status !== zapsignDocument.documentStatus) {
-      await prisma.zapsignDocument.update({
-        where: {
-          id: zapsignDocument.id,
-        },
-        data: {
-          documentStatus: data?.status,
-        },
-      })
-    }
-
-    return data
-  }
-
-  throw serverError('Ha ocurrido un error con el registro del documento')
-}
 
 /** ! Right now, we only use ZapSign on Terms & Conditions.
  *  If we add more documents, we will have to refactor this function in order to identify
@@ -57,6 +15,28 @@ export const hasSignedTerms = async (
   employeeId: Employee['id']
 ): Promise<boolean> => {
   /** It should have only one, but just in case */
+  const employeeData = await prisma.employee.findUnique({
+    where: { id: employeeId },
+    select: {
+      phone: true,
+      user: {
+        select: {
+          firstName: true,
+          lastName: true,
+          email: true,
+        },
+      },
+    },
+  })
+
+  if (!employeeData) {
+    throw badRequest('El usuario no ha sido encontrado')
+  }
+
+  if (!employeeData.phone) {
+    throw badRequest('El número telefónico no ha sido registrado')
+  }
+
   const document = await prisma.zapsignDocument.findFirst({
     where: {
       employeeId,
@@ -67,6 +47,13 @@ export const hasSignedTerms = async (
     const signatureData = await getSignature(document.signerToken, document)
     return signatureData.status === ZapsignDocumentStatus.signed
   }
+
+  await requestSignature({
+    fullName: `${employeeData.user.firstName} ${employeeData.user.lastName}`,
+    email: employeeData?.user.email,
+    phone: employeeData?.phone,
+    employeeId,
+  })
 
   return Boolean(document)
 }
@@ -91,7 +78,7 @@ export const requestSignature = async ({
         template_id: 'f9d24bcc-fca8-4fbd-9120-686f6e457c5b',
         signer_name: fullName,
         lang: 'es',
-        brand_name: 'HoyAdelantas',
+        brand_name: 'HoyTrabajas Beneficios',
         created_by: 'erika.pardo@hoytrabajas.com',
         folder_path:
           process.env.NODE_ENV === 'production'
@@ -130,3 +117,43 @@ export const requestSignature = async ({
 }
 
 /** TODO Add ZapSign Webhook */
+
+export const getZapsignDocumentByEmployeeId = async (
+  employeeId: Employee['id']
+) => {
+  return prisma.zapsignDocument.findFirst({
+    where: {
+      employeeId,
+    },
+  })
+}
+
+const getSignature = async (
+  signerToken: string,
+  zapsignDocument: ZapsignDocument
+): Promise<SignatureDetailsResponse> => {
+  if (zapsignDocument.externalToken) {
+    const response = await fetch(
+      `https://api.zapsign.com.br/api/v1/docs/${zapsignDocument.externalToken}/?api_token=${process.env.ZAPSIGN_ACCESS_TOKEN}`
+    ).catch((err) => {
+      throw serverError(err.response.data)
+    })
+
+    const data = await response.json()
+
+    if (data?.status !== zapsignDocument.documentStatus) {
+      await prisma.zapsignDocument.update({
+        where: {
+          id: zapsignDocument.id,
+        },
+        data: {
+          documentStatus: data?.status,
+        },
+      })
+    }
+
+    return data
+  }
+
+  throw serverError('Ha ocurrido un error con el registro del documento')
+}

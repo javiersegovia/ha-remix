@@ -9,7 +9,7 @@ import { prisma } from '~/db.server'
 import { Box } from '~/components/Layout/Box'
 import { Title } from '~/components/Typography/Title'
 import { BenefitCard } from '~/components/Cards/BenefitCard'
-import { canUseBenefit } from '~/services/permissions/permissions.server'
+import { getEmployeeEnabledBenefits } from '~/services/permissions/permissions.server'
 
 export type DashboardIndexLoaderData = {
   gender: Pick<Gender, 'name'> | null
@@ -45,7 +45,7 @@ export const loader: LoaderFunction = async ({ request, context: ctx }) => {
     },
   })
 
-  const benefits = await canUseBenefit(
+  const benefits = await getEmployeeEnabledBenefits(
     employeeData?.membership?.benefits,
     employeeData?.company.benefits
   )

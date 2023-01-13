@@ -3,6 +3,8 @@ import type {
   LoaderFunction,
   MetaFunction,
 } from '@remix-run/server-runtime'
+import type { getEmployeeById } from '~/services/employee/employee.server'
+
 import { redirect } from '@remix-run/server-runtime'
 import { useLoaderData } from '@remix-run/react'
 import { json } from '@remix-run/server-runtime'
@@ -11,18 +13,15 @@ import { validationError } from 'remix-validated-form'
 import { WelcomeForm } from '~/components/Forms/WelcomeForm'
 import { getCountries } from '~/services/country/country.server'
 import { getGenders } from '~/services/gender/gender.server'
-import { logout, requireUser } from '~/session.server'
-import {
-  getEmployeeById,
-  updateEmployeeByWelcomeForm,
-} from '~/services/employee/employee.server'
+import { requireEmployee } from '~/session.server'
+import { updateEmployeeByWelcomeForm } from '~/services/employee/employee.server'
 import { getBanks } from '~/services/bank/bank.server'
 import { welcomeValidator } from '~/schemas/welcome.schema'
 import { getBankAccountTypes } from '~/services/bank-account-type/bank-account-type.server'
 import { getIdentityDocumentTypes } from '~/services/identity-document-type/identity-document-type.server'
 
 type LoaderData = {
-  employee: Awaited<ReturnType<typeof getEmployeeById>>
+  employee: NonNullable<Awaited<ReturnType<typeof getEmployeeById>>>
   countries: Awaited<ReturnType<typeof getCountries>>
   genders: Awaited<ReturnType<typeof getGenders>>
   banks: Awaited<ReturnType<typeof getBanks>>
@@ -31,16 +30,10 @@ type LoaderData = {
 }
 
 export const loader: LoaderFunction = async ({ request }) => {
-  const { employee } = await requireUser(request)
-
-  if (!employee) {
-    throw logout(request)
-  }
-
-  const employeeData = await getEmployeeById(employee.id)
+  const employee = await requireEmployee(request)
 
   return json<LoaderData>({
-    employee: employeeData,
+    employee,
     countries: await getCountries(),
     genders: await getGenders(),
     banks: await getBanks(),
@@ -56,7 +49,7 @@ export const meta: MetaFunction = () => {
 }
 
 export const action: ActionFunction = async ({ request }) => {
-  const user = await requireUser(request)
+  const employee = await requireEmployee(request)
 
   const { data, submittedData, error } = await welcomeValidator.validate(
     await request.formData()
@@ -66,12 +59,9 @@ export const action: ActionFunction = async ({ request }) => {
     return validationError(error, submittedData)
   }
 
-  if (!user.employee?.id) {
-    throw logout(request)
-  }
+  await updateEmployeeByWelcomeForm(data, employee.id)
 
-  const signerToken = await updateEmployeeByWelcomeForm(data, user.employee.id)
-  return redirect(`/dashboard/verify-signature?token=${signerToken}`, 301)
+  return redirect('/dashboard/overview')
 }
 
 export default function DashboardWelcomeRoute() {
@@ -83,10 +73,6 @@ export default function DashboardWelcomeRoute() {
     bankAccountTypes,
     identityDocumentTypes,
   } = useLoaderData<LoaderData>()
-
-  if (!employee) {
-    return redirect('/logout')
-  }
 
   return (
     <section className="min-h-screen bg-steelBlue-900 py-20">
@@ -104,6 +90,7 @@ export default function DashboardWelcomeRoute() {
             <h1 className="mb-4 text-center text-3xl font-semibold text-steelBlue-600">
               ¡Bienvenido!
             </h1>
+
             <div className="mx-auto max-w-xl">
               <p className="mb-2 text-center text-sm">
                 Antes de ingresar, por favor verifica que la siguiente

@@ -26,6 +26,7 @@ import nProgressStyles from 'nprogress/nprogress.css'
 import { getUser } from './session.server'
 import tailwindStylesheetUrl from './styles/tailwind.css'
 import ErrorContainer from './containers/ErrorContainer'
+import { Toaster } from 'react-hot-toast'
 
 export const links: LinksFunction = () => {
   return [
@@ -72,6 +73,7 @@ export default function App() {
   const location = useLocation()
   const transition = useTransition()
   const { refresh } = useDataRefresh()
+  const isProd = process.env.NODE_ENV === 'production'
 
   useEffect(() => {
     if (
@@ -114,14 +116,15 @@ export default function App() {
         <Meta />
         <Links />
 
-        {(location.pathname === '/dashboard/overview' ||
-          location.pathname.includes('/dashboard/payroll-advances/') ||
-          location.pathname.includes('/dashboard/premium-advances/')) && (
-          <script
-            async
-            id="hotjar"
-            dangerouslySetInnerHTML={{
-              __html: `
+        {isProd &&
+          (location.pathname === '/dashboard/overview' ||
+            location.pathname.includes('/dashboard/payroll-advances/') ||
+            location.pathname.includes('/dashboard/premium-advances/')) && (
+            <script
+              async
+              id="hotjar"
+              dangerouslySetInnerHTML={{
+                __html: `
           (function(h,o,t,j,a,r){
             h.hj=h.hj||function(){(h.hj.q=h.hj.q||[]).push(arguments)};
             h._hjSettings={hjid:3148054,hjsv:6};
@@ -131,28 +134,45 @@ export default function App() {
             a.appendChild(r);
         })(window,document,'https://static.hotjar.com/c/hotjar-','.js?sv=');
       `,
-            }}
-          />
-        )}
+              }}
+            />
+          )}
 
-        <script
-          async
-          id="tagManager"
-          dangerouslySetInnerHTML={{
-            __html: `(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+        {isProd && (
+          <script
+            async
+            id="tagManager"
+            dangerouslySetInnerHTML={{
+              __html: `(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
             new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
             j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
             'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
             })(window,document,'script','dataLayer','GTM-5SRTQ7B');`,
-          }}
-        />
+            }}
+          />
+        )}
       </head>
 
       <body className="h-full">
-        <noscript
-          dangerouslySetInnerHTML={{
-            __html: `<iframe src="https://www.googletagmanager.com/ns.html?id=GTM-5SRTQ7B"
+        {isProd && (
+          <noscript
+            dangerouslySetInnerHTML={{
+              __html: `<iframe src="https://www.googletagmanager.com/ns.html?id=GTM-5SRTQ7B"
           height="0" width="0" style="display:none;visibility:hidden"></iframe>`,
+            }}
+          />
+        )}
+
+        <Toaster
+          position="top-right"
+          toastOptions={{
+            duration: 3500,
+            success: {
+              className: 'text-green-600 text-sm font-medium',
+            },
+            error: {
+              className: 'text-red-600 text-sm font-medium',
+            },
           }}
         />
 
@@ -190,7 +210,7 @@ export const ErrorBoundary: ErrorBoundaryComponent = ({ error }) => {
 export const CatchBoundary = () => {
   const caught = useCatch()
   const parsedData = caught?.data && JSON.parse(caught.data)
-  const message = caught.statusText || parsedData?.message || parsedData
+  const message = parsedData?.message || parsedData || caught.statusText
 
   return (
     <html lang="es" className="h-full">

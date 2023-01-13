@@ -82,6 +82,7 @@ interface AdminEmployeeFormProps<T = EmployeeSchemaInput> {
     | 'documentIssueDate'
     | 'birthDay'
     | 'inactivatedAt'
+    | 'startedAt'
   > & {
     country?: Pick<Country, 'id'> | null
     wallet?: Pick<Wallet, 'address' | 'cryptocurrencyId' | 'networkId'> | null
@@ -139,6 +140,7 @@ export const AdminEmployeeForm = ({
     wallet,
     bankAccount,
     inactivatedAt,
+    startedAt,
   } = defaultValues || {}
 
   const formDefaultValues = {
@@ -148,6 +150,7 @@ export const AdminEmployeeForm = ({
     advanceCryptoMaxAmount,
     advanceAvailableAmount,
     advanceCryptoAvailableAmount,
+    startedAt,
     inactivatedAt,
     phone,
     address,
@@ -277,6 +280,15 @@ export const AdminEmployeeForm = ({
               label="Estado"
               placeholder="Estado"
               options={employeeStatusList}
+            />
+          </FormGridItem>
+
+          <FormGridItem>
+            <DatePicker
+              name="startedAt"
+              label="Fecha de ingreso"
+              placeholder="Ingresar fecha de ingreso"
+              maxDate={formatMDYDate(new Date())}
             />
           </FormGridItem>
 

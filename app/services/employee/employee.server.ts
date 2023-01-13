@@ -5,12 +5,16 @@ import type {
   Employee,
   Wallet,
 } from '@prisma/client'
-import { EmployeeRole, Prisma } from '@prisma/client'
+import type { UploadEmployeeSchemaInput } from '~/schemas/upload-employees.schema'
 import type { WelcomeSchemaInput } from '~/schemas/welcome.schema'
 import type { EditAccountSchemaInput } from '~/schemas/edit-account.schema'
 import type { EmployeeSchemaInput } from './employee.schema'
 
-import { PayrollAdvancePaymentMethod } from '@prisma/client'
+import {
+  EmployeeRole,
+  Prisma,
+  PayrollAdvancePaymentMethod,
+} from '@prisma/client'
 import { EmployeeStatus } from '@prisma/client'
 import { Response, json } from '@remix-run/node'
 import { badRequest } from 'remix-utils'
@@ -20,8 +24,6 @@ import { connect, connectOrDisconnect } from '~/utils/relationships'
 import { generateExpirationDate, generateRandomToken } from '../auth.server'
 import { sendInvitation } from '../email/email.server'
 import { dateAsUTC } from '~/utils/formatDate'
-import { requestSignature } from '../signature/signature.server'
-import type { UploadEmployeeSchemaInput } from '~/schemas/upload-employees.schema'
 import { uploadEmployeeSchema } from '~/schemas/upload-employees.schema'
 import { capitalize } from '~/utils/strings'
 
@@ -173,6 +175,7 @@ export const createEmployee = async (
     advanceCryptoAvailableAmount,
     advanceCryptoMaxAmount,
     advanceMaxAmount,
+    startedAt,
     inactivatedAt,
   } = data
 
@@ -248,7 +251,8 @@ export const createEmployee = async (
 
     const employee = await prisma.employee.create({
       data: {
-        inactivatedAt,
+        startedAt: dateAsUTC(startedAt),
+        inactivatedAt: dateAsUTC(inactivatedAt),
         salaryFiat,
         salaryCrypto,
         advanceAvailableAmount,
@@ -349,6 +353,7 @@ export const updateEmployeeById = async (
     wallet,
 
     inactivatedAt,
+    startedAt,
   } = data
 
   const upsertWallet: Prisma.EmployeeUpdateInput['wallet'] =
@@ -426,6 +431,7 @@ export const updateEmployeeById = async (
         id: employeeId,
       },
       data: {
+        startedAt: dateAsUTC(startedAt),
         inactivatedAt: dateAsUTC(newInactivatedAt),
         salaryFiat,
         salaryCrypto,
@@ -532,14 +538,14 @@ export const updateEmployeeByWelcomeForm = async (
       },
     })
 
-    const { signerToken } = await requestSignature({
-      fullName: `${user.firstName} ${user.lastName}`,
-      email: user.email,
-      employeeId,
-      phone,
-    })
+    // const { signerToken } = await requestSignature({
+    //   fullName: `${user.firstName} ${user.lastName}`,
+    //   email: user.email,
+    //   employeeId,
+    //   phone,
+    // })
 
-    return signerToken as string
+    // console.log({ y: signerToken })
   } catch (err) {
     // Todo LOGGER: Log error and save to a file
     console.error(err)
@@ -700,6 +706,9 @@ export const uploadEmployees = async (
         TIPO_DE_DOCUMENTO: documentTypeName,
         DOCUMENTO_DE_IDENTIDAD: documentNumber,
         MEMBRESIA: membershipName,
+
+        FECHA_DE_INGRESO: startedAt,
+        FECHA_DE_RETIRO: inactivatedAt,
       } = parsed.data
 
       const formattedJobDepartmentName = capitalize(jobDepartmentName?.trim())
@@ -913,6 +922,10 @@ export const uploadEmployees = async (
                 ...newUser,
               },
             },
+            startedAt: startedAt ? dateAsUTC(new Date(startedAt)) : null,
+            inactivatedAt: inactivatedAt
+              ? dateAsUTC(new Date(inactivatedAt))
+              : null,
             salaryFiat: parseFloat(salary),
             advanceAvailableAmount: parseFloat(availableAmount),
             advanceMaxAmount: parseFloat(maxAvailableAmount),
@@ -953,16 +966,24 @@ export const uploadEmployees = async (
                 ...newUser,
               },
             },
+            startedAt: startedAt ? dateAsUTC(new Date(startedAt)) : null,
             salaryFiat: parseFloat(salary),
             advanceAvailableAmount: parseFloat(availableAmount),
             advanceMaxAmount: parseFloat(maxAvailableAmount),
             roles: [EmployeeRole.MEMBER],
 
-            inactivatedAt:
-              existingUser?.employee?.status === EmployeeStatus.ACTIVE &&
-              status?.toLowerCase() == 'inactivo'
-                ? dateAsUTC(new Date())
-                : undefined,
+            /** If we have an "inactivatedAt" value,
+             *  we will use it.
+             *  If not, we will check the status update
+             *  and check if we should update the field or
+             *  delete the current value.
+             */
+            inactivatedAt: inactivatedAt
+              ? dateAsUTC(new Date(inactivatedAt))
+              : existingUser?.employee?.status === EmployeeStatus.ACTIVE &&
+                status?.toLowerCase() == 'inactivo'
+              ? dateAsUTC(new Date())
+              : null,
 
             status:
               status?.toLowerCase() == EmployeeStatus.ACTIVE.toLowerCase() ||
@@ -970,7 +991,7 @@ export const uploadEmployees = async (
                 ? EmployeeStatus.ACTIVE
                 : EmployeeStatus.INACTIVE,
 
-            company: { connect: { id: company?.id } },
+            company: connect(company.id),
 
             jobDepartment: formattedJobDepartmentName
               ? {

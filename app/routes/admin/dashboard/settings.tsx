@@ -10,7 +10,6 @@ import { validationError } from 'remix-validated-form'
 import { redirect } from '@remix-run/server-runtime'
 import { upsertGlobalSettings } from '~/services/global-settings/global-settings.server'
 
-// import { useLoaderData } from '@remix-run/react'
 import { json } from '@remix-run/server-runtime'
 import { ValidatedForm, setFormDefaults } from 'remix-validated-form'
 import { FormActions } from '~/components/FormFields/FormActions'
@@ -19,6 +18,7 @@ import { Box } from '~/components/Layout/Box'
 import { Title } from '~/components/Typography/Title'
 import { globalSettingsValidator } from '~/services/global-settings/global-settings.schema'
 import { requireAdminUserId } from '~/session.server'
+import { FormGridItem } from '~/components/FormFields/FormGridItem'
 
 type LoaderData = {
   globalSettings: Awaited<ReturnType<typeof getGlobalSettings>>
@@ -35,9 +35,11 @@ export const loader: LoaderFunction = async ({ request }) => {
       daysWithoutRequestsBeforePaymentDay:
         globalSettings?.daysWithoutRequestsBeforePaymentDay,
       annualInterestRate: globalSettings?.annualInterestRate,
+      transportationAid: globalSettings?.transportationAid,
     }),
   })
 }
+
 export const action: ActionFunction = async ({ request }) => {
   await requireAdminUserId(request)
 
@@ -73,7 +75,7 @@ export default function AdminSettingsRoute() {
 
         <Box className="p-5">
           <div className="grid grid-cols-12 gap-5">
-            <div className="col-span-12 lg:col-span-6">
+            <FormGridItem>
               <Input
                 name="annualInterestRate"
                 type="number"
@@ -81,15 +83,23 @@ export default function AdminSettingsRoute() {
                 placeholder="Porcentaje de tasa de interés anual"
                 step="0.01"
               />
-            </div>
-            <div className="col-span-12 lg:col-span-6">
+            </FormGridItem>
+            <FormGridItem>
               <Input
                 name="daysWithoutRequestsBeforePaymentDay"
                 type="number"
                 label="Días sin solicitudes antes de una fecha de pago"
                 placeholder="Cantidad de días a limitar"
               />
-            </div>
+            </FormGridItem>
+            <FormGridItem>
+              <Input
+                name="transportationAid"
+                type="number"
+                label="Auxilio de Transporte (Adelanto de Prima)"
+                placeholder="Monto de auxilio de transporte"
+              />
+            </FormGridItem>
           </div>
 
           <FormActions title="Guardar" />

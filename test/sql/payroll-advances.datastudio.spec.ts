@@ -40,7 +40,7 @@ describe('DATASTUDIO PayrollAdvances Query', () => {
       },
     })
 
-    const requestReason = await prisma.payrollAdvanceRequestReason.create({
+    const requestReason = await prisma.requestReason.create({
       data: {
         name: 'Emergencia',
       },
@@ -129,7 +129,7 @@ describe('DATASTUDIO PayrollAdvances Query', () => {
       "requestedAmount",
       "totalAmount",
       "PayrollAdvance"."status",
-      "PayrollAdvanceRequestReason"."name" as "requestReason",
+      "RequestReason"."name" as "requestReason",
       "requestReasonDescription"
       FROM "advance_api"."PayrollAdvance"
       LEFT JOIN "advance_api"."PayrollAdvanceTax" ON "PayrollAdvance"."id" = "PayrollAdvanceTax"."payrollAdvanceId"
@@ -137,7 +137,7 @@ describe('DATASTUDIO PayrollAdvances Query', () => {
       LEFT JOIN "advance_api"."Employee" ON "PayrollAdvance"."employeeId" = "Employee"."id"
       LEFT JOIN "advance_api"."User" ON "Employee"."userId" = "User"."id"
       LEFT JOIN "advance_api"."PayrollAdvanceHistory" ON "PayrollAdvance"."id" = "PayrollAdvanceHistory"."payrollAdvanceId"
-      LEFT JOIN "advance_api"."PayrollAdvanceRequestReason" ON "PayrollAdvance"."requestReasonId" = "PayrollAdvanceRequestReason"."id"
+      LEFT JOIN "advance_api"."RequestReason" ON "PayrollAdvance"."requestReasonId" = "RequestReason"."id"
       GROUP BY 
         "PayrollAdvance"."id",
         "User"."email",
@@ -148,7 +148,7 @@ describe('DATASTUDIO PayrollAdvances Query', () => {
         "PayrollAdvance"."requestedAmount",
         "PayrollAdvance"."totalAmount",
         "PayrollAdvance"."status",
-        "PayrollAdvanceRequestReason"."name";`
+        "RequestReason"."name";`
 
     expect(queryResult.length).toEqual(5)
     expect(queryResult[0]).toEqual<

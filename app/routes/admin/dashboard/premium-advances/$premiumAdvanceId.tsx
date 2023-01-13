@@ -101,7 +101,8 @@ export const meta: MetaFunction = ({ data }) => {
 }
 
 export default function AdminPremiumAdvanceDetailsRoute() {
-  const { premiumAdvance } = useLoaderData<LoaderData>()
+  const { premiumAdvance } =
+    useLoaderData<LoaderData>() as unknown as LoaderData
 
   return (
     <PremiumAdvanceDetails

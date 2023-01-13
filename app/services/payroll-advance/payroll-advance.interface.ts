@@ -1,7 +1,7 @@
 import type { BankFee, GlobalTax } from '@prisma/client'
 
 export interface ITaxItem {
-  name: GlobalTax['name'] | BankFee['name']
-  description: GlobalTax['description'] | BankFee['description']
+  name: string
+  description: string
   value: GlobalTax['value'] | BankFee['value']
 }

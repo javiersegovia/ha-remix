@@ -55,9 +55,10 @@ const emailConfig: () => Email.EmailConfig = () => {
     juice: true,
     preview: process.env.NODE_ENV === 'development' && {
       open: {
-        app: 'firefox',
-        wait: false,
+        app: 'chrome',
       },
+      urlTransform: (path) => `file://wsl.localhost/Ubuntu-22.04/${path}`,
+      openSimulator: true,
     },
   }
 }

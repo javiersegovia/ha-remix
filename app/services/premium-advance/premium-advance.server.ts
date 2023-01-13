@@ -1,19 +1,26 @@
+import type { TBasicTemplate } from '~/services/email/templates/basic/interface'
 import type {
   AdminUser,
-  Company,
+  Benefit,
   Employee,
   PremiumAdvance,
   Prisma,
   User,
 } from '@prisma/client'
+import { PayrollAdvanceStatus } from '@prisma/client'
+import { CompanyStatus, EmployeeStatus } from '@prisma/client'
 
 import { PremiumAdvanceHistoryActor } from '@prisma/client'
 import { prisma } from '~/db.server'
 import { CLIENT_URL, sendEmail } from '../email/email.server'
 import { PremiumAdvanceStatus } from '@prisma/client'
-import { badRequest } from 'remix-utils'
+import { badRequest, forbidden, notFound } from 'remix-utils'
 import { connect } from '~/utils/relationships'
-import type { TBasicTemplate } from '../email/templates/basic/interface'
+import { dateAsUTC } from '~/utils/formatDate'
+import { formatDistanceStrict } from 'date-fns'
+import type { getEmployeeById } from '../employee/employee.server'
+import type { CalculatePremiumAdvanceSchemaInput } from '~/schemas/calculate-premium-advance.schema'
+import type { ITaxItem } from '../payroll-advance/payroll-advance.interface'
 
 export const getPremiumAdvances = async (args?: {
   where?: Prisma.PremiumAdvanceFindManyArgs['where']
@@ -54,6 +61,10 @@ export const getPremiumAdvanceById = async (
   return prisma.premiumAdvance.findUnique({
     where: { id: premiumAdvanceId },
     include: {
+      bankAccountData: true,
+      requestReason: {
+        select: { name: true },
+      },
       employee: {
         select: {
           id: true,
@@ -69,6 +80,7 @@ export const getPremiumAdvanceById = async (
         },
       },
       company: true,
+      taxes: true,
       history: {
         include: {
           employee: true,
@@ -78,44 +90,333 @@ export const getPremiumAdvanceById = async (
   })
 }
 
-interface ICreatePremiumAdvanceArgs {
+export const calculatePremiumAdvanceSpecs = async (
   employeeId: Employee['id']
-  companyId: Company['id']
-  user: Pick<User, 'firstName' | 'lastName'>
+) => {
+  const employeeData = await prisma.employee.findUnique({
+    where: {
+      id: employeeId,
+    },
+    select: {
+      premiumAdvances: {
+        where: {
+          status: PayrollAdvanceStatus.PAID,
+        },
+        select: {
+          createdAt: true,
+        },
+        orderBy: {
+          createdAt: 'desc',
+        },
+      },
+      status: true,
+      startedAt: true,
+      salaryFiat: true,
+      bankAccount: true,
+      company: {
+        select: {
+          status: true,
+          benefits: {
+            select: {
+              slug: true,
+            },
+          },
+        },
+      },
+    },
+  })
+  const globalSettings = await prisma.globalSettings.findFirst({
+    select: {
+      transportationAid: true,
+    },
+  })
+
+  if (employeeData?.status === EmployeeStatus.INACTIVE) {
+    throw badRequest('La cuenta del usuario se encuentra inactiva')
+  }
+  if (employeeData?.company.status === CompanyStatus.INACTIVE) {
+    throw badRequest('La cuenta de la empresa se encuentra inactiva')
+  }
+  if (!employeeData?.salaryFiat) {
+    throw badRequest('El salario no ha sido registrado')
+  }
+  if (!employeeData?.startedAt) {
+    throw badRequest('La fecha de ingreso a la compañía no ha sido registrada')
+  }
+  if (!employeeData?.bankAccount) {
+    throw badRequest('La cuenta bancaria no ha sido registrada')
+  }
+
+  const currentTimestamp = new Date().getTime()
+
+  /**  We take two reference dates for the Premium Advances:
+   *   January 1 and July 1.
+   */
+  const { januaryLimitDate, julyLimitDate } = getPremiumAdvanceLimits()
+
+  /**
+   *  Here we check if we will take January or July as reference,
+   *  based on the currentTimestamp.
+   *
+   *  If we are in March, we should take January as reference.
+   *  If we are in August, we should take July as reference.
+   */
+  const premiumAdvancePaymentLimit =
+    julyLimitDate.getTime() > currentTimestamp
+      ? januaryLimitDate
+      : julyLimitDate
+
+  /**
+   *  Here we check if we will use the employee.startedAt as startDate, the premiumAdvance referenceDate, or the most recent paid premiumAdvance date,
+   *  based on which date is the most recent date.
+   */
+  const paidPremiumAdvances = employeeData.premiumAdvances?.[0]
+  const initDate =
+    paidPremiumAdvances?.createdAt &&
+    paidPremiumAdvances?.createdAt.getTime() > employeeData.startedAt.getTime()
+      ? paidPremiumAdvances?.createdAt
+      : employeeData.startedAt
+
+  const startDate =
+    initDate.getTime() > premiumAdvancePaymentLimit.getTime()
+      ? initDate
+      : premiumAdvancePaymentLimit
+
+  const endDate = new Date()
+
+  /** We calculate the total working days and then parse the result  */
+  const workingDaysString = formatDistanceStrict(endDate, startDate, {
+    unit: 'day',
+  })
+    .match(/\d/g)
+    ?.join('')
+  const workingDays = workingDaysString ? parseFloat(workingDaysString) : 0
+
+  console.log({ workingDays, workingDaysString })
+
+  const baseSalary =
+    employeeData.salaryFiat + (globalSettings?.transportationAid || 0)
+
+  /** We return the result by using the following formula:
+   *
+   *  (BASE_SALARY / 360) * WORKING_DAYS
+   *
+   */
+  const availableAmount = parseFloat(
+    ((baseSalary / 360) * workingDays).toFixed(2)
+  )
+
+  return { availableAmount, workingDays, startDate, endDate }
 }
 
-export const createPremiumAdvance = async ({
-  employeeId,
-  companyId,
-  user,
-}: ICreatePremiumAdvanceArgs) => {
+export const calculatePremiumAdvanceCost = async (
+  data: CalculatePremiumAdvanceSchemaInput,
+  employeeId: Employee['id']
+) => {
+  const { requestedAmount } = data
+
+  const { availableAmount, workingDays, startDate, endDate } =
+    await calculatePremiumAdvanceSpecs(employeeId)
+
+  if (requestedAmount > availableAmount) {
+    return {
+      fieldErrors: {
+        requestedAmount: 'El monto solicitado supera el monto disponible',
+      },
+    }
+  }
+
+  const employeeData = await prisma.employee.findUnique({
+    where: { id: employeeId },
+    select: {
+      company: {
+        select: {
+          premiumDispersion: true,
+        },
+      },
+    },
+  })
+
+  if (!employeeData) {
+    throw notFound('El usuario no ha sido encontrado')
+  }
+
+  const globalSettings = await prisma.globalSettings.findFirst({
+    select: {
+      annualInterestRate: true,
+    },
+  })
+
+  const taxItems: ITaxItem[] = []
+  const currentDate = dateAsUTC(new Date()) as Date
+
+  /** Interests formula:
+   *  REQUESTED_AMOUNT * ((1 + ANNUAL_INTEREST_RATE)^(WORKING_DAYS/365) - 1)
+   */
+  let interests = 0
+  if (globalSettings?.annualInterestRate) {
+    const annualInterestRate = globalSettings.annualInterestRate / 100
+
+    interests = Math.round(
+      requestedAmount *
+        (Math.pow(1 + annualInterestRate, (workingDays - 1) / 365) - 1)
+    )
+
+    const dateString = `${currentDate.getDate()}/${
+      currentDate.getMonth() + 1
+    }/${currentDate.getFullYear()}`
+
+    taxItems.push({
+      name: 'Intereses',
+      description: `Tasa calculada el ${dateString}, a ${globalSettings.annualInterestRate}%, considerando un plazo de ${workingDays} días trabajados`,
+      value: interests,
+    })
+  }
+
+  /** GMF & Dispersion formula:
+   *  (REQUESTED_AMOUNT * 4/1000) + BASE_DISPERSION_AMOUNT
+   */
+  const dispersion = Math.round(
+    (requestedAmount * 4) / 1000 + (employeeData.company.premiumDispersion || 0)
+  )
+
+  taxItems.push({
+    name: '4x1000 y costo transacción',
+    description: `Dispersión calculada utilizando ${employeeData.company.premiumDispersion} como base`,
+    value: dispersion,
+  })
+
+  /**  Total amount formula:
+   *  REQUESTED_AMOUNT + INTERESTS + GMF & DISPERSION
+   */
+  const totalAmount = requestedAmount + interests + dispersion
+
+  return { totalAmount, taxItems, startDate, endDate }
+}
+
+export const createPremiumAdvance = async (
+  data: CalculatePremiumAdvanceSchemaInput,
+  employeeId: Employee['id']
+) => {
+  const { requestedAmount, requestReasonId, requestReasonDescription } = data
+
+  const { totalAmount, taxItems, startDate, endDate, fieldErrors } =
+    await calculatePremiumAdvanceCost(
+      {
+        requestedAmount,
+        requestReasonId,
+        requestReasonDescription,
+      },
+      employeeId
+    )
+
+  if (fieldErrors) {
+    return { fieldErrors }
+  }
+
+  const employee = await prisma.employee.findUnique({
+    where: { id: employeeId },
+    select: {
+      user: {
+        select: {
+          firstName: true,
+          lastName: true,
+        },
+      },
+      company: {
+        select: {
+          id: true,
+        },
+      },
+      bankAccount: {
+        select: {
+          accountNumber: true,
+          bank: {
+            select: {
+              name: true,
+            },
+          },
+          accountType: {
+            select: {
+              name: true,
+            },
+          },
+          identityDocument: {
+            select: {
+              value: true,
+              documentType: {
+                select: {
+                  name: true,
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  })
+
+  const { company, bankAccount } = employee!
+  const { bank, accountNumber, accountType, identityDocument } = bankAccount!
+
+  const createManyTaxes: Prisma.PremiumAdvanceCreateInput['taxes'] =
+    taxItems.length > 0
+      ? {
+          createMany: { data: taxItems },
+        }
+      : {}
+
+  const createHistory: Prisma.PremiumAdvanceCreateInput['history'] = {
+    create: {
+      toStatus: PremiumAdvanceStatus.REQUESTED,
+      actor: PremiumAdvanceHistoryActor.EMPLOYEE,
+      employee: {
+        connect: {
+          id: employeeId,
+        },
+      },
+    },
+  }
+
   try {
     const premiumAdvance = await prisma.premiumAdvance.create({
       data: {
-        companyId,
-        employeeId,
-        status: PremiumAdvanceStatus.REQUESTED,
-        history: {
+        requestedAmount,
+        totalAmount,
+        startDate,
+        endDate,
+        company: connect(company.id),
+        employee: connect(employeeId),
+        history: createHistory,
+        taxes: createManyTaxes,
+        requestReason: connect(requestReasonId),
+        requestReasonDescription,
+        bankAccountData: {
           create: {
-            actor: PremiumAdvanceHistoryActor.EMPLOYEE,
-            toStatus: PremiumAdvanceStatus.REQUESTED,
+            accountNumber,
+            accountType: accountType.name,
+            bankName: bank.name,
+            identityDocumentType: identityDocument.documentType.name,
+            identityDocumentValue: identityDocument.value,
+            currencyName: 'Pesos colombianos',
           },
         },
       },
     })
 
     sendPremiumAdvanceNotificationToAdmin({
-      employeeFullName: `${user.firstName} ${user.lastName}`,
+      employeeFullName: `${employee!.user.firstName} ${
+        employee!.user.lastName
+      }`,
       status: PremiumAdvanceStatus.REQUESTED,
       premiumAdvanceId: premiumAdvance.id,
     })
 
-    return premiumAdvance
+    return { premiumAdvance }
   } catch (e) {
-    // todo: Save log to a file
     console.error(e)
-    throw badRequest(
-      'Ha ocurrido un error al solicitar tu adelanto de prima. Por favor, informa de lo sucedido directamente a hoyadelantas@hoytrabajas.com'
+    throw forbidden(
+      'Ocurrió un error durante la creación del adelanto de prima. Por favor contacta a un administrador'
     )
   }
 }
@@ -164,6 +465,7 @@ export const updatePremiumAdvanceStatus = async ({
   }
 
   try {
+    const currentDate = dateAsUTC(new Date())
     const updatedPremiumAdvance = await prisma.premiumAdvance.update({
       where: {
         id: premiumAdvance.id,
@@ -171,6 +473,14 @@ export const updatePremiumAdvanceStatus = async ({
       data: {
         status: toStatus,
         history: createHistory,
+        approvedAt:
+          toStatus === PremiumAdvanceStatus.APPROVED ? currentDate : undefined,
+        paidAt:
+          toStatus === PremiumAdvanceStatus.PAID ? currentDate : undefined,
+        deniedAt:
+          toStatus === PremiumAdvanceStatus.DENIED ? currentDate : undefined,
+        cancelledAt:
+          toStatus === PremiumAdvanceStatus.CANCELLED ? currentDate : undefined,
       },
     })
 
@@ -209,14 +519,6 @@ export const updatePremiumAdvanceStatus = async ({
           premiumAdvanceId: premiumAdvance.id,
           status: toStatus,
         })
-
-        // if (employee.phone) {
-        //   await sendSMS({
-        //     PhoneNumber: employee.phone,
-        //     Message:
-        //       '¡Tu solicitud de adelanto ha sido desembolsada! En unas horas el dinero se verá reflejado en tu cuenta :grinning:',
-        //   })
-        // }
         break
       }
 
@@ -343,4 +645,44 @@ export const sendPremiumAdvanceNotificationToAdmin = async ({
     },
     templateData,
   })
+}
+
+export const verifyIfEmployeeCanRequestPremiumAdvance = ({
+  employee,
+  enabledBenefits,
+}: {
+  employee: NonNullable<Awaited<ReturnType<typeof getEmployeeById>>>
+  enabledBenefits: Benefit[]
+}) => {
+  let errorMessage: string | null = null
+
+  if (employee.status === EmployeeStatus.INACTIVE) {
+    errorMessage = 'Tu cuenta se encuentra inactiva'
+  } else if (employee.company.status === CompanyStatus.INACTIVE) {
+    errorMessage = 'Tu compañía se encuentra inactiva'
+  } else if (!employee.salaryFiat) {
+    errorMessage =
+      'Tu salario no ha sido registrado. Por favor, contacta a un administrador.'
+  } else if (!employee.bankAccount) {
+    errorMessage =
+      'Tu cuenta bancaria no ha sido registrada. Por favor, contacta a un administrador.'
+  } else if (!employee.startedAt) {
+    errorMessage =
+      'Tu fecha de ingreso a la compañía no ha sido registrada. Por favor, contacta a un administrador.'
+  }
+
+  const canUsePremiumAdvances = process.env.SLUG_PREMIUM_ADVANCE
+    ? enabledBenefits.some((b) => b.slug === process.env.SLUG_PREMIUM_ADVANCE)
+    : true
+
+  return { errorMessage, canUsePremiumAdvances }
+}
+
+const getPremiumAdvanceLimits = () => {
+  const currentDate = new Date()
+
+  return {
+    januaryLimitDate: new Date(currentDate.getUTCFullYear(), 0, 1),
+    julyLimitDate: new Date(currentDate.getUTCFullYear(), 6, 1),
+  }
 }

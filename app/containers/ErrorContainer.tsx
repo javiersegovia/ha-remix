@@ -60,7 +60,7 @@ export default function ErrorContainer({
           )}
         </section>
 
-        <Button href="/" className="mx-auto mt-10" variant="LIGHT">
+        <Button href="/" external className="mx-auto mt-10" variant="LIGHT">
           Volver al inicio
         </Button>
 

@@ -5,7 +5,7 @@ import type {
   PayrollAdvance,
   User,
   AdminUser,
-  PayrollAdvanceRequestReason,
+  RequestReason,
 } from '@prisma/client'
 import type { CalculatePayrollSchemaInput } from '~/schemas/calculate-payroll.schema'
 import type { ITaxItem } from './payroll-advance.interface'
@@ -26,7 +26,6 @@ import {
   sendPayrollNotificationToUser,
 } from '../email/email.server'
 import { dateAsUTC } from '~/utils/formatDate'
-// import { sendSMS } from '../sms/sms.service'
 
 export type TPayrollContent = {
   [key in PayrollAdvanceStatus]?: {
@@ -235,8 +234,9 @@ export const getPayrollAdvanceById = async (
   })
 }
 
-export const getPayrollAdvanceRequestReasons = async () => {
-  return prisma.payrollAdvanceRequestReason.findMany({
+// TODO: Create a "request-reason" basic service
+export const getRequestReasons = async () => {
+  return prisma.requestReason.findMany({
     orderBy: {
       name: 'asc',
     },
@@ -259,7 +259,7 @@ interface ICalculatePayrollAdvanceArgs {
   }
   requestedAmount: number
   paymentMethod: PayrollAdvancePaymentMethod
-  requestReasonId: PayrollAdvanceRequestReason['id']
+  requestReasonId: RequestReason['id']
   requestReasonDescription: PayrollAdvance['requestReasonDescription']
 }
 
@@ -453,8 +453,8 @@ const calculatePayrollCost = async ({
     const lastPaymentDay =
       paymentDays.length === 0
         ? new Date(
-            currentDate.getFullYear(),
-            currentDate.getMonth() + 1,
+            currentDate.getUTCFullYear(),
+            currentDate.getUTCMonth() + 1,
             0
           ).getUTCDate()
         : paymentDays.sort((a, b) => a - b)[paymentDays.length - 1]

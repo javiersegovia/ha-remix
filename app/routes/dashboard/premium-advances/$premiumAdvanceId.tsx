@@ -98,9 +98,8 @@ export const meta: MetaFunction = () => {
 }
 
 export default function PremiumAdvanceDetailsRoute() {
-  const { premiumAdvance } = useLoaderData<LoaderData>()
-
-  // todo: premiumAdvance details
+  const { premiumAdvance } =
+    useLoaderData<LoaderData>() as unknown as LoaderData
 
   return (
     <>

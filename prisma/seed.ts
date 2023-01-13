@@ -371,14 +371,14 @@ async function main() {
 
   const upsertRequestReason = async () => {
     const requestReasonName = 'Emergencia'
-    const exists = await prisma.payrollAdvanceRequestReason.findFirst({
+    const exists = await prisma.requestReason.findFirst({
       where: {
         name: requestReasonName,
       },
     })
 
     if (!exists) {
-      return await prisma.payrollAdvanceRequestReason.create({
+      return await prisma.requestReason.create({
         data: {
           name: requestReasonName,
         },

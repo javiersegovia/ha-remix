@@ -1,7 +1,7 @@
 import type { Benefit } from '@prisma/client'
 import { prisma } from '~/db.server'
 
-export const canUseBenefit = async (
+export const getEmployeeEnabledBenefits = async (
   membershipBenefits?: Pick<Benefit, 'id'>[],
   companyBenefits?: Pick<Benefit, 'id'>[]
 ) => {

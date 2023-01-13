@@ -8,7 +8,7 @@ import { Box } from '~/components/Layout/Box'
 import { Checkbox } from '~/components/FormFields/Checkbox'
 import { SubmitButton } from '~/components/SubmitButton'
 import { formatMoney } from '~/utils/formatMoney'
-import { PayrollAdvanceSummaryItem } from './PayrollAdvanceSummaryItem'
+import { AdvanceSummaryItem } from './Advances/AdvanceSummaryItem'
 
 import type { calculatePayrollAdvance } from '~/services/payroll-advance/payroll-advance.server'
 
@@ -82,13 +82,13 @@ export const PayrollAdvanceCalculation = ({
           />
 
           <>
-            <PayrollAdvanceSummaryItem
+            <AdvanceSummaryItem
               label="Dinero solicitado"
               value={formatMoney(requestedAmount, currencySymbol)}
             />
 
             {taxItems.map(({ name, value }) => (
-              <PayrollAdvanceSummaryItem
+              <AdvanceSummaryItem
                 key={name + value}
                 label={name}
                 value={formatMoney(value, currencySymbol)}
@@ -96,13 +96,13 @@ export const PayrollAdvanceCalculation = ({
             ))}
 
             {/* {address && (
-              <PayrollAdvanceSummaryItem
+              <AdvanceSummaryItem
                 label="Costo aproximado de transferencia (*)"
                 value={estimatedGasValue}
               />
             )} */}
 
-            <PayrollAdvanceSummaryItem
+            <AdvanceSummaryItem
               label={<div className="font-semibold">Descontamos</div>}
               value={
                 <div className="font-semibold">

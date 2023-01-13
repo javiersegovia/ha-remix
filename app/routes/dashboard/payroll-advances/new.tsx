@@ -32,22 +32,23 @@ import { getEmployeePaymentOptions } from '~/services/employee/employee.server'
 import {
   calculatePayrollAdvance,
   createPayrollAdvance,
-  getPayrollAdvanceRequestReasons,
+  getRequestReasons,
 } from '~/services/payroll-advance/payroll-advance.server'
 import { PayrollAdvanceCalculation } from '~/containers/dashboard/PayrollAdvanceCalculation'
 import { Input } from '~/components/FormFields/Input'
-import { canUseBenefit } from '~/services/permissions/permissions.server'
+import { getEmployeeEnabledBenefits } from '~/services/permissions/permissions.server'
+import { hasSignedTerms } from '~/services/signature/signature.server'
 
 type LoaderData = {
   employee: Awaited<ReturnType<typeof requireEmployee>>
   paymentOptions: Awaited<ReturnType<typeof getEmployeePaymentOptions>>
-  requestReasons: Awaited<ReturnType<typeof getPayrollAdvanceRequestReasons>>
+  requestReasons: Awaited<ReturnType<typeof getRequestReasons>>
 }
 
 export const loader: LoaderFunction = async ({ request }) => {
   const employee = await requireEmployee(request)
 
-  const benefits = await canUseBenefit(
+  const benefits = await getEmployeeEnabledBenefits(
     employee.membership?.benefits,
     employee.company.benefits
   )
@@ -60,6 +61,11 @@ export const loader: LoaderFunction = async ({ request }) => {
     return redirect('/')
   }
 
+  const employeeHasSignedTerms = await hasSignedTerms(employee.id)
+  if (!employeeHasSignedTerms) {
+    return redirect('/dashboard/verify-terms')
+  }
+
   const paymentOptions = getEmployeePaymentOptions({
     employee,
     wallet: employee.wallet,
@@ -69,7 +75,7 @@ export const loader: LoaderFunction = async ({ request }) => {
   return json<LoaderData>({
     employee,
     paymentOptions,
-    requestReasons: await getPayrollAdvanceRequestReasons(),
+    requestReasons: await getRequestReasons(),
   })
 }
 
@@ -79,7 +85,7 @@ type ActionData = {
     | null
 }
 
-/** The "calculation" process could be handled inside the loader as a "GET" requested,
+/** The "calculation" process could be handled inside the loader as a "GET" request,
  *  but in order to return validation errors inside the form, we have to use actions,
  *  as Remix Validated Form does not handle the errors inside the loaderData.
  */
@@ -95,6 +101,11 @@ export const action: ActionFunction = async ({ request }) => {
 
   if (error) {
     return validationError(error, submittedData)
+  }
+
+  const employeeHasSignedTerms = await hasSignedTerms(employee.id)
+  if (!employeeHasSignedTerms) {
+    return redirect('/dashboard/verify-terms')
   }
 
   if (subaction === 'calculate') {
@@ -187,7 +198,7 @@ export default function PayrollAdvanceNewRoute() {
         <section className="flex flex-col gap-6 xl:flex-row">
           <div className="mx-auto w-full max-w-lg">
             <Title as="h1" className="text-center xl:text-left">
-              Calcula tu próximo adelanto
+              Calcula tu próximo adelanto de nómina
             </Title>
             <Box className="mt-8 block p-6">
               <PayrollAdvanceAvailableAmount

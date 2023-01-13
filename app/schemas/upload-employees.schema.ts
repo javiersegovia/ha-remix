@@ -3,6 +3,8 @@ import { withZod } from '@remix-validated-form/with-zod'
 import { z } from 'zod'
 import { zfd } from 'zod-form-data'
 
+export const ISO_DATE_REGEX = /\d{4}-[01]\d-[0-3]\d/
+
 export const uploadEmployeeSchema = z.object({
   CORREO_ELECTRONICO: zfd.text(
     z.string({
@@ -53,6 +55,24 @@ export const uploadEmployeeSchema = z.object({
       invalid_type_error: 'Ingrese un cupo disponible',
       required_error: 'Ingrese un cupo disponible',
     })
+  ),
+  FECHA_DE_INGRESO: zfd.text(
+    z
+      .string()
+      .regex(
+        ISO_DATE_REGEX,
+        'El formato de fecha es inválido. Debe ser año-mes-día, por ejemplo: 2023-12-25'
+      )
+      .nullish()
+  ),
+  FECHA_DE_RETIRO: zfd.text(
+    z
+      .string()
+      .regex(
+        ISO_DATE_REGEX,
+        'El formato de fecha es inválido. Debe ser año-mes-día, por ejemplo: 2023-12-25'
+      )
+      .nullish()
   ),
 })
 

@@ -6,12 +6,12 @@ import { zDate } from '../../schemas/helpers'
 import { bankAccountSchema } from '../bank/bank.schema'
 
 export const employeeSchema = z.object({
-  salaryFiat: zfd.numeric(z.number().nullish()),
-  salaryCrypto: zfd.numeric(z.number().nullish()),
+  salaryFiat: zfd.numeric(z.number().nullish().default(null)),
+  salaryCrypto: zfd.numeric(z.number().nullish().default(null)),
   advanceMaxAmount: zfd.numeric(z.number().default(0)),
-  advanceCryptoMaxAmount: zfd.numeric(z.number().default(0).nullish()),
+  advanceCryptoMaxAmount: zfd.numeric(z.number().default(0).nullable()),
   advanceAvailableAmount: zfd.numeric(z.number().default(0)),
-  advanceCryptoAvailableAmount: zfd.numeric(z.number().default(0).nullish()),
+  advanceCryptoAvailableAmount: zfd.numeric(z.number().default(0).nullable()),
 
   user: z.object({
     email: zfd.text(
@@ -96,6 +96,17 @@ export const employeeSchema = z.object({
       .date({
         invalid_type_error: 'Ingrese la fecha de retiro',
         required_error: 'Ingrese la fecha de retiro',
+      })
+      .nullish()
+  )
+    .nullable()
+    .default(null),
+
+  startedAt: zDate(
+    z
+      .date({
+        invalid_type_error: 'Ingrese la fecha de ingreso',
+        required_error: 'Ingrese la fecha de ingreso',
       })
       .nullish()
   )

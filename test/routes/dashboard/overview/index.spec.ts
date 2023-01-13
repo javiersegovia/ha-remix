@@ -159,6 +159,7 @@ describe('LOADER /dashboard/overview', () => {
         buttonHref: benefitLite_1.buttonHref,
         buttonText: benefitLite_1.buttonText,
         imageUrl: benefitLite_1.imageUrl,
+        slug: benefitLite_1.slug,
       },
     ])
   })
@@ -213,6 +214,7 @@ describe('LOADER /dashboard/overview', () => {
         buttonHref: benefitLite_2.buttonHref,
         buttonText: benefitLite_2.buttonText,
         imageUrl: benefitLite_2.imageUrl,
+        slug: benefitLite_2.slug,
       },
       {
         id: benefitPremium_2.id,
@@ -222,6 +224,7 @@ describe('LOADER /dashboard/overview', () => {
         buttonHref: benefitPremium_2.buttonHref,
         buttonText: benefitPremium_2.buttonText,
         imageUrl: benefitPremium_2.imageUrl,
+        slug: benefitPremium_2.slug,
       },
     ])
   })

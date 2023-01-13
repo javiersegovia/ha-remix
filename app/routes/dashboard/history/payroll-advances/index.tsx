@@ -1,6 +1,6 @@
 import type { LoaderFunction, MetaFunction } from '@remix-run/server-runtime'
 
-import { useLoaderData, useMatches } from '@remix-run/react'
+import { useLoaderData } from '@remix-run/react'
 import { json } from '@remix-run/server-runtime'
 import { Button } from '~/components/Button'
 import { PayrollAdvanceList } from '~/components/Lists/PayrollAdvanceList'
@@ -8,7 +8,6 @@ import { Title } from '~/components/Typography/Title'
 import { requireEmployee } from '~/session.server'
 import { getPayrollAdvances } from '~/services/payroll-advance/payroll-advance.server'
 import { useMatchesData } from '~/utils/utils'
-import { DashboardLoaderData } from '~/routes/dashboard'
 
 type LoaderData = {
   payrollAdvances: Awaited<ReturnType<typeof getPayrollAdvances>>

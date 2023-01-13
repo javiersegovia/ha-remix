@@ -14,8 +14,6 @@ export const sendSMS = async (smsParams: PublishCommandInput) => {
 
   try {
     const data = await snsClient.send(new PublishCommand(smsParams))
-    // console.log('Sending SMS')
-    // console.log({ data })
     return data
   } catch (err) {
     console.error(err)
