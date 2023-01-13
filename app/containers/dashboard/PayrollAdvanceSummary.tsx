@@ -230,6 +230,8 @@ export const PayrollAdvanceSummary = ({
           />
         )} */}
 
+      <div className=" my-4 h-[1px] w-full bg-gray-200" />
+
       <AdvanceSummaryItem
         label={<div className="font-semibold">Total a descontar de nómina</div>}
         value={

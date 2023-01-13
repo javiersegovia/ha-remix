@@ -119,16 +119,20 @@ export const PremiumAdvanceSummary = ({
       ))}
 
       {totalAmount && (
-        <AdvanceSummaryItem
-          label={
-            <div className="font-semibold">Total a descontar de nómina</div>
-          }
-          value={
-            <div className="font-semibold">
-              {formatMoney(totalAmount, CurrencySymbol.COP)}
-            </div>
-          }
-        />
+        <>
+          <div className=" my-4 h-[1px] w-full bg-gray-200" />
+
+          <AdvanceSummaryItem
+            label={
+              <div className="font-semibold">Total a descontar de nómina</div>
+            }
+            value={
+              <div className="font-semibold">
+                {formatMoney(totalAmount, CurrencySymbol.COP)}
+              </div>
+            }
+          />
+        </>
       )}
 
       <div className="pb-4" />
