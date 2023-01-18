@@ -13,7 +13,7 @@ SELECT DISTINCT
   "requestedAmount",
   "totalAmount",
   "PayrollAdvance"."status",
-  "PayrollAdvanceRequestReason"."name" as "requestReason",
+  "RequestReason"."name" as "requestReason",
   "requestReasonDescription"
   FROM "advance_api"."PayrollAdvance"
   LEFT JOIN "advance_api"."PayrollAdvanceTax" ON "PayrollAdvance"."id" = "PayrollAdvanceTax"."payrollAdvanceId"
@@ -21,7 +21,7 @@ SELECT DISTINCT
   LEFT JOIN "advance_api"."Employee" ON "PayrollAdvance"."employeeId" = "Employee"."id"
   LEFT JOIN "advance_api"."User" ON "Employee"."userId" = "User"."id"
   LEFT JOIN "advance_api"."PayrollAdvanceHistory" ON "PayrollAdvance"."id" = "PayrollAdvanceHistory"."payrollAdvanceId"
-  LEFT JOIN "advance_api"."PayrollAdvanceRequestReason" ON "PayrollAdvance"."requestReasonId" = "PayrollAdvanceRequestReason"."id"
+  LEFT JOIN "advance_api"."RequestReason" ON "PayrollAdvance"."requestReasonId" = "RequestReason"."id"
   GROUP BY 
     "PayrollAdvance"."id",
     "User"."email",
@@ -32,4 +32,4 @@ SELECT DISTINCT
     "PayrollAdvance"."requestedAmount",
     "PayrollAdvance"."totalAmount",
     "PayrollAdvance"."status",
-    "PayrollAdvanceRequestReason"."name";
+    "RequestReason"."name";

@@ -35,7 +35,7 @@ SELECT DISTINCT
         'paidAt', "PayrollAdvance"."paidAt",
         'cancelledAt', "PayrollAdvance"."cancelledAt",
         'deniedAt', "PayrollAdvance"."deniedAt",
-        'requestReason', "PayrollAdvanceRequestReason"."name",
+        'requestReason', "RequestReason"."name",
         'requestReasonDescription', "PayrollAdvance"."requestReasonDescription"
       )
     ) FILTER (WHERE "PayrollAdvance"."id" IS NOT NULL), '[]') as "payrollAdvances"
@@ -54,7 +54,7 @@ SELECT DISTINCT
     LEFT JOIN "advance_api"."BankAccountType" ON "BankAccountType"."id" = "BankAccount"."accountTypeId"
     LEFT JOIN "advance_api"."IdentityDocumentType" ON "IdentityDocumentType"."id" = "IdentityDocument"."documentTypeId"
     LEFT JOIN "advance_api"."PayrollAdvance" ON "PayrollAdvance"."employeeId" = "Employee"."id"
-    LEFT JOIN "advance_api"."PayrollAdvanceRequestReason" ON "PayrollAdvance"."requestReasonId" = "PayrollAdvanceRequestReason"."id"
+    LEFT JOIN "advance_api"."RequestReason" ON "PayrollAdvance"."requestReasonId" = "RequestReason"."id"
     GROUP BY 
       "Employee"."id",
       "Company"."name",
