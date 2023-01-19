@@ -81,8 +81,8 @@ export const ButtonElement = ({
 
         disabled && 'cursor-not-allowed opacity-40',
 
-        isPrimary && 'bg-electricYellow-400 text-steelBlue-800',
-        isPrimary && !disabled && 'hover:bg-electricYellow-600',
+        isPrimary && 'bg-electricYellow-600 text-steelBlue-800',
+        isPrimary && !disabled && 'hover:bg-electricYellow-800',
 
         isSecondary && 'bg-electricYellow-600 text-black',
         isSecondary && !disabled && 'hover:bg-electricYellow-800',
