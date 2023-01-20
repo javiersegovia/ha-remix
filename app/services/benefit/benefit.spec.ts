@@ -2,6 +2,7 @@ import { truncateDB } from 'test/helpers/truncateDB'
 import { prisma } from '~/db.server'
 import { BenefitFactory } from '~/services/benefit/benefit.factory'
 import * as benefitService from '~/services/benefit/benefit.server'
+import { BenefitSubproductFactory } from '../benefit-subproduct/benefit-subproduct.factory'
 
 beforeEach(async () => {
   await truncateDB()
@@ -24,17 +25,31 @@ describe('getBenefits', () => {
 describe('getBenefitById', () => {
   test('should return a benefit', async () => {
     const existingBenefit = await BenefitFactory.create()
+    const existingBenefitSubproduct = await BenefitSubproductFactory.create(
+      undefined,
+      {
+        associations: { benefit: existingBenefit },
+      }
+    )
+
+    const { id, name, buttonHref, buttonText, imageUrl, slug } = existingBenefit
 
     const result = await benefitService.getBenefitById(existingBenefit.id)
-    expect(result).toMatchObject<
+    expect(result).toEqual<
       NonNullable<Awaited<ReturnType<typeof benefitService.getBenefitById>>>
     >({
-      id: existingBenefit.id,
-      name: existingBenefit.name,
-      buttonHref: existingBenefit.buttonHref,
-      buttonText: existingBenefit.buttonText,
-      imageUrl: existingBenefit.imageUrl,
-      slug: existingBenefit.slug,
+      id,
+      name,
+      buttonHref,
+      buttonText,
+      imageUrl,
+      slug,
+      subproducts: [
+        {
+          id: existingBenefitSubproduct.id,
+          name: existingBenefitSubproduct.name,
+        },
+      ],
     })
   })
 })
@@ -64,17 +79,53 @@ describe('updateBenefitById', () => {
       name: 'Travel',
     }
 
-    const result = await benefitService.updateBenefitById(
-      data,
-      existingBenefit.id
-    )
+    await benefitService.updateBenefitById(data, existingBenefit.id)
 
-    expect(result).toMatchObject<
-      NonNullable<Awaited<ReturnType<typeof benefitService.updateBenefitById>>>
-    >({
-      id: expect.any(Number),
-      name: data.name,
+    const updatedBenefit = await prisma.benefit.findUnique({
+      where: { id: existingBenefit.id },
+      include: { subproducts: true },
     })
+
+    expect(updatedBenefit?.name).toEqual(data.name)
+  })
+
+  test('should update existing benefitSubproducts', async () => {
+    const existingBenefit = await BenefitFactory.create()
+    const existingBenefitSubproducts =
+      await BenefitSubproductFactory.createList(3, undefined, {
+        associations: { benefit: existingBenefit },
+      })
+
+    const newBenefitSubproduct = BenefitSubproductFactory.build()
+
+    const data = {
+      name: 'Travel',
+      subproducts: [
+        newBenefitSubproduct.name,
+        existingBenefitSubproducts[0].name,
+      ],
+    }
+
+    await benefitService.updateBenefitById(data, existingBenefit.id)
+
+    const updatedBenefit = await prisma.benefit.findUnique({
+      where: { id: existingBenefit.id },
+      include: { subproducts: true },
+    })
+
+    expect(updatedBenefit?.name).toEqual(data.name)
+    expect(updatedBenefit?.subproducts.length).toEqual(2)
+
+    expect(
+      updatedBenefit?.subproducts.some(
+        (subproduct) => subproduct.name === newBenefitSubproduct.name
+      )
+    ).toBeTruthy()
+    expect(
+      updatedBenefit?.subproducts.some(
+        (subproduct) => subproduct.name === existingBenefitSubproducts[0].name
+      )
+    ).toBeTruthy()
   })
 })
 
@@ -87,6 +138,27 @@ describe('deleteBenefitById', () => {
     expect(result).toEqual(existingBenefit.id)
     expect(
       await prisma.benefit.findFirst({ where: { id: existingBenefit.id } })
+    ).toEqual(null)
+  })
+  test('should delete the benefitSubproducts too', async () => {
+    const existingBenefit = await BenefitFactory.create()
+
+    await BenefitSubproductFactory.createList(3, undefined, {
+      associations: { benefit: existingBenefit },
+    })
+
+    const result = await benefitService.deleteBenefitById(existingBenefit.id)
+
+    expect(result).toEqual(existingBenefit.id)
+
+    expect(
+      await prisma.benefit.findFirst({ where: { id: existingBenefit.id } })
+    ).toEqual(null)
+
+    expect(
+      await prisma.benefitSubproduct.findFirst({
+        where: { benefitId: existingBenefit.id },
+      })
     ).toEqual(null)
   })
 })

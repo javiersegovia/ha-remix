@@ -12,6 +12,7 @@ import { selectStyles } from './Select.styles'
 import type { TReactSelectOption } from './Select'
 import { getSelectValue } from './Select'
 import { useHydrated } from 'remix-utils'
+import makeAnimated from 'react-select/animated'
 
 export type TSelectProps = Omit<
   React.DetailedHTMLProps<
@@ -29,6 +30,8 @@ interface SelectProps extends TSelectProps {
   options: TReactSelectOption[] | null | undefined
   onSelectChange?: (newValue?: readonly TReactSelectOption[] | null) => void
 }
+
+const animatedComponents = makeAnimated()
 
 export const SelectMultiple = ({
   name,
@@ -71,6 +74,7 @@ export const SelectMultiple = ({
           isMulti
           id={name}
           instanceId={name}
+          components={animatedComponents}
           styles={styles}
           options={options || []}
           placeholder={placeholder}

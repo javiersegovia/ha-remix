@@ -16,9 +16,7 @@ export const BenefitFactory = Factory.define<ExtendedBenefit>(
         data: {
           ...benefitData,
 
-          membership: associations?.membership
-            ? connect(associations?.membership?.id)
-            : undefined,
+          membership: connect(associations?.membership?.id),
         },
       })
     })
@@ -37,3 +35,4 @@ export const BenefitFactory = Factory.define<ExtendedBenefit>(
     }
   }
 )
+// Update the BenefitFactory function above to include "subproducts"

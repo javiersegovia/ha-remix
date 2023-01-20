@@ -370,11 +370,7 @@ export const createPremiumAdvance = async (
     create: {
       toStatus: PremiumAdvanceStatus.REQUESTED,
       actor: PremiumAdvanceHistoryActor.EMPLOYEE,
-      employee: {
-        connect: {
-          id: employeeId,
-        },
-      },
+      employee: connect(employeeId),
     },
   }
 

@@ -224,6 +224,7 @@ model Employee {
 
   payrollAdvanceHistories PayrollAdvanceHistory[]
   premiumAdvanceHistories PremiumAdvanceHistory[]
+  benefitConsumptions     BenefitConsumption[]
 }
 
 enum EmployeeRole {
@@ -755,8 +756,10 @@ model Benefit {
   buttonText String?
   buttonHref String?
 
-  companies  Company[]
-  membership Membership[]
+  companies    Company[]
+  membership   Membership[]
+  subproducts  BenefitSubproduct[]
+  consumptions BenefitConsumption[]
 }
 
 model Membership {
@@ -769,4 +772,34 @@ model Membership {
   companies Company[]
   employees Employee[]
   benefits  Benefit[]
+}
+
+model BenefitSubproduct {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  name String
+
+  benefit             Benefit              @relation(fields: [benefitId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  benefitId           Int
+  benefitConsumptions BenefitConsumption[]
+}
+
+model BenefitConsumption {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  consumedAt DateTime
+  value      Int
+  discount   Float
+
+  benefitSubproduct   BenefitSubproduct? @relation(fields: [benefitSubproductId], references: [id], onUpdate: Cascade, onDelete: SetNull)
+  benefitSubproductId Int?
+
+  benefit    Benefit  @relation(fields: [benefitId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  benefitId  Int
+  employee   Employee @relation(fields: [employeeId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  employeeId String
 }

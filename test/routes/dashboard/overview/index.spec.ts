@@ -7,6 +7,7 @@ import { vi } from 'vitest'
 import { prisma } from '~/db.server'
 import { MembershipFactory } from '~/services/membership/membership.factory'
 import { BenefitFactory } from '~/services/benefit/benefit.factory'
+import { connect } from '~/utils/relationships'
 
 vi.mock('~/session.server', () => {
   return {
@@ -188,9 +189,7 @@ describe('LOADER /dashboard/overview', () => {
         id: employee.id,
       },
       data: {
-        membership: {
-          connect: { id: membershipPremium.id },
-        },
+        membership: connect(membershipPremium.id),
       },
     })
 

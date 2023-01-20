@@ -1,6 +1,7 @@
 import type { Benefit } from '@prisma/client'
 
 import { prisma } from '~/db.server'
+import { BenefitSubproductFactory } from '../benefit-subproduct/benefit-subproduct.factory'
 import { BenefitFactory } from './benefit.factory'
 import * as benefitService from './benefit.server'
 
@@ -40,10 +41,34 @@ describe('createBenefit', () => {
 
 describe('updateBenefitById', () => {
   test('should update and return a benefit', async () => {
+    const existingBenefit = BenefitFactory.build()
     const expectedBenefit = BenefitFactory.build()
 
-    vi.spyOn(prisma.benefit, 'findFirst').mockResolvedValueOnce(expectedBenefit)
+    vi.spyOn(prisma.benefit, 'findFirst').mockResolvedValueOnce(existingBenefit)
     vi.spyOn(prisma.benefit, 'update').mockResolvedValueOnce(expectedBenefit)
+
+    const result = await benefitService.updateBenefitById(
+      {
+        name: expectedBenefit.name,
+      },
+      expectedBenefit.id
+    )
+
+    expect(result).toMatchObject<Benefit>(expectedBenefit)
+  })
+
+  test('should update the existing subproducts', async () => {
+    const existingBenefit = BenefitFactory.build()
+    const expectedBenefit = BenefitFactory.build()
+
+    const existingBenefitSubproducts = BenefitSubproductFactory.buildList(3)
+
+    vi.spyOn(prisma.benefit, 'findFirst').mockResolvedValueOnce(existingBenefit)
+    vi.spyOn(prisma.benefit, 'update').mockResolvedValueOnce(expectedBenefit)
+
+    vi.spyOn(prisma.benefitSubproduct, 'findMany').mockResolvedValueOnce(
+      existingBenefitSubproducts
+    )
 
     const result = await benefitService.updateBenefitById(
       {

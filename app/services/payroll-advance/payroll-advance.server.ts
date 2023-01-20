@@ -655,11 +655,7 @@ export const createPayrollAdvance = async ({
     create: {
       toStatus: PayrollAdvanceStatus.REQUESTED,
       actor: PayrollAdvanceHistoryActor.EMPLOYEE,
-      employee: {
-        connect: {
-          id: employeeId,
-        },
-      },
+      employee: connect(employeeId),
     },
   }
 

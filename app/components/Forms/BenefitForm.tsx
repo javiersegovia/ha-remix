@@ -1,4 +1,4 @@
-import type { Benefit } from '@prisma/client'
+import type { Benefit, BenefitSubproduct } from '@prisma/client'
 
 import { Form, Link } from '@remix-run/react'
 import { RiCloseFill } from 'react-icons/ri'
@@ -8,6 +8,7 @@ import { Button } from '../Button'
 import { FormGridItem } from '../FormFields/FormGridItem'
 import { FormGridWrapper } from '../FormFields/FormGridWrapper'
 import { Input } from '../FormFields/Input'
+import { SelectMultipleCreatableInput } from '../FormFields/SelectMultipleCreatableInput'
 import { Box } from '../Layout/Box'
 import { Title } from '../Typography/Title'
 
@@ -18,7 +19,9 @@ interface BenefitFormProps {
   defaultValues?: Pick<
     Benefit,
     'name' | 'imageUrl' | 'buttonText' | 'buttonHref' | 'slug'
-  >
+  > & {
+    subproducts: Pick<BenefitSubproduct, 'id' | 'name'>[]
+  }
   showDelete?: boolean
 }
 
@@ -29,6 +32,8 @@ export const BenefitForm = ({
   onCloseRedirectTo,
   showDelete = false,
 }: BenefitFormProps) => {
+  const { subproducts } = defaultValues || {}
+
   return (
     <div className="mt-auto h-full w-full md:ml-auto md:max-w-lg">
       <Box className="mt-auto flex w-full flex-col space-y-5 rounded-none p-5 md:min-h-screen md:w-auto">
@@ -45,7 +50,10 @@ export const BenefitForm = ({
         <ValidatedForm
           id="BenefitForm"
           validator={benefitValidator}
-          defaultValues={defaultValues}
+          defaultValues={{
+            ...defaultValues,
+            subproducts: subproducts?.map((subproduct) => subproduct.name),
+          }}
           method="post"
         >
           <FormGridWrapper>
@@ -63,6 +71,15 @@ export const BenefitForm = ({
 
             <FormGridItem className="lg:col-span-12">
               <Input name="buttonHref" label="URL del botón" type="text" />
+            </FormGridItem>
+
+            <FormGridItem className="lg:col-span-12">
+              <SelectMultipleCreatableInput
+                name="subproducts"
+                label="Subproductos"
+                currentValues={subproducts}
+                placeholder="Escribe un nombre y presiona enter..."
+              />
             </FormGridItem>
 
             <FormGridItem className="lg:col-span-12">

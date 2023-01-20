@@ -27,6 +27,12 @@ export const getBenefitById = async (benefitId: Benefit['id']) => {
       buttonText: true,
       buttonHref: true,
       slug: true,
+      subproducts: {
+        select: {
+          id: true,
+          name: true,
+        },
+      },
     },
   })
 }
@@ -76,7 +82,36 @@ export const updateBenefitById = async (
     })
   }
 
-  const { name, imageUrl, buttonText, buttonHref, slug } = data
+  const { name, imageUrl, buttonText, buttonHref, slug, subproducts } = data
+
+  const benefitSubproducts = await prisma.benefitSubproduct.findMany({
+    where: {
+      benefitId: benefit.id,
+    },
+    select: {
+      id: true,
+      name: true,
+    },
+  })
+
+  const benefitSubproductNames = benefitSubproducts.map((benefitSubproduct) =>
+    benefitSubproduct.name.toLowerCase()
+  )
+
+  const newSubproducts = subproducts?.filter(
+    (subproduct) =>
+      benefitSubproductNames.includes(subproduct.toLowerCase()) === false
+  )
+
+  const subproductsToDelete = benefitSubproducts.filter(
+    (benefitSubproduct) =>
+      Boolean(
+        subproducts?.some(
+          (subproduct) =>
+            subproduct.toLowerCase() === benefitSubproduct.name.toLowerCase()
+        )
+      ) === false
+  )
 
   return prisma.benefit.update({
     where: {
@@ -88,6 +123,20 @@ export const updateBenefitById = async (
       buttonText: buttonText || null,
       buttonHref: buttonHref || null,
       slug: slug || null,
+
+      subproducts: {
+        createMany: newSubproducts?.length
+          ? {
+              data: newSubproducts.map((newSubproduct) => ({
+                name: newSubproduct,
+              })),
+            }
+          : undefined,
+
+        deleteMany: subproductsToDelete?.length
+          ? subproductsToDelete.map((subproduct) => ({ id: subproduct.id }))
+          : undefined,
+      },
     },
     select: {
       id: true,
