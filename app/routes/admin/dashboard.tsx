@@ -5,7 +5,7 @@ import { HiOutlineHome, HiOutlineOfficeBuilding } from 'react-icons/hi'
 import { TbStars } from 'react-icons/tb'
 import { MdAttachMoney } from 'react-icons/md'
 import { FiSettings } from 'react-icons/fi'
-import { AiOutlineThunderbolt } from 'react-icons/ai'
+import { AiOutlineDatabase, AiOutlineThunderbolt } from 'react-icons/ai'
 
 import { requireAdminUser } from '~/session.server'
 import type { INavPath } from '~/components/SideBar/DashboardSideBar'
@@ -51,6 +51,11 @@ const navPaths: INavPath[] = [
     icon: AiOutlineThunderbolt,
     path: '/admin/dashboard/memberships',
     title: 'Membresías',
+  },
+  {
+    icon: AiOutlineDatabase,
+    title: 'Data',
+    path: '/admin/dashboard/data',
   },
   {
     icon: FiSettings,
