@@ -205,27 +205,16 @@ export const createEmployee = async (
       ? {
           create: {
             accountNumber: bankAccount.accountNumber,
-            bank: {
-              connect: {
-                id: bankAccount.bankId,
-              },
-            },
+            bank: connect(bankAccount.bankId),
 
-            accountType: {
-              connect: {
-                id: bankAccount.accountTypeId,
-              },
-            },
+            accountType: connect(bankAccount.accountTypeId),
 
             identityDocument: {
               create: {
                 value: bankAccount.identityDocument.value,
-                documentType: {
-                  connect: {
-                    id:
-                      bankAccount.identityDocument.documentTypeId || undefined,
-                  },
-                },
+                documentType: connect(
+                  bankAccount.identityDocument.documentTypeId
+                ),
               },
             },
           },
@@ -237,11 +226,7 @@ export const createEmployee = async (
       ? {
           create: {
             address: wallet.address,
-            network: {
-              connect: {
-                id: wallet.cryptoNetworkId,
-              },
-            },
+            network: connect(wallet.cryptoNetworkId),
           },
         }
       : undefined
@@ -390,11 +375,9 @@ export const updateEmployeeById = async (
               identityDocument: {
                 create: {
                   value: bankAccount.identityDocument?.value,
-                  documentType: {
-                    connect: {
-                      id: bankAccount.identityDocument?.documentTypeId,
-                    },
-                  },
+                  documentType: connect(
+                    bankAccount.identityDocument?.documentTypeId
+                  ),
                 },
               },
             },
@@ -405,11 +388,9 @@ export const updateEmployeeById = async (
               identityDocument: {
                 update: {
                   value: bankAccount.identityDocument?.value,
-                  documentType: {
-                    connect: {
-                      id: bankAccount.identityDocument?.documentTypeId,
-                    },
-                  },
+                  documentType: connect(
+                    bankAccount.identityDocument?.documentTypeId
+                  ),
                 },
               },
             },
@@ -707,6 +688,8 @@ export const uploadEmployees = async (
         DOCUMENTO_DE_IDENTIDAD: documentNumber,
         MEMBRESIA: membershipName,
 
+        CELULAR: phone,
+
         FECHA_DE_INGRESO: startedAt,
         FECHA_DE_RETIRO: inactivatedAt,
       } = parsed.data
@@ -848,26 +831,14 @@ export const uploadEmployees = async (
           bankAccountHasAllValues
             ? {
                 accountNumber: accountNumber as string,
-                bank: {
-                  connect: {
-                    id: bank?.id,
-                  },
-                },
+                bank: connect(bank?.id as number),
 
-                accountType: {
-                  connect: {
-                    id: accountType?.id,
-                  },
-                },
+                accountType: connect(accountType?.id as number),
 
                 identityDocument: {
                   create: {
                     value: documentNumber as string,
-                    documentType: {
-                      connect: {
-                        id: documentType?.id,
-                      },
-                    },
+                    documentType: connect(documentType?.id as number),
                   },
                 },
               }
@@ -930,6 +901,7 @@ export const uploadEmployees = async (
             advanceAvailableAmount: parseFloat(availableAmount),
             advanceMaxAmount: parseFloat(maxAvailableAmount),
             roles: [EmployeeRole.MEMBER],
+            phone,
 
             status:
               status?.toLowerCase() == EmployeeStatus.ACTIVE.toLowerCase() ||
@@ -971,6 +943,7 @@ export const uploadEmployees = async (
             advanceAvailableAmount: parseFloat(availableAmount),
             advanceMaxAmount: parseFloat(maxAvailableAmount),
             roles: [EmployeeRole.MEMBER],
+            phone,
 
             /** If we have an "inactivatedAt" value,
              *  we will use it.

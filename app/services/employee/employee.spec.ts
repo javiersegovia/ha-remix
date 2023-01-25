@@ -59,6 +59,7 @@ describe('uploadEmployees', () => {
         CUPO_DISPONIBLE: faker.datatype.number().toString(),
         FECHA_DE_INGRESO: '2020-12-20',
         FECHA_DE_RETIRO: undefined,
+        CELULAR: '+58 424 9999 999',
       })
     }
 
@@ -105,6 +106,7 @@ describe('uploadEmployees', () => {
     expect(createdUser?.employee?.country?.id).toEqual(country.id)
     expect(createdUser?.employee?.membership?.id).toEqual(membership.id)
     expect(createdUser?.employee?.status).toEqual(EmployeeStatus.ACTIVE)
+    expect(createdUser?.employee?.phone).toEqual(expectedUser.CELULAR)
 
     expect(createdUser?.employee?.bankAccount?.accountNumber).toEqual(
       expectedUser.NUMERO_DE_CUENTA
@@ -177,40 +179,62 @@ describe('uploadEmployees', () => {
       SALARIO: faker.datatype.number().toString(),
       CUPO_APROBADO: faker.datatype.number().toString(),
       CUPO_DISPONIBLE: faker.datatype.number().toString(),
+      CELULAR: faker.datatype.number().toString(),
     })
 
     const existingUser = createDummyData()
-    const updatedUser = createDummyData()
+    const newUserData = createDummyData()
 
     await uploadEmployees([existingUser], company.id)
 
     const { createdUsersCount, updatedUsersCount, usersWithErrors } =
-      await uploadEmployees([updatedUser], company.id)
+      await uploadEmployees([newUserData], company.id)
 
     expect(createdUsersCount).toEqual(0)
     expect(updatedUsersCount).toEqual(1)
     expect(usersWithErrors.length).toEqual(0)
 
-    const createdUser = await prisma.user.findFirst({
+    const updatedUser = await prisma.user.findFirst({
       where: {
-        email: { equals: updatedUser.CORREO_ELECTRONICO, mode: 'insensitive' },
+        email: {
+          equals: newUserData.CORREO_ELECTRONICO,
+          mode: 'insensitive',
+        },
       },
-      include: {
+      select: {
+        email: true,
+        firstName: true,
+        lastName: true,
+        password: true,
         employee: {
-          include: {
-            country: true,
-            company: true,
-            gender: true,
-            jobDepartment: true,
-            jobPosition: true,
-            membership: true,
+          select: {
+            acceptedPrivacyPolicy: true,
+            acceptedTermsOfService: true,
+            address: true,
+            status: true,
+            salaryFiat: true,
+            advanceAvailableAmount: true,
+            advanceMaxAmount: true,
+            membershipId: true,
+            phone: true,
+            countryId: true,
+            companyId: true,
+            jobDepartment: { select: { name: true } },
+            jobPosition: { select: { name: true } },
             bankAccount: {
-              include: {
-                bank: true,
-                accountType: true,
+              select: {
+                accountNumber: true,
+                bankId: true,
+                bank: { select: { name: true } },
+                accountType: { select: { name: true } },
                 identityDocument: {
-                  include: {
-                    documentType: true,
+                  select: {
+                    value: true,
+                    documentType: {
+                      select: {
+                        name: true,
+                      },
+                    },
                   },
                 },
               },
@@ -220,44 +244,50 @@ describe('uploadEmployees', () => {
       },
     })
 
-    expect(createdUser?.firstName).toEqual(updatedUser.NOMBRE)
-    expect(createdUser?.lastName).toEqual(updatedUser.APELLIDO)
+    expect(updatedUser).toBeDefined()
 
-    expect(createdUser?.employee?.company.id).toEqual(company.id)
-    expect(createdUser?.employee?.country?.id).toEqual(country.id)
-    expect(createdUser?.employee?.membership?.id).toEqual(membership.id)
-    expect(createdUser?.employee?.status).toEqual(EmployeeStatus.ACTIVE)
+    expect(updatedUser).toEqual({
+      firstName: newUserData.NOMBRE,
+      lastName: newUserData.APELLIDO,
+      email: newUserData.CORREO_ELECTRONICO.toLowerCase(),
+      password: null,
+      employee: expect.any(Object),
+    })
 
-    expect(createdUser?.employee?.bankAccount?.accountNumber).toEqual(
-      updatedUser.NUMERO_DE_CUENTA
-    )
-    expect(createdUser?.employee?.bankAccount?.accountType.name).toEqual(
-      updatedUser.TIPO_DE_CUENTA
-    )
-    expect(createdUser?.employee?.bankAccount?.bank.name).toEqual(
-      updatedUser.BANCO
-    )
-    expect(createdUser?.employee?.bankAccount?.identityDocument.value).toEqual(
-      updatedUser.DOCUMENTO_DE_IDENTIDAD
-    )
-    expect(
-      createdUser?.employee?.bankAccount?.identityDocument.documentType.name
-    ).toEqual(updatedUser.TIPO_DE_DOCUMENTO)
-
-    expect(createdUser?.employee?.jobPosition?.name).toEqual(updatedUser.CARGO)
-    expect(createdUser?.employee?.jobDepartment?.name).toEqual(
-      updatedUser.DEPARTAMENTO
-    )
-
-    expect(createdUser?.employee?.salaryFiat).toEqual(
-      parseFloat(updatedUser.SALARIO)
-    )
-
-    expect(createdUser?.employee?.advanceAvailableAmount).toEqual(
-      parseFloat(updatedUser.CUPO_DISPONIBLE)
-    )
-    expect(createdUser?.employee?.advanceMaxAmount).toEqual(
-      parseFloat(updatedUser.CUPO_APROBADO)
-    )
+    expect(updatedUser!.employee!).toEqual({
+      acceptedPrivacyPolicy: false,
+      acceptedTermsOfService: false,
+      address: null,
+      companyId: company.id,
+      countryId: country.id,
+      membershipId: membership.id,
+      status: EmployeeStatus.ACTIVE,
+      phone: newUserData.CELULAR,
+      salaryFiat: parseFloat(newUserData.SALARIO),
+      advanceAvailableAmount: parseFloat(newUserData.CUPO_DISPONIBLE),
+      advanceMaxAmount: parseFloat(newUserData.CUPO_APROBADO),
+      jobPosition: {
+        name: newUserData.CARGO,
+      },
+      jobDepartment: {
+        name: newUserData.DEPARTAMENTO,
+      },
+      bankAccount: {
+        bankId: bank.id,
+        accountNumber: newUserData.NUMERO_DE_CUENTA,
+        bank: {
+          name: newUserData.BANCO,
+        },
+        accountType: {
+          name: newUserData.TIPO_DE_CUENTA,
+        },
+        identityDocument: {
+          value: newUserData.DOCUMENTO_DE_IDENTIDAD,
+          documentType: {
+            name: newUserData.TIPO_DE_DOCUMENTO,
+          },
+        },
+      },
+    })
   })
 })

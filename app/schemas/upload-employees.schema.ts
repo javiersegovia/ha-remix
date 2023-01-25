@@ -74,6 +74,7 @@ export const uploadEmployeeSchema = z.object({
       )
       .nullish()
   ),
+  CELULAR: zfd.text(z.string().nullish()),
 })
 
 export const uploadEmployeeValidator = withZod(uploadEmployeeSchema)

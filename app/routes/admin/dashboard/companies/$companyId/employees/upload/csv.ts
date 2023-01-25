@@ -56,6 +56,7 @@ export const action: ActionFunction = async ({ request, params }) => {
         'DOCUMENTO_DE_IDENTIDAD',
         'FECHA_DE_INGRESO',
         'FECHA_DE_RETIRO',
+        'CELULAR',
         'ERRORES',
       ]
 
