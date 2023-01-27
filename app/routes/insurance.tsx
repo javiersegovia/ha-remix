@@ -1,3 +1,11 @@
+import {
+  FaFacebookF,
+  FaInstagram,
+  FaLinkedinIn,
+  FaTiktok,
+  FaWhatsapp,
+  FaYoutube,
+} from 'react-icons/fa'
 import { Button } from '~/components/Button'
 import insuranceStyles from '~/styles/routes/insurance.css'
 
@@ -53,14 +61,14 @@ const InsuranceRoute = () => {
 
       <section className="steps bg-steelBlue-100/50 py-14">
         <div className="container mx-auto px-4 xl:px-28">
-          <h3 className="text-4xl font-bold">
+          <h3 className="text-2xl font-bold lg:text-4xl">
             Sólo necesitas <span className="text-purple-600">6 pasos</span> para
             reportar el siniestro:
           </h3>
 
           <div className="mt-12 flex justify-between">
-            <li className="left-2 w-full list-none space-y-5 text-steelBlue-800 sm:max-w-[55%] lg:max-w-[45%]">
-              <ul className="flex items-center gap-x-4 text-2xl">
+            <li className="left-2 w-full list-none space-y-5 text-steelBlue-800 md:max-w-[55%] lg:max-w-[45%]">
+              <ul className="flex items-center gap-x-4 text-base lg:text-2xl">
                 <span className="inline-block w-10 text-center text-4xl font-bold text-purple-600">
                   1
                 </span>
@@ -71,7 +79,7 @@ const InsuranceRoute = () => {
                 </p>
               </ul>
 
-              <ul className="flex items-center gap-x-4 text-2xl">
+              <ul className="flex items-center gap-x-4 text-base lg:text-2xl">
                 <span className="inline-block w-10 text-center text-4xl font-bold text-purple-600">
                   2
                 </span>
@@ -81,28 +89,28 @@ const InsuranceRoute = () => {
                 </p>
               </ul>
 
-              <ul className="flex items-center gap-x-4 text-2xl">
+              <ul className="flex items-center gap-x-4 text-base lg:text-2xl">
                 <span className="inline-block w-10 text-center text-4xl font-bold text-purple-600">
                   3
                 </span>
                 <p>Aceptar la política de tratamiento de datos</p>
               </ul>
 
-              <ul className="flex items-center gap-x-4 text-2xl">
+              <ul className="flex items-center gap-x-4 text-base lg:text-2xl">
                 <span className="inline-block w-10 text-center text-4xl font-bold text-purple-600">
                   4
                 </span>
                 <p>Llenar los datos solicitados</p>
               </ul>
 
-              <ul className="flex items-center gap-x-4 text-2xl">
+              <ul className="flex items-center gap-x-4 text-base lg:text-2xl">
                 <span className="inline-block w-10 text-center text-4xl font-bold text-purple-600">
                   5
                 </span>
                 <p>Te llegará a tu correo un número de solicitud</p>
               </ul>
 
-              <ul className="flex items-center gap-x-4 text-2xl">
+              <ul className="flex items-center gap-x-4 text-base lg:text-2xl">
                 <span className="inline-block w-10 text-center text-4xl font-bold text-purple-600">
                   6
                 </span>
@@ -123,64 +131,110 @@ const InsuranceRoute = () => {
               <img
                 src="/images/routes/insurance/Steps.png"
                 alt="Steps"
-                className="max-w-[486px] object-contain"
+                className="object-contain sm:max-w-[323px] lg:max-w-[486px]"
               />
             </div>
           </div>
         </div>
       </section>
 
-      <h3 className="third-section">
-        Este seguro te da el amparo de dos accidentes:
-      </h3>
-      <section className="accidents">
-        <div className="left-3">
-          <img
-            className="first"
-            src="/images/routes/insurance/Shield.png"
-            alt=""
-          />
+      <section className="relative">
+        <section className="container mx-auto mt-12 px-4 lg:mt-28 xl:px-28">
+          <h3 className="mb-12 text-2xl font-bold lg:text-4xl 2xl:text-5xl">
+            Este seguro te da el amparo de dos accidentes:
+          </h3>
+          <div className="grid items-center sm:grid-cols-2">
+            <img
+              src="/images/routes/insurance/Shield.png"
+              alt="Shield"
+              className="hidden justify-self-center sm:block"
+            />
+            <div>
+              <h4 className="mb-6 text-lg font-bold text-purple-600 sm:text-xl lg:text-[28px] 2xl:text-[32px]">
+                Muerte accidental
+              </h4>
+              <p className="max-w-2xl text-justify text-base font-medium text-steelBlue-800 lg:text-lg 2xl:text-xl">
+                SBS Seguros pagará a los beneficiarios el valor asegurado
+                señalado en la carátula de la póliza, si dentro de los ciento
+                ochenta (180) días calendario contados desde la fecha del
+                accidente
+              </p>
+            </div>
+          </div>
+          <div className="mt-12 grid items-center sm:grid-cols-2">
+            <div>
+              <h4 className="mb-6 text-lg font-bold text-purple-600 sm:text-xl lg:text-[28px] 2xl:text-[32px]">
+                Renta diaria por hospitalización
+              </h4>
+              <p className="max-w-2xl text-justify text-base font-medium text-steelBlue-800 lg:text-lg 2xl:text-xl">
+                SBS Seguros pagará al asegurado como consecuencia de un
+                accidente según el amparo contratado "la renta diaria" expresada
+                en la carátula de la póliza.
+              </p>
+            </div>
+            <img
+              src="/images/routes/insurance/Briefcase.png"
+              alt="Briefcase"
+              className="hidden justify-self-center sm:block"
+            />
+          </div>
 
-          <h4 className="text-purple-600">Renta diaria por hospitalización</h4>
-          <p>
-            SBS Seguros pagará al asegurado como consecuencia de un accidente
-            según el amparo contratado "la renta diaria" expresada en la
-            carátula de la póliza.
-          </p>
-          <img
-            src="/images/routes/insurance/ManPurpleBackground.png"
-            alt="hero"
-          />
-          <img
-            className="mobile"
-            src="/images/routes/insurance/MobilePurpleBackground.png"
-            alt="Shield"
-          />
-        </div>
-        <div className="right-3">
-          <h4 className="text-purple-600">Muerte accidental</h4>
-          <p>
-            SBS Seguros pagará a los beneficiarios el valor asegurado señalado
-            en la carátula de la póliza, si dentro de los ciento ochenta (180)
-            días calendario contados desde la fecha del accidente
-          </p>
-          <img src="/images/routes/insurance/Briefcase.png" alt="Briefcase" />
-          <h3>Tu bienestar para nosotros es importante</h3>
-          <p>
-            No olvides reportar de <br />
-            inmediato
-          </p>
-        </div>
+          <div className="mt-20 mb-11 grid items-center pb-11 sm:grid-cols-2">
+            <div>
+              <img
+                src="/images/routes/insurance/ManPurpleBackground.png"
+                alt="hero"
+                className="hidden sm:block sm:max-w-[265px] lg:max-w-none"
+              />
+              <img
+                className="absolute bottom-0 left-0 block sm:hidden"
+                src="/images/routes/insurance/MobilePurpleBackground.png"
+                alt="Shield"
+              />
+            </div>
+            <div>
+              <h3 className="max-w-md text-[32px] font-bold leading-10">
+                Tu bienestar para nosotros es importante
+              </h3>
+              <p className="mt-6 text-xl font-medium text-steelBlue-700 lg:max-w-xs">
+                No olvides reportar de inmediato
+              </p>
+            </div>
+          </div>
+        </section>
       </section>
-      <section className="footer">
+
+      <section className="footer pb-10">
         <div className="footerbar">
           <img
             className="logo"
             src="/images/routes/insurance/Logo.png"
             alt="HoyTrabajas Logo"
           />
-          <p>Síguenos</p>
-          {/* <img src="images/Group 19.png" alt="Instagram" /> */}
+          <div>
+            <p>Síguenos</p>
+
+            <div className="mt-4 ml-[17px] flex items-center gap-2 text-2xl text-white md:ml-0">
+              <a href="/" target="_blank" rel="noopener noreferrer">
+                <FaInstagram />
+              </a>
+              <a href="/" target="_blank" rel="noopener noreferrer">
+                <FaLinkedinIn />
+              </a>
+              <a href="/" target="_blank" rel="noopener noreferrer">
+                <FaFacebookF />
+              </a>
+              <a href="/" target="_blank" rel="noopener noreferrer">
+                <FaTiktok />
+              </a>
+              <a href="/" target="_blank" rel="noopener noreferrer">
+                <FaWhatsapp />
+              </a>
+              <a href="/" target="_blank" rel="noopener noreferrer">
+                <FaYoutube />
+              </a>
+            </div>
+          </div>
         </div>
       </section>
     </>
