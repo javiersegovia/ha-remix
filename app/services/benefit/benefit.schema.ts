@@ -13,8 +13,6 @@ export const benefitSchema = z.object({
   buttonText: zfd.text(z.string().nullish()),
   buttonHref: zfd.text(z.string().nullish()),
   slug: zfd.text(z.string().nullish()),
-
-  subproducts: z.array(zfd.text(z.string())).nullish(),
 })
 
 export const benefitValidator = withZod(benefitSchema)

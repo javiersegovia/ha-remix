@@ -1,0 +1,15 @@
+SELECT DISTINCT
+  "BenefitConsumption"."id" as "benefitConsumptionId", 
+  "BenefitConsumption"."consumedAt", 
+  "BenefitConsumption"."value", 
+  "BenefitSubproduct"."name" AS "benefitSubproductName", 
+  "BenefitSubproduct"."id" AS "benefitSubproductId", 
+  "Benefit"."name" AS "benefitName", 
+  "Benefit"."id" AS "benefitId", 
+  "User"."email", 
+  "Employee"."id" AS "employeeId"
+  FROM "advance_api"."BenefitConsumption"
+  LEFT JOIN "advance_api"."BenefitSubproduct" ON "BenefitConsumption"."benefitSubproductId" = "BenefitSubproduct"."id"
+  LEFT JOIN "advance_api"."Benefit" ON "BenefitConsumption"."benefitId" = "Benefit"."id"
+  LEFT JOIN "advance_api"."Employee" ON "BenefitConsumption"."employeeId" = "Employee"."id"
+  LEFT JOIN "advance_api"."User" ON "advance_api"."User"."id" = "Employee"."userId";

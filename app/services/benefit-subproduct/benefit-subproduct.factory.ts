@@ -11,35 +11,37 @@ type ExtendedBenefitSubproduct = BenefitSubproduct & {
 }
 
 export const BenefitSubproductFactory =
-  Factory.define<ExtendedBenefitSubproduct>(({ onCreate, associations }) => {
-    onCreate(({ id: _, ...benefitSubproductData }) => {
-      const { name, discount } = benefitSubproductData
+  Factory.define<ExtendedBenefitSubproduct>(
+    ({ onCreate, sequence, associations }) => {
+      const benefit = associations.benefit || BenefitFactory.build()
 
-      if (!associations?.benefit) {
-        throw new Error('Missing associations')
-      }
+      onCreate((benefitSubproductData) => {
+        const { name, discount } = benefitSubproductData
 
-      return prisma.benefitSubproduct.create({
-        data: {
-          name,
-          discount,
-          benefit: connect(associations?.benefit?.id),
-        },
-        include: {
-          benefit: true,
-        },
+        if (!associations.benefit) {
+          throw new Error('Missing benefit association')
+        }
+
+        return prisma.benefitSubproduct.create({
+          data: {
+            name,
+            discount,
+            benefit: connect(associations.benefit.id),
+          },
+          include: {
+            benefit: true,
+          },
+        })
       })
-    })
 
-    const benefit = associations?.benefit || BenefitFactory.build()
-
-    return {
-      id: faker.datatype.number(),
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      name: faker.commerce.productName(),
-      discount: faker.datatype.number(),
-      benefit,
-      benefitId: benefit.id,
+      return {
+        id: sequence,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        name: faker.commerce.productName(),
+        discount: faker.datatype.number(),
+        benefit,
+        benefitId: benefit.id,
+      }
     }
-  })
+  )

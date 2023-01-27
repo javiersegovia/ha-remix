@@ -88,45 +88,6 @@ describe('updateBenefitById', () => {
 
     expect(updatedBenefit?.name).toEqual(data.name)
   })
-
-  test('should update existing benefitSubproducts', async () => {
-    const existingBenefit = await BenefitFactory.create()
-    const existingBenefitSubproducts =
-      await BenefitSubproductFactory.createList(3, undefined, {
-        associations: { benefit: existingBenefit },
-      })
-
-    const newBenefitSubproduct = BenefitSubproductFactory.build()
-
-    const data = {
-      name: 'Travel',
-      subproducts: [
-        newBenefitSubproduct.name,
-        existingBenefitSubproducts[0].name,
-      ],
-    }
-
-    await benefitService.updateBenefitById(data, existingBenefit.id)
-
-    const updatedBenefit = await prisma.benefit.findUnique({
-      where: { id: existingBenefit.id },
-      include: { subproducts: true },
-    })
-
-    expect(updatedBenefit?.name).toEqual(data.name)
-    expect(updatedBenefit?.subproducts.length).toEqual(2)
-
-    expect(
-      updatedBenefit?.subproducts.some(
-        (subproduct) => subproduct.name === newBenefitSubproduct.name
-      )
-    ).toBeTruthy()
-    expect(
-      updatedBenefit?.subproducts.some(
-        (subproduct) => subproduct.name === existingBenefitSubproducts[0].name
-      )
-    ).toBeTruthy()
-  })
 })
 
 describe('deleteBenefitById', () => {

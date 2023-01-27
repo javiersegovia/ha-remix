@@ -35,4 +35,3 @@ export const BenefitFactory = Factory.define<ExtendedBenefit>(
     }
   }
 )
-// Update the BenefitFactory function above to include "subproducts"
