@@ -9,6 +9,7 @@ export const welcomeSchema = z.object({
     .string({
       required_error: 'Ingrese una contraseña',
     })
+    .trim()
     .min(6, {
       message: 'La contraseña debe poseer mínimo 6 caracteres',
     }),
@@ -16,6 +17,7 @@ export const welcomeSchema = z.object({
     .string({
       required_error: 'Confirme su contraseña',
     })
+    .trim()
     .min(6, {
       message: 'La contraseña debe poseer mínimo 6 caracteres',
     }),
@@ -28,31 +30,40 @@ export const welcomeSchema = z.object({
         .string({
           required_error: 'Ingrese un correo electrónico',
         })
+        .trim()
         .email('Correo electrónico inválido')
     ),
 
     firstName: zfd.text(
-      z.string({
-        required_error: 'Ingrese un nombre',
-      })
+      z
+        .string({
+          required_error: 'Ingrese un nombre',
+        })
+        .trim()
     ),
 
     lastName: zfd.text(
-      z.string({
-        required_error: 'Ingrese un apellido',
-      })
+      z
+        .string({
+          required_error: 'Ingrese un apellido',
+        })
+        .trim()
     ),
   }),
 
   phone: zfd.text(
-    z.string({
-      required_error: 'Ingrese un número telefónico',
-    })
+    z
+      .string({
+        required_error: 'Ingrese un número telefónico',
+      })
+      .trim()
   ),
   address: zfd.text(
-    z.string({
-      required_error: 'Ingrese una dirección',
-    })
+    z
+      .string({
+        required_error: 'Ingrese una dirección',
+      })
+      .trim()
   ),
   numberOfChildren: zfd.numeric(z.number().int().default(0)),
 

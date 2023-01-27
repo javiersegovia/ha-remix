@@ -9,13 +9,14 @@ const companySchema = z.object({
     .string({
       required_error: 'Ingrese el nombre de la compañía',
     })
+    .trim()
     .min(4, 'El nombre debe poseer al menos 4 caracteres'),
 
   status: z.nativeEnum(CompanyStatus).default(CompanyStatus.INACTIVE),
 
-  address: z.string().nullable().default(null),
-  description: z.string().nullable().default(null),
-  phone: z.string().nullable().default(null),
+  address: z.string().trim().nullable().default(null),
+  description: z.string().trim().nullable().default(null),
+  phone: z.string().trim().nullable().default(null),
 
   dispersion: zfd.numeric(z.number().nullable().default(null)),
   premiumDispersion: zfd.numeric(z.number().nullable().default(null)),

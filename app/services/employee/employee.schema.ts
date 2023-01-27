@@ -19,19 +19,24 @@ export const employeeSchema = z.object({
         .string({
           required_error: 'Ingrese un correo electrónico',
         })
+        .trim()
         .email('Correo electrónico inválido')
     ),
 
     firstName: zfd.text(
-      z.string({
-        required_error: 'Ingrese un nombre',
-      })
+      z
+        .string({
+          required_error: 'Ingrese un nombre',
+        })
+        .trim()
     ),
 
     lastName: zfd.text(
-      z.string({
-        required_error: 'Ingrese un apellido',
-      })
+      z
+        .string({
+          required_error: 'Ingrese un apellido',
+        })
+        .trim()
     ),
   }),
 

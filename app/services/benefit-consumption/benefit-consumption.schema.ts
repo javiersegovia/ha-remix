@@ -4,14 +4,16 @@ import { zfd } from 'zod-form-data'
 import { ISO_DATE_REGEX } from '~/utils/formatDate'
 
 export const uploadBenefitConsumptionsSchema = z.object({
-  CORREO: zfd.text(z.string().nullish()),
-  CEDULA: zfd.text(z.string().nullish()),
-  ID_SUBPRODUCTO: zfd.text(z.string().nullish()),
+  CORREO: zfd.text(z.string().trim().nullish()),
+  CEDULA: zfd.text(z.string().trim().nullish()),
+  ID_SUBPRODUCTO: zfd.text(z.string().trim().nullish()),
   VALOR_CONSUMIDO: zfd.text(
-    z.string({
-      invalid_type_error: 'Ingrese un valor consumido',
-      required_error: 'Ingrese un valor consumido',
-    })
+    z
+      .string({
+        invalid_type_error: 'Ingrese un valor consumido',
+        required_error: 'Ingrese un valor consumido',
+      })
+      .trim()
   ),
   FECHA_DE_CONSUMO: zfd.text(
     z
@@ -19,6 +21,7 @@ export const uploadBenefitConsumptionsSchema = z.object({
         invalid_type_error: 'Ingrese una fecha de consumo',
         required_error: 'Ingrese una fecha de consumo',
       })
+      .trim()
       .regex(
         ISO_DATE_REGEX,
         'El formato de fecha es inválido. Debe ser año-mes-día, por ejemplo: 2023-12-25'

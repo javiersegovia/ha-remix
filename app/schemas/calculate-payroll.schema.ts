@@ -27,9 +27,11 @@ const calculatePayrollSchema = z.object({
   ),
 
   requestReasonDescription: zfd.text(
-    z.string({
-      required_error: 'Describa el motivo de la solicitud',
-    })
+    z
+      .string({
+        required_error: 'Describa el motivo de la solicitud',
+      })
+      .trim()
   ),
 })
 

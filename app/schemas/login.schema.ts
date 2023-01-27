@@ -6,6 +6,7 @@ const loginSchema = z.object({
     .string({
       required_error: 'Ingrese un correo electrónico',
     })
+    .trim()
     .email('Correo electrónico inválido'),
   password: z
     .string({

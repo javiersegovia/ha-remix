@@ -6,54 +6,69 @@ import { ISO_DATE_REGEX } from '~/utils/formatDate'
 
 export const uploadEmployeeSchema = z.object({
   CORREO_ELECTRONICO: zfd.text(
-    z.string({
-      invalid_type_error: 'Ingrese un correo electrónico',
-      required_error: 'Ingrese un correo electrónico',
-    })
+    z
+      .string({
+        invalid_type_error: 'Ingrese un correo electrónico',
+        required_error: 'Ingrese un correo electrónico',
+      })
+      .trim()
+      .email('Correo electrónico inválido')
   ),
   NOMBRE: zfd.text(
-    z.string({
-      invalid_type_error: 'Ingrese un nombre',
-      required_error: 'Ingrese un nombre',
-    })
+    z
+      .string({
+        invalid_type_error: 'Ingrese un nombre',
+        required_error: 'Ingrese un nombre',
+      })
+      .trim()
   ),
   APELLIDO: zfd.text(
-    z.string({
-      invalid_type_error: 'Ingrese un apellido',
-      required_error: 'Ingrese un apellido',
-    })
+    z
+      .string({
+        invalid_type_error: 'Ingrese un apellido',
+        required_error: 'Ingrese un apellido',
+      })
+      .trim()
   ),
-  MEMBRESIA: zfd.text(z.string().nullish()),
-  ESTADO: zfd.text(z.string().nullable().default(EmployeeStatus.INACTIVE)),
+  MEMBRESIA: zfd.text(z.string().trim().nullish()),
+  ESTADO: zfd.text(
+    z.string().trim().nullable().default(EmployeeStatus.INACTIVE)
+  ),
 
-  CARGO: zfd.text(z.string().nullish()),
-  DEPARTAMENTO: zfd.text(z.string().nullish()),
+  CARGO: zfd.text(z.string().trim().nullish()),
+  DEPARTAMENTO: zfd.text(z.string().trim().nullish()),
 
-  PAIS: zfd.text(z.string().nullish()),
+  PAIS: zfd.text(z.string().trim().nullish()),
 
-  BANCO: zfd.text(z.string().nullish()),
-  TIPO_DE_CUENTA: zfd.text(z.string().nullish()),
-  NUMERO_DE_CUENTA: zfd.text(z.string().nullish()),
-  TIPO_DE_DOCUMENTO: zfd.text(z.string().nullish()),
-  DOCUMENTO_DE_IDENTIDAD: zfd.text(z.string().nullish()),
+  BANCO: zfd.text(z.string().trim().nullish()),
+  TIPO_DE_CUENTA: zfd.text(z.string().trim().nullish()),
+  NUMERO_DE_CUENTA: zfd.text(z.string().trim().nullish()),
+  TIPO_DE_DOCUMENTO: zfd.text(z.string().trim().nullish()),
+  DOCUMENTO_DE_IDENTIDAD: zfd.text(z.string().trim().nullish()),
 
   SALARIO: zfd.text(
-    z.string({
-      invalid_type_error: 'Ingrese un salario',
-      required_error: 'Ingrese un salario',
-    })
+    z
+      .string({
+        invalid_type_error: 'Ingrese un salario',
+        required_error: 'Ingrese un salario',
+      })
+      .trim()
   ),
   CUPO_APROBADO: zfd.text(
-    z.string({
-      invalid_type_error: 'Ingrese un cupo aprobado',
-      required_error: 'Ingrese un cupo aprobado',
-    })
+    z
+      .string({
+        invalid_type_error: 'Ingrese un cupo aprobado',
+        required_error: 'Ingrese un cupo aprobado',
+      })
+      .trim()
   ),
   CUPO_DISPONIBLE: zfd.text(
-    z.string({
-      invalid_type_error: 'Ingrese un cupo disponible',
-      required_error: 'Ingrese un cupo disponible',
-    })
+    z
+      .string({
+        invalid_type_error: 'Ingrese un cupo disponible',
+        required_error: 'Ingrese un cupo disponible',
+      })
+      .trim()
   ),
   FECHA_DE_INGRESO: zfd.text(
     z
@@ -62,6 +77,7 @@ export const uploadEmployeeSchema = z.object({
         ISO_DATE_REGEX,
         'El formato de fecha es inválido. Debe ser año-mes-día, por ejemplo: 2023-12-25'
       )
+      .trim()
       .nullish()
   ),
   FECHA_DE_RETIRO: zfd.text(
@@ -71,9 +87,10 @@ export const uploadEmployeeSchema = z.object({
         ISO_DATE_REGEX,
         'El formato de fecha es inválido. Debe ser año-mes-día, por ejemplo: 2023-12-25'
       )
+      .trim()
       .nullish()
   ),
-  CELULAR: zfd.text(z.string().nullish()),
+  CELULAR: zfd.text(z.string().trim().nullish()),
 })
 
 export const uploadEmployeeValidator = withZod(uploadEmployeeSchema)
