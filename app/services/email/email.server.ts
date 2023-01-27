@@ -124,11 +124,10 @@ export const sendInvitation = async ({
   token,
 }: TSendLoginArgs) => {
   const templateData: TBasicTemplate = {
-    title: 'Invitación a HoyAdelantas',
+    title: '¡Bienvenido al portal de beneficios de HoyTrabajas!',
     firstLine: `Hola ${firstName},`,
-    secondLine: '¡Bienvenido a HoyAdelantas!',
-    thirdLine:
-      'Haz click en el siguiente botón para ingresar a tu cuenta y validar tus datos.',
+    secondLine: `Ahora puedes aprovechar nuestro plan de beneficios pensados para ti y tu familia. Accede a herramientas y descuentos que harán tu vida más fácil.`,
+    thirdLine: 'Solo haz click y úsalos totalmente grátis.',
     button: 'Ingresar',
     buttonHref: `${CLIENT_URL}/verify-login?token=${token}`,
   }
@@ -137,7 +136,7 @@ export const sendInvitation = async ({
     templateName: 'basic',
     info: {
       to: destination,
-      subject: '¡Has sido invitado a HoyAdelantas!',
+      subject: '¡HoyTrabajas te da la bienvenida a un mundo de beneficios!',
     },
     templateData,
   })
