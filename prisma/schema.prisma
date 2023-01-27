@@ -779,7 +779,8 @@ model BenefitSubproduct {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  name String
+  name     String
+  discount Float?
 
   benefit             Benefit              @relation(fields: [benefitId], references: [id], onUpdate: Cascade, onDelete: Cascade)
   benefitId           Int
@@ -793,7 +794,6 @@ model BenefitConsumption {
 
   consumedAt DateTime
   value      Int
-  discount   Float
 
   benefitSubproduct   BenefitSubproduct? @relation(fields: [benefitSubproductId], references: [id], onUpdate: Cascade, onDelete: SetNull)
   benefitSubproductId Int?

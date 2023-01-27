@@ -192,8 +192,6 @@ export const calculatePremiumAdvanceSpecs = async (
     ?.join('')
   const workingDays = workingDaysString ? parseFloat(workingDaysString) : 0
 
-  console.log({ workingDays, workingDaysString })
-
   const baseSalary =
     employeeData.salaryFiat + (globalSettings?.transportationAid || 0)
 

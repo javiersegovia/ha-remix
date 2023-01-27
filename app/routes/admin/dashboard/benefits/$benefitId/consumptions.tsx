@@ -1,0 +1,82 @@
+import type { LoaderFunction } from '@remix-run/server-runtime'
+import type { TableRowProps } from '~/components/Lists/Table'
+
+import { Outlet, useLoaderData } from '@remix-run/react'
+import { json } from '@remix-run/node'
+import { badRequest } from 'remix-utils'
+
+import { Button } from '~/components/Button'
+import { TitleWithActions } from '~/components/Layout/TitleWithActions'
+import { requireAdminUserId } from '~/session.server'
+
+import { getBenefitConsumptionsByBenefitId } from '~/services/benefit-consumption/benefit-consumption.server'
+import { Table } from '~/components/Lists/Table'
+import { formatDate } from '~/utils/formatDate'
+
+type LoaderData = {
+  consumptions: Awaited<ReturnType<typeof getBenefitConsumptionsByBenefitId>>
+}
+
+export const loader: LoaderFunction = async ({ request, params }) => {
+  await requireAdminUserId(request)
+
+  const { benefitId } = params
+
+  if (!benefitId) {
+    throw badRequest(null, {
+      statusText: 'No se ha encontrado el ID del beneficio',
+    })
+  }
+
+  const consumptions = await getBenefitConsumptionsByBenefitId(
+    Number(benefitId)
+  )
+
+  return json<LoaderData>({
+    consumptions,
+  })
+}
+
+export default function BenefitConsumptionIndexRoute() {
+  const { consumptions } = useLoaderData<LoaderData>()
+
+  const rows: TableRowProps[] = consumptions.map((consumption) => ({
+    key: consumption.id,
+    items: [
+      consumption.employee.user.email,
+      consumption.benefitSubproduct?.name || '-',
+      formatDate(Date.parse(consumption.consumedAt)),
+      consumption.value,
+    ],
+  }))
+
+  return (
+    <>
+      <TitleWithActions
+        title="Consumos"
+        className="my-10"
+        actions={[
+          <Button key="create-consumption" href="create">
+            Cargar consumos
+          </Button>,
+        ]}
+      />
+
+      {consumptions?.length > 0 ? (
+        <Table
+          headings={[
+            'Correo del Colaborador',
+            'Subproducto',
+            'Fecha de Consumo',
+            'Valor del Consumo',
+          ]}
+          rows={rows}
+        />
+      ) : (
+        <p>No se han registrado consumos.</p>
+      )}
+
+      <Outlet />
+    </>
+  )
+}

@@ -26,7 +26,7 @@ export const loader: LoaderFunction = async ({ request, params }) => {
   const { membershipId } = params
 
   if (!membershipId) {
-    return badRequest(null, {
+    throw badRequest(null, {
       statusText: 'No se ha encontrado el ID de la membresía',
     })
   }
@@ -34,7 +34,7 @@ export const loader: LoaderFunction = async ({ request, params }) => {
   const membership = await getMembershipById(parseFloat(membershipId))
 
   if (!membership) {
-    return notFound({
+    throw notFound({
       message: 'No se ha encontrado información sobre la membresía',
     })
   }
@@ -72,7 +72,7 @@ export const action: ActionFunction = async ({ request, params }) => {
     return redirect(`/admin/dashboard/memberships`)
   }
 
-  return badRequest(null, {
+  throw badRequest(null, {
     statusText: 'El método HTTP utilizado es inválido',
   })
 }

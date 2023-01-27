@@ -27,7 +27,7 @@ export const loader: LoaderFunction = async ({ request, params }) => {
   const { companyDebtId } = params
 
   if (!companyDebtId) {
-    return badRequest({
+    throw badRequest({
       message: 'No se ha encontrado el ID del adelanto de nómina',
     })
   }
@@ -35,7 +35,7 @@ export const loader: LoaderFunction = async ({ request, params }) => {
   const companyDebt = await getCompanyDebtById(companyDebtId)
 
   if (!companyDebt) {
-    return notFound({
+    throw notFound({
       message: 'No se ha encontrado información sobre el adelanto de nómina',
     })
   }

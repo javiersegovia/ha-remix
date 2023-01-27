@@ -1,13 +1,14 @@
 import type { LoaderFunction, MetaFunction } from '@remix-run/server-runtime'
-import { getBenefits } from '~/services/benefit/benefit.server'
-import { requireAdminUserId } from '~/session.server'
+
 import { json } from '@remix-run/node'
-import { Outlet, useLoaderData } from '@remix-run/react'
-import { Button } from '~/components/Button'
+import { useLoaderData } from '@remix-run/react'
 import { HiPlus } from 'react-icons/hi'
+import { Button } from '~/components/Button'
 import { Title } from '~/components/Typography/Title'
 import { BenefitList } from '~/components/Lists/BenefitList'
 import { Container } from '~/components/Layout/Container'
+import { getBenefits } from '~/services/benefit/benefit.server'
+import { requireAdminUserId } from '~/session.server'
 
 export type BenefitLoader = {
   benefits: Awaited<ReturnType<typeof getBenefits>>
@@ -45,8 +46,6 @@ export default function BenefitIndexRoute() {
           )}
         </>
       </Container>
-
-      <Outlet />
     </>
   )
 }

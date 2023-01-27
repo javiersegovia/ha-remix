@@ -79,6 +79,6 @@ export const action: ActionFunction = async ({ request, params }) => {
     return redirect(`/admin/dashboard/companies/${companyId}/employees`)
   } catch (e) {
     console.error(e)
-    return badRequest('Ha ocurrido un error inesperado.')
+    throw badRequest('Ha ocurrido un error inesperado.')
   }
 }

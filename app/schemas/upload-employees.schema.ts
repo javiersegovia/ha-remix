@@ -2,8 +2,7 @@ import { EmployeeStatus } from '@prisma/client'
 import { withZod } from '@remix-validated-form/with-zod'
 import { z } from 'zod'
 import { zfd } from 'zod-form-data'
-
-export const ISO_DATE_REGEX = /\d{4}-[01]\d-[0-3]\d/
+import { ISO_DATE_REGEX } from '~/utils/formatDate'
 
 export const uploadEmployeeSchema = z.object({
   CORREO_ELECTRONICO: zfd.text(

@@ -518,15 +518,6 @@ export const updateEmployeeByWelcomeForm = async (
         },
       },
     })
-
-    // const { signerToken } = await requestSignature({
-    //   fullName: `${user.firstName} ${user.lastName}`,
-    //   email: user.email,
-    //   employeeId,
-    //   phone,
-    // })
-
-    // console.log({ y: signerToken })
   } catch (err) {
     // Todo LOGGER: Log error and save to a file
     console.error(err)

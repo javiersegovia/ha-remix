@@ -13,7 +13,7 @@ type ExtendedBenefitSubproduct = BenefitSubproduct & {
 export const BenefitSubproductFactory =
   Factory.define<ExtendedBenefitSubproduct>(({ onCreate, associations }) => {
     onCreate(({ id: _, ...benefitSubproductData }) => {
-      const { name } = benefitSubproductData
+      const { name, discount } = benefitSubproductData
 
       if (!associations?.benefit) {
         throw new Error('Missing associations')
@@ -22,6 +22,7 @@ export const BenefitSubproductFactory =
       return prisma.benefitSubproduct.create({
         data: {
           name,
+          discount,
           benefit: connect(associations?.benefit?.id),
         },
         include: {
@@ -37,6 +38,7 @@ export const BenefitSubproductFactory =
       createdAt: new Date(),
       updatedAt: new Date(),
       name: faker.commerce.productName(),
+      discount: faker.datatype.number(),
       benefit,
       benefitId: benefit.id,
     }

@@ -24,7 +24,7 @@ export function BenefitList({ benefits }: BenefitListProps) {
                   <tr key={benefit.id} className="hover:bg-gray-100">
                     <TableData>
                       <Link
-                        to={`/admin/dashboard/benefits/${benefit.id}`}
+                        to={`/admin/dashboard/benefits/${benefit.id}/details`}
                         className="text-sm font-medium text-gray-900 underline hover:text-cyan-600"
                       >
                         {benefit.name}

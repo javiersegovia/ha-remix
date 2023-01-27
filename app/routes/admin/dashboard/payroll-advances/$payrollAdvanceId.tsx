@@ -25,7 +25,7 @@ export const loader: LoaderFunction = async ({ request, params }) => {
   const { payrollAdvanceId } = params
 
   if (!payrollAdvanceId) {
-    return badRequest({
+    throw notFound({
       message: 'No se ha encontrado el ID del adelanto de nómina',
     })
   }
@@ -35,7 +35,7 @@ export const loader: LoaderFunction = async ({ request, params }) => {
   )
 
   if (!payrollAdvance) {
-    return notFound({
+    throw notFound({
       message: 'No se ha encontrado información sobre el adelanto de nómina',
     })
   }

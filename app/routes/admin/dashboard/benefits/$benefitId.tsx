@@ -1,49 +1,21 @@
-import type { ActionFunction, LoaderFunction } from '@remix-run/server-runtime'
+import type { LoaderFunction } from '@remix-run/server-runtime'
+import type { TabItem } from '~/components/Tabs/Tabs'
 
-import { redirect } from '@remix-run/server-runtime'
-import { validationError } from 'remix-validated-form'
-import { benefitValidator } from '~/services/benefit/benefit.schema'
-import { Modal } from '~/components/Dialog/Modal'
-import { requireAdminUserId } from '~/session.server'
-import {
-  deleteBenefitById,
-  getBenefitById,
-  updateBenefitById,
-} from '~/services/benefit/benefit.server'
-import { BenefitForm } from '~/components/Forms/BenefitForm'
-import { badRequest, notFound } from 'remix-utils'
+import { Link, Outlet, useLoaderData } from '@remix-run/react'
 import { json } from '@remix-run/node'
-import { useLoaderData } from '@remix-run/react'
+import { badRequest } from 'remix-utils'
+import { AiOutlineArrowLeft } from 'react-icons/ai'
+
+import { requireAdminUserId } from '~/session.server'
+import { Container } from '~/components/Layout/Container'
+import { Tabs } from '~/components/Tabs/Tabs'
 
 type LoaderData = {
-  benefit: NonNullable<Awaited<ReturnType<typeof getBenefitById>>>
+  benefitId: string
 }
 
 export const loader: LoaderFunction = async ({ request, params }) => {
   await requireAdminUserId(request)
-  const { benefitId } = params
-
-  if (!benefitId) {
-    return badRequest(null, {
-      statusText: 'No se ha encontrado el ID del beneficio',
-    })
-  }
-
-  const benefit = await getBenefitById(parseFloat(benefitId))
-
-  if (!benefit) {
-    return notFound({
-      message: 'No se ha encontrado información sobre el beneficio',
-    })
-  }
-  return json<LoaderData>({
-    benefit,
-  })
-}
-
-export const action: ActionFunction = async ({ request, params }) => {
-  await requireAdminUserId(request)
-
   const { benefitId } = params
 
   if (!benefitId) {
@@ -52,50 +24,42 @@ export const action: ActionFunction = async ({ request, params }) => {
     })
   }
 
-  if (request.method === 'POST') {
-    const { data, submittedData, error } = await benefitValidator.validate(
-      await request.formData()
-    )
-
-    if (error) {
-      return validationError(error, submittedData)
-    }
-    await updateBenefitById(data, parseFloat(benefitId))
-
-    return redirect(`/admin/dashboard/benefits`)
-  } else if (request.method === 'DELETE') {
-    await deleteBenefitById(parseFloat(benefitId))
-
-    return redirect(`/admin/dashboard/benefits`)
-  }
-
-  return badRequest(null, {
-    statusText: 'El método HTTP utilizado es inválido',
+  return json<LoaderData>({
+    benefitId,
   })
 }
 
 export default function UpdateBenefitRoute() {
-  const { benefit } = useLoaderData<LoaderData>()
-  const onCloseRedirectTo = '/admin/dashboard/benefits'
+  const { benefitId } = useLoaderData<LoaderData>()
 
-  const { name, imageUrl, buttonText, buttonHref, slug, subproducts } = benefit
+  const tabItems: TabItem[] = [
+    {
+      title: 'Datos del beneficio',
+      path: `/admin/dashboard/benefits/${benefitId}/details`,
+    },
+    {
+      title: 'Subproductos',
+      path: `/admin/dashboard/benefits/${benefitId}/subproducts`,
+    },
+    {
+      title: 'Consumo',
+      path: `/admin/dashboard/benefits/${benefitId}/consumptions`,
+    },
+  ]
 
   return (
-    <Modal onCloseRedirectTo={onCloseRedirectTo}>
-      <BenefitForm
-        title="Actualizar beneficio"
-        buttonText="Guardar"
-        onCloseRedirectTo={onCloseRedirectTo}
-        showDelete
-        defaultValues={{
-          name,
-          imageUrl,
-          buttonText,
-          buttonHref,
-          slug,
-          subproducts,
-        }}
-      />
-    </Modal>
+    <Container>
+      <Link
+        to="/admin/dashboard/benefits"
+        className="ml-auto mb-10 flex gap-3 font-medium text-cyan-600"
+      >
+        <AiOutlineArrowLeft className="text-2xl" />
+        <span className="tracking-widest">Regresar</span>
+      </Link>
+
+      <Tabs items={tabItems} />
+
+      <Outlet context={benefitId} />
+    </Container>
   )
 }
