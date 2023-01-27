@@ -1,9 +1,9 @@
-import { getMonthlyOverview } from './payroll-advance.server'
 import { prisma } from '~/db.server'
 import {
   PayrollAdvancePaymentMethod,
   PayrollAdvanceStatus,
 } from '@prisma/client'
+import { getMonthlyOverview } from './payroll-advance.server'
 import { PayrollAdvanceFactory } from './payroll-advance.factory'
 
 describe('getMonthlyOverview', () => {

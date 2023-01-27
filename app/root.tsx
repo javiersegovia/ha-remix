@@ -153,7 +153,7 @@ export default function App() {
         )}
       </head>
 
-      <body className="h-full">
+      <body className="min-h-full">
         {isProd && (
           <noscript
             dangerouslySetInnerHTML={{
