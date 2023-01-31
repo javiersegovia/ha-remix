@@ -58,7 +58,7 @@ model Company {
   premiumPaymentDays    Int[]
   premiumLastRequestDay Int?   @default(25)
 
-  country          Country?              @relation(fields: [countryId], references: [id])
+  country          Country?              @relation(fields: [countryId], references: [id], onDelete: SetNull)
   countryId        Int?
   employees        Employee[]
   banks            Bank[]
@@ -70,7 +70,7 @@ model Company {
   premiumAdvances  PremiumAdvance[]
 
   benefits     Benefit[]
-  membership   Membership? @relation(fields: [membershipId], references: [id])
+  membership   Membership? @relation(fields: [membershipId], references: [id], onDelete: SetNull)
   membershipId Int?
 
   companyFiatDebts   CompanyFiatDebt[]
@@ -94,7 +94,7 @@ model CompanyDebt {
   fiatDebt   CompanyFiatDebt?
   cryptoDebt CompanyCryptoDebt?
 
-  company   Company @relation(fields: [companyId], references: [id])
+  company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
   companyId String
 }
 
@@ -106,11 +106,11 @@ model CompanyFiatDebt {
   amount        Float // Total accumulated value of the debt
   currentAmount Float // Actual value of the debt
 
-  currency      Currency     @relation(fields: [currencyId], references: [id])
+  currency      Currency     @relation(fields: [currencyId], references: [id], onDelete: Restrict)
   currencyId    Int
   companyDebt   CompanyDebt? @relation(fields: [companyDebtId], references: [id], onDelete: Cascade)
   companyDebtId String?      @unique
-  company       Company      @relation(fields: [companyId], references: [id])
+  company       Company      @relation(fields: [companyId], references: [id], onDelete: Cascade)
   companyId     String
 
   payrollAdvances PayrollAdvance[]
@@ -124,11 +124,11 @@ model CompanyCryptoDebt {
   amount        Float // Total accumulated value of the debt
   currentAmount Float // Actual value of the debt
 
-  cryptocurrency   Cryptocurrency @relation(fields: [cryptocurrencyId], references: [id])
+  cryptocurrency   Cryptocurrency @relation(fields: [cryptocurrencyId], references: [id], onDelete: Restrict)
   cryptocurrencyId Int
   companyDebt      CompanyDebt?   @relation(fields: [companyDebtId], references: [id], onDelete: Cascade)
   companyDebtId    String?        @unique
-  company          Company        @relation(fields: [companyId], references: [id])
+  company          Company        @relation(fields: [companyId], references: [id], onDelete: Cascade)
   companyId        String
 
   payrollAdvances PayrollAdvance[]
@@ -184,9 +184,9 @@ model Employee {
   salaryCrypto                 Float?
   advanceCryptoMaxAmount       Float?          @default(0)
   advanceCryptoAvailableAmount Float?          @default(0)
-  cryptocurrency               Cryptocurrency? @relation(fields: [cryptocurrencyId], references: [id])
+  cryptocurrency               Cryptocurrency? @relation(fields: [cryptocurrencyId], references: [id], onDelete: SetNull)
   cryptocurrencyId             Int?
-  wallet                       Wallet?         @relation(fields: [walletId], references: [id])
+  wallet                       Wallet?         @relation(fields: [walletId], references: [id], onDelete: SetNull)
   walletId                     String?         @unique
 
   numberOfChildren Int     @default(0)
@@ -197,22 +197,22 @@ model Employee {
   companyId       String
   user            User           @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId          String         @unique
-  bankAccount     BankAccount?   @relation(fields: [bankAccountId], references: [id])
+  bankAccount     BankAccount?   @relation(fields: [bankAccountId], references: [id], onDelete: SetNull)
   bankAccountId   String?        @unique
-  gender          Gender?        @relation(fields: [genderId], references: [id])
+  gender          Gender?        @relation(fields: [genderId], references: [id], onDelete: SetNull)
   genderId        Int?
-  jobDepartment   JobDepartment? @relation(fields: [jobDepartmentId], references: [id])
+  jobDepartment   JobDepartment? @relation(fields: [jobDepartmentId], references: [id], onDelete: SetNull)
   jobDepartmentId Int?
-  jobPosition     JobPosition?   @relation(fields: [jobPositionId], references: [id])
+  jobPosition     JobPosition?   @relation(fields: [jobPositionId], references: [id], onDelete: SetNull)
   jobPositionId   Int?
-  membership      Membership?    @relation(fields: [membershipId], references: [id])
+  membership      Membership?    @relation(fields: [membershipId], references: [id], onDelete: SetNull)
   membershipId    Int?
 
-  country   Country? @relation(fields: [countryId], references: [id])
+  country   Country? @relation(fields: [countryId], references: [id], onDelete: SetNull)
   countryId Int?
-  state     State?   @relation(fields: [stateId], references: [id])
+  state     State?   @relation(fields: [stateId], references: [id], onDelete: SetNull)
   stateId   Int?
-  city      City?    @relation(fields: [cityId], references: [id])
+  city      City?    @relation(fields: [cityId], references: [id], onDelete: SetNull)
   cityId    Int?
 
   zapsignDocuments ZapsignDocument[]
@@ -340,7 +340,7 @@ model Bank {
   name String
 
   fee          BankFee?
-  country      Country?      @relation(fields: [countryId], references: [id])
+  country      Country?      @relation(fields: [countryId], references: [id], onDelete: SetNull)
   countryId    Int?
   bankAccounts BankAccount[]
   companies    Company[]
@@ -367,11 +367,11 @@ model BankAccount {
 
   accountNumber String
 
-  accountType        BankAccountType  @relation(fields: [accountTypeId], references: [id])
+  accountType        BankAccountType  @relation(fields: [accountTypeId], references: [id], onDelete: Restrict)
   accountTypeId      Int
-  bank               Bank             @relation(fields: [bankId], references: [id])
+  bank               Bank             @relation(fields: [bankId], references: [id], onDelete: Restrict)
   bankId             Int
-  identityDocument   IdentityDocument @relation(fields: [identityDocumentId], references: [id])
+  identityDocument   IdentityDocument @relation(fields: [identityDocumentId], references: [id], onDelete: Restrict)
   identityDocumentId Int              @unique
   employee           Employee?
 }
@@ -490,17 +490,17 @@ model PayrollAdvance {
   bankAccountData PayrollAdvanceBankAccount?
   walletData      PayrollAdvanceWallet?
 
-  requestReason            RequestReason? @relation(fields: [requestReasonId], references: [id])
+  requestReason            RequestReason? @relation(fields: [requestReasonId], references: [id], onDelete: SetNull)
   requestReasonId          Int?
   requestReasonDescription String?
 
-  employee            Employee?          @relation(fields: [employeeId], references: [id])
+  employee            Employee?          @relation(fields: [employeeId], references: [id], onDelete: SetNull)
   employeeId          String?
   company             Company            @relation(fields: [companyId], references: [id], onDelete: Cascade)
   companyId           String
-  companyCryptoDebt   CompanyCryptoDebt? @relation(fields: [companyCryptoDebtId], references: [id])
+  companyCryptoDebt   CompanyCryptoDebt? @relation(fields: [companyCryptoDebtId], references: [id], onDelete: SetNull)
   companyCryptoDebtId String?
-  companyFiatDebt     CompanyFiatDebt?   @relation(fields: [companyFiatDebtId], references: [id])
+  companyFiatDebt     CompanyFiatDebt?   @relation(fields: [companyFiatDebtId], references: [id], onDelete: SetNull)
   companyFiatDebtId   String?
 }
 
@@ -527,9 +527,9 @@ model PayrollAdvanceHistory {
 
   payrollAdvance   PayrollAdvance @relation(fields: [payrollAdvanceId], references: [id], onDelete: Cascade)
   payrollAdvanceId Int
-  employee         Employee?      @relation(fields: [employeeId], references: [id])
+  employee         Employee?      @relation(fields: [employeeId], references: [id], onDelete: SetNull)
   employeeId       String?
-  adminUser        AdminUser?     @relation(fields: [adminUserId], references: [id])
+  adminUser        AdminUser?     @relation(fields: [adminUserId], references: [id], onDelete: SetNull)
   adminUserId      String?
 }
 
@@ -543,7 +543,7 @@ model PayrollAdvanceTransfer {
 
   payrollAdvance   PayrollAdvance @relation(fields: [payrollAdvanceId], references: [id], onDelete: Cascade)
   payrollAdvanceId Int
-  adminUser        AdminUser      @relation(fields: [adminUserId], references: [id])
+  adminUser        AdminUser      @relation(fields: [adminUserId], references: [id], onDelete: Restrict)
   adminUserId      String
 }
 
@@ -642,7 +642,7 @@ model ZapsignDocument {
   signerToken    String
   documentStatus ZapsignDocumentStatus @default(pending)
 
-  employee   Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  employee   Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
   employeeId String
 }
 
@@ -665,21 +665,21 @@ model PremiumAdvance {
   startDate DateTime?
   endDate   DateTime?
 
-  requestedAmount Float?
-  totalAmount     Float?
+  requestedAmount          Float?
+  totalAmount              Float?
+  requestReasonDescription String?
 
   bankAccountData PremiumAdvanceBankAccount?
   history         PremiumAdvanceHistory[]
   taxes           PremiumAdvanceTax[]
 
-  employee   Employee? @relation(fields: [employeeId], references: [id])
+  employee   Employee? @relation(fields: [employeeId], references: [id], onDelete: SetNull)
   employeeId String?
   company    Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
   companyId  String
 
-  requestReason            RequestReason? @relation(fields: [requestReasonId], references: [id])
-  requestReasonId          Int?
-  requestReasonDescription String?
+  requestReason   RequestReason? @relation(fields: [requestReasonId], references: [id], onDelete: SetNull)
+  requestReasonId Int?
 }
 
 enum PremiumAdvanceStatus {
@@ -700,9 +700,9 @@ model PremiumAdvanceHistory {
 
   premiumAdvance   PremiumAdvance @relation(fields: [premiumAdvanceId], references: [id], onDelete: Cascade)
   premiumAdvanceId String
-  employee         Employee?      @relation(fields: [employeeId], references: [id])
+  employee         Employee?      @relation(fields: [employeeId], references: [id], onDelete: SetNull)
   employeeId       String?
-  adminUser        AdminUser?     @relation(fields: [adminUserId], references: [id])
+  adminUser        AdminUser?     @relation(fields: [adminUserId], references: [id], onDelete: SetNull)
   adminUserId      String?
 }
 
@@ -768,7 +768,7 @@ model Benefit {
   buttonText String?
   buttonHref String?
 
-  benefitCategory   BenefitCategory? @relation(fields: benefitCategoryId, references: id, onUpdate: Cascade, onDelete: SetNull)
+  benefitCategory   BenefitCategory? @relation(fields: benefitCategoryId, references: id, onDelete: SetNull)
   benefitCategoryId Int?
 
   companies    Company[]
@@ -785,7 +785,7 @@ model BenefitSubproduct {
   name     String
   discount Float?
 
-  benefit             Benefit              @relation(fields: [benefitId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  benefit             Benefit              @relation(fields: [benefitId], references: [id], onDelete: Cascade)
   benefitId           Int
   benefitConsumptions BenefitConsumption[]
 }
@@ -798,12 +798,12 @@ model BenefitConsumption {
   consumedAt DateTime
   value      Int
 
-  benefitSubproduct   BenefitSubproduct? @relation(fields: [benefitSubproductId], references: [id], onUpdate: Cascade, onDelete: SetNull)
+  benefitSubproduct   BenefitSubproduct? @relation(fields: [benefitSubproductId], references: [id], onDelete: SetNull)
   benefitSubproductId Int?
 
-  benefit    Benefit  @relation(fields: [benefitId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  benefit    Benefit  @relation(fields: [benefitId], references: [id], onDelete: Cascade)
   benefitId  Int
-  employee   Employee @relation(fields: [employeeId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  employee   Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
   employeeId String
 }
 
