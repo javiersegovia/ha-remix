@@ -3,7 +3,7 @@ import { BankAccountTypeFactory } from './bank-account-type.factory'
 import * as bankAccountTypeService from './bank-account-type.server'
 
 describe('getBankAccountTypes', () => {
-  test('should return an array of bankAccountTypes', async () => {
+  it('returns an array of bankAccountTypes', async () => {
     const bankAccountTypes = BankAccountTypeFactory.buildList(3)
 
     vi.spyOn(prisma.bankAccountType, 'findMany').mockResolvedValueOnce(

@@ -21,7 +21,7 @@ beforeEach(async () => {
 })
 
 describe('DATASTUDIO Employee_PayrollAdvances Query', () => {
-  test('should return a list of employees and their payroll advances', async () => {
+  it('returns a list of employees and their payroll advances', async () => {
     const createCountry = prisma.country.create({
       data: {
         name: 'Venezuela',

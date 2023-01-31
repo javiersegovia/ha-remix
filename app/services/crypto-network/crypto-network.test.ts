@@ -7,7 +7,7 @@ afterAll(async () => {
 })
 
 describe('getCurrencies', () => {
-  test('should return an array of currencies', async () => {
+  it('returns an array of currencies', async () => {
     const cryptoNetworks = CryptoNetworkFactory.buildList(3)
     vi.spyOn(prisma.cryptoNetwork, 'findMany').mockResolvedValue(cryptoNetworks)
     expect(await getCryptoNetworks()).toEqual(cryptoNetworks)

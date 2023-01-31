@@ -87,7 +87,7 @@ const createBenefitsAndMemberships = async () => {
 }
 
 describe('LOADER /dashboard/overview', () => {
-  test('should return user and gender data', async () => {
+  it('returns user and gender data', async () => {
     const employee = await createMockEmployee()
     const response: Response = await dashboardOverviewLoader({
       request: new Request(`http://localhost:3000/dashboard/overview`),
@@ -98,21 +98,21 @@ describe('LOADER /dashboard/overview', () => {
 
     const data = await response.json()
 
-    expect(data).toMatchObject<DashboardIndexLoaderData>({
+    expect(data).toEqual<DashboardIndexLoaderData>({
       gender: null,
       user: {
         firstName: employee.user.firstName,
       },
       benefits: [],
       company: {
+        benefits: [],
         name: employee.company.name,
       },
     })
   })
 
-  test(`When the company has both "Lite" and "Premium" benefits
-        When the employee has a "Lite" membership
-        Should return only the "Lite" benefits that belong to the company`, async () => {
+  test(`if the company has both "Lite" and "Premium" benefits && the Employee has a "Lite" membership
+        return only the "Lite" benefits that belong to the company`, async () => {
     const employee = await createMockEmployee()
 
     const { benefitLite_1, benefitPremium_1, membershipLite } =
@@ -151,7 +151,7 @@ describe('LOADER /dashboard/overview', () => {
 
     const data = await response.json()
 
-    expect(data.benefits).toMatchObject<DashboardIndexLoaderData['benefits']>([
+    expect(data.benefits).toEqual<DashboardIndexLoaderData['benefits']>([
       {
         id: benefitLite_1.id,
         createdAt: expect.any(String),
@@ -161,13 +161,13 @@ describe('LOADER /dashboard/overview', () => {
         buttonText: benefitLite_1.buttonText,
         imageUrl: benefitLite_1.imageUrl,
         slug: benefitLite_1.slug,
+        benefitCategoryId: null,
       },
     ])
   })
 
-  test(`When the company has both "Lite" and "Premium" benefits
-        When the employee has a "Premium" membership
-        Should return only the "Lite" and "Premium" benefits that belong to the company`, async () => {
+  test(`if the company has both "Lite" and "Premium" benefits, and the employee has a "Premium" membership,
+        returns only the "Lite" and "Premium" benefits that belong to the company`, async () => {
     const employee = await createMockEmployee()
 
     const { benefitLite_2, benefitPremium_2, membershipPremium } =
@@ -204,7 +204,7 @@ describe('LOADER /dashboard/overview', () => {
 
     const data = await response.json()
 
-    expect(data.benefits).toMatchObject<DashboardIndexLoaderData['benefits']>([
+    expect(data.benefits).toEqual<DashboardIndexLoaderData['benefits']>([
       {
         id: benefitLite_2.id,
         createdAt: expect.any(String),
@@ -214,6 +214,7 @@ describe('LOADER /dashboard/overview', () => {
         buttonText: benefitLite_2.buttonText,
         imageUrl: benefitLite_2.imageUrl,
         slug: benefitLite_2.slug,
+        benefitCategoryId: null,
       },
       {
         id: benefitPremium_2.id,
@@ -224,6 +225,7 @@ describe('LOADER /dashboard/overview', () => {
         buttonText: benefitPremium_2.buttonText,
         imageUrl: benefitPremium_2.imageUrl,
         slug: benefitPremium_2.slug,
+        benefitCategoryId: null,
       },
     ])
   })

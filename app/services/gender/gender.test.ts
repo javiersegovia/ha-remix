@@ -7,7 +7,7 @@ afterAll(async () => {
 })
 
 describe('getGenders', () => {
-  test('should return an array of genders', async () => {
+  it('returns an array of genders', async () => {
     const genders = GenderFactory.buildList(3)
     vi.spyOn(prisma.gender, 'findMany').mockResolvedValue(genders)
     expect(await getGenders()).toEqual(genders)

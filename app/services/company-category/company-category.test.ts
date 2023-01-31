@@ -7,7 +7,7 @@ afterAll(() => {
 })
 
 describe('getCompanyCategories', () => {
-  test('should return an array of companyCategories', async () => {
+  it('returns an array of companyCategories', async () => {
     const companyCategories = CompanyCategoryFactory.buildList(3)
 
     vi.spyOn(prisma.companyCategory, 'findMany').mockResolvedValueOnce(

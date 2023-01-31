@@ -7,7 +7,7 @@ afterAll(() => {
 })
 
 describe('getCitiesByStateId', () => {
-  test('should return an array of cities', async () => {
+  it('returs an array of cities', async () => {
     const cities = CityFactory.buildList(3)
     vi.spyOn(prisma.city, 'findMany').mockResolvedValueOnce(cities)
     const result = await cityService.getCitiesByStateId(1)

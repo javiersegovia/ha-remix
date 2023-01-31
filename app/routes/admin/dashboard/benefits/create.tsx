@@ -3,10 +3,13 @@ import type { ActionFunction } from '@remix-run/server-runtime'
 import { redirect } from '@remix-run/server-runtime'
 import { validationError } from 'remix-validated-form'
 import { benefitValidator } from '~/services/benefit/benefit.schema'
-import { Modal } from '~/components/Dialog/Modal'
 import { requireAdminUserId } from '~/session.server'
 import { createBenefit } from '~/services/benefit/benefit.server'
 import { BenefitForm } from '~/components/Forms/BenefitForm'
+import { Container } from '~/components/Layout/Container'
+import { Link } from '@remix-run/react'
+import { AiOutlineArrowLeft } from 'react-icons/ai'
+import { Title } from '~/components/Typography/Title'
 
 export const action: ActionFunction = async ({ request }) => {
   await requireAdminUserId(request)
@@ -27,14 +30,19 @@ export const action: ActionFunction = async ({ request }) => {
 }
 
 export default function CreateBenefitRoute() {
-  const onCloseRedirectTo = '/admin/dashboard/benefits'
   return (
-    <Modal onCloseRedirectTo={onCloseRedirectTo}>
-      <BenefitForm
-        title="Crear beneficio"
-        buttonText="Crear"
-        onCloseRedirectTo={onCloseRedirectTo}
-      />
-    </Modal>
+    <Container>
+      <Link
+        to="/admin/dashboard/benefits"
+        className="ml-auto mb-10 flex gap-3 font-medium text-cyan-600"
+      >
+        <AiOutlineArrowLeft className="text-2xl" />
+        <span className="tracking-widest">Regresar</span>
+      </Link>
+
+      <Title className="mb-10">Crear beneficio</Title>
+
+      <BenefitForm buttonText="Crear" />
+    </Container>
   )
 }

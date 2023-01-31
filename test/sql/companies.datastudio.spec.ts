@@ -10,7 +10,7 @@ beforeEach(async () => {
 })
 
 describe('DATASTUDIO Companies Query', () => {
-  test('should return a list of companies', async () => {
+  it('returns a list of companies', async () => {
     const country = await prisma.country.create({
       data: {
         name: 'Venezuela',

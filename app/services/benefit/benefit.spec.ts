@@ -9,7 +9,7 @@ beforeEach(async () => {
 })
 
 describe('getBenefits', () => {
-  test('should return an array of benefits', async () => {
+  it('returns an array of benefits', async () => {
     const expectedBenefits = (await BenefitFactory.createList(3))
       .map((benefit) => ({
         id: benefit.id,
@@ -23,7 +23,7 @@ describe('getBenefits', () => {
 })
 
 describe('getBenefitById', () => {
-  test('should return a benefit', async () => {
+  it('returns a benefit', async () => {
     const existingBenefit = await BenefitFactory.create()
     const existingBenefitSubproduct = await BenefitSubproductFactory.create(
       undefined,
@@ -55,7 +55,7 @@ describe('getBenefitById', () => {
 })
 
 describe('createBenefit', () => {
-  test('should create a benefit and return it', async () => {
+  it('creates a benefit and returns it', async () => {
     const data = {
       name: 'Insurance',
     }
@@ -72,7 +72,7 @@ describe('createBenefit', () => {
 })
 
 describe('updateBenefitById', () => {
-  test('should update a benefit and return it', async () => {
+  it('updates a benefit and returns it', async () => {
     const existingBenefit = await BenefitFactory.create()
 
     const data = {
@@ -91,7 +91,7 @@ describe('updateBenefitById', () => {
 })
 
 describe('deleteBenefitById', () => {
-  test('should delete a benefit and return the id', async () => {
+  it('deletes a benefit and return the id', async () => {
     const existingBenefit = await BenefitFactory.create()
 
     const result = await benefitService.deleteBenefitById(existingBenefit.id)
@@ -101,7 +101,8 @@ describe('deleteBenefitById', () => {
       await prisma.benefit.findFirst({ where: { id: existingBenefit.id } })
     ).toEqual(null)
   })
-  test('should delete the benefitSubproducts too', async () => {
+
+  it('deletes the benefitSubproducts', async () => {
     const existingBenefit = await BenefitFactory.create()
 
     await BenefitSubproductFactory.createList(3, undefined, {

@@ -7,7 +7,7 @@ afterAll(() => {
 })
 
 describe('getStatesByCountryId', () => {
-  test('should return a list of states', async () => {
+  it('returns a list of states', async () => {
     const states = StateFactory.buildList(3)
     vi.spyOn(prisma.state, 'findMany').mockResolvedValueOnce(states)
     const result = await stateService.getStatesByCountryId(1)

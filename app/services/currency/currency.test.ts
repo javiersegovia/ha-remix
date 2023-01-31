@@ -7,7 +7,7 @@ afterAll(async () => {
 })
 
 describe('getCurrencies', () => {
-  test('should return an array of currencies', async () => {
+  it('returns an array of currencies', async () => {
     const currencies = CurrencyFactory.buildList(3)
     vi.spyOn(prisma.currency, 'findMany').mockResolvedValue(currencies)
     expect(await getCurrencies()).toEqual(currencies)

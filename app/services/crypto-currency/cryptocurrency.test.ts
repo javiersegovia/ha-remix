@@ -7,7 +7,7 @@ afterAll(async () => {
 })
 
 describe('getCryptocurrencies', () => {
-  test('should return an array of cryptocurrencies', async () => {
+  it('returns an array of cryptocurrencies', async () => {
     const cryptocurrencies = CryptocurrencyFactory.buildList(3)
 
     vi.spyOn(prisma.cryptocurrency, 'findMany').mockResolvedValue(

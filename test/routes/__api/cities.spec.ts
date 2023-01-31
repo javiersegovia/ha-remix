@@ -7,7 +7,7 @@ beforeEach(async () => {
 })
 
 describe('LOADER /__api/cities', () => {
-  test('should return an array of cities', async () => {
+  it('returns an array of cities', async () => {
     const country = await prisma.country.create({
       data: {
         name: 'My country',
@@ -43,7 +43,7 @@ describe('LOADER /__api/cities', () => {
     })
 
     expect(response.status).toEqual(200)
-    expect(await response.json()).toMatchObject({
+    expect(await response.json()).toEqual({
       cities: [
         { id: expect.any(Number), name: 'A_City_2' },
         { id: expect.any(Number), name: 'B_City_1' },
@@ -51,7 +51,7 @@ describe('LOADER /__api/cities', () => {
     })
   })
 
-  test('should return an empty array if the stateId is not defined', async () => {
+  it('returns an empty array if the stateId is not defined', async () => {
     const response: Response = await cityLoader({
       request: new Request(`http://localhost:3000/cities`),
       params: {},
@@ -59,7 +59,7 @@ describe('LOADER /__api/cities', () => {
     })
 
     expect(response.status).toEqual(200)
-    expect(await response.json()).toMatchObject({
+    expect(await response.json()).toEqual({
       cities: [],
     })
   })

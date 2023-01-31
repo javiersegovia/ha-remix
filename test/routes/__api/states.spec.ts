@@ -9,7 +9,7 @@ beforeEach(async () => {
 // todo: the tests are slow, check how to mock DB in order to make them faster
 
 describe('LOADER /__api/states', () => {
-  test('should return an array of states', async () => {
+  it('returns an array of states', async () => {
     const country = await prisma.country.create({
       data: {
         name: 'My country',
@@ -39,7 +39,7 @@ describe('LOADER /__api/states', () => {
     })
 
     expect(response.status).toEqual(200)
-    expect(await response.json()).toMatchObject({
+    expect(await response.json()).toEqual({
       states: [
         { id: expect.any(Number), name: 'Amazonas' },
         { id: expect.any(Number), name: 'Zaragoza' },
@@ -47,7 +47,7 @@ describe('LOADER /__api/states', () => {
     })
   })
 
-  test('should return an empty array if the stateId is not defined', async () => {
+  it('returns an empty array if the stateId is not defined', async () => {
     const response: Response = await stateLoader({
       request: new Request(`http://localhost:3000/states`),
       params: {},
@@ -55,7 +55,7 @@ describe('LOADER /__api/states', () => {
     })
 
     expect(response.status).toEqual(200)
-    expect(await response.json()).toMatchObject({
+    expect(await response.json()).toEqual({
       states: [],
     })
   })

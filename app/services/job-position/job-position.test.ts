@@ -9,7 +9,7 @@ afterAll(() => {
 })
 
 describe('getJobPositions', () => {
-  test('should return an array of jobPositions', async () => {
+  it('returns an array of jobPositions', async () => {
     const jobPositions = JobPositionFactory.buildList(3)
     vi.spyOn(prisma.jobPosition, 'findMany').mockResolvedValueOnce(jobPositions)
     const result = await jobPositionService.getJobPositions()

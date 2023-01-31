@@ -3,7 +3,7 @@ import { IdentityDocumentTypeFactory } from './identity-document-type.factory'
 import * as identityDocumentTypeService from './identity-document-type.server'
 
 describe('getIdentityDocumentTypes', () => {
-  test('should return an array of identityDocumentTypes', async () => {
+  it('returns an array of identityDocumentTypes', async () => {
     const identityDocumentTypes = IdentityDocumentTypeFactory.buildList(3)
 
     vi.spyOn(prisma.identityDocumentType, 'findMany').mockResolvedValueOnce(

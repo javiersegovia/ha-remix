@@ -9,37 +9,37 @@ beforeEach(() => {
 })
 
 describe('getBenefits', () => {
-  test('should return an array of benefits', async () => {
+  it('returns an array of benefits', async () => {
     const expectedBenefits = BenefitFactory.buildList(3)
     vi.spyOn(prisma.benefit, 'findMany').mockResolvedValueOnce(expectedBenefits)
     const result = await benefitService.getBenefits()
-    expect(result).toMatchObject<Benefit[]>(expectedBenefits)
+    expect(result).toEqual<Benefit[]>(expectedBenefits)
   })
 })
 
 describe('getBenefitById', () => {
-  test('should return a benefit', async () => {
+  it('returns a benefit', async () => {
     const expectedBenefit = BenefitFactory.build()
     vi.spyOn(prisma.benefit, 'findFirst').mockResolvedValueOnce(expectedBenefit)
     const result = await benefitService.getBenefitById(expectedBenefit.id)
-    expect(result).toMatchObject<Benefit>(expectedBenefit)
+    expect(result).toEqual<Benefit>(expectedBenefit)
   })
 })
 
 describe('createBenefit', () => {
-  test('should create and return a benefit', async () => {
+  it('returns a created benefit', async () => {
     const expectedBenefit = BenefitFactory.build()
     vi.spyOn(prisma.benefit, 'create').mockResolvedValueOnce(expectedBenefit)
 
     const result = await benefitService.createBenefit({
       name: expectedBenefit.name,
     })
-    expect(result).toMatchObject<Benefit>(expectedBenefit)
+    expect(result).toEqual<Benefit>(expectedBenefit)
   })
 })
 
 describe('updateBenefitById', () => {
-  test('should update and return a benefit', async () => {
+  it('returns an updated benefit', async () => {
     const existingBenefit = BenefitFactory.build()
     const expectedBenefit = BenefitFactory.build()
 
@@ -63,7 +63,7 @@ describe('updateBenefitById', () => {
 })
 
 describe('deleteBenefitById', () => {
-  test('should return the benefit', async () => {
+  it('returns a deleted benefit id', async () => {
     const deletedBenefit = BenefitFactory.build()
     vi.spyOn(prisma.benefit, 'delete').mockResolvedValueOnce(deletedBenefit)
     const result = await benefitService.deleteBenefitById(deletedBenefit.id)

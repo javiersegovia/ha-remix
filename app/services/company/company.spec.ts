@@ -1,3 +1,4 @@
+import type { CompanyContactPerson } from '@prisma/client'
 import { CompanyStatus } from '@prisma/client'
 import { truncateDB } from 'test/helpers/truncateDB'
 
@@ -15,7 +16,7 @@ beforeEach(async () => {
 })
 
 describe('createCompany', () => {
-  test('should create a company with relationships', async () => {
+  it('creates a company with relationships', async () => {
     const contactPerson = {
       firstName: 'Luke',
       lastName: 'Skywalker',
@@ -50,19 +51,26 @@ describe('createCompany', () => {
       },
     })
 
-    expect(response).toMatchObject<
+    expect(response).toEqual<
       Awaited<ReturnType<typeof companyService.createCompany>>
     >({ company: { id: expect.any(String) } })
 
     expect(createdCompany?.categories).toHaveLength(2)
     expect(createdCompany?.benefits).toHaveLength(3)
-    expect(createdCompany?.country).toMatchObject(country)
-    expect(createdCompany?.contactPerson).toMatchObject(contactPerson)
+    expect(createdCompany?.country).toEqual(country)
+
+    expect(createdCompany?.contactPerson).toEqual<CompanyContactPerson>({
+      ...contactPerson,
+      id: expect.any(String),
+      companyId: createdCompany?.id!,
+      createdAt: expect.any(Date),
+      updatedAt: expect.any(Date),
+    })
   })
 })
 
 describe('updateCompanyById', () => {
-  test('should update a company with relationships', async () => {
+  it('updates a company with relationships', async () => {
     const contactPerson = {
       firstName: 'Luke',
       lastName: 'Skywalker',
@@ -107,7 +115,7 @@ describe('updateCompanyById', () => {
       updateData
     )
 
-    expect(response).toMatchObject<
+    expect(response).toEqual<
       Awaited<ReturnType<typeof companyService.updateCompanyById>>
     >({ company: { id: company.id } })
 
@@ -122,10 +130,17 @@ describe('updateCompanyById', () => {
     })
 
     expect(createdCompany?.categories).toHaveLength(0)
-    expect(createdCompany?.benefits).toMatchObject(
+    expect(createdCompany?.benefits).toEqual(
       newBenefits.sort((a, b) => a.name.localeCompare(b.name))
     )
-    expect(createdCompany?.country).toMatchObject(country[1])
-    expect(createdCompany?.contactPerson).toMatchObject(contactPerson)
+    expect(createdCompany?.country).toEqual(country[1])
+
+    expect(createdCompany?.contactPerson).toEqual<CompanyContactPerson>({
+      ...contactPerson,
+      id: expect.any(String),
+      companyId: company.id,
+      createdAt: expect.any(Date),
+      updatedAt: expect.any(Date),
+    })
   })
 })

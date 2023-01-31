@@ -13,7 +13,7 @@ afterAll(async () => {
 })
 
 describe('AdminDashboardDataIndexRoute Loader', () => {
-  test('should return an object with the correct keys', async () => {
+  it('returns an object with the correct keys', async () => {
     vi.spyOn(prisma.bank, 'count').mockResolvedValue(3)
     vi.spyOn(prisma.jobPosition, 'count').mockResolvedValue(5)
     vi.spyOn(prisma.jobDepartment, 'count').mockResolvedValue(4)

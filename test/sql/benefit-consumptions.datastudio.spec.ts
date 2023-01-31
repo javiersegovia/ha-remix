@@ -13,7 +13,7 @@ beforeEach(async () => {
 })
 
 describe('DATASTUDIO - BenefitConsumptions', () => {
-  test('should return a list of benefit consumptions', async () => {
+  it('returns a list of benefit consumptions', async () => {
     const [company1, company2] = await CompanyFactory.createList(2)
     const employee1 = await EmployeeFactory.create(undefined, {
       associations: {

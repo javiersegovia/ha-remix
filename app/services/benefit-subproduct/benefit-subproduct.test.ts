@@ -12,7 +12,7 @@ beforeEach(() => {
 })
 
 describe('getBenefitSubproductsByBenefitId', () => {
-  test('should return an array of BenefitSubproducts', async () => {
+  it('returns an array of BenefitSubproducts', async () => {
     const expectedBenefitSubproducts = BenefitSubproductFactory.buildList(3)
 
     vi.spyOn(prisma.benefitSubproduct, 'findMany').mockResolvedValueOnce(
@@ -24,7 +24,7 @@ describe('getBenefitSubproductsByBenefitId', () => {
 })
 
 describe('getBenefitSubproductById', () => {
-  test('should return a BenefitSubproduct', async () => {
+  it('returns a BenefitSubproduct', async () => {
     const expectedBenefitSubproduct = BenefitSubproductFactory.build()
 
     vi.spyOn(prisma.benefitSubproduct, 'findUnique').mockResolvedValueOnce(

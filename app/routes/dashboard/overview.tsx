@@ -1,4 +1,4 @@
-import type { Company, Gender, User } from '@prisma/client'
+import type { Gender, User } from '@prisma/client'
 import type { LoaderFunction } from '@remix-run/server-runtime'
 
 import { Outlet, useLoaderData } from '@remix-run/react'
@@ -15,12 +15,11 @@ export type DashboardIndexLoaderData = {
   gender: Pick<Gender, 'name'> | null
   user: Pick<User, 'firstName'>
   benefits: Awaited<ReturnType<typeof prisma.benefit.findMany>>
-  company: Pick<Company, 'name'>
+  company: NonNullable<Awaited<ReturnType<typeof getEmployeeData>>>['company']
 }
 
-export const loader: LoaderFunction = async ({ request, context: ctx }) => {
-  const userId = await requireUserId(request)
-  const employeeData = await prisma.employee.findFirst({
+const getEmployeeData = (userId: string) => {
+  return prisma.employee.findFirst({
     where: {
       user: {
         id: userId,
@@ -44,6 +43,12 @@ export const loader: LoaderFunction = async ({ request, context: ctx }) => {
       user: { select: { firstName: true } },
     },
   })
+}
+
+export const loader: LoaderFunction = async ({ request, context: ctx }) => {
+  const userId = await requireUserId(request)
+
+  const employeeData = await getEmployeeData(userId)
 
   const benefits = await getEmployeeEnabledBenefits(
     employeeData?.membership?.benefits,

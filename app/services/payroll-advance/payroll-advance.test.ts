@@ -11,7 +11,7 @@ describe('getMonthlyOverview', () => {
     vi.restoreAllMocks()
   })
 
-  test('it should return the correct overview and request days for a given month', async () => {
+  it('returns the correct overview and request days for a given month', async () => {
     const mockPayrollAdvances = [
       PayrollAdvanceFactory.build({
         createdAt: new Date(2022, 1, 1),
@@ -85,7 +85,7 @@ describe('getMonthlyOverview', () => {
     })
   })
 
-  test('it should handle an empty response from the database', async () => {
+  it('handles an empty response from the database', async () => {
     // Configure the mock function to return an empty array
     vi.spyOn(prisma.payrollAdvance, 'findMany').mockResolvedValue([])
 
@@ -105,7 +105,7 @@ describe('getMonthlyOverview', () => {
     expect(requestDays).toHaveLength(0)
   })
 
-  test('it should handle invalid date input', async () => {
+  it('handles invalid date input', async () => {
     // Configure the mock function to return an empty array
     vi.spyOn(prisma.payrollAdvance, 'findMany').mockResolvedValue([])
 

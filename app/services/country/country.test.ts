@@ -7,7 +7,7 @@ afterAll(async () => {
 })
 
 describe('getCountries', () => {
-  test('should return an array of countries', async () => {
+  it('returns an array of countries', async () => {
     const countries = CountryFactory.buildList(3)
     vi.spyOn(prisma.country, 'findMany').mockResolvedValue(countries)
     expect(await getCountries()).toEqual(countries)

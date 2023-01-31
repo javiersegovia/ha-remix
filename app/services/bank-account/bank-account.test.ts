@@ -1,7 +1,7 @@
 import * as bankAccountService from './bank-account.server'
 
 describe('validateBankAccount', () => {
-  test('should return undefined if all the values are empty', () => {
+  test('if all values are falsy, it returns undefined', () => {
     const data = {
       bankId: undefined,
       accountNumber: undefined,
@@ -14,7 +14,7 @@ describe('validateBankAccount', () => {
     expect(result).toEqual(undefined)
   })
 
-  test('should return undefined if all the values are truthy', () => {
+  test('if all the values are truthy, it returns undefined', () => {
     const data = {
       bankId: 1,
       accountNumber: '123123',
@@ -29,7 +29,7 @@ describe('validateBankAccount', () => {
     expect(result).toEqual(undefined)
   })
 
-  test('should return a validation error if some values are present but only one value is missing', async () => {
+  test('if some value is present and some value is missing, it returns a validation error', async () => {
     const data = {
       bankId: undefined,
       accountNumber: '123123',
@@ -49,7 +49,7 @@ describe('validateBankAccount', () => {
     })
   })
 
-  test('should return a validation error if some values are present and multiple values are missing', async () => {
+  test('if some values are present and multiple values are missing, it returns a validation error ', async () => {
     const data = {
       bankId: 1,
       accountNumber: undefined,

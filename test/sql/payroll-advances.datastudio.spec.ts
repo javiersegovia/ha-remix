@@ -14,7 +14,7 @@ beforeEach(async () => {
 })
 
 describe('DATASTUDIO PayrollAdvances Query', () => {
-  test('should return a list of payroll advances', async () => {
+  it('returns a list of payroll advances', async () => {
     const employee = await prisma.employee.create({
       data: {
         user: {

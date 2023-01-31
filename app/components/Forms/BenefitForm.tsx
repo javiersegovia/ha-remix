@@ -1,4 +1,4 @@
-import type { Benefit, BenefitSubproduct } from '@prisma/client'
+import type { Benefit } from '@prisma/client'
 
 import { Form } from '@remix-run/react'
 import { ValidatedForm } from 'remix-validated-form'
@@ -14,9 +14,7 @@ interface BenefitFormProps {
   defaultValues?: Pick<
     Benefit,
     'name' | 'imageUrl' | 'buttonText' | 'buttonHref' | 'slug'
-  > & {
-    subproducts: Pick<BenefitSubproduct, 'id' | 'name'>[]
-  }
+  >
   showDelete?: boolean
 }
 
@@ -25,17 +23,12 @@ export const BenefitForm = ({
   defaultValues,
   showDelete = false,
 }: BenefitFormProps) => {
-  const { subproducts } = defaultValues || {}
-
   return (
     <Box className="mt-auto flex w-full flex-col space-y-5 p-5 md:w-auto">
       <ValidatedForm
         id="BenefitForm"
         validator={benefitValidator}
-        defaultValues={{
-          ...defaultValues,
-          subproducts: subproducts?.map((subproduct) => subproduct.name),
-        }}
+        defaultValues={defaultValues}
         method="post"
       >
         <FormGridWrapper>
