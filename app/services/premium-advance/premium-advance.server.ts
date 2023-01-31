@@ -93,43 +93,14 @@ export const getPremiumAdvanceById = async (
 export const calculatePremiumAdvanceSpecs = async (
   employeeId: Employee['id']
 ) => {
-  const employeeData = await prisma.employee.findUnique({
-    where: {
-      id: employeeId,
-    },
-    select: {
-      premiumAdvances: {
-        where: {
-          status: PayrollAdvanceStatus.PAID,
-        },
-        select: {
-          createdAt: true,
-        },
-        orderBy: {
-          createdAt: 'desc',
-        },
+  const employeeData = await getEmployeeData(employeeId)
+
+  const { transportationAid } =
+    (await prisma.globalSettings.findFirst({
+      select: {
+        transportationAid: true,
       },
-      status: true,
-      startedAt: true,
-      salaryFiat: true,
-      bankAccount: true,
-      company: {
-        select: {
-          status: true,
-          benefits: {
-            select: {
-              slug: true,
-            },
-          },
-        },
-      },
-    },
-  })
-  const globalSettings = await prisma.globalSettings.findFirst({
-    select: {
-      transportationAid: true,
-    },
-  })
+    })) || {}
 
   if (employeeData?.status === EmployeeStatus.INACTIVE) {
     throw badRequest('La cuenta del usuario se encuentra inactiva')
@@ -192,8 +163,7 @@ export const calculatePremiumAdvanceSpecs = async (
     ?.join('')
   const workingDays = workingDaysString ? parseFloat(workingDaysString) : 0
 
-  const baseSalary =
-    employeeData.salaryFiat + (globalSettings?.transportationAid || 0)
+  const baseSalary = employeeData.salaryFiat + (transportationAid || 0)
 
   /** We return the result by using the following formula:
    *
@@ -679,4 +649,39 @@ const getPremiumAdvanceLimits = () => {
     januaryLimitDate: new Date(currentDate.getUTCFullYear(), 0, 1),
     julyLimitDate: new Date(currentDate.getUTCFullYear(), 6, 1),
   }
+}
+
+const getEmployeeData = async (employeeId: Employee['id']) => {
+  return prisma.employee.findUnique({
+    where: {
+      id: employeeId,
+    },
+    select: {
+      premiumAdvances: {
+        where: {
+          status: PayrollAdvanceStatus.PAID,
+        },
+        select: {
+          createdAt: true,
+        },
+        orderBy: {
+          createdAt: 'desc',
+        },
+      },
+      status: true,
+      startedAt: true,
+      salaryFiat: true,
+      bankAccount: true,
+      company: {
+        select: {
+          status: true,
+          benefits: {
+            select: {
+              slug: true,
+            },
+          },
+        },
+      },
+    },
+  })
 }
