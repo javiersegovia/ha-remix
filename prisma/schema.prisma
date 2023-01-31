@@ -745,6 +745,18 @@ model PremiumAdvanceTax {
   premiumAdvanceId String
 }
 
+model Membership {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  name String
+
+  companies Company[]
+  employees Employee[]
+  benefits  Benefit[]
+}
+
 model Benefit {
   id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
@@ -756,22 +768,13 @@ model Benefit {
   buttonText String?
   buttonHref String?
 
+  benefitCategory   BenefitCategory? @relation(fields: benefitCategoryId, references: id, onUpdate: Cascade, onDelete: SetNull)
+  benefitCategoryId Int?
+
   companies    Company[]
   membership   Membership[]
   subproducts  BenefitSubproduct[]
   consumptions BenefitConsumption[]
-}
-
-model Membership {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  name String
-
-  companies Company[]
-  employees Employee[]
-  benefits  Benefit[]
 }
 
 model BenefitSubproduct {
@@ -802,4 +805,14 @@ model BenefitConsumption {
   benefitId  Int
   employee   Employee @relation(fields: [employeeId], references: [id], onUpdate: Cascade, onDelete: Cascade)
   employeeId String
+}
+
+model BenefitCategory {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  name String
+
+  benefits Benefit[]
 }

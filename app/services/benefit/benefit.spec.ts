@@ -62,7 +62,7 @@ describe('createBenefit', () => {
 
     const result = await benefitService.createBenefit(data)
 
-    expect(result).toMatchObject<
+    expect(result).toEqual<
       NonNullable<Awaited<ReturnType<typeof benefitService.createBenefit>>>
     >({
       id: expect.any(Number),

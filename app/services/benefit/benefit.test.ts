@@ -53,7 +53,7 @@ describe('updateBenefitById', () => {
       expectedBenefit.id
     )
 
-    expect(result).toMatchObject<Benefit>(expectedBenefit)
+    expect(result).toEqual<Benefit>(expectedBenefit)
   })
 
   // TODO: Test error path

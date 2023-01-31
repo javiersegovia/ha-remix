@@ -10,8 +10,10 @@ type ExtendedBenefit = Benefit & {
 }
 
 export const BenefitFactory = Factory.define<ExtendedBenefit>(
-  ({ onCreate, associations }) => {
-    onCreate(({ id: _, ...benefitData }) => {
+  ({ onCreate, associations, sequence }) => {
+    onCreate((benefit) => {
+      const { id: _, ...benefitData } = benefit
+
       return prisma.benefit.create({
         data: {
           ...benefitData,
@@ -22,7 +24,7 @@ export const BenefitFactory = Factory.define<ExtendedBenefit>(
     })
 
     return {
-      id: faker.datatype.number(),
+      id: sequence,
       createdAt: new Date(),
       updatedAt: new Date(),
       name: faker.commerce.productName(),
@@ -32,6 +34,8 @@ export const BenefitFactory = Factory.define<ExtendedBenefit>(
       slug: faker.datatype.string(),
 
       membership: associations?.membership,
+
+      benefitCategoryId: null,
     }
   }
 )
