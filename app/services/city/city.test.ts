@@ -2,10 +2,6 @@ import { prisma } from '~/db.server'
 import { CityFactory } from './city.factory'
 import * as cityService from './city.server'
 
-afterAll(() => {
-  vi.restoreAllMocks()
-})
-
 describe('getCitiesByStateId', () => {
   it('returs an array of cities', async () => {
     const cities = CityFactory.buildList(3)

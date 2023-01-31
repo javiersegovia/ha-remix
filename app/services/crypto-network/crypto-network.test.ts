@@ -2,10 +2,6 @@ import { prisma } from '~/db.server'
 import { CryptoNetworkFactory } from './crypto-network.factory'
 import { getCryptoNetworks } from './crypto-network.server'
 
-afterAll(async () => {
-  vi.restoreAllMocks()
-})
-
 describe('getCurrencies', () => {
   it('returns an array of currencies', async () => {
     const cryptoNetworks = CryptoNetworkFactory.buildList(3)

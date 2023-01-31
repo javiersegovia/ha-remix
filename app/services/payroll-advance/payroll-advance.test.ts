@@ -7,10 +7,6 @@ import { getMonthlyOverview } from './payroll-advance.server'
 import { PayrollAdvanceFactory } from './payroll-advance.factory'
 
 describe('getMonthlyOverview', () => {
-  beforeEach(() => {
-    vi.restoreAllMocks()
-  })
-
   it('returns the correct overview and request days for a given month', async () => {
     const mockPayrollAdvances = [
       PayrollAdvanceFactory.build({

@@ -1,10 +1,6 @@
 import { prisma } from '~/db.server'
 import * as companyDebtService from './company-debt.server'
 
-afterAll(() => {
-  vi.restoreAllMocks()
-})
-
 describe('getCompanyDebtById', () => {
   test('return a CompanyDebt', async () => {
     const date = new Date()

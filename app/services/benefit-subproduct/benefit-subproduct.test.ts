@@ -7,10 +7,6 @@ import {
   getBenefitSubproductsByBenefitId,
 } from './benefit-subproduct.server'
 
-beforeEach(() => {
-  vi.restoreAllMocks()
-})
-
 describe('getBenefitSubproductsByBenefitId', () => {
   it('returns an array of BenefitSubproducts', async () => {
     const expectedBenefitSubproducts = BenefitSubproductFactory.buildList(3)

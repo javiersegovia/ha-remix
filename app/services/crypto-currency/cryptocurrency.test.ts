@@ -2,10 +2,6 @@ import { prisma } from '~/db.server'
 import { CryptocurrencyFactory } from './crypto-currency.factory'
 import { getCryptocurrencies } from './crypto-currency.server'
 
-afterAll(async () => {
-  vi.restoreAllMocks()
-})
-
 describe('getCryptocurrencies', () => {
   it('returns an array of cryptocurrencies', async () => {
     const cryptocurrencies = CryptocurrencyFactory.buildList(3)

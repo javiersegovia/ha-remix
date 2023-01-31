@@ -3,10 +3,6 @@ import { prisma } from '~/db.server'
 import { vi } from 'vitest'
 import { CompanyFactory } from './company.factory'
 
-afterAll(async () => {
-  vi.restoreAllMocks()
-})
-
 describe('getCompanies', () => {
   it('returns an array of companies', async () => {
     vi.spyOn(prisma.company, 'findMany').mockResolvedValueOnce([])

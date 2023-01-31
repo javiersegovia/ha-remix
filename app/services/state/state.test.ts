@@ -2,10 +2,6 @@ import { prisma } from '~/db.server'
 import { StateFactory } from './state.factory'
 import * as stateService from './state.server'
 
-afterAll(() => {
-  vi.restoreAllMocks()
-})
-
 describe('getStatesByCountryId', () => {
   it('returns a list of states', async () => {
     const states = StateFactory.buildList(3)

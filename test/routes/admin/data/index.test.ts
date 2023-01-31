@@ -8,10 +8,6 @@ vi.mock('~/session.server', () => {
   }
 })
 
-afterAll(async () => {
-  vi.restoreAllMocks()
-})
-
 describe('AdminDashboardDataIndexRoute Loader', () => {
   it('returns an object with the correct keys', async () => {
     vi.spyOn(prisma.bank, 'count').mockResolvedValue(3)

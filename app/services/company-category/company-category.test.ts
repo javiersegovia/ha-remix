@@ -2,10 +2,6 @@ import { prisma } from '~/db.server'
 import { CompanyCategoryFactory } from './company-category.factory'
 import * as companyCategoryService from './company-category.server'
 
-afterAll(() => {
-  vi.restoreAllMocks()
-})
-
 describe('getCompanyCategories', () => {
   it('returns an array of companyCategories', async () => {
     const companyCategories = CompanyCategoryFactory.buildList(3)

@@ -4,10 +4,6 @@ import { prisma } from '~/db.server'
 import { BenefitFactory } from './benefit.factory'
 import * as benefitService from './benefit.server'
 
-beforeEach(() => {
-  vi.restoreAllMocks()
-})
-
 describe('getBenefits', () => {
   it('returns an array of benefits', async () => {
     const expectedBenefits = BenefitFactory.buildList(3)

@@ -2,10 +2,6 @@ import { prisma } from '~/db.server'
 import { GenderFactory } from './gender.factory'
 import { getGenders } from './gender.server'
 
-afterAll(async () => {
-  vi.restoreAllMocks()
-})
-
 describe('getGenders', () => {
   it('returns an array of genders', async () => {
     const genders = GenderFactory.buildList(3)
