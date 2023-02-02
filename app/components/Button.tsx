@@ -1,17 +1,25 @@
 import type { ButtonHTMLAttributes } from 'react'
 import { Link } from '@remix-run/react'
-import { HiCheck } from 'react-icons/hi'
+import { HiCheck, HiPlus } from 'react-icons/hi'
 import { Spinner } from '~/components/Spinner'
 import { twMerge } from 'tailwind-merge'
+import clsx from 'clsx'
+import { MdOutlineUploadFile } from 'react-icons/md'
 
 export type TButtonSizes = 'XS' | 'SM' | 'MD' | 'LG' | 'XL'
-export type TButtonVariants =
-  | 'PRIMARY'
-  | 'SECONDARY'
-  | 'SUCCESS'
-  | 'DARK'
-  | 'LIGHT'
-  | 'WARNING'
+
+export enum ButtonColorVariants {
+  PRIMARY = 'PRIMARY',
+  SECONDARY = 'SECONDARY',
+  SUCCESS = 'SUCCESS',
+  DARK = 'DARK',
+  WARNING = 'WARNING',
+}
+
+export enum ButtonIconVariants {
+  UPLOAD = 'UPLOAD',
+  CREATE = 'CREATE',
+}
 
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   href?: string
@@ -20,7 +28,8 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   isLoading?: boolean
   showCheckOnSuccess?: boolean
   size?: TButtonSizes
-  variant?: TButtonVariants
+  variant?: ButtonColorVariants
+  icon?: ButtonIconVariants
 }
 
 export const Button = ({
@@ -54,53 +63,52 @@ export const Button = ({
 export const ButtonElement = ({
   type = 'button',
   size = 'MD',
-  variant = 'PRIMARY',
+  variant = ButtonColorVariants.PRIMARY,
   disabled = false,
   isLoading = false,
   showCheckOnSuccess = false,
   children,
   className,
+  icon,
   ...otherProps
 }: ButtonProps) => {
-  const isPrimary = variant === 'PRIMARY'
-  const isSecondary = variant === 'SECONDARY'
-  const isSuccess = variant === 'SUCCESS'
-  const isDark = variant === 'DARK'
-  const isLight = variant === 'LIGHT'
-  const isWarning = variant === 'WARNING'
+  const isPrimary = variant === ButtonColorVariants.PRIMARY
+  const isSecondary = variant === ButtonColorVariants.SECONDARY
+  const isSuccess = variant === ButtonColorVariants.SUCCESS
+  const isDark = variant === ButtonColorVariants.DARK
+  const isWarning = variant === ButtonColorVariants.WARNING
 
   return (
     <button
       type={type}
       disabled={disabled}
       className={twMerge(
-        'flex w-full transform items-center justify-center rounded-lg text-center text-base font-medium transition duration-100 active:scale-95',
+        clsx(
+          'flex w-full transform items-center justify-center rounded-lg text-center text-base font-medium transition duration-100 active:scale-95',
 
-        size === 'MD' && 'px-6 py-4',
-        size === 'SM' && 'px-10 py-2',
+          size === 'MD' && 'px-6 py-4',
+          size === 'SM' && 'px-5 py-3',
 
-        disabled && 'cursor-not-allowed opacity-40',
+          disabled && 'cursor-not-allowed opacity-40',
 
-        isPrimary && 'bg-electricYellow-600 text-steelBlue-800',
-        isPrimary && !disabled && 'hover:bg-electricYellow-800',
+          isPrimary && 'bg-electricYellow-500 text-steelBlue-800',
+          isPrimary && !disabled && 'hover:bg-electricYellow-700',
 
-        isSecondary && 'bg-electricYellow-600 text-black',
-        isSecondary && !disabled && 'hover:bg-electricYellow-800',
+          isDark && 'bg-gray-800 text-white',
+          isDark && !disabled && 'hover:bg-gray-900',
 
-        isDark && 'bg-gray-800 text-white',
-        isDark && !disabled && 'hover:bg-gray-900',
+          isSecondary && 'bg-blue-100 text-cyan-600',
+          isSecondary && !disabled && 'hover:bg-blue-200',
 
-        isLight && 'bg-blue-100 text-cyan-600',
-        isLight && !disabled && 'hover:bg-blue-200',
+          isWarning && 'bg-red-100 text-red-600',
+          isWarning && !disabled && 'hover:bg-red-200',
 
-        isWarning && 'bg-red-100 text-red-600',
-        isWarning && !disabled && 'hover:bg-red-200',
+          isSuccess && 'bg-green-400 text-white',
+          isSuccess && !disabled && 'hover:bg-green-600',
+          isSuccess && disabled && 'opacity-100',
 
-        isSuccess && 'bg-green-400 text-white',
-        isSuccess && !disabled && 'hover:bg-green-600',
-        isSuccess && disabled && 'opacity-100',
-
-        className
+          className
+        )
       )}
       {...otherProps}
     >
@@ -109,7 +117,15 @@ export const ButtonElement = ({
       ) : showCheckOnSuccess && isSuccess ? (
         <HiCheck className="text-2xl" />
       ) : (
-        <>{children}</>
+        <>
+          {icon === ButtonIconVariants.UPLOAD ? (
+            <MdOutlineUploadFile className="mr-3" />
+          ) : (
+            icon === ButtonIconVariants.CREATE && <HiPlus className="mr-3" />
+          )}
+
+          {children}
+        </>
       )}
     </button>
   )

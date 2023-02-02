@@ -5,7 +5,7 @@ import { Title } from '../Typography/Title'
 
 interface TitleWithActionsProps {
   title: string
-  actions: React.ReactNode[]
+  actions: React.ReactNode
   className?: string
 }
 
@@ -17,15 +17,13 @@ export const TitleWithActions = ({
   return (
     <div
       className={twMerge(
-        clsx(
-          'flex flex-col items-center lg:flex-row lg:items-center lg:justify-between'
-        ),
+        clsx('flex flex-col items-center lg:flex-row lg:justify-between'),
         className
       )}
     >
       <Title>{title}</Title>
       <div className="mt-4 flex w-full items-center justify-center gap-4 md:w-auto lg:mt-0">
-        {actions.map((action) => action)}
+        {actions}
       </div>
     </div>
   )

@@ -8,7 +8,7 @@ import { createUserSession, getUserIdFromSession } from '~/session.server'
 import { safeRedirect } from '~/utils/utils'
 import { loginValidator } from '~/schemas/login.schema'
 import { Input } from '~/components/FormFields/Input'
-import { Button } from '~/components/Button'
+import { Button, ButtonColorVariants } from '~/components/Button'
 import { Title } from '~/components/Typography/Title'
 import { SubmitButton } from '~/components/SubmitButton'
 
@@ -117,7 +117,7 @@ export default function LoginRemixRoute() {
                 <Button
                   type="button"
                   href="/login-email"
-                  variant="LIGHT"
+                  variant={ButtonColorVariants.SECONDARY}
                   className="text-sm"
                   data-testid="login-email-button"
                 >

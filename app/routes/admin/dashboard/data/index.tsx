@@ -12,7 +12,7 @@ import { useLoaderData } from '@remix-run/react'
 const headings: TableProps['headings'] = ['Nombre', 'Resultados']
 
 type AdminDashboardIndexRouteLoaderData = {
-  rows: (Pick<TableRowProps, 'key' | 'href' | 'isDisabled'> & {
+  rows: (Pick<TableRowProps, 'rowId' | 'href' | 'isDisabled'> & {
     items: (string | number)[]
   })[]
 }
@@ -48,67 +48,67 @@ export const loader: LoaderFunction = async ({ request }) => {
 
   const rows: AdminDashboardIndexRouteLoaderData['rows'] = [
     {
-      key: 'job-departments',
+      rowId: 'job-departments',
       items: ['Áreas de trabajo', jobDepartments],
       href: '/admin/dashboard/data/job-departments',
       isDisabled: true,
     },
     {
-      key: 'banks',
+      rowId: 'banks',
       items: ['Bancos', banks],
       href: '/admin/dashboard/data/banks',
       isDisabled: true,
     },
     {
-      key: 'job-positions',
+      rowId: 'job-positions',
       items: ['Cargos de trabajo', jobPositions],
       href: '/admin/dashboard/data/job-positions',
       isDisabled: true,
     },
     {
-      key: 'company-categories',
+      rowId: 'company-categories',
       items: ['Categorías de compañías', companyCategories],
       href: '/admin/dashboard/data/company-categories',
       isDisabled: true,
     },
     {
-      key: 'cities',
+      rowId: 'cities',
       items: ['Ciudades', cities],
       href: '/admin/dashboard/data/cities',
       isDisabled: true,
     },
     {
-      key: 'states',
+      rowId: 'states',
       items: ['Estados', states],
       href: '/admin/dashboard/data/states',
       isDisabled: true,
     },
     {
-      key: 'genders',
+      rowId: 'genders',
       items: ['Géneros', genders],
       href: '/admin/dashboard/data/genders',
       isDisabled: true,
     },
     {
-      key: 'currencies',
+      rowId: 'currencies',
       items: ['Monedas', currencies],
       href: '/admin/dashboard/data/currencies',
       isDisabled: true,
     },
     {
-      key: 'countries',
+      rowId: 'countries',
       items: ['Países', countries],
       href: '/admin/dashboard/data/countries',
       isDisabled: true,
     },
     {
-      key: 'bank-account-types',
+      rowId: 'bank-account-types',
       items: ['Tipos de cuenta bancaria', bankAccountTypes],
       href: '/admin/dashboard/data/bank-account-types',
       isDisabled: true,
     },
     {
-      key: 'identity-document-types',
+      rowId: 'identity-document-types',
       items: ['Tipos de documento de identidad', identityDocumentTypes],
       href: '/admin/dashboard/data/identity-document-types',
       isDisabled: true,

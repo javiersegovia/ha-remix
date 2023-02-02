@@ -5,7 +5,7 @@ import { Outlet, useLoaderData } from '@remix-run/react'
 import { json } from '@remix-run/node'
 import { badRequest } from 'remix-utils'
 
-import { Button } from '~/components/Button'
+import { Button, ButtonIconVariants } from '~/components/Button'
 import { TitleWithActions } from '~/components/Layout/TitleWithActions'
 import { requireAdminUserId } from '~/session.server'
 
@@ -41,7 +41,7 @@ export default function BenefitConsumptionIndexRoute() {
   const { consumptions } = useLoaderData<LoaderData>()
 
   const rows: TableRowProps[] = consumptions.map((consumption) => ({
-    key: consumption.id,
+    rowId: consumption.id,
     items: [
       consumption.employee.user.email,
       consumption.benefitSubproduct?.name || '-',
@@ -55,11 +55,16 @@ export default function BenefitConsumptionIndexRoute() {
       <TitleWithActions
         title="Consumos"
         className="my-10"
-        actions={[
-          <Button key="create-consumption" href="create">
-            Cargar consumos
-          </Button>,
-        ]}
+        actions={
+          <Button
+            key="create-consumption"
+            href="create"
+            icon={ButtonIconVariants.UPLOAD}
+            size="SM"
+          >
+            Subir consumos
+          </Button>
+        }
       />
 
       {consumptions?.length > 0 ? (

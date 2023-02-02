@@ -6,7 +6,7 @@ import { ValidatedForm } from 'remix-validated-form'
 import type { getBenefits } from '~/services/benefit/benefit.server'
 
 import { membershipValidator } from '~/services/membership/membership.schema'
-import { Button } from '../Button'
+import { Button, ButtonColorVariants } from '../Button'
 import { FormGridItem } from '../FormFields/FormGridItem'
 import { FormGridWrapper } from '../FormFields/FormGridWrapper'
 import { Input } from '../FormFields/Input'
@@ -79,7 +79,7 @@ export const MembershipForm = ({
 
         {showDelete && (
           <Form method="delete">
-            <Button type="submit" variant="WARNING">
+            <Button type="submit" variant={ButtonColorVariants.WARNING}>
               Eliminar
             </Button>
           </Form>

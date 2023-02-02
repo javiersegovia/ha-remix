@@ -20,7 +20,7 @@ import {
   verifyIfEmployeeCanRequestPremiumAdvance,
 } from '~/services/premium-advance/premium-advance.server'
 import { ErrorText } from '~/components/Error/ErrorText'
-import { Button } from '~/components/Button'
+import { Button, ButtonColorVariants } from '~/components/Button'
 import { formatMoney } from '../../../utils/formatMoney'
 import { getEmployeeEnabledBenefits } from '~/services/permissions/permissions.server'
 import { getRequestReasons } from '~/services/payroll-advance/payroll-advance.server'
@@ -202,7 +202,11 @@ const PremiumAdvancesNewRoute = () => {
               {'errorMessage' in loaderData ? (
                 <>
                   <ErrorText>{loaderData.errorMessage}</ErrorText>
-                  <Button href="/" variant="LIGHT" className="mt-5">
+                  <Button
+                    href="/"
+                    variant={ButtonColorVariants.SECONDARY}
+                    className="mt-5"
+                  >
                     Regresar al inicio
                   </Button>
                 </>

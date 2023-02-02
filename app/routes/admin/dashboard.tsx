@@ -1,4 +1,6 @@
+import type { INavPath } from '~/components/SideBar/DashboardSideBar'
 import type { LoaderFunction, MetaFunction } from '@remix-run/server-runtime'
+
 import { Outlet } from '@remix-run/react'
 import { json } from '@remix-run/node'
 import { HiOutlineHome, HiOutlineOfficeBuilding } from 'react-icons/hi'
@@ -8,7 +10,7 @@ import { FiSettings } from 'react-icons/fi'
 import { AiOutlineDatabase, AiOutlineThunderbolt } from 'react-icons/ai'
 
 import { requireAdminUser } from '~/session.server'
-import type { INavPath } from '~/components/SideBar/DashboardSideBar'
+import { DashboardColorVariant } from '~/components/SideBar/DashboardSideBar'
 import { DashboardSideBar } from '~/components/SideBar/DashboardSideBar'
 
 type LoaderData = {
@@ -67,7 +69,7 @@ const navPaths: INavPath[] = [
 export default function AdminDashboardRoute() {
   return (
     <DashboardSideBar
-      variant="DARK"
+      variant={DashboardColorVariant.DARK}
       paths={navPaths}
       logoHref="/admin/dashboard"
     >

@@ -5,7 +5,7 @@ import { TableData } from './TableData'
 import { TableHeading } from './TableHeading'
 
 export interface TableRowProps {
-  key: string | number
+  rowId: string | number
   items: React.ReactNode[] | string[]
   href?: string
   isDisabled?: boolean
@@ -38,14 +38,14 @@ export const Table = ({ headings, rows }: TableProps) => {
               <tbody className="divide-y divide-gray-200 bg-white">
                 {rows.map((row) => (
                   <tr
-                    key={row.key}
+                    key={row.rowId}
                     className={clsx('hover:bg-gray-100', {
                       'cursor-not-allowed bg-gray-200 hover:bg-gray-300':
                         row.isDisabled,
                     })}
                   >
                     <TableRow
-                      key={row.key}
+                      rowId={row.rowId}
                       items={row.items}
                       href={row.href}
                       isDisabled={row.isDisabled}
@@ -61,12 +61,12 @@ export const Table = ({ headings, rows }: TableProps) => {
   )
 }
 
-export const TableRow = ({ key, href, items, isDisabled }: TableRowProps) => {
+export const TableRow = ({ rowId, href, items, isDisabled }: TableRowProps) => {
   return (
     <>
       {items.map((item, index) => {
         return (
-          <TableData key={`${key}_${item}`} isCentered={index !== 0}>
+          <TableData key={`${rowId}_${item}`} isCentered={index !== 0}>
             <span
               className={clsx(
                 isDisabled && 'pointer-events-none text-gray-400'

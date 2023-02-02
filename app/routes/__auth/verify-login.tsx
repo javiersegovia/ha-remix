@@ -1,5 +1,5 @@
 import type { LoaderArgs } from '@remix-run/server-runtime'
-import { Button } from '~/components/Button'
+import { Button, ButtonColorVariants } from '~/components/Button'
 import { Title } from '~/components/Typography/Title'
 import { verifyLoginLink } from '~/services/auth.server'
 import { createUserSession } from '~/session.server'
@@ -61,7 +61,11 @@ export default function VerifyLoginRoute() {
             Tu enlace es inválido o ha expirado
           </Title>
 
-          <Button href="/login-email" className="mt-6 text-sm" variant="LIGHT">
+          <Button
+            href="/login-email"
+            className="mt-6 text-sm"
+            variant={ButtonColorVariants.SECONDARY}
+          >
             Haz click aquí para solicitar uno nuevo
           </Button>
         </div>

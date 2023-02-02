@@ -2,12 +2,17 @@ import { json } from '@remix-run/server-runtime'
 import { useLoaderData } from '@remix-run/react'
 import type { LoaderFunction, MetaFunction } from '@remix-run/server-runtime'
 import { HiPlus } from 'react-icons/hi'
-
-import { Button } from '~/components/Button'
+import { MdOutlineUploadFile } from 'react-icons/md'
+import {
+  Button,
+  ButtonColorVariants,
+  ButtonIconVariants,
+} from '~/components/Button'
 import { requireCompany } from '~/services/company/company.server'
 import { getEmployeesByCompanyId } from '~/services/employee/employee.server'
 import { requireAdminUserId } from '~/session.server'
 import { EmployeeList } from '~/components/Lists/EmployeeList'
+import { TitleWithActions } from '~/components/Layout/TitleWithActions'
 
 type LoaderData = {
   employees: Awaited<ReturnType<typeof getEmployeesByCompanyId>>
@@ -50,48 +55,43 @@ export default function AdminDashboardCompanyEmployees() {
 
   return (
     <>
-      {employees?.length > 0 ? (
-        <>
-          <ManagementButtons />
+      <>
+        <TitleWithActions
+          title="Colaboradores"
+          className="my-10"
+          actions={
+            <>
+              <Button
+                className="flex w-full items-center whitespace-nowrap sm:w-auto"
+                href="create"
+                key="create-employee"
+                size="SM"
+                icon={ButtonIconVariants.CREATE}
+              >
+                {/* <HiPlus className="mr-3" /> */}
+                Nuevo colaborador
+              </Button>
+
+              <Button
+                className="flex w-full items-center whitespace-nowrap sm:w-auto"
+                href="upload"
+                size="SM"
+                variant={ButtonColorVariants.SECONDARY}
+                icon={ButtonIconVariants.UPLOAD}
+              >
+                {/* <MdOutlineUploadFile className="mr-3" /> */}
+                Cargar colaboradores
+              </Button>
+            </>
+          }
+        />
+
+        {employees?.length > 0 ? (
           <EmployeeList employees={employees} />
-        </>
-      ) : (
-        <>
-          <div className="flex flex-col rounded-md border border-gray-300 py-6">
-            <p className="mb-6 text-center font-medium text-gray-700">
-              La lista de colaboradores está vacía
-            </p>
-            <div className="mx-auto">
-              <ManagementButtons />
-            </div>
-          </div>
-        </>
-      )}
+        ) : (
+          <p className="text-lg">La lista de colaboradores está vacía.</p>
+        )}
+      </>
     </>
-  )
-}
-
-const ManagementButtons = () => {
-  return (
-    <div className="mb-8 mt-2 flex flex-col items-center sm:items-start lg:flex-row lg:justify-end">
-      <div className="flex w-full flex-col items-center justify-end gap-4 sm:w-auto sm:flex-row">
-        <Button
-          className="flex w-full items-center whitespace-nowrap sm:w-auto"
-          href="create"
-        >
-          <HiPlus className="mr-3" />
-          Nuevo colaborador
-        </Button>
-
-        <Button
-          className="flex w-full items-center whitespace-nowrap sm:w-auto"
-          href="upload"
-          variant="LIGHT"
-        >
-          <HiPlus className="mr-3" />
-          Cargar colaboradores
-        </Button>
-      </div>
-    </div>
   )
 }

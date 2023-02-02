@@ -3,11 +3,10 @@ import type { TableRowProps } from '~/components/Lists/Table'
 
 import { Outlet, useLoaderData } from '@remix-run/react'
 import { json } from '@remix-run/node'
-import { HiPlus } from 'react-icons/hi'
 import { badRequest } from 'remix-utils'
 
 import { Table } from '~/components/Lists/Table'
-import { Button } from '~/components/Button'
+import { Button, ButtonIconVariants } from '~/components/Button'
 import { TitleWithActions } from '~/components/Layout/TitleWithActions'
 import { getBenefitSubproductsByBenefitId } from '~/services/benefit-subproduct/benefit-subproduct.server'
 
@@ -37,23 +36,24 @@ const BenefitSubproductIndexRoute = () => {
   const rows: TableRowProps[] = subproducts.map((subproduct) => ({
     href: subproduct.id.toString(),
     items: [subproduct.name, subproduct.discount || '-', subproduct.id],
-    key: `${subproduct.id}_${subproduct.name}}`,
+    rowId: `${subproduct.id}_${subproduct.name}}`,
   }))
 
   return (
     <>
       <TitleWithActions
         title="Subproductos"
-        actions={[
+        actions={
           <Button
             key="create-subproduct"
             href="create"
+            size="SM"
             className="flex items-center px-4"
+            icon={ButtonIconVariants.CREATE}
           >
-            <HiPlus className="mr-3" />
             Crear subproducto
-          </Button>,
-        ]}
+          </Button>
+        }
         className="my-10"
       />
 

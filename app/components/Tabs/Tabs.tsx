@@ -32,7 +32,7 @@ export const Tabs = ({ items }: TabsProps) => {
         <nav className="col-span-12 flex flex-col-reverse lg:col-span-4 lg:block 2xl:col-span-4">
           <Box className="border-radius[15px] overflow-hidden">
             <div className="border-t border-gray-200 text-sm">
-              <div className="grid grid-cols-3">
+              <div className="grid grid-flow-col">
                 {items.map((item) => (
                   <Link
                     key={item.title}

@@ -1,15 +1,15 @@
 import type { ActionArgs, LoaderArgs, MetaFunction } from '@remix-run/node'
+import { Link } from '@remix-run/react'
 import { redirect } from '@remix-run/node'
+import { ValidatedForm, validationError } from 'remix-validated-form'
 
 import { requestLoginLink } from '~/services/auth.server'
 import { getUserIdFromSession } from '~/session.server'
 import { loginEmailValidator } from '~/schemas/login.schema'
 import { Input } from '~/components/FormFields/Input'
-import { Button } from '~/components/Button'
 import { Title } from '~/components/Typography/Title'
-import { ValidatedForm, validationError } from 'remix-validated-form'
 import { SubmitButton } from '~/components/SubmitButton'
-import { Link } from '@remix-run/react'
+import { Button, ButtonColorVariants } from '~/components/Button'
 
 export async function loader({ request }: LoaderArgs) {
   const userId = await getUserIdFromSession(request)
@@ -79,7 +79,7 @@ export default function LoginEmailRoute() {
               <Button
                 type="button"
                 href="/login"
-                variant="LIGHT"
+                variant={ButtonColorVariants.SECONDARY}
                 className="text-sm"
               >
                 Ingresar usando correo y contraseña

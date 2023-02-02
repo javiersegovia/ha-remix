@@ -1,7 +1,7 @@
 import type { MetaFunction } from '@remix-run/server-runtime'
 
 import { Form, useTransition } from '@remix-run/react'
-import { Button } from '~/components/Button'
+import { Button, ButtonColorVariants } from '~/components/Button'
 import { Modal } from '~/components/Dialog/Modal'
 import { Box } from '~/components/Layout/Box'
 import { Title } from '~/components/Typography/Title'
@@ -32,7 +32,7 @@ export default function RequestPremiumAdvanceModalRoute() {
               </a>
 
               <Button
-                variant="LIGHT"
+                variant={ButtonColorVariants.SECONDARY}
                 href="/dashboard/overview"
                 disabled={transition.state !== 'idle'}
               >

@@ -6,7 +6,7 @@ import { badRequest } from 'remix-utils'
 import { ValidatedForm, validationError } from 'remix-validated-form'
 
 import { Modal } from '~/components/Dialog/Modal'
-import { Button } from '~/components/Button'
+import { Button, ButtonColorVariants } from '~/components/Button'
 import { SubmitButton } from '~/components/SubmitButton'
 import { Box } from '~/components/Layout/Box'
 import { Title } from '~/components/Typography/Title'
@@ -125,7 +125,7 @@ export default function UpdateDebtModalRoute() {
 
               <Button
                 href={`/admin/dashboard/debts/${companyDebt.id}`}
-                variant="LIGHT"
+                variant={ButtonColorVariants.SECONDARY}
               >
                 Cancelar
               </Button>

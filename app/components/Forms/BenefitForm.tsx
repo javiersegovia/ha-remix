@@ -3,7 +3,7 @@ import type { Benefit } from '@prisma/client'
 import { Form } from '@remix-run/react'
 import { ValidatedForm } from 'remix-validated-form'
 import { benefitValidator } from '~/services/benefit/benefit.schema'
-import { Button } from '../Button'
+import { Button, ButtonColorVariants } from '../Button'
 import { FormGridItem } from '../FormFields/FormGridItem'
 import { FormGridWrapper } from '../FormFields/FormGridWrapper'
 import { Input } from '../FormFields/Input'
@@ -69,7 +69,7 @@ export const BenefitForm = ({
           <Form method="delete" className="inline-block">
             <Button
               type="submit"
-              variant="WARNING"
+              variant={ButtonColorVariants.WARNING}
               className="inline-block w-auto"
             >
               Eliminar

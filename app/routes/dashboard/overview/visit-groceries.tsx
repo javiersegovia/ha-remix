@@ -1,4 +1,4 @@
-import { Button } from '~/components/Button'
+import { Button, ButtonColorVariants } from '~/components/Button'
 import { Modal } from '~/components/Dialog/Modal'
 import { Box } from '~/components/Layout/Box'
 import { Title } from '~/components/Typography/Title'
@@ -22,7 +22,10 @@ export default function VisitGroceriesModalRoute() {
                 Ir a TocToc
               </Button>
 
-              <Button variant="LIGHT" href="/dashboard/overview">
+              <Button
+                variant={ButtonColorVariants.SECONDARY}
+                href="/dashboard/overview"
+              >
                 Cancelar
               </Button>
             </div>

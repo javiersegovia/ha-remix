@@ -92,7 +92,6 @@ const AdminDashboardBenefitDetailsIndexRoute = () => {
           buttonText,
           buttonHref,
           slug,
-          subproducts,
         }}
       />
     </>

@@ -3,7 +3,7 @@ import type { PayrollAdvance, PayrollAdvanceWallet } from '@prisma/client'
 import { PayrollAdvancePaymentMethod } from '@prisma/client'
 import { PayrollAdvanceStatus } from '@prisma/client'
 import { Form, useTransition } from '@remix-run/react'
-import { Button } from '../Button'
+import { Button, ButtonColorVariants } from '../Button'
 
 interface ManagementButtonsProps {
   payrollAdvance: Pick<
@@ -64,7 +64,11 @@ export const AdminManagementButtons = ({
         <Form method="put" action={`/admin/dashboard/payroll-advances/${id}`}>
           <>
             <input type="hidden" name="subaction" value={DENIED} />
-            <Button type="submit" variant="LIGHT" disabled={isSubmitting}>
+            <Button
+              type="submit"
+              variant={ButtonColorVariants.SECONDARY}
+              disabled={isSubmitting}
+            >
               Denegar
             </Button>
           </>

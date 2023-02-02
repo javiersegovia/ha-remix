@@ -38,6 +38,7 @@ import { PayrollAdvanceCalculation } from '~/containers/dashboard/PayrollAdvance
 import { Input } from '~/components/FormFields/Input'
 import { getEmployeeEnabledBenefits } from '~/services/permissions/permissions.server'
 import { hasSignedTerms } from '~/services/signature/signature.server'
+import { ButtonColorVariants } from '~/components/Button'
 
 type LoaderData = {
   employee: Awaited<ReturnType<typeof requireEmployee>>
@@ -251,7 +252,13 @@ export default function PayrollAdvanceNewRoute() {
                     placeholder="Describe tu motivo aquí"
                   />
                 </div>
-                <SubmitButton variant={!calculation ? 'PRIMARY' : 'LIGHT'}>
+                <SubmitButton
+                  variant={
+                    !calculation
+                      ? ButtonColorVariants.PRIMARY
+                      : ButtonColorVariants.SECONDARY
+                  }
+                >
                   Calcular
                 </SubmitButton>
               </ValidatedForm>

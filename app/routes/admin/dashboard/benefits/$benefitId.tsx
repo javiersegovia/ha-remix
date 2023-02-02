@@ -45,6 +45,10 @@ export default function UpdateBenefitRoute() {
       title: 'Consumo',
       path: `/admin/dashboard/benefits/${benefitId}/consumptions`,
     },
+    {
+      title: 'Imágenes',
+      path: `/admin/dashboard/benefits/${benefitId}/images`,
+    },
   ]
 
   return (

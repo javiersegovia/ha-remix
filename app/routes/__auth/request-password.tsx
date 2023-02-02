@@ -5,7 +5,7 @@ import { requestPasswordChange } from '~/services/auth.server'
 import { getUserIdFromSession } from '~/session.server'
 import { loginEmailValidator } from '~/schemas/login.schema'
 import { Input } from '~/components/FormFields/Input'
-import { Button } from '~/components/Button'
+import { Button, ButtonColorVariants } from '~/components/Button'
 import { Title } from '~/components/Typography/Title'
 import { ValidatedForm, validationError } from 'remix-validated-form'
 import { SubmitButton } from '~/components/SubmitButton'
@@ -83,7 +83,7 @@ export default function LoginEmailRoute() {
               <Button
                 type="button"
                 href="/login"
-                variant="LIGHT"
+                variant={ButtonColorVariants.SECONDARY}
                 className="text-sm"
               >
                 Ingresar usando correo y contraseña

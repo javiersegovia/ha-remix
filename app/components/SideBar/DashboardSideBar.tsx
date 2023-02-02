@@ -52,7 +52,10 @@ export type INavPath =
       subPaths: { title: string; path: string }[]
     }
 
-export type DashboardColorVariant = 'PRIMARY' | 'DARK'
+export enum DashboardColorVariant {
+  PRIMARY = 'PRIMARY',
+  DARK = 'DARK',
+}
 
 interface DashboardSideBarProps {
   paths: INavPath[]
@@ -62,7 +65,7 @@ interface DashboardSideBarProps {
 
 export const DashboardSideBar = ({
   children,
-  variant = 'PRIMARY',
+  variant = DashboardColorVariant.PRIMARY,
   logoHref,
   paths,
 }: PropsWithChildren<DashboardSideBarProps>) => {

@@ -1,7 +1,7 @@
 import type { PayrollAdvance } from '@prisma/client'
 import { PayrollAdvanceStatus } from '@prisma/client'
 import { Form, useTransition } from '@remix-run/react'
-import { Button } from '../Button'
+import { Button, ButtonColorVariants } from '../Button'
 
 interface ManagementButtonsProps {
   payrollAdvance: Pick<PayrollAdvance, 'id' | 'status'>
@@ -25,7 +25,11 @@ export const EmployeeManagementButtons = ({
       >
         <>
           <input type="hidden" name="subaction" value={CANCELLED} />
-          <Button type="submit" variant="LIGHT" disabled={isSubmitting}>
+          <Button
+            type="submit"
+            variant={ButtonColorVariants.SECONDARY}
+            disabled={isSubmitting}
+          >
             Cancelar
           </Button>
         </>

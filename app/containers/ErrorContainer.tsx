@@ -1,5 +1,5 @@
 import React from 'react'
-import { Button } from '~/components/Button'
+import { Button, ButtonColorVariants } from '~/components/Button'
 
 interface ErrorContainerProps {
   title: string
@@ -60,7 +60,12 @@ export default function ErrorContainer({
           )}
         </section>
 
-        <Button href="/" external className="mx-auto mt-10" variant="LIGHT">
+        <Button
+          href="/"
+          external
+          className="mx-auto mt-10"
+          variant={ButtonColorVariants.SECONDARY}
+        >
           Volver al inicio
         </Button>
 

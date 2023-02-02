@@ -1,15 +1,14 @@
-import type { LoaderFunction } from '@remix-run/server-runtime'
+import type { LoaderFunction } from '@remix-run/node'
 
-import { useLoaderData } from '@remix-run/react'
 import { json } from '@remix-run/node'
+import { useLoaderData } from '@remix-run/react'
 import { badRequest } from 'remix-utils'
-
-import { requireAdminUserId } from '~/session.server'
-import { Modal } from '~/components/Dialog/Modal'
-import { Title } from '~/components/Typography/Title'
-import { RightPanel } from '~/components/Layout/RightPanel'
 import { Button } from '~/components/Button'
+import { Modal } from '~/components/Dialog/Modal'
 import { Label } from '~/components/FormFields/Label'
+import { RightPanel } from '~/components/Layout/RightPanel'
+import { Title } from '~/components/Typography/Title'
+import { requireAdminUserId } from '~/session.server'
 
 type LoaderData = {
   benefitId: string
@@ -31,15 +30,15 @@ export const loader: LoaderFunction = async ({ request, params }) => {
   })
 }
 
-export default function BenefitConsumptionCreateRoute() {
+export default function BenefitImageCreateRoute() {
   const { benefitId } = useLoaderData<LoaderData>()
-  const onCloseRedirectTo = `/admin/dashboard/benefits/${benefitId}/consumptions`
+  const onCloseRedirectTo = `/admin/dashboard/benefits/${benefitId}/images`
 
   return (
     <>
       <Modal onCloseRedirectTo={onCloseRedirectTo}>
         <RightPanel onCloseRedirectTo={onCloseRedirectTo}>
-          <Title>Subir consumos</Title>
+          <Title>Subir imagen de beneficio</Title>
 
           <form
             method="post"
@@ -47,12 +46,12 @@ export default function BenefitConsumptionCreateRoute() {
             action={`/admin/dashboard/benefits/${benefitId}/consumptions/csv`}
             noValidate
           >
-            <Label description="Archivo CSV" htmlFor="csvFile">
+            <Label description="Seleccionar imagen" htmlFor="imageInput">
               <input
-                id="csvFile"
+                id="imageInput"
                 type="file"
-                name="csvFile"
-                accept=".csv"
+                name="image"
+                accept=".png,.jpeg,.jpg"
                 className="my-3 block"
                 // disabled={inProcess}
               />

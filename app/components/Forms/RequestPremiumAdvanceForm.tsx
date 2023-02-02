@@ -7,6 +7,7 @@ import { Input } from '../FormFields/Input'
 import { SubmitButton } from '../SubmitButton'
 import { calculatePremiumAdvanceValidator } from '~/schemas/calculate-premium-advance.schema'
 import { CALCULATE_SUBACTION } from '~/routes/dashboard/premium-advances/new'
+import { ButtonColorVariants } from '../Button'
 
 interface RequestPremiumAdvanceFormProps {
   requestReasons: Pick<RequestReason, 'id' | 'name'>[]
@@ -57,7 +58,13 @@ export const RequestPremiumAdvanceForm = ({
 
       <input type="hidden" name="subaction" value={CALCULATE_SUBACTION} />
 
-      <SubmitButton variant={!hasCalculationData ? 'PRIMARY' : 'LIGHT'}>
+      <SubmitButton
+        variant={
+          !hasCalculationData
+            ? ButtonColorVariants.PRIMARY
+            : ButtonColorVariants.SECONDARY
+        }
+      >
         Calcular
       </SubmitButton>
     </ValidatedForm>
