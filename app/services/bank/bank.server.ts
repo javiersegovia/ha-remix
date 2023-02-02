@@ -1,15 +1,19 @@
 import type { Bank } from '@prisma/client'
-import { validationError } from 'remix-validated-form'
-import { prisma } from '~/db.server'
 import type { EmployeeSchemaInput } from '~/services/employee/employee.schema'
 import type { BankSchema } from './bank.schema'
+
+import { validationError } from 'remix-validated-form'
 import { badRequest } from 'remix-utils'
+import { prisma } from '~/db.server'
 
 export const getBanks = () => {
   return prisma.bank.findMany({
     select: {
       id: true,
       name: true,
+    },
+    orderBy: {
+      name: 'asc',
     },
   })
 }
@@ -27,18 +31,20 @@ export const getBankById = async (id: Bank['id']) => {
 }
 
 export const createBank = async (data: BankSchema) => {
+  const { name } = data
   return prisma.bank.create({
-    data,
+    data: { name },
   })
 }
 
 export const updateBankById = async (id: Bank['id'], data: BankSchema) => {
+  const { name } = data
   try {
     return prisma.bank.update({
       where: {
         id,
       },
-      data,
+      data: { name },
     })
   } catch (e) {
     console.error(e)

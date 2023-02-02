@@ -19,7 +19,7 @@ export const bankSchema = z.object({
       invalid_type_error: 'El nombre debe tener formato de texto',
     })
     .trim()
-    .min(2, {
+    .min(5, {
       message: 'Por favor, ingrese un nombre',
     }),
 })
