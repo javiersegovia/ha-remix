@@ -12,3 +12,16 @@ export const bankAccountSchema = z.object({
     })
     .nullish(),
 })
+
+export const bankSchema = z.object({
+  name: z
+    .string({
+      invalid_type_error: 'El nombre debe tener formato de texto',
+    })
+    .trim()
+    .min(2, {
+      message: 'Por favor, ingrese un nombre',
+    }),
+})
+
+export type BankSchema = z.infer<typeof bankSchema>
