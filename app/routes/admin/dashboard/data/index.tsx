@@ -22,6 +22,7 @@ export const loader: LoaderFunction = async ({ request }) => {
 
   const [
     banks,
+    benefitCategories,
     jobPositions,
     jobDepartments,
     companyCategories,
@@ -34,6 +35,7 @@ export const loader: LoaderFunction = async ({ request }) => {
     identityDocumentTypes,
   ] = await Promise.all([
     prisma.bank.count(),
+    prisma.benefitCategory.count(),
     prisma.jobPosition.count(),
     prisma.jobDepartment.count(),
     prisma.companyCategory.count(),
@@ -70,6 +72,11 @@ export const loader: LoaderFunction = async ({ request }) => {
       items: ['Categorías de compañías', companyCategories],
       href: '/admin/dashboard/data/company-categories',
       isDisabled: true,
+    },
+    {
+      rowId: 'benefit-categories',
+      items: ['Categorías de beneficios', benefitCategories],
+      href: '/admin/dashboard/data/benefit-categories',
     },
     {
       rowId: 'cities',

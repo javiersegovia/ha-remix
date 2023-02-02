@@ -1,3 +1,4 @@
+import { withZod } from '@remix-validated-form/with-zod'
 import { z } from 'zod'
 
 export const benefitCategorySchema = z.object({
@@ -11,4 +12,5 @@ export const benefitCategorySchema = z.object({
     }),
 })
 
+export const benefitCategoryValidator = withZod(benefitCategorySchema)
 export type BenefitCategoryInputSchema = z.infer<typeof benefitCategorySchema>
