@@ -53,7 +53,6 @@ export const loader: LoaderFunction = async ({ request }) => {
       rowId: 'job-departments',
       items: ['Áreas de trabajo', jobDepartments],
       href: '/admin/dashboard/data/job-departments',
-      isDisabled: true,
     },
     {
       rowId: 'banks',
