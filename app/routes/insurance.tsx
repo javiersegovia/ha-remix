@@ -51,7 +51,7 @@ const InsuranceRoute = () => {
 
       <section className="steps bg-steelBlue-100/50 py-14">
         <div className="container mx-auto px-4 xl:px-28">
-          <h3 className="text-steelBlue-800 text-2xl font-bold lg:text-4xl">
+          <h3 className="text-2xl font-bold text-steelBlue-800 lg:text-4xl">
             Sólo necesitas <span className="text-purple-600">6 pasos</span> para
             reportar el siniestro:
           </h3>
@@ -62,7 +62,7 @@ const InsuranceRoute = () => {
                 <span className="inline-block w-10 text-center text-4xl font-bold text-purple-600">
                   1
                 </span>
-                <p className='text-steelBlue-800'>
+                <p className="text-steelBlue-800">
                   Ingresa a{' '}
                   <span className="font-semibold">sbseguros.syc.com.co</span>{' '}
                   dando clic en el botón reportar
@@ -73,7 +73,7 @@ const InsuranceRoute = () => {
                 <span className="inline-block w-10 text-center text-4xl font-bold text-purple-600">
                   2
                 </span>
-                <p className='text-steelBlue-800'>
+                <p className="text-steelBlue-800">
                   Selecciona la opción{' '}
                   <span className="font-semibold">ACCIDENTES PERSONALES</span>
                 </p>
@@ -83,28 +83,34 @@ const InsuranceRoute = () => {
                 <span className="inline-block w-10 text-center text-4xl font-bold text-purple-600">
                   3
                 </span>
-                <p className='text-steelBlue-800'>Aceptar la política de tratamiento de datos</p>
+                <p className="text-steelBlue-800">
+                  Aceptar la política de tratamiento de datos
+                </p>
               </ul>
 
               <ul className="flex items-center gap-x-4 text-base lg:text-2xl">
                 <span className="inline-block w-10 text-center text-4xl font-bold text-purple-600">
                   4
                 </span>
-                <p className='text-steelBlue-800'>Llenar los datos solicitados</p>
+                <p className="text-steelBlue-800">
+                  Llenar los datos solicitados
+                </p>
               </ul>
 
               <ul className="flex items-center gap-x-4 text-base lg:text-2xl">
                 <span className="inline-block w-10 text-center text-4xl font-bold text-purple-600">
                   5
                 </span>
-                <p className='text-steelBlue-800'>Te llegará a tu correo un número de solicitud</p>
+                <p className="text-steelBlue-800">
+                  Te llegará a tu correo un número de solicitud
+                </p>
               </ul>
 
               <ul className="flex items-center gap-x-4 text-base lg:text-2xl">
                 <span className="inline-block w-10 text-center text-4xl font-bold text-purple-600">
                   6
                 </span>
-                <p className='text-steelBlue-800'>
+                <p className="text-steelBlue-800">
                   La compañía de seguros se contactará para realizar el pago de
                   la indemnización
                 </p>
@@ -130,7 +136,7 @@ const InsuranceRoute = () => {
 
       <section className="relative">
         <section className="container mx-auto mt-12 px-4 lg:mt-28 xl:px-28">
-          <h3 className="text-steelBlue-800 mb-12 text-2xl font-bold lg:text-4xl 2xl:text-5xl">
+          <h3 className="mb-12 text-2xl font-bold text-steelBlue-800 lg:text-4xl 2xl:text-5xl">
             Este seguro te da el amparo de dos accidentes:
           </h3>
           <div className="grid items-center sm:grid-cols-2">
@@ -183,7 +189,7 @@ const InsuranceRoute = () => {
               />
             </div>
             <div>
-              <h3 className="text-steelBlue-800 max-w-md text-[32px] font-bold leading-10">
+              <h3 className="max-w-md text-[32px] font-bold leading-10 text-steelBlue-800">
                 Tu bienestar para nosotros es importante
               </h3>
               <p className="mt-6 text-xl font-medium text-steelBlue-700 lg:max-w-xs">
@@ -195,32 +201,58 @@ const InsuranceRoute = () => {
       </section>
 
       <section className="footer bg-steelBlue-800">
-        <div className="footerbar px-5 py-10 md:flex items-center px-4  lg:ml-16 ">
+        <div className="footerbar items-center px-5 py-10 px-4 md:flex  lg:ml-16 ">
           <img
             className="logo"
             src="/images/routes/insurance/Logo.png"
             alt="HoyTrabajas Logo"
           />
-          <div className='md:flex items-center md:ml-40 lg:block  lg:ml-[249px] 2xl:ml-[348px]'>
-            <p className='text-electricYellow-500 px-2 pt-2 md:mr-10 lg:px-0'>Síguenos</p>
+          <div className="items-center md:ml-40 md:flex lg:ml-[249px]  lg:block 2xl:ml-[348px]">
+            <p className="px-2 pt-2 text-electricYellow-500 md:mr-10 lg:px-0">
+              Síguenos
+            </p>
 
             <div className="mt-4 ml-[7px] flex items-center gap-2 text-2xl text-white md:ml-0">
-              <a href="https://www.instagram.com/hoytrabajas/" target="_blank" rel="noopener noreferrer">
+              <a
+                href="https://www.instagram.com/hoytrabajas/"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 <FaInstagram />
               </a>
-              <a href="https://es.linkedin.com/company/hoytrabajas" target="_blank" rel="noopener noreferrer">
+              <a
+                href="https://es.linkedin.com/company/hoytrabajas"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 <FaLinkedinIn />
               </a>
-              <a href="https://www.facebook.com/HoyTrabajasLatam" target="_blank" rel="noopener noreferrer">
+              <a
+                href="https://www.facebook.com/HoyTrabajasLatam"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 <FaFacebookF />
               </a>
-              <a href="https://www.tiktok.com/@hoytrabajas" target="_blank" rel="noopener noreferrer">
+              <a
+                href="https://www.tiktok.com/@hoytrabajas"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 <FaTiktok />
               </a>
-              <a href="https://api.whatsapp.com/send/?phone=573118208820&text&type=phone_number&app_absent=0" target="_blank" rel="noopener noreferrer">
+              <a
+                href="https://api.whatsapp.com/send/?phone=573118208820&text&type=phone_number&app_absent=0"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 <FaWhatsapp />
               </a>
-              <a href="https://www.youtube.com/channel/UCRpq_yKpzlfIJCb3hykUA9g" target="_blank" rel="noopener noreferrer">
+              <a
+                href="https://www.youtube.com/channel/UCRpq_yKpzlfIJCb3hykUA9g"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 <FaYoutube />
               </a>
             </div>
