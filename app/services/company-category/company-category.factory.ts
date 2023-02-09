@@ -5,7 +5,7 @@ import { Factory } from 'fishery'
 import { prisma } from '~/db.server'
 
 export const CompanyCategoryFactory = Factory.define<CompanyCategory>(
-  ({ onCreate }) => {
+  ({ onCreate, sequence }) => {
     onCreate((companyCategory) => {
       const { ...companyCategoryData } = companyCategory
 
@@ -17,7 +17,7 @@ export const CompanyCategoryFactory = Factory.define<CompanyCategory>(
     })
 
     return {
-      id: faker.datatype.number(),
+      id: sequence,
       createdAt: new Date(),
       updatedAt: new Date(),
       name: faker.datatype.uuid(), // We use "uuid" instead of a name, to make sure it is an unique value
