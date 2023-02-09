@@ -32,7 +32,7 @@ export default function JobDepartmentIndexRoute() {
 
   const rows: TableRowProps[] = jobDepartments?.map((jobDepartments) => ({
     rowId: jobDepartments.id,
-    href: `/admin/dashboard/data/job-department/${jobDepartments.id}`,
+    href: `/admin/dashboard/data/job-departments/${jobDepartments.id}`,
     items: [jobDepartments.name],
   }))
 
@@ -44,7 +44,7 @@ export default function JobDepartmentIndexRoute() {
           title="Área de trabajo"
           actions={
             <Button href="create" size="SM">
-              Crear Área de trabajo
+              Crear área de trabajo
             </Button>
           }
         />
