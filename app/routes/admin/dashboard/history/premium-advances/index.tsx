@@ -1,4 +1,4 @@
-import type { LoaderFunction, MetaFunction } from '@remix-run/server-runtime'
+import type { LoaderArgs, MetaFunction } from '@remix-run/server-runtime'
 
 import { useLoaderData } from '@remix-run/react'
 import { json } from '@remix-run/server-runtime'
@@ -7,16 +7,12 @@ import { requireAdminUserId } from '~/session.server'
 import { getPremiumAdvances } from '~/services/premium-advance/premium-advance.server'
 import { PremiumAdvanceList } from '~/components/Lists/PremiumAdvanceList'
 
-type LoaderData = {
-  premiumAdvances: Awaited<ReturnType<typeof getPremiumAdvances>>
-}
-
-export const loader: LoaderFunction = async ({ request }) => {
+export const loader = async ({ request }: LoaderArgs) => {
   await requireAdminUserId(request)
 
   const premiumAdvances = await getPremiumAdvances()
 
-  return json<LoaderData>({
+  return json({
     premiumAdvances,
   })
 }
@@ -28,7 +24,7 @@ export const meta: MetaFunction = () => {
 }
 
 export default function PremiumAdvancesIndexRoute() {
-  const { premiumAdvances } = useLoaderData<LoaderData>()
+  const { premiumAdvances } = useLoaderData<typeof loader>()
 
   return (
     <>

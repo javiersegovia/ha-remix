@@ -162,6 +162,7 @@ describe('LOADER /dashboard/overview', () => {
         imageUrl: benefitLite_1.imageUrl,
         slug: benefitLite_1.slug,
         benefitCategoryId: null,
+        mainImageId: null,
       },
     ])
   })
@@ -215,6 +216,7 @@ describe('LOADER /dashboard/overview', () => {
         imageUrl: benefitLite_2.imageUrl,
         slug: benefitLite_2.slug,
         benefitCategoryId: null,
+        mainImageId: null,
       },
       {
         id: benefitPremium_2.id,
@@ -226,6 +228,7 @@ describe('LOADER /dashboard/overview', () => {
         imageUrl: benefitPremium_2.imageUrl,
         slug: benefitPremium_2.slug,
         benefitCategoryId: null,
+        mainImageId: null,
       },
     ])
   })

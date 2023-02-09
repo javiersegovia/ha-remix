@@ -1,11 +1,12 @@
+import type { LoaderArgs } from '@remix-run/server-runtime'
+
 import { useLoaderData, useTransition } from '@remix-run/react'
-import type { LoaderFunction } from '@remix-run/server-runtime'
 import { json } from '@remix-run/server-runtime'
 import { badRequest } from 'remix-utils'
 import { Button } from '~/components/Button'
 import { requireAdminUserId } from '~/session.server'
 
-export const loader: LoaderFunction = async ({ request, params }) => {
+export const loader = async ({ request, params }: LoaderArgs) => {
   await requireAdminUserId(request)
   const { companyId } = params
 
@@ -17,7 +18,7 @@ export const loader: LoaderFunction = async ({ request, params }) => {
 }
 
 export default function AdminDashboardEmployeesUploadRoute() {
-  const { companyId } = useLoaderData()
+  const { companyId } = useLoaderData<typeof loader>()
   const transition = useTransition()
   const inProcess = transition.state !== 'idle'
 

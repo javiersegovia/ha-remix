@@ -1,4 +1,4 @@
-import type { ActionFunction, LoaderFunction } from '@remix-run/server-runtime'
+import type { ActionArgs, LoaderArgs } from '@remix-run/server-runtime'
 
 import { json, redirect } from '@remix-run/server-runtime'
 import { useLoaderData } from '@remix-run/react'
@@ -15,12 +15,7 @@ import {
 import { requireAdminUserId } from '~/session.server'
 import { benefitSubproductValidator } from '~/services/benefit-subproduct/benefit-subproduct.schema'
 
-type LoaderData = {
-  benefitId: string
-  subproduct: NonNullable<Awaited<ReturnType<typeof getBenefitSubproductById>>>
-}
-
-export const loader: LoaderFunction = async ({ request, params }) => {
+export const loader = async ({ request, params }: LoaderArgs) => {
   await requireAdminUserId(request)
 
   const { benefitId, subproductId } = params
@@ -39,13 +34,13 @@ export const loader: LoaderFunction = async ({ request, params }) => {
     })
   }
 
-  return json<LoaderData>({
+  return json({
     benefitId,
     subproduct,
   })
 }
 
-export const action: ActionFunction = async ({ request, params }) => {
+export const action = async ({ request, params }: ActionArgs) => {
   await requireAdminUserId(request)
 
   const { benefitId, subproductId } = params
@@ -78,7 +73,7 @@ export const action: ActionFunction = async ({ request, params }) => {
 }
 
 export default function BenefitSubproductDetailsRoute() {
-  const { benefitId, subproduct } = useLoaderData<LoaderData>()
+  const { benefitId, subproduct } = useLoaderData<typeof loader>()
 
   const onCloseRedirectTo = `/admin/dashboard/benefits/${benefitId}/subproducts`
 

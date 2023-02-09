@@ -1,3 +1,4 @@
+import type { LoaderArgs, MetaFunction } from '@remix-run/server-runtime'
 import { useFetcher, useLoaderData } from '@remix-run/react'
 
 import { FaHandHolding, FaHandHoldingUsd } from 'react-icons/fa'
@@ -6,7 +7,6 @@ import { json } from '@remix-run/node'
 import { CurrencySymbol } from '~/components/FormFields/CurrencyInput'
 
 import { Title } from '~/components/Typography/Title'
-import type { LoaderFunction, MetaFunction } from '@remix-run/server-runtime'
 import { requireAdminUserId } from '~/session.server'
 import { getLastPaymentMonths } from '~/utils/paymentMonths'
 import { getMonthlyOverview } from '~/services/payroll-advance/payroll-advance.server'
@@ -20,10 +20,6 @@ import { z } from 'zod'
 
 const lastPaymentMonths = getLastPaymentMonths()
 
-type LoaderData = {
-  data: Awaited<ReturnType<typeof getMonthlyOverview>>
-}
-
 const validator = withZod(z.object({ month: z.string() }))
 
 export const meta: MetaFunction = () => {
@@ -32,19 +28,20 @@ export const meta: MetaFunction = () => {
   }
 }
 
-export const loader: LoaderFunction = async ({ request }) => {
+export const loader = async ({ request }: LoaderArgs) => {
   await requireAdminUserId(request)
   const url = new URL(request.url)
   const month = url.searchParams.get('month')
   const data = await getMonthlyOverview(month || lastPaymentMonths[0].id)
-  return json<LoaderData>({ data })
+
+  return json(data)
 }
 
 export default function AdminDashboardIndexRoute() {
-  const { data: loaderData } = useLoaderData<LoaderData>()
+  const loaderData = useLoaderData<typeof loader>()
+  const fetcher = useFetcher<typeof loader>()
 
-  const fetcher = useFetcher<LoaderData>()
-  const { overview, requestDays } = fetcher?.data?.data || loaderData
+  const { overview, requestDays } = fetcher?.data || loaderData
 
   return (
     <>

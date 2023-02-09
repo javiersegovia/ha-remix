@@ -1,4 +1,4 @@
-import type { ActionFunction, LoaderFunction } from '@remix-run/server-runtime'
+import type { ActionArgs, LoaderArgs } from '@remix-run/server-runtime'
 
 import { json } from '@remix-run/node'
 import { useLoaderData } from '@remix-run/react'
@@ -16,12 +16,7 @@ import {
 } from '~/services/membership/membership.server'
 import { getBenefits } from '~/services/benefit/benefit.server'
 
-type LoaderData = {
-  membership: NonNullable<Awaited<ReturnType<typeof getMembershipById>>>
-  benefits: Awaited<ReturnType<typeof getBenefits>>
-}
-
-export const loader: LoaderFunction = async ({ request, params }) => {
+export const loader = async ({ request, params }: LoaderArgs) => {
   await requireAdminUserId(request)
   const { membershipId } = params
 
@@ -38,13 +33,13 @@ export const loader: LoaderFunction = async ({ request, params }) => {
       message: 'No se ha encontrado información sobre la membresía',
     })
   }
-  return json<LoaderData>({
+  return json({
     membership,
     benefits: await getBenefits(),
   })
 }
 
-export const action: ActionFunction = async ({ request, params }) => {
+export const action = async ({ request, params }: ActionArgs) => {
   await requireAdminUserId(request)
 
   const { membershipId } = params
@@ -78,7 +73,7 @@ export const action: ActionFunction = async ({ request, params }) => {
 }
 
 export default function UpdateMembershipRoute() {
-  const { membership, benefits } = useLoaderData<LoaderData>()
+  const { membership, benefits } = useLoaderData<typeof loader>()
   const onCloseRedirectTo = '/admin/dashboard/memberships'
 
   return (

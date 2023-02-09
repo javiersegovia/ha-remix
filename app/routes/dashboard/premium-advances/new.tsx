@@ -1,4 +1,4 @@
-import type { ActionFunction, LoaderFunction } from '@remix-run/server-runtime'
+import type { ActionArgs, LoaderArgs } from '@remix-run/server-runtime'
 import type { CalculatePremiumAdvanceSchemaInput } from '~/schemas/calculate-premium-advance.schema'
 import type { ITaxItem } from '~/services/payroll-advance/payroll-advance.interface'
 
@@ -41,7 +41,7 @@ type PremiumAdvancesNewRouteLoaderErrorData = {
   errorMessage: string | null
 }
 
-export const loader: LoaderFunction = async ({ request }) => {
+export const loader = async ({ request }: LoaderArgs) => {
   const employee = await requireEmployee(request)
 
   const enabledBenefits = await getEmployeeEnabledBenefits(
@@ -93,7 +93,7 @@ type CalculatePremiumAdvanceActionData = {
 export const CALCULATE_SUBACTION = 'calculate'
 export const CREATE_PREMIUM_ADVANCE_SUBACTION = 'create_premium_advance'
 
-export const action: ActionFunction = async ({ request }) => {
+export const action = async ({ request }: ActionArgs) => {
   const employee = await requireEmployee(request)
 
   const enabledBenefits = await getEmployeeEnabledBenefits(
@@ -169,9 +169,7 @@ export const action: ActionFunction = async ({ request }) => {
 }
 
 const PremiumAdvancesNewRoute = () => {
-  const loaderData = useLoaderData<
-    PremiumAdvancesNewRouteLoaderData | PremiumAdvancesNewRouteLoaderErrorData
-  >()
+  const loaderData = useLoaderData<typeof loader>()
 
   const {
     totalAmount,

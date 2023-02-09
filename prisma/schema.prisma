@@ -764,9 +764,14 @@ model Benefit {
 
   slug       String?
   name       String
-  imageUrl   String?
   buttonText String?
   buttonHref String?
+
+  // @deprecated Use "mainImage" instead
+  imageUrl   String?
+
+  mainImage   Image?  @relation(fields: [mainImageId], references: [id], onDelete: SetNull)
+  mainImageId String?
 
   benefitCategory   BenefitCategory? @relation(fields: benefitCategoryId, references: id, onDelete: SetNull)
   benefitCategoryId Int?
@@ -813,6 +818,17 @@ model BenefitCategory {
   updatedAt DateTime @updatedAt
 
   name String
+
+  benefits Benefit[]
+}
+
+model Image {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  url String
+  key String @unique
 
   benefits Benefit[]
 }

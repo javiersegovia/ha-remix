@@ -1,7 +1,11 @@
+import type { Benefit, Prisma } from '@prisma/client'
 import type { BenefitInputSchema } from './benefit.schema'
+
 import { prisma } from '~/db.server'
 import { badRequest, notFound } from 'remix-utils'
-import type { Benefit } from '@prisma/client'
+import { getS3ObjectUrl } from '../aws/s3.server'
+import { connect, connectOrDisconnect } from '~/utils/relationships'
+import { deleteImageByKey } from '../image/image.server'
 
 export const getBenefits = async () => {
   return prisma.benefit.findMany({
@@ -27,6 +31,14 @@ export const getBenefitById = async (benefitId: Benefit['id']) => {
       buttonText: true,
       buttonHref: true,
       slug: true,
+      benefitCategoryId: true,
+      mainImage: {
+        select: {
+          id: true,
+          key: true,
+          url: true,
+        },
+      },
       subproducts: {
         select: {
           id: true,
@@ -43,7 +55,18 @@ export const createBenefit = async ({
   buttonText,
   buttonHref,
   slug,
+  mainImageKey,
+  benefitCategoryId,
 }: BenefitInputSchema) => {
+  const mainImage: Prisma.BenefitCreateInput['mainImage'] = mainImageKey
+    ? {
+        create: {
+          key: mainImageKey,
+          url: getS3ObjectUrl(mainImageKey),
+        },
+      }
+    : undefined
+
   try {
     return prisma.benefit.create({
       data: {
@@ -52,6 +75,8 @@ export const createBenefit = async ({
         buttonText,
         buttonHref,
         slug,
+        benefitCategory: connect(benefitCategoryId),
+        mainImage,
       },
       select: {
         id: true,
@@ -70,23 +95,59 @@ export const updateBenefitById = async (
   data: BenefitInputSchema,
   benefitId: Benefit['id']
 ) => {
-  const benefit = await prisma.benefit.findFirst({
+  const benefitToUpdate = await prisma.benefit.findFirst({
     where: {
       id: benefitId,
     },
+    select: {
+      id: true,
+      benefitCategoryId: true,
+      mainImage: {
+        select: {
+          id: true,
+          key: true,
+          url: true,
+        },
+      },
+    },
   })
 
-  if (!benefit) {
+  if (!benefitToUpdate) {
     throw notFound(null, {
       statusText: 'No se pudo encontrar el beneficio a actualizar',
     })
   }
 
-  const { name, imageUrl, buttonText, buttonHref, slug } = data
+  const {
+    name,
+    imageUrl,
+    buttonText,
+    buttonHref,
+    slug,
+    mainImageKey,
+    benefitCategoryId,
+    delete_mainImage,
+  } = data
+  const existingMainImage = benefitToUpdate.mainImage
+
+  /** We will delete the existingMainImage ONLY if we receive a new mainImageKey or the delete_mainImage checkbox field as true. (Check ImageInput Component)
+   */
+  if (existingMainImage && (mainImageKey || delete_mainImage)) {
+    await deleteImageByKey(existingMainImage.key)
+  }
+
+  const mainImage: Prisma.BenefitUpdateInput['mainImage'] = mainImageKey
+    ? {
+        create: {
+          key: mainImageKey,
+          url: getS3ObjectUrl(mainImageKey),
+        },
+      }
+    : undefined
 
   return prisma.benefit.update({
     where: {
-      id: benefit.id,
+      id: benefitToUpdate.id,
     },
     data: {
       name,
@@ -94,6 +155,11 @@ export const updateBenefitById = async (
       buttonText: buttonText || null,
       buttonHref: buttonHref || null,
       slug: slug || null,
+      mainImage,
+      benefitCategory: connectOrDisconnect(
+        benefitCategoryId,
+        Boolean(benefitToUpdate.benefitCategoryId)
+      ),
     },
     select: {
       id: true,
@@ -103,6 +169,29 @@ export const updateBenefitById = async (
 }
 
 export const deleteBenefitById = async (benefitId: Benefit['id']) => {
+  const benefitToDelete = await prisma.benefit.findUnique({
+    where: {
+      id: benefitId,
+    },
+    select: {
+      id: true,
+      mainImage: {
+        select: {
+          id: true,
+          key: true,
+        },
+      },
+    },
+  })
+
+  if (!benefitToDelete) {
+    return null
+  }
+
+  if (benefitToDelete.mainImage) {
+    await deleteImageByKey(benefitToDelete.mainImage.key)
+  }
+
   try {
     const deleted = await prisma.benefit.delete({
       where: {

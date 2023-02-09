@@ -1,4 +1,4 @@
-import type { LoaderFunction } from '@remix-run/server-runtime'
+import type { LoaderArgs } from '@remix-run/server-runtime'
 import type { TabItem } from '~/components/Tabs/Tabs'
 
 import { Link, Outlet, useLoaderData } from '@remix-run/react'
@@ -10,11 +10,7 @@ import { requireAdminUserId } from '~/session.server'
 import { Container } from '~/components/Layout/Container'
 import { Tabs } from '~/components/Tabs/Tabs'
 
-type LoaderData = {
-  benefitId: string
-}
-
-export const loader: LoaderFunction = async ({ request, params }) => {
+export const loader = async ({ request, params }: LoaderArgs) => {
   await requireAdminUserId(request)
   const { benefitId } = params
 
@@ -24,13 +20,13 @@ export const loader: LoaderFunction = async ({ request, params }) => {
     })
   }
 
-  return json<LoaderData>({
+  return json({
     benefitId,
   })
 }
 
 export default function UpdateBenefitRoute() {
-  const { benefitId } = useLoaderData<LoaderData>()
+  const { benefitId } = useLoaderData<typeof loader>()
 
   const tabItems: TabItem[] = [
     {
@@ -44,10 +40,6 @@ export default function UpdateBenefitRoute() {
     {
       title: 'Consumo',
       path: `/admin/dashboard/benefits/${benefitId}/consumptions`,
-    },
-    {
-      title: 'Imágenes',
-      path: `/admin/dashboard/benefits/${benefitId}/images`,
     },
   ]
 

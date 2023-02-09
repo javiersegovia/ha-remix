@@ -1,4 +1,4 @@
-import type { LoaderFunction, MetaFunction } from '@remix-run/server-runtime'
+import type { LoaderArgs, MetaFunction } from '@remix-run/server-runtime'
 
 import { useLoaderData } from '@remix-run/react'
 import { json } from '@remix-run/server-runtime'
@@ -7,16 +7,12 @@ import { requireAdminUserId } from '~/session.server'
 import { getPayrollAdvances } from '~/services/payroll-advance/payroll-advance.server'
 import { PayrollAdvanceList } from '~/components/Lists/PayrollAdvanceList'
 
-type LoaderData = {
-  payrollAdvances: Awaited<ReturnType<typeof getPayrollAdvances>>
-}
-
-export const loader: LoaderFunction = async ({ request }) => {
+export const loader = async ({ request }: LoaderArgs) => {
   await requireAdminUserId(request)
 
   const payrollAdvances = await getPayrollAdvances()
 
-  return json<LoaderData>({
+  return json({
     payrollAdvances,
   })
 }
@@ -28,7 +24,7 @@ export const meta: MetaFunction = () => {
 }
 
 export default function AdminPayrollAdvancesIndexRoute() {
-  const { payrollAdvances } = useLoaderData<LoaderData>()
+  const { payrollAdvances } = useLoaderData<typeof loader>()
 
   return (
     <>

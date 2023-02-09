@@ -14,6 +14,7 @@ describe('AdminDashboardDataIndexRoute Loader', () => {
     vi.spyOn(prisma.jobPosition, 'count').mockResolvedValue(5)
     vi.spyOn(prisma.jobDepartment, 'count').mockResolvedValue(4)
     vi.spyOn(prisma.companyCategory, 'count').mockResolvedValue(2)
+    vi.spyOn(prisma.benefitCategory, 'count').mockResolvedValue(10)
     vi.spyOn(prisma.city, 'count').mockResolvedValue(6)
     vi.spyOn(prisma.state, 'count').mockResolvedValue(8)
     vi.spyOn(prisma.gender, 'count').mockResolvedValue(2)
@@ -34,67 +35,72 @@ describe('AdminDashboardDataIndexRoute Loader', () => {
     expect(result).toEqual({
       rows: [
         {
-          key: 'job-departments',
+          rowId: 'job-departments',
           items: ['Áreas de trabajo', 4],
           href: '/admin/dashboard/data/job-departments',
           isDisabled: true,
         },
         {
-          key: 'banks',
+          rowId: 'banks',
           items: ['Bancos', 3],
           href: '/admin/dashboard/data/banks',
           isDisabled: true,
         },
         {
-          key: 'job-positions',
+          rowId: 'job-positions',
           items: ['Cargos de trabajo', 5],
           href: '/admin/dashboard/data/job-positions',
           isDisabled: true,
         },
         {
-          key: 'company-categories',
+          rowId: 'company-categories',
           items: ['Categorías de compañías', 2],
           href: '/admin/dashboard/data/company-categories',
           isDisabled: true,
         },
         {
-          key: 'cities',
+          rowId: 'benefit-categories',
+          items: ['Categorías de beneficios', 10],
+          href: '/admin/dashboard/data/benefit-categories',
+        },
+        {
+          rowId: 'cities',
           items: ['Ciudades', 6],
           href: '/admin/dashboard/data/cities',
           isDisabled: true,
         },
         {
-          key: 'states',
+          rowId: 'states',
           items: ['Estados', 8],
           href: '/admin/dashboard/data/states',
           isDisabled: true,
         },
         {
-          key: 'genders',
+          rowId: 'genders',
           items: ['Géneros', 2],
           href: '/admin/dashboard/data/genders',
           isDisabled: true,
         },
         {
-          key: 'currencies',
+          rowId: 'currencies',
           items: ['Monedas', 3],
           href: '/admin/dashboard/data/currencies',
           isDisabled: true,
         },
         {
-          key: 'countries',
+          rowId: 'countries',
           items: ['Países', 5],
           href: '/admin/dashboard/data/countries',
           isDisabled: true,
         },
         {
-          key: 'bank-account-types',
+          rowId: 'bank-account-types',
           items: ['Tipos de cuenta bancaria', 2],
           href: '/admin/dashboard/data/bank-account-types',
           isDisabled: true,
         },
         {
-          key: 'identity-document-types',
+          rowId: 'identity-document-types',
           items: ['Tipos de documento de identidad', 4],
           href: '/admin/dashboard/data/identity-document-types',
           isDisabled: true,

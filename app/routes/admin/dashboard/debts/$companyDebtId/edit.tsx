@@ -1,5 +1,5 @@
 import type { ActionFunction } from '@remix-run/server-runtime'
-import type { CompanyDebtLoaderData } from '../$companyDebtId'
+import type { loader as companyDebtLoader } from '../$companyDebtId'
 
 import { redirect } from '@remix-run/server-runtime'
 import { badRequest } from 'remix-utils'
@@ -53,7 +53,8 @@ export default function UpdateDebtModalRoute() {
   const routeData = useMatchesData(
     'routes/admin/dashboard/debts/$companyDebtId'
   )
-  const { companyDebt } = (routeData as CompanyDebtLoaderData) || {}
+  const { companyDebt } =
+    (routeData as Awaited<ReturnType<typeof companyDebtLoader>>) || {}
 
   if (!companyDebt) {
     return null

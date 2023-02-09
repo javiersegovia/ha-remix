@@ -1,6 +1,6 @@
 import type {
-  ActionFunction,
-  LoaderFunction,
+  ActionArgs,
+  LoaderArgs,
   MetaFunction,
 } from '@remix-run/server-runtime'
 import { redirect } from '@remix-run/server-runtime'
@@ -37,17 +37,7 @@ import { updateEmployeeByAccountForm } from '~/services/employee/employee.server
 import { getBankAccountTypes } from '~/services/bank-account-type/bank-account-type.server'
 import { getIdentityDocumentTypes } from '~/services/identity-document-type/identity-document-type.server'
 
-type LoaderData = {
-  employee: Awaited<ReturnType<typeof requireEmployee>>
-  countries: Awaited<ReturnType<typeof getCountries>>
-  genders: Awaited<ReturnType<typeof getGenders>>
-  banks: Awaited<ReturnType<typeof getBanks>>
-  bankAccountTypes: Awaited<ReturnType<typeof getBankAccountTypes>>
-  identityDocumentTypes: Awaited<ReturnType<typeof getIdentityDocumentTypes>>
-  cryptocurrencies: Awaited<ReturnType<typeof getCryptocurrencies>>
-}
-
-export const loader: LoaderFunction = async ({ request }) => {
+export const loader = async ({ request }: LoaderArgs) => {
   const employee = await requireEmployee(request)
 
   const [
@@ -67,7 +57,7 @@ export const loader: LoaderFunction = async ({ request }) => {
     getCryptocurrencies(),
   ])
 
-  return json<LoaderData>({
+  return json({
     employee,
     countries,
     genders,
@@ -78,7 +68,7 @@ export const loader: LoaderFunction = async ({ request }) => {
   })
 }
 
-export const action: ActionFunction = async ({ request }) => {
+export const action = async ({ request }: ActionArgs) => {
   const employee = await requireEmployee(request)
 
   const { data, submittedData, error } = await editAccountValidator.validate(
@@ -109,7 +99,7 @@ export default function DashboardAccountRoute() {
     banks,
     bankAccountTypes,
     identityDocumentTypes,
-  } = useLoaderData<LoaderData>()
+  } = useLoaderData<typeof loader>()
 
   const {
     countryId,

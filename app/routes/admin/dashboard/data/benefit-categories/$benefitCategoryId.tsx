@@ -1,4 +1,4 @@
-import type { ActionFunction, LoaderFunction } from '@remix-run/server-runtime'
+import type { ActionArgs, LoaderArgs } from '@remix-run/server-runtime'
 
 import { redirect, json } from '@remix-run/node'
 import { useLoaderData } from '@remix-run/react'
@@ -17,13 +17,7 @@ import {
 } from '~/services/benefit-category/benefit-category.server'
 import { requireAdminUserId } from '~/session.server'
 
-type LoaderData = {
-  benefitCategory: NonNullable<
-    Awaited<ReturnType<typeof getBenefitCategoryById>>
-  >
-}
-
-export const loader: LoaderFunction = async ({ request, params }) => {
+export const loader = async ({ request, params }: LoaderArgs) => {
   await requireAdminUserId(request)
 
   const { benefitCategoryId } = params
@@ -39,10 +33,10 @@ export const loader: LoaderFunction = async ({ request, params }) => {
     throw badRequest('No se encontró la categoría de beneficio')
   }
 
-  return json<LoaderData>({ benefitCategory })
+  return json({ benefitCategory })
 }
 
-export const action: ActionFunction = async ({ request, params }) => {
+export const action = async ({ request, params }: ActionArgs) => {
   await requireAdminUserId(request)
 
   const { benefitCategoryId } = params
@@ -70,7 +64,7 @@ export const action: ActionFunction = async ({ request, params }) => {
 
 const onCloseRedirectTo = '/admin/dashboard/data/benefit-categories' as const
 export default function BenefitCategoryUpdateRoute() {
-  const { benefitCategory } = useLoaderData<LoaderData>()
+  const { benefitCategory } = useLoaderData<typeof loader>()
 
   return (
     <Modal onCloseRedirectTo={onCloseRedirectTo}>

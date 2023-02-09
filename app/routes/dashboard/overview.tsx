@@ -1,5 +1,5 @@
 import type { Gender, User } from '@prisma/client'
-import type { LoaderFunction } from '@remix-run/server-runtime'
+import type { LoaderArgs } from '@remix-run/server-runtime'
 
 import { Outlet, useLoaderData } from '@remix-run/react'
 import { json } from '@remix-run/server-runtime'
@@ -45,7 +45,7 @@ const getEmployeeData = (userId: string) => {
   })
 }
 
-export const loader: LoaderFunction = async ({ request, context: ctx }) => {
+export const loader = async ({ request, context: ctx }: LoaderArgs) => {
   const userId = await requireUserId(request)
 
   const employeeData = await getEmployeeData(userId)
@@ -57,7 +57,7 @@ export const loader: LoaderFunction = async ({ request, context: ctx }) => {
 
   if (!employeeData) throw await logout(request)
 
-  return json<DashboardIndexLoaderData>({
+  return json({
     gender: employeeData.gender,
     user: employeeData.user,
     benefits,
@@ -66,8 +66,7 @@ export const loader: LoaderFunction = async ({ request, context: ctx }) => {
 }
 
 export default function DashboardIndexRoute() {
-  const { gender, user, benefits, company } =
-    useLoaderData<DashboardIndexLoaderData>()
+  const { gender, user, benefits, company } = useLoaderData<typeof loader>()
 
   return (
     <>

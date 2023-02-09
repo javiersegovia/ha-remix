@@ -1,17 +1,14 @@
-import type { LoaderFunction, MetaFunction } from '@remix-run/node'
+import type { LoaderArgs, MetaFunction } from '@remix-run/node'
+
 import { json } from '@remix-run/node'
 import { useLoaderData } from '@remix-run/react'
-import { HiPlus } from 'react-icons/hi'
 
 import { getCompanies } from '~/services/company/company.server'
 import { requireAdminUserId } from '~/session.server'
-import { Title } from '~/components/Typography/Title'
-import { Button } from '~/components/Button'
+import { Button, ButtonIconVariants } from '~/components/Button'
 import { CompanyList } from '~/components/Lists/CompanyList'
-
-type LoaderData = {
-  companies: Awaited<ReturnType<typeof getCompanies>>
-}
+import { TitleWithActions } from '~/components/Layout/TitleWithActions'
+import { Container } from '~/components/Layout/Container'
 
 export const meta: MetaFunction = () => {
   return {
@@ -19,51 +16,39 @@ export const meta: MetaFunction = () => {
   }
 }
 
-export const loader: LoaderFunction = async ({ request }) => {
+export const loader = async ({ request }: LoaderArgs) => {
   await requireAdminUserId(request)
-  return json<LoaderData>({
+
+  return json({
     companies: await getCompanies(),
   })
 }
 
 export default function CompanyIndexRoute() {
-  const { companies } = useLoaderData<LoaderData>()
+  const { companies } = useLoaderData<typeof loader>()
 
   return (
-    <>
+    <Container>
+      <TitleWithActions
+        title="Compañías"
+        className="mb-10"
+        actions={
+          <Button
+            href="/admin/dashboard/companies/create"
+            className="flex items-center px-4"
+            size="SM"
+            icon={ButtonIconVariants.CREATE}
+          >
+            Crear compañía
+          </Button>
+        }
+      />
+
       {companies?.length > 0 ? (
-        <>
-          <div className="mb-8 mt-2 flex flex-col items-center lg:flex-row lg:items-center lg:justify-between">
-            <Title>Listado de compañías</Title>
-            <ManagementButtons />
-          </div>
-
-          <CompanyList companies={companies} />
-        </>
+        <CompanyList companies={companies} />
       ) : (
-        <div className="text-center">
-          <h2 className="mt-2 text-2xl font-medium">
-            La lista de compañías está vacía
-          </h2>
-          <div className="mt-4">
-            <ManagementButtons />
-          </div>
-        </div>
+        <p>No se han encontrado compañías</p>
       )}
-    </>
-  )
-}
-
-const ManagementButtons = () => {
-  return (
-    <div className="mt-4 flex w-full items-center justify-center gap-4 md:w-auto lg:mt-0">
-      <Button
-        href="/admin/dashboard/companies/create"
-        className="flex items-center px-4"
-      >
-        <HiPlus className="mr-3" />
-        Nueva compañía
-      </Button>
-    </div>
+    </Container>
   )
 }

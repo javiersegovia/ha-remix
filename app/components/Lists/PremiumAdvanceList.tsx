@@ -2,12 +2,17 @@ import type { Company, User, PremiumAdvance } from '@prisma/client'
 
 import { Link } from '@remix-run/react'
 import { formatDate } from '~/utils/formatDate'
+import { formatMoney } from '~/utils/formatMoney'
+import { CurrencySymbol } from '../FormFields/CurrencyInput'
 import { AdvanceStatusPill } from '../Pills/AdvanceStatusPill'
 import { TableData } from './TableData'
 import { TableHeading } from './TableHeading'
 
 export interface PremiumAdvanceListProps {
-  premiumAdvances: (Pick<PremiumAdvance, 'id' | 'status'> & {
+  premiumAdvances: (Pick<
+    PremiumAdvance,
+    'id' | 'status' | 'requestedAmount' | 'totalAmount'
+  > & {
     createdAt: string | Date
     company: Pick<Company, 'name'>
     employee?: {
@@ -53,6 +58,8 @@ export const PremiumAdvanceList = ({
               <thead className="bg-gray-50">
                 <tr>
                   <TableHeading title="Colaborador" />
+                  <TableHeading title="Dinero solicitado" isCentered />
+                  <TableHeading title="Total solicitado" isCentered />
                   <TableHeading title="Fecha de solicitud" isCentered />
 
                   {!hideColumns?.status && (
@@ -63,7 +70,13 @@ export const PremiumAdvanceList = ({
 
               <tbody className="divide-y divide-gray-200 bg-white">
                 {premiumAdvances.map(
-                  ({ employee, company, ...premiumAdvance }) => (
+                  ({
+                    employee,
+                    company,
+                    requestedAmount,
+                    totalAmount,
+                    ...premiumAdvance
+                  }) => (
                     <tr key={premiumAdvance.id} className="hover:bg-gray-100">
                       <td className="whitespace-nowrap px-6 py-4">
                         <Link
@@ -87,6 +100,22 @@ export const PremiumAdvanceList = ({
                           )}
                         </Link>
                       </td>
+
+                      <TableData isCentered>
+                        <div className="text-sm text-gray-900">
+                          {requestedAmount
+                            ? formatMoney(requestedAmount, CurrencySymbol.COP)
+                            : '-'}
+                        </div>
+                      </TableData>
+
+                      <TableData isCentered>
+                        <div className="text-sm text-gray-900">
+                          {totalAmount
+                            ? formatMoney(totalAmount, CurrencySymbol.COP)
+                            : '-'}
+                        </div>
+                      </TableData>
 
                       <TableData isCentered>
                         <div className="text-sm text-gray-900">

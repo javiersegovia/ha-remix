@@ -275,6 +275,15 @@ export const AdminEmployeeForm = ({
           </FormGridItem>
 
           <FormGridItem>
+            <Input
+              name="user.password"
+              type="password"
+              label="Contraseña"
+              placeholder="Contraseña del colaborador"
+            />
+          </FormGridItem>
+
+          <FormGridItem>
             <Select
               name="status"
               label="Estado"

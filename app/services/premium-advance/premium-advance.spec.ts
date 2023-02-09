@@ -36,6 +36,6 @@ describe('calculatePremiumAdvanceSpecs', () => {
 
     vi.useRealTimers()
 
-    console.log('date_now', new Date())
+    // console.log('date_now', new Date())
   })
 })

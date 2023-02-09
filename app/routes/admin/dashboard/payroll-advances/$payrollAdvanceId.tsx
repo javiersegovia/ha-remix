@@ -1,7 +1,7 @@
 import type { PayrollAdvanceStatus } from '@prisma/client'
 import type {
-  ActionFunction,
-  LoaderFunction,
+  ActionArgs,
+  LoaderArgs,
   MetaFunction,
 } from '@remix-run/server-runtime'
 
@@ -16,11 +16,7 @@ import {
 } from '~/services/payroll-advance/payroll-advance.server'
 import { requireAdminUser, requireAdminUserId } from '~/session.server'
 
-type LoaderData = {
-  payrollAdvance: NonNullable<Awaited<ReturnType<typeof getPayrollAdvanceById>>>
-}
-
-export const loader: LoaderFunction = async ({ request, params }) => {
+export const loader = async ({ request, params }: LoaderArgs) => {
   await requireAdminUserId(request)
   const { payrollAdvanceId } = params
 
@@ -40,12 +36,12 @@ export const loader: LoaderFunction = async ({ request, params }) => {
     })
   }
 
-  return json<LoaderData>({
+  return json({
     payrollAdvance,
   })
 }
 
-export const action: ActionFunction = async ({ request, params }) => {
+export const action = async ({ request, params }: ActionArgs) => {
   const adminUser = await requireAdminUser(request)
   const formData = await request.formData()
   const subaction = formData.get('subaction') as PayrollAdvanceStatus
@@ -80,14 +76,14 @@ export const action: ActionFunction = async ({ request, params }) => {
   return null
 }
 
-export const meta: MetaFunction = ({ data }) => {
+export const meta: MetaFunction<typeof loader> = ({ data }) => {
   if (!data) {
     return {
       title: 'Ha ocurrido un error | HoyAdelantas',
     }
   }
 
-  const { payrollAdvance } = data as LoaderData
+  const { payrollAdvance } = data
 
   const { employee } = payrollAdvance
   const { user } = employee || {}
@@ -105,7 +101,7 @@ export const meta: MetaFunction = ({ data }) => {
 }
 
 export default function AdminPayrollAdvanceDetailsRoute() {
-  const { payrollAdvance } = useLoaderData<LoaderData>()
+  const { payrollAdvance } = useLoaderData<typeof loader>()
 
   return (
     <PayrollAdvanceDetails

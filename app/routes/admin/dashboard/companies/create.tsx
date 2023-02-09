@@ -1,4 +1,4 @@
-import type { ActionArgs, LoaderFunction, MetaFunction } from '@remix-run/node'
+import type { ActionArgs, LoaderArgs, MetaFunction } from '@remix-run/node'
 
 import { useLoaderData } from '@remix-run/react'
 import { redirect } from '@remix-run/node'
@@ -17,15 +17,10 @@ import { CompanyForm } from '~/components/Forms/CompanyForm'
 import { FormActions } from '~/components/FormFields/FormActions'
 import { Title } from '~/components/Typography/Title'
 
-type LoaderData = {
-  companyCategories: Awaited<ReturnType<typeof getCompanyCategories>>
-  countries: Awaited<ReturnType<typeof getCountries>>
-  benefits: Awaited<ReturnType<typeof getBenefits>>
-}
-
-export const loader: LoaderFunction = async ({ request }) => {
+export const loader = async ({ request }: LoaderArgs) => {
   await requireAdminUserId(request)
-  return json<LoaderData>({
+
+  return json({
     companyCategories: await getCompanyCategories(),
     benefits: await getBenefits(),
     countries: await getCountries(),
@@ -65,7 +60,8 @@ export async function action({ request }: ActionArgs) {
 }
 
 export default function AdminDashboardCompaniesCreateRoute() {
-  const { countries, companyCategories, benefits } = useLoaderData<LoaderData>()
+  const { countries, companyCategories, benefits } =
+    useLoaderData<typeof loader>()
 
   return (
     <section className="mx-auto w-full max-w-screen-lg px-2 pb-10 sm:px-8">

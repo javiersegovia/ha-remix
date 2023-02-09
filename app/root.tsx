@@ -7,7 +7,6 @@ import type {
 
 import React, { useEffect, useRef } from 'react'
 import { json } from '@remix-run/node'
-import { useDataRefresh } from 'remix-utils'
 import {
   Links,
   LiveReload,
@@ -18,6 +17,7 @@ import {
   useCatch,
   useLocation,
   useTransition,
+  useRevalidator,
 } from '@remix-run/react'
 
 import NProgress from 'nprogress'
@@ -59,12 +59,8 @@ export const meta: MetaFunction = () => ({
   viewport: 'width=device-width,initial-scale=1',
 })
 
-type LoaderData = {
-  user: Awaited<ReturnType<typeof getUser>>
-}
-
 export async function loader({ request }: LoaderArgs) {
-  return json<LoaderData>({
+  return json({
     user: await getUser(request),
   })
 }
@@ -72,7 +68,7 @@ export async function loader({ request }: LoaderArgs) {
 export default function App() {
   const location = useLocation()
   const transition = useTransition()
-  const { refresh } = useDataRefresh()
+  const revalidator = useRevalidator()
   const isProd = process.env.NODE_ENV === 'production'
 
   useEffect(() => {
@@ -81,16 +77,16 @@ export default function App() {
       typeof window !== 'undefined' &&
       window.addEventListener
     ) {
-      window.addEventListener('visibilitychange', refresh, false)
-      window.addEventListener('focus', refresh, false)
+      window.addEventListener('visibilitychange', revalidator.revalidate, false)
+      window.addEventListener('focus', revalidator.revalidate, false)
     }
 
     return () => {
       // Be sure to unsubscribe if a new handler is set
-      window.removeEventListener('visibilitychange', refresh)
-      window.removeEventListener('focus', refresh)
+      window.removeEventListener('visibilitychange', revalidator.revalidate)
+      window.removeEventListener('focus', revalidator.revalidate)
     }
-  }, [refresh])
+  }, [revalidator.revalidate])
 
   const nProgressTimeoutRef = useRef<NodeJS.Timeout>()
 

@@ -1,6 +1,6 @@
 import type {
-  ActionFunction,
-  LoaderFunction,
+  ActionArgs,
+  LoaderArgs,
   MetaFunction,
 } from '@remix-run/server-runtime'
 
@@ -31,22 +31,7 @@ import { getBankAccountTypes } from '~/services/bank-account-type/bank-account-t
 import { getIdentityDocumentTypes } from '~/services/identity-document-type/identity-document-type.server'
 import { prisma } from '~/db.server'
 
-type LoaderData = {
-  employee: Awaited<ReturnType<typeof getEmployeeById>>
-  countries: Awaited<ReturnType<typeof getCountries>>
-  jobPositions: Awaited<ReturnType<typeof getJobPositions>>
-  jobDepartments: Awaited<ReturnType<typeof getJobDepartments>>
-  banks: Awaited<ReturnType<typeof getBanks>>
-  bankAccountTypes: Awaited<ReturnType<typeof getBankAccountTypes>>
-  identityDocumentTypes: Awaited<ReturnType<typeof getIdentityDocumentTypes>>
-  genders: Awaited<ReturnType<typeof getGenders>>
-  currencies: Awaited<ReturnType<typeof getCurrencies>>
-  cryptoNetworks: Awaited<ReturnType<typeof getCryptoNetworks>>
-  cryptocurrencies: Awaited<ReturnType<typeof getCryptocurrencies>>
-  memberships: Awaited<ReturnType<typeof getMemberships>>
-}
-
-export const loader: LoaderFunction = async ({ request, params }) => {
+export const loader = async ({ request, params }: LoaderArgs) => {
   await requireAdminUserId(request)
   const { employeeId } = params
 
@@ -61,7 +46,7 @@ export const loader: LoaderFunction = async ({ request, params }) => {
   }
 
   // todo: test Promise.all with remix-utils utility to improve load times
-  return json<LoaderData>({
+  return json({
     employee: await getEmployeeById(employeeId),
     countries: await getCountries(),
     jobPositions: await getJobPositions(),
@@ -77,21 +62,21 @@ export const loader: LoaderFunction = async ({ request, params }) => {
   })
 }
 
-export const meta: MetaFunction = ({ data }) => {
+export const meta: MetaFunction<typeof loader> = ({ data }) => {
   if (!data) {
     return {
       title: '[Admin] Colaborador no encontrado | HoyAdelantas',
     }
   }
 
-  const { employee } = data as LoaderData
+  const { employee } = data
 
   return {
     title: `[Admin] ${employee?.user.firstName} ${employee?.user.lastName}`,
   }
 }
 
-export const action: ActionFunction = async ({ request, params }) => {
+export const action = async ({ request, params }: ActionArgs) => {
   await requireAdminUserId(request)
 
   const { data, submittedData, error, formId } =
@@ -133,7 +118,7 @@ export default function AdminDashboardCompanyUpdateEmployeeRoute() {
     cryptocurrencies,
     cryptoNetworks,
     memberships,
-  } = useLoaderData<LoaderData>()
+  } = useLoaderData<typeof loader>()
 
   return (
     <section className="mx-auto w-full max-w-screen-lg pb-10">

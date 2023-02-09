@@ -1,9 +1,8 @@
 import type {
   ActionFunction,
-  LoaderFunction,
+  LoaderArgs,
   MetaFunction,
 } from '@remix-run/server-runtime'
-import type { getEmployeeById } from '~/services/employee/employee.server'
 
 import { redirect } from '@remix-run/server-runtime'
 import { useLoaderData } from '@remix-run/react'
@@ -20,19 +19,10 @@ import { welcomeValidator } from '~/schemas/welcome.schema'
 import { getBankAccountTypes } from '~/services/bank-account-type/bank-account-type.server'
 import { getIdentityDocumentTypes } from '~/services/identity-document-type/identity-document-type.server'
 
-type LoaderData = {
-  employee: NonNullable<Awaited<ReturnType<typeof getEmployeeById>>>
-  countries: Awaited<ReturnType<typeof getCountries>>
-  genders: Awaited<ReturnType<typeof getGenders>>
-  banks: Awaited<ReturnType<typeof getBanks>>
-  bankAccountTypes: Awaited<ReturnType<typeof getBankAccountTypes>>
-  identityDocumentTypes: Awaited<ReturnType<typeof getIdentityDocumentTypes>>
-}
-
-export const loader: LoaderFunction = async ({ request }) => {
+export const loader = async ({ request }: LoaderArgs) => {
   const employee = await requireEmployee(request)
 
-  return json<LoaderData>({
+  return json({
     employee,
     countries: await getCountries(),
     genders: await getGenders(),
@@ -72,7 +62,7 @@ export default function DashboardWelcomeRoute() {
     banks,
     bankAccountTypes,
     identityDocumentTypes,
-  } = useLoaderData<LoaderData>()
+  } = useLoaderData<typeof loader>()
 
   return (
     <section className="min-h-screen bg-steelBlue-900 py-20">

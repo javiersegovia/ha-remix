@@ -1,4 +1,4 @@
-import type { LoaderFunction } from '@remix-run/server-runtime'
+import type { LoaderArgs } from '@remix-run/server-runtime'
 import type { TableRowProps } from '~/components/Lists/Table'
 
 import { Outlet, useLoaderData } from '@remix-run/react'
@@ -13,11 +13,7 @@ import { getBenefitConsumptionsByBenefitId } from '~/services/benefit-consumptio
 import { Table } from '~/components/Lists/Table'
 import { formatDate } from '~/utils/formatDate'
 
-type LoaderData = {
-  consumptions: Awaited<ReturnType<typeof getBenefitConsumptionsByBenefitId>>
-}
-
-export const loader: LoaderFunction = async ({ request, params }) => {
+export const loader = async ({ request, params }: LoaderArgs) => {
   await requireAdminUserId(request)
 
   const { benefitId } = params
@@ -32,13 +28,13 @@ export const loader: LoaderFunction = async ({ request, params }) => {
     Number(benefitId)
   )
 
-  return json<LoaderData>({
+  return json({
     consumptions,
   })
 }
 
 export default function BenefitConsumptionIndexRoute() {
-  const { consumptions } = useLoaderData<LoaderData>()
+  const { consumptions } = useLoaderData<typeof loader>()
 
   const rows: TableRowProps[] = consumptions.map((consumption) => ({
     rowId: consumption.id,

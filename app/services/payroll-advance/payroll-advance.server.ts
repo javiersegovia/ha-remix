@@ -25,7 +25,7 @@ import {
   sendPayrollNotificationToAdmin,
   sendPayrollNotificationToUser,
 } from '../email/email.server'
-import { dateAsUTC } from '~/utils/formatDate'
+import { sanitizeDate } from '~/utils/formatDate'
 
 export type TPayrollContent = {
   [key in PayrollAdvanceStatus]?: {
@@ -792,7 +792,7 @@ export const updatePayrollAdvanceStatus = async ({
   }
 
   try {
-    const currentDate = dateAsUTC(new Date())
+    const currentDate = sanitizeDate(new Date())
     const updatedPayroll = await prisma.payrollAdvance.update({
       where: {
         id: payrollAdvance.id,

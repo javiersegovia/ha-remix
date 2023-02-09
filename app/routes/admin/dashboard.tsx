@@ -1,5 +1,5 @@
 import type { INavPath } from '~/components/SideBar/DashboardSideBar'
-import type { LoaderFunction, MetaFunction } from '@remix-run/server-runtime'
+import type { LoaderArgs, MetaFunction } from '@remix-run/server-runtime'
 
 import { Outlet } from '@remix-run/react'
 import { json } from '@remix-run/node'
@@ -13,13 +13,9 @@ import { requireAdminUser } from '~/session.server'
 import { DashboardColorVariant } from '~/components/SideBar/DashboardSideBar'
 import { DashboardSideBar } from '~/components/SideBar/DashboardSideBar'
 
-type LoaderData = {
-  user: Awaited<ReturnType<typeof requireAdminUser>>
-}
-
-export const loader: LoaderFunction = async ({ request }) => {
+export const loader = async ({ request }: LoaderArgs) => {
   const adminUser = await requireAdminUser(request)
-  return json<LoaderData>({ user: adminUser })
+  return json({ user: adminUser })
 }
 
 export const meta: MetaFunction = () => {

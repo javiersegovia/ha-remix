@@ -5,7 +5,7 @@ import { badRequest } from 'remix-utils'
 import { prisma } from '~/db.server'
 import { connect } from '~/utils/relationships'
 import { uploadBenefitConsumptionsSchema } from './benefit-consumption.schema'
-import { dateAsUTC } from '~/utils/formatDate'
+import { sanitizeDate } from '~/utils/formatDate'
 
 export const getBenefitConsumptionsByBenefitId = async (
   benefitId: Benefit['id']
@@ -158,7 +158,7 @@ export const uploadBenefitConsumptions = async (
           benefit: connect(benefit.id),
           employee: connect(employee.id),
           value: Number(consumedValue),
-          consumedAt: dateAsUTC(new Date(consumedAt)) as Date,
+          consumedAt: sanitizeDate(new Date(consumedAt)) as Date,
         },
       })
 

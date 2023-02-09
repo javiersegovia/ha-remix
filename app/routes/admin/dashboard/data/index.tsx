@@ -1,9 +1,9 @@
+import type { LoaderFunction } from '@remix-run/server-runtime'
 import type { TableProps, TableRowProps } from '~/components/Lists/Table'
 
 import { Container } from '~/components/Layout/Container'
 import { Table } from '~/components/Lists/Table'
 import { Title } from '~/components/Typography/Title'
-import type { LoaderFunction } from '@remix-run/server-runtime'
 import { requireAdminUserId } from '~/session.server'
 import { json } from '@remix-run/node'
 import { prisma } from '~/db.server'

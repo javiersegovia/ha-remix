@@ -23,7 +23,7 @@ import { prisma } from '~/db.server'
 import { connect, connectOrDisconnect } from '~/utils/relationships'
 import { generateExpirationDate, generateRandomToken } from '../auth.server'
 import { sendInvitation } from '../email/email.server'
-import { dateAsUTC } from '~/utils/formatDate'
+import { sanitizeDate } from '~/utils/formatDate'
 import { uploadEmployeeSchema } from '~/schemas/upload-employees.schema'
 import { capitalize } from '~/utils/strings'
 
@@ -236,8 +236,8 @@ export const createEmployee = async (
 
     const employee = await prisma.employee.create({
       data: {
-        startedAt: dateAsUTC(startedAt),
-        inactivatedAt: dateAsUTC(inactivatedAt),
+        startedAt: sanitizeDate(startedAt),
+        inactivatedAt: sanitizeDate(inactivatedAt),
         salaryFiat,
         salaryCrypto,
         advanceAvailableAmount,
@@ -249,8 +249,8 @@ export const createEmployee = async (
         numberOfChildren: numberOfChildren || undefined,
         roles: roles || undefined,
 
-        birthDay: dateAsUTC(birthDay),
-        documentIssueDate: dateAsUTC(documentIssueDate),
+        birthDay: sanitizeDate(birthDay),
+        documentIssueDate: sanitizeDate(documentIssueDate),
 
         gender: connect(genderId),
         country: connect(countryId),
@@ -261,6 +261,7 @@ export const createEmployee = async (
         user: {
           create: {
             ...newUser,
+            password: user.password ? await hash(user.password, 10) : undefined,
           },
         },
         status,
@@ -412,16 +413,16 @@ export const updateEmployeeById = async (
         id: employeeId,
       },
       data: {
-        startedAt: dateAsUTC(startedAt),
-        inactivatedAt: dateAsUTC(newInactivatedAt),
+        startedAt: sanitizeDate(startedAt),
+        inactivatedAt: sanitizeDate(newInactivatedAt),
         salaryFiat,
         salaryCrypto,
         advanceAvailableAmount,
         advanceCryptoAvailableAmount,
         advanceCryptoMaxAmount,
         advanceMaxAmount,
-        birthDay: dateAsUTC(birthDay),
-        documentIssueDate: dateAsUTC(documentIssueDate),
+        birthDay: sanitizeDate(birthDay),
+        documentIssueDate: sanitizeDate(documentIssueDate),
         address,
         phone,
         status,
@@ -456,6 +457,7 @@ export const updateEmployeeById = async (
         user: {
           update: {
             ...user,
+            password: user.password ? await hash(user.password, 10) : undefined,
           },
         },
       },
@@ -495,8 +497,8 @@ export const updateEmployeeByWelcomeForm = async (
         id: employeeId,
       },
       data: {
-        birthDay: dateAsUTC(birthDay),
-        documentIssueDate: dateAsUTC(documentIssueDate),
+        birthDay: sanitizeDate(birthDay),
+        documentIssueDate: sanitizeDate(documentIssueDate),
         address,
         phone,
         numberOfChildren: numberOfChildren || undefined,
@@ -570,8 +572,8 @@ export const updateEmployeeByAccountForm = async (
         id: employeeId,
       },
       data: {
-        birthDay: dateAsUTC(birthDay),
-        documentIssueDate: dateAsUTC(documentIssueDate),
+        birthDay: sanitizeDate(birthDay),
+        documentIssueDate: sanitizeDate(documentIssueDate),
         address,
         phone,
         numberOfChildren: numberOfChildren || undefined,
@@ -884,9 +886,9 @@ export const uploadEmployees = async (
                 ...newUser,
               },
             },
-            startedAt: startedAt ? dateAsUTC(new Date(startedAt)) : null,
+            startedAt: startedAt ? sanitizeDate(new Date(startedAt)) : null,
             inactivatedAt: inactivatedAt
-              ? dateAsUTC(new Date(inactivatedAt))
+              ? sanitizeDate(new Date(inactivatedAt))
               : null,
             salaryFiat: parseFloat(salary),
             advanceAvailableAmount: parseFloat(availableAmount),
@@ -929,7 +931,7 @@ export const uploadEmployees = async (
                 ...newUser,
               },
             },
-            startedAt: startedAt ? dateAsUTC(new Date(startedAt)) : null,
+            startedAt: startedAt ? sanitizeDate(new Date(startedAt)) : null,
             salaryFiat: parseFloat(salary),
             advanceAvailableAmount: parseFloat(availableAmount),
             advanceMaxAmount: parseFloat(maxAvailableAmount),
@@ -943,10 +945,10 @@ export const uploadEmployees = async (
              *  delete the current value.
              */
             inactivatedAt: inactivatedAt
-              ? dateAsUTC(new Date(inactivatedAt))
+              ? sanitizeDate(new Date(inactivatedAt))
               : existingUser?.employee?.status === EmployeeStatus.ACTIVE &&
                 status?.toLowerCase() == 'inactivo'
-              ? dateAsUTC(new Date())
+              ? sanitizeDate(new Date())
               : null,
 
             status:

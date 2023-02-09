@@ -1,7 +1,6 @@
-import type { FormDefaults } from 'remix-validated-form'
 import type {
   ActionFunction,
-  LoaderFunction,
+  LoaderArgs,
   MetaFunction,
 } from '@remix-run/server-runtime'
 import { getGlobalSettings } from '~/services/global-settings/global-settings.server'
@@ -20,16 +19,13 @@ import { globalSettingsValidator } from '~/services/global-settings/global-setti
 import { requireAdminUserId } from '~/session.server'
 import { FormGridItem } from '~/components/FormFields/FormGridItem'
 
-type LoaderData = {
-  globalSettings: Awaited<ReturnType<typeof getGlobalSettings>>
-}
-
 const globalSettingsFormId = 'GlobalSettingsForm' as const
-export const loader: LoaderFunction = async ({ request }) => {
+
+export const loader = async ({ request }: LoaderArgs) => {
   await requireAdminUserId(request)
   const globalSettings = await getGlobalSettings()
 
-  return json<LoaderData & FormDefaults>({
+  return json({
     globalSettings: null,
     ...setFormDefaults(globalSettingsFormId, {
       daysWithoutRequestsBeforePaymentDay:
@@ -84,6 +80,7 @@ export default function AdminSettingsRoute() {
                 step="0.01"
               />
             </FormGridItem>
+
             <FormGridItem>
               <Input
                 name="daysWithoutRequestsBeforePaymentDay"
@@ -92,6 +89,7 @@ export default function AdminSettingsRoute() {
                 placeholder="Cantidad de días a limitar"
               />
             </FormGridItem>
+
             <FormGridItem>
               <Input
                 name="transportationAid"

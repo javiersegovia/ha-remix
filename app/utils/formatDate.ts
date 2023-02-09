@@ -33,17 +33,10 @@ export const parseDate = (date: Date | string) => {
   ) // Note: months are 0-based
 }
 
-export function dateAsUTC(date?: Date | null) {
+export function sanitizeDate(date?: Date | null) {
   return date
-    ? new Date(
-        date.getUTCFullYear(),
-        date.getUTCMonth(),
-        date.getUTCDate(),
-        date.getUTCHours(),
-        date.getUTCMinutes(),
-        date.getUTCSeconds()
-      )
-    : null
+    ? new Date(date.getTime() - date.getTimezoneOffset() * -60000)
+    : date
 }
 
 export const ISO_DATE_REGEX = /\d{4}-[01]\d-[0-3]\d/

@@ -1,8 +1,7 @@
+import type { MetaFunction, LoaderArgs } from '@remix-run/server-runtime'
+
 import { json } from '@remix-run/server-runtime'
 import { useLoaderData } from '@remix-run/react'
-import type { LoaderFunction, MetaFunction } from '@remix-run/server-runtime'
-import { HiPlus } from 'react-icons/hi'
-import { MdOutlineUploadFile } from 'react-icons/md'
 import {
   Button,
   ButtonColorVariants,
@@ -14,12 +13,7 @@ import { requireAdminUserId } from '~/session.server'
 import { EmployeeList } from '~/components/Lists/EmployeeList'
 import { TitleWithActions } from '~/components/Layout/TitleWithActions'
 
-type LoaderData = {
-  employees: Awaited<ReturnType<typeof getEmployeesByCompanyId>>
-  companyName: string
-}
-
-export const loader: LoaderFunction = async ({ request, params }) => {
+export const loader = async ({ request, params }: LoaderArgs) => {
   await requireAdminUserId(request)
 
   const { companyId } = params
@@ -30,20 +24,20 @@ export const loader: LoaderFunction = async ({ request, params }) => {
 
   const employees = await getEmployeesByCompanyId(company.id)
 
-  return json<LoaderData>({
+  return json({
     employees,
     companyName: company.name,
   })
 }
 
-export const meta: MetaFunction = ({ data }) => {
+export const meta: MetaFunction<typeof loader> = ({ data }) => {
   if (!data) {
     return {
       title: '[Admin] Compañía no encontrada | HoyAdelantas',
     }
   }
 
-  const { companyName } = data as LoaderData
+  const { companyName } = data
 
   return {
     title: `[Admin] Colaboradores de ${companyName} | HoyAdelantas`,
@@ -51,7 +45,7 @@ export const meta: MetaFunction = ({ data }) => {
 }
 
 export default function AdminDashboardCompanyEmployees() {
-  const { employees } = useLoaderData<LoaderData>()
+  const { employees } = useLoaderData<typeof loader>()
 
   return (
     <>

@@ -1,4 +1,4 @@
-import type { LoaderFunction } from '@remix-run/server-runtime'
+import type { LoaderArgs } from '@remix-run/server-runtime'
 import type { TableRowProps } from '~/components/Lists/Table'
 
 import { Outlet, useLoaderData } from '@remix-run/react'
@@ -10,11 +10,7 @@ import { Button, ButtonIconVariants } from '~/components/Button'
 import { TitleWithActions } from '~/components/Layout/TitleWithActions'
 import { getBenefitSubproductsByBenefitId } from '~/services/benefit-subproduct/benefit-subproduct.server'
 
-type BenefitSubproductsIndexLoaderData = {
-  subproducts: Awaited<ReturnType<typeof getBenefitSubproductsByBenefitId>>
-}
-
-export const loader: LoaderFunction = async ({ request, params }) => {
+export const loader = async ({ request, params }: LoaderArgs) => {
   const { benefitId } = params
 
   if (!benefitId) {
@@ -25,13 +21,13 @@ export const loader: LoaderFunction = async ({ request, params }) => {
 
   const subproducts = await getBenefitSubproductsByBenefitId(+benefitId)
 
-  return json<BenefitSubproductsIndexLoaderData>({
+  return json({
     subproducts,
   })
 }
 
 const BenefitSubproductIndexRoute = () => {
-  const { subproducts } = useLoaderData<BenefitSubproductsIndexLoaderData>()
+  const { subproducts } = useLoaderData<typeof loader>()
 
   const rows: TableRowProps[] = subproducts.map((subproduct) => ({
     href: subproduct.id.toString(),

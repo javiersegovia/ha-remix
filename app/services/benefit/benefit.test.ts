@@ -60,9 +60,12 @@ describe('updateBenefitById', () => {
 
 describe('deleteBenefitById', () => {
   it('returns a deleted benefit id', async () => {
-    const deletedBenefit = BenefitFactory.build()
-    vi.spyOn(prisma.benefit, 'delete').mockResolvedValueOnce(deletedBenefit)
-    const result = await benefitService.deleteBenefitById(deletedBenefit.id)
-    expect(result).toEqual(deletedBenefit.id)
+    const benefitToDelete = BenefitFactory.build()
+    vi.spyOn(prisma.benefit, 'findUnique').mockResolvedValueOnce(
+      benefitToDelete
+    )
+    vi.spyOn(prisma.benefit, 'delete').mockResolvedValueOnce(benefitToDelete)
+    const result = await benefitService.deleteBenefitById(benefitToDelete.id)
+    expect(result).toEqual(benefitToDelete.id)
   })
 })

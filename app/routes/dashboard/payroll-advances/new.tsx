@@ -1,7 +1,7 @@
 import type {
-  LoaderFunction,
   MetaFunction,
-  ActionFunction,
+  LoaderArgs,
+  ActionArgs,
 } from '@remix-run/server-runtime'
 
 import { useEffect, useRef } from 'react'
@@ -40,13 +40,7 @@ import { getEmployeeEnabledBenefits } from '~/services/permissions/permissions.s
 import { hasSignedTerms } from '~/services/signature/signature.server'
 import { ButtonColorVariants } from '~/components/Button'
 
-type LoaderData = {
-  employee: Awaited<ReturnType<typeof requireEmployee>>
-  paymentOptions: Awaited<ReturnType<typeof getEmployeePaymentOptions>>
-  requestReasons: Awaited<ReturnType<typeof getRequestReasons>>
-}
-
-export const loader: LoaderFunction = async ({ request }) => {
+export const loader = async ({ request }: LoaderArgs) => {
   const employee = await requireEmployee(request)
 
   const benefits = await getEmployeeEnabledBenefits(
@@ -73,7 +67,7 @@ export const loader: LoaderFunction = async ({ request }) => {
     bankAccount: employee.bankAccount,
   })
 
-  return json<LoaderData>({
+  return json({
     employee,
     paymentOptions,
     requestReasons: await getRequestReasons(),
@@ -90,7 +84,7 @@ type ActionData = {
  *  but in order to return validation errors inside the form, we have to use actions,
  *  as Remix Validated Form does not handle the errors inside the loaderData.
  */
-export const action: ActionFunction = async ({ request }) => {
+export const action = async ({ request }: ActionArgs) => {
   const employee = await requireEmployee(request)
 
   const formData = await request.formData()
@@ -158,7 +152,7 @@ export const meta: MetaFunction = () => {
 const calculationFormId = 'CalculationForm'
 export default function PayrollAdvanceNewRoute() {
   const { employee, paymentOptions, requestReasons } =
-    useLoaderData<LoaderData>()
+    useLoaderData<typeof loader>()
   const { calculation } = useActionData<ActionData>() || {}
 
   const calculationRef = useRef<HTMLDivElement>(null)

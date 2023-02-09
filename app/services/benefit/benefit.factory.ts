@@ -36,6 +36,7 @@ export const BenefitFactory = Factory.define<ExtendedBenefit>(
       membership: associations?.membership,
 
       benefitCategoryId: null,
+      mainImageId: null,
     }
   }
 )

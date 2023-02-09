@@ -23,6 +23,8 @@ export const employeeSchema = z.object({
         .email('Correo electrónico inválido')
     ),
 
+    password: zfd.text(z.string().trim().nullish()),
+
     firstName: zfd.text(
       z
         .string({

@@ -16,7 +16,7 @@ import { CLIENT_URL, sendEmail } from '../email/email.server'
 import { PremiumAdvanceStatus } from '@prisma/client'
 import { badRequest, forbidden, notFound } from 'remix-utils'
 import { connect } from '~/utils/relationships'
-import { dateAsUTC } from '~/utils/formatDate'
+import { sanitizeDate } from '~/utils/formatDate'
 import { formatDistanceStrict } from 'date-fns'
 import type { getEmployeeById } from '../employee/employee.server'
 import type { CalculatePremiumAdvanceSchemaInput } from '~/schemas/calculate-premium-advance.schema'
@@ -35,6 +35,8 @@ export const getPremiumAdvances = async (args?: {
       id: true,
       createdAt: true,
       status: true,
+      requestedAmount: true,
+      totalAmount: true,
       employee: {
         select: {
           user: {
@@ -216,7 +218,7 @@ export const calculatePremiumAdvanceCost = async (
   })
 
   const taxItems: ITaxItem[] = []
-  const currentDate = dateAsUTC(new Date()) as Date
+  const currentDate = sanitizeDate(new Date()) as Date
 
   /** Interests formula:
    *  REQUESTED_AMOUNT * ((1 + ANNUAL_INTEREST_RATE)^(WORKING_DAYS/365) - 1)
@@ -429,7 +431,7 @@ export const updatePremiumAdvanceStatus = async ({
   }
 
   try {
-    const currentDate = dateAsUTC(new Date())
+    const currentDate = sanitizeDate(new Date())
     const updatedPremiumAdvance = await prisma.premiumAdvance.update({
       where: {
         id: premiumAdvance.id,

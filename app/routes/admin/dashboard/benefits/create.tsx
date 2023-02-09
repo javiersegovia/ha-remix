@@ -1,20 +1,39 @@
-import type { ActionFunction } from '@remix-run/server-runtime'
+import type { ActionFunction, LoaderArgs } from '@remix-run/server-runtime'
 
 import { redirect } from '@remix-run/server-runtime'
+import { Link, useLoaderData } from '@remix-run/react'
+import {
+  unstable_parseMultipartFormData as parseMultipartFormData,
+  json,
+} from '@remix-run/node'
 import { validationError } from 'remix-validated-form'
+import { AiOutlineArrowLeft } from 'react-icons/ai'
+
 import { benefitValidator } from '~/services/benefit/benefit.schema'
 import { requireAdminUserId } from '~/session.server'
 import { createBenefit } from '~/services/benefit/benefit.server'
 import { BenefitForm } from '~/components/Forms/BenefitForm'
 import { Container } from '~/components/Layout/Container'
-import { Link } from '@remix-run/react'
-import { AiOutlineArrowLeft } from 'react-icons/ai'
 import { Title } from '~/components/Typography/Title'
+import { getBenefitCategories } from '~/services/benefit-category/benefit-category.server'
+import { uploadHandler } from '~/services/aws/s3.server'
+
+export const loader = async ({ request, params }: LoaderArgs) => {
+  await requireAdminUserId(request)
+
+  return json({
+    benefitCategories: await getBenefitCategories(),
+  })
+}
 
 export const action: ActionFunction = async ({ request }) => {
   await requireAdminUserId(request)
 
-  const formData = await request.formData()
+  /** We need to access two instances of FormData, one for validation and other for parseMultipartFormData,
+   * hence we need to clone the request to avoid consuming the original request body
+   */
+  const clonedRequest = request.clone()
+  const formData = await clonedRequest.formData()
 
   const { data, submittedData, error } = await benefitValidator.validate(
     formData
@@ -24,12 +43,18 @@ export const action: ActionFunction = async ({ request }) => {
     return validationError(error, submittedData)
   }
 
-  await createBenefit(data)
+  const imageFormData = await parseMultipartFormData(request, uploadHandler)
+  const key = imageFormData.get('mainImage')
+  const mainImageKey = typeof key === 'string' ? key : undefined
+
+  await createBenefit({ ...data, mainImageKey })
 
   return redirect(`/admin/dashboard/benefits`)
 }
 
 export default function CreateBenefitRoute() {
+  const { benefitCategories } = useLoaderData<typeof loader>()
+
   return (
     <Container>
       <Link
@@ -42,7 +67,7 @@ export default function CreateBenefitRoute() {
 
       <Title className="mb-10">Crear beneficio</Title>
 
-      <BenefitForm buttonText="Crear" />
+      <BenefitForm benefitCategories={benefitCategories} buttonText="Crear" />
     </Container>
   )
 }

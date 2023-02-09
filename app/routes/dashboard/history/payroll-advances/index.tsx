@@ -1,4 +1,4 @@
-import type { LoaderFunction, MetaFunction } from '@remix-run/server-runtime'
+import type { LoaderArgs, MetaFunction } from '@remix-run/server-runtime'
 
 import { useLoaderData } from '@remix-run/react'
 import { json } from '@remix-run/server-runtime'
@@ -9,11 +9,7 @@ import { requireEmployee } from '~/session.server'
 import { getPayrollAdvances } from '~/services/payroll-advance/payroll-advance.server'
 import { useMatchesData } from '~/utils/utils'
 
-type LoaderData = {
-  payrollAdvances: Awaited<ReturnType<typeof getPayrollAdvances>>
-}
-
-export const loader: LoaderFunction = async ({ request }) => {
+export const loader = async ({ request }: LoaderArgs) => {
   const employee = await requireEmployee(request)
 
   const payrollAdvances = await getPayrollAdvances({
@@ -22,7 +18,7 @@ export const loader: LoaderFunction = async ({ request }) => {
     },
   })
 
-  return json<LoaderData>({
+  return json({
     payrollAdvances,
   })
 }
@@ -34,7 +30,7 @@ export const meta: MetaFunction = () => {
 }
 
 export default function PayrollAdvancesIndexRoute() {
-  const { payrollAdvances } = useLoaderData<LoaderData>()
+  const { payrollAdvances } = useLoaderData<typeof loader>()
   const dashboardData = useMatchesData('routes/dashboard')
 
   const shouldHideRequestNewPayrollButton =

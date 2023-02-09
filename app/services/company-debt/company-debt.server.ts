@@ -4,6 +4,7 @@ import type { CompanyDebtSchemaInput } from './company-debt.schema'
 import { badRequest } from 'remix-utils'
 import { prisma } from '~/db.server'
 import { connect } from '~/utils/relationships'
+import { sanitizeDate } from '~/utils/formatDate'
 
 /** This function will return a CompanyDebt matching the month and year provided */
 export const getCompanyDebtById = async (companyDebtId: string) => {
@@ -60,14 +61,9 @@ export const getCompanyDebtsByCompanyId = (companyId: string) => {
     where: {
       companyId,
     },
-    orderBy: [
-      {
-        month: 'asc',
-      },
-      {
-        year: 'asc',
-      },
-    ],
+    orderBy: {
+      createdAt: 'desc',
+    },
     // todo: select only required values
     include: {
       fiatDebt: {
@@ -115,11 +111,11 @@ export const upsertFiatMonthlyDebt = async ({
       company: connect(companyId),
     },
   }
-
+  const currentDate = new Date()
   const companyDebt = await prisma.companyDebt.findFirst({
     where: {
-      month: new Date().getMonth() + 1,
-      year: new Date().getFullYear(),
+      month: (sanitizeDate(currentDate) as Date).getMonth() + 1,
+      year: (sanitizeDate(currentDate) as Date).getFullYear(),
       companyId: payrollAdvance.companyId,
     },
     include: {

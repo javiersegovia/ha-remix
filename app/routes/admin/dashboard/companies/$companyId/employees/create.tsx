@@ -1,6 +1,6 @@
 import type {
-  ActionFunction,
-  LoaderFunction,
+  ActionArgs,
+  LoaderArgs,
   MetaFunction,
 } from '@remix-run/server-runtime'
 
@@ -8,6 +8,7 @@ import { useLoaderData } from '@remix-run/react'
 import { redirect } from '@remix-run/node'
 import { json } from '@remix-run/server-runtime'
 import { validationError } from 'remix-validated-form'
+
 import { FormActions } from '~/components/FormFields/FormActions'
 import { AdminEmployeeForm } from '~/components/Forms/AdminEmployeeForm'
 import { Title } from '~/components/Typography/Title'
@@ -27,25 +28,11 @@ import { getBankAccountTypes } from '~/services/bank-account-type/bank-account-t
 import { getIdentityDocumentTypes } from '~/services/identity-document-type/identity-document-type.server'
 import { getMemberships } from '~/services/membership/membership.server'
 
-type LoaderData = {
-  countries: Awaited<ReturnType<typeof getCountries>>
-  jobPositions: Awaited<ReturnType<typeof getJobPositions>>
-  jobDepartments: Awaited<ReturnType<typeof getJobDepartments>>
-  banks: Awaited<ReturnType<typeof getBanks>>
-  bankAccountTypes: Awaited<ReturnType<typeof getBankAccountTypes>>
-  identityDocumentTypes: Awaited<ReturnType<typeof getIdentityDocumentTypes>>
-  genders: Awaited<ReturnType<typeof getGenders>>
-  currencies: Awaited<ReturnType<typeof getCurrencies>>
-  cryptoNetworks: Awaited<ReturnType<typeof getCryptoNetworks>>
-  cryptocurrencies: Awaited<ReturnType<typeof getCryptocurrencies>>
-  memberships: Awaited<ReturnType<typeof getMemberships>>
-}
-
-export const loader: LoaderFunction = async ({ request }) => {
+export const loader = async ({ request }: LoaderArgs) => {
   await requireAdminUserId(request)
 
   // todo: test Promise.all with remix-utils utility to improve load times
-  return json<LoaderData>({
+  return json({
     countries: await getCountries(),
     jobPositions: await getJobPositions(),
     jobDepartments: await getJobDepartments(),
@@ -66,7 +53,7 @@ export const meta: MetaFunction = () => {
   }
 }
 
-export const action: ActionFunction = async ({ request, params }) => {
+export const action = async ({ request, params }: ActionArgs) => {
   await requireAdminUserId(request)
 
   const { data, submittedData, error, formId } =
@@ -112,7 +99,7 @@ export default function AdminDashboardCompanyCreateEmployeeRoute() {
     currencies,
     cryptocurrencies,
     cryptoNetworks,
-  } = useLoaderData<LoaderData>()
+  } = useLoaderData<typeof loader>()
 
   return (
     <section className="mx-auto w-full max-w-screen-lg pb-10">

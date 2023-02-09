@@ -1,4 +1,4 @@
-import type { ActionFunction, LoaderFunction } from '@remix-run/server-runtime'
+import type { ActionArgs, LoaderArgs } from '@remix-run/server-runtime'
 
 import { json } from '@remix-run/node'
 import { useLoaderData } from '@remix-run/react'
@@ -11,19 +11,15 @@ import { membershipValidator } from '~/services/membership/membership.schema'
 import { createMembership } from '~/services/membership/membership.server'
 import { getBenefits } from '~/services/benefit/benefit.server'
 
-type LoaderData = {
-  benefits: Awaited<ReturnType<typeof getBenefits>>
-}
-
-export const loader: LoaderFunction = async ({ request }) => {
+export const loader = async ({ request }: LoaderArgs) => {
   await requireAdminUserId(request)
 
-  return json<LoaderData>({
+  return json({
     benefits: await getBenefits(),
   })
 }
 
-export const action: ActionFunction = async ({ request }) => {
+export const action = async ({ request }: ActionArgs) => {
   await requireAdminUserId(request)
 
   const formData = await request.formData()
@@ -42,7 +38,7 @@ export const action: ActionFunction = async ({ request }) => {
 }
 
 export default function CreateMembershipRoute() {
-  const { benefits } = useLoaderData<LoaderData>()
+  const { benefits } = useLoaderData<typeof loader>()
 
   const onCloseRedirectTo = '/admin/dashboard/memberships'
   return (

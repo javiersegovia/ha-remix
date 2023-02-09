@@ -1,17 +1,14 @@
+import type { MetaFunction, LoaderArgs } from '@remix-run/server-runtime'
+
 import { useLoaderData } from '@remix-run/react'
 import { json } from '@remix-run/server-runtime'
+
 import { Title } from '~/components/Typography/Title'
 import { requireEmployee } from '~/session.server'
-
-import type { LoaderFunction, MetaFunction } from '@remix-run/server-runtime'
 import { getPremiumAdvances } from '~/services/premium-advance/premium-advance.server'
 import { PremiumAdvanceList } from '~/components/Lists/PremiumAdvanceList'
 
-type LoaderData = {
-  premiumAdvances: Awaited<ReturnType<typeof getPremiumAdvances>>
-}
-
-export const loader: LoaderFunction = async ({ request }) => {
+export const loader = async ({ request }: LoaderArgs) => {
   const employee = await requireEmployee(request)
 
   const premiumAdvances = await getPremiumAdvances({
@@ -20,7 +17,7 @@ export const loader: LoaderFunction = async ({ request }) => {
     },
   })
 
-  return json<LoaderData>({
+  return json({
     premiumAdvances,
   })
 }
@@ -32,7 +29,7 @@ export const meta: MetaFunction = () => {
 }
 
 export default function PremiumAdvancesIndexRoute() {
-  const { premiumAdvances } = useLoaderData<LoaderData>()
+  const { premiumAdvances } = useLoaderData<typeof loader>()
 
   return (
     <>
@@ -45,16 +42,6 @@ export default function PremiumAdvancesIndexRoute() {
             >
               Adelantos de Prima
             </Title>
-
-            {/* todo: add request premiumAdvance button */}
-            {/* <div className="mx-auto inline-block w-full sm:w-auto lg:ml-auto">
-              <Button
-                href="/dashboard/overview/request-premium-advance"
-                className=" w-full md:w-auto"
-              >
-                Solicitar nuevo adelanto de prima
-              </Button>
-            </div> */}
           </div>
 
           <PremiumAdvanceList premiumAdvances={premiumAdvances} />

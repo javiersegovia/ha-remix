@@ -1,4 +1,4 @@
-import type { LoaderFunction } from '@remix-run/server-runtime'
+import type { LoaderArgs } from '@remix-run/server-runtime'
 import type { TableRowProps } from '~/components/Lists/Table'
 
 import { Outlet, useLoaderData } from '@remix-run/react'
@@ -11,22 +11,18 @@ import { Table } from '~/components/Lists/Table'
 import { getBenefitCategories } from '~/services/benefit-category/benefit-category.server'
 import { requireAdminUserId } from '~/session.server'
 
-type LoaderData = {
-  benefitCategories: Awaited<ReturnType<typeof getBenefitCategories>>
-}
-
-export const loader: LoaderFunction = async ({ request }) => {
+export const loader = async ({ request }: LoaderArgs) => {
   await requireAdminUserId(request)
 
   const benefitCategories = await getBenefitCategories()
 
-  return json<LoaderData>({
+  return json({
     benefitCategories,
   })
 }
 
 export default function BenefitCategoriesIndexRoute() {
-  const { benefitCategories } = useLoaderData<LoaderData>()
+  const { benefitCategories } = useLoaderData<typeof loader>()
 
   const headings = ['Nombre']
 

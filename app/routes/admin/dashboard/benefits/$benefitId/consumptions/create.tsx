@@ -1,6 +1,6 @@
-import type { LoaderFunction } from '@remix-run/server-runtime'
+import type { LoaderArgs } from '@remix-run/server-runtime'
 
-import { useLoaderData } from '@remix-run/react'
+import { useLoaderData, useTransition } from '@remix-run/react'
 import { json } from '@remix-run/node'
 import { badRequest } from 'remix-utils'
 
@@ -11,11 +11,7 @@ import { RightPanel } from '~/components/Layout/RightPanel'
 import { Button } from '~/components/Button'
 import { Label } from '~/components/FormFields/Label'
 
-type LoaderData = {
-  benefitId: string
-}
-
-export const loader: LoaderFunction = async ({ request, params }) => {
+export const loader = async ({ request, params }: LoaderArgs) => {
   await requireAdminUserId(request)
 
   const { benefitId } = params
@@ -26,14 +22,16 @@ export const loader: LoaderFunction = async ({ request, params }) => {
     })
   }
 
-  return json<LoaderData>({
+  return json({
     benefitId,
   })
 }
 
 export default function BenefitConsumptionCreateRoute() {
-  const { benefitId } = useLoaderData<LoaderData>()
+  const { benefitId } = useLoaderData<typeof loader>()
   const onCloseRedirectTo = `/admin/dashboard/benefits/${benefitId}/consumptions`
+  const transition = useTransition()
+  const isLoading = transition.state !== 'idle'
 
   return (
     <>
@@ -54,13 +52,14 @@ export default function BenefitConsumptionCreateRoute() {
                 name="csvFile"
                 accept=".csv"
                 className="my-3 block"
-                // disabled={inProcess}
+                disabled={isLoading}
               />
             </Label>
             <Button
               type="submit"
               className="mt-10"
-              // disabled={inProcess}
+              disabled={isLoading}
+              isLoading={isLoading}
             >
               Guardar
             </Button>

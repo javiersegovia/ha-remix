@@ -1,5 +1,6 @@
 import clsx from 'clsx'
 import React from 'react'
+import { twMerge } from 'tailwind-merge'
 
 interface ILabelProps {
   htmlFor: string
@@ -7,6 +8,9 @@ interface ILabelProps {
   className?: string
   children?: React.ReactNode
 }
+
+export const labelStyles =
+  'mb-1 block text-xs font-medium text-steelBlue-600' as const
 
 export const Label = ({
   htmlFor = '',
@@ -18,14 +22,10 @@ export const Label = ({
   return (
     <label
       htmlFor={htmlFor}
-      className={clsx('block', className)}
+      className={twMerge(clsx('block', className))}
       {...otherProps}
     >
-      {description && (
-        <span className="mb-1 block text-xs font-medium text-steelBlue-600">
-          {description}
-        </span>
-      )}
+      {description && <span className={labelStyles}>{description}</span>}
       {children}
     </label>
   )

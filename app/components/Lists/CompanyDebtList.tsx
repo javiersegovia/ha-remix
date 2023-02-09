@@ -58,7 +58,7 @@ export function CompanyDebtList({ debts }: CompanyDebtListProps) {
                         <Link to={`/admin/dashboard/debts/${id}`}>
                           <div className="text-sm font-medium text-gray-900 underline hover:text-cyan-600">
                             Novedades de{' '}
-                            {format(new Date(year, month - 1), 'MMMM', {
+                            {format(new Date(year, month - 1), 'MMMM yyyy', {
                               locale: es,
                             })}
                           </div>

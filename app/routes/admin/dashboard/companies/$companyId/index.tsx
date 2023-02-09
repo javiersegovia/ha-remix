@@ -1,13 +1,6 @@
 import type {
-  Benefit,
-  Company,
-  CompanyCategory,
-  CompanyContactPerson,
-  Country,
-} from '@prisma/client'
-import type {
   ActionArgs,
-  LoaderFunction,
+  LoaderArgs,
   MetaFunction,
 } from '@remix-run/server-runtime'
 
@@ -28,28 +21,13 @@ import { getCountries } from '~/services/country/country.server'
 import { requireAdminUserId } from '~/session.server'
 import { getBenefits } from '~/services/benefit/benefit.server'
 
-type LoaderData = {
-  company: Company & {
-    benefits: Pick<Benefit, 'id'>[]
-    country: Pick<Country, 'id'>
-    categories: Pick<CompanyCategory, 'id'>[]
-    contactPerson: Pick<
-      CompanyContactPerson,
-      'firstName' | 'lastName' | 'phone'
-    >
-  }
-  companyCategories: Awaited<ReturnType<typeof getCompanyCategories>>
-  countries: Awaited<ReturnType<typeof getCountries>>
-  benefits: Awaited<ReturnType<typeof getBenefits>>
-}
-
-export const loader: LoaderFunction = async ({ request, params }) => {
+export const loader = async ({ request, params }: LoaderArgs) => {
   await requireAdminUserId(request)
 
   const { companyId } = params
 
   // todo: refactor function to avoid assert when whe refactor the return types of requireCompany
-  const company = (await requireCompany({
+  const company = await requireCompany({
     where: { id: companyId },
     include: {
       benefits: true,
@@ -57,9 +35,9 @@ export const loader: LoaderFunction = async ({ request, params }) => {
       country: true,
       contactPerson: true,
     },
-  })) as LoaderData['company']
+  })
 
-  return json<LoaderData>({
+  return json({
     company,
     companyCategories: await getCompanyCategories(),
     countries: await getCountries(),
@@ -67,14 +45,14 @@ export const loader: LoaderFunction = async ({ request, params }) => {
   })
 }
 
-export const meta: MetaFunction = ({ data }) => {
+export const meta: MetaFunction<typeof loader> = ({ data }) => {
   if (!data) {
     return {
       title: '[Admin] Compañía no encontrada | HoyAdelantas',
     }
   }
 
-  const { company } = data as LoaderData
+  const { company } = data
 
   return {
     title: `[Admin] Detalles de ${company.name}`,
@@ -120,7 +98,7 @@ export async function action({ request, params }: ActionArgs) {
 
 export default function AdminDashboardCompanyDetailsRoute() {
   const { company, countries, benefits, companyCategories } =
-    useLoaderData<LoaderData>()
+    useLoaderData<typeof loader>()
 
   return (
     <CompanyForm

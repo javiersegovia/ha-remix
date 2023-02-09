@@ -1,4 +1,5 @@
-import type { LoaderFunction, MetaFunction } from '@remix-run/server-runtime'
+import type { LoaderArgs, MetaFunction } from '@remix-run/server-runtime'
+
 import { Outlet, useLoaderData } from '@remix-run/react'
 import { json } from '@remix-run/node'
 import { HiOutlineHome } from 'react-icons/hi'
@@ -17,7 +18,7 @@ export type DashboardLoaderData = {
   hasPayrollAdvances: boolean
 }
 
-export const loader: LoaderFunction = async ({ request }) => {
+export const loader = async ({ request }: LoaderArgs) => {
   const user = await requireUser(request)
 
   const employeeData = await prisma.employee.findFirst({
@@ -59,7 +60,7 @@ export const loader: LoaderFunction = async ({ request }) => {
 
   const hasPayrollAdvances = !!employeeData?.payrollAdvances?.length
 
-  return json<DashboardLoaderData>({
+  return json({
     user,
     canUsePayrollAdvances,
     hasPayrollAdvances,
@@ -74,7 +75,7 @@ export const meta: MetaFunction = () => {
 
 export default function AdminDashboardRoute() {
   const { canUsePayrollAdvances, hasPayrollAdvances } =
-    useLoaderData<DashboardLoaderData>()
+    useLoaderData<typeof loader>()
 
   const navPaths: INavPath[] = [
     {

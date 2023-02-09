@@ -1,4 +1,4 @@
-import type { ActionFunction, LoaderFunction } from '@remix-run/server-runtime'
+import type { ActionArgs, LoaderArgs } from '@remix-run/server-runtime'
 
 import { redirect } from '@remix-run/server-runtime'
 import { useLoaderData } from '@remix-run/react'
@@ -13,11 +13,7 @@ import { BenefitSubproductForm } from '~/components/Forms/BenefitSubproductForm'
 import { createBenefitSubproduct } from '~/services/benefit-subproduct/benefit-subproduct.server'
 import { benefitSubproductValidator } from '~/services/benefit-subproduct/benefit-subproduct.schema'
 
-type LoaderData = {
-  benefitId: string
-}
-
-export const loader: LoaderFunction = async ({ request, params }) => {
+export const loader = async ({ request, params }: LoaderArgs) => {
   await requireAdminUserId(request)
 
   const { benefitId } = params
@@ -28,12 +24,12 @@ export const loader: LoaderFunction = async ({ request, params }) => {
     })
   }
 
-  return json<LoaderData>({
+  return json({
     benefitId,
   })
 }
 
-export const action: ActionFunction = async ({ request, params }) => {
+export const action = async ({ request, params }: ActionArgs) => {
   await requireAdminUserId(request)
 
   const { benefitId } = params
@@ -59,7 +55,7 @@ export const action: ActionFunction = async ({ request, params }) => {
 }
 
 export default function BenefitSubproductCreateRoute() {
-  const { benefitId } = useLoaderData<LoaderData>()
+  const { benefitId } = useLoaderData<typeof loader>()
 
   const onCloseRedirectTo = `/admin/dashboard/benefits/${benefitId}/subproducts`
 

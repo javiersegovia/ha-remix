@@ -1,17 +1,14 @@
+import type { LoaderArgs, MetaFunction } from '@remix-run/server-runtime'
+
 import { useLoaderData } from '@remix-run/react'
-import type { LoaderFunction, MetaFunction } from '@remix-run/server-runtime'
 import { json } from '@remix-run/server-runtime'
+
 import { CompanyDebtList } from '~/components/Lists/CompanyDebtList'
 import { getCompanyDebtsByCompanyId } from '~/services/company-debt/company-debt.server'
 import { requireCompany } from '~/services/company/company.server'
 import { requireAdminUserId } from '~/session.server'
 
-type LoaderData = {
-  debts: Awaited<ReturnType<typeof getCompanyDebtsByCompanyId>>
-  companyName: string
-}
-
-export const loader: LoaderFunction = async ({ request, params }) => {
+export const loader = async ({ request, params }: LoaderArgs) => {
   await requireAdminUserId(request)
 
   const { companyId } = params
@@ -24,20 +21,20 @@ export const loader: LoaderFunction = async ({ request, params }) => {
     },
   })
 
-  return json<LoaderData>({
+  return json({
     debts: await getCompanyDebtsByCompanyId(company.id),
     companyName: company.name,
   })
 }
 
-export const meta: MetaFunction = ({ data }) => {
+export const meta: MetaFunction<typeof loader> = ({ data }) => {
   if (!data) {
     return {
       title: '[Admin] Error | HoyAdelantas',
     }
   }
 
-  const { companyName } = data as LoaderData
+  const { companyName } = data
 
   return {
     title: `[Admin] Novedades de ${companyName}`,
@@ -45,6 +42,7 @@ export const meta: MetaFunction = ({ data }) => {
 }
 
 export default function AdminDashboardCompanyDebtsIndexRoute() {
-  const { debts } = useLoaderData<LoaderData>()
+  const { debts } = useLoaderData<typeof loader>()
+
   return <CompanyDebtList debts={debts} />
 }

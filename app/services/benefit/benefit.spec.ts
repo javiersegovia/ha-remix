@@ -32,7 +32,15 @@ describe('getBenefitById', () => {
       }
     )
 
-    const { id, name, buttonHref, buttonText, imageUrl, slug } = existingBenefit
+    const {
+      id,
+      name,
+      buttonHref,
+      buttonText,
+      imageUrl,
+      slug,
+      benefitCategoryId,
+    } = existingBenefit
 
     const result = await benefitService.getBenefitById(existingBenefit.id)
     expect(result).toEqual<
@@ -44,6 +52,8 @@ describe('getBenefitById', () => {
       buttonText,
       imageUrl,
       slug,
+      mainImage: null,
+      benefitCategoryId,
       subproducts: [
         {
           id: existingBenefitSubproduct.id,

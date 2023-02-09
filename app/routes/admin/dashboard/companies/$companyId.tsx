@@ -1,16 +1,12 @@
-import type { Company } from '@prisma/client'
+import type { LoaderArgs, MetaFunction } from '@remix-run/server-runtime'
+
 import { Outlet, useLoaderData } from '@remix-run/react'
-import type { LoaderFunction, MetaFunction } from '@remix-run/server-runtime'
 import { json } from '@remix-run/server-runtime'
 import { CompanyNavigation } from '~/containers/admin/dashboard/companies/CompanyNavigation'
 import { requireCompany } from '~/services/company/company.server'
 import { requireAdminUserId } from '~/session.server'
 
-type LoaderData = {
-  company: Pick<Company, 'id' | 'name'>
-}
-
-export const loader: LoaderFunction = async ({ request, params }) => {
+export const loader = async ({ request, params }: LoaderArgs) => {
   await requireAdminUserId(request)
   const { companyId } = params
 
@@ -22,19 +18,19 @@ export const loader: LoaderFunction = async ({ request, params }) => {
     },
   })
 
-  return json<LoaderData>({
+  return json({
     company,
   })
 }
 
-export const meta: MetaFunction = ({ data }) => {
+export const meta: MetaFunction<typeof loader> = ({ data }) => {
   if (!data) {
     return {
       title: '[Admin] Compañía no encontrada | HoyAdelantas',
     }
   }
 
-  const { company } = data as LoaderData
+  const { company } = data
 
   return {
     title: `[Admin] ${company.name} | HoyAdelantas`,
@@ -42,7 +38,7 @@ export const meta: MetaFunction = ({ data }) => {
 }
 
 export default function AdminDashboardCompanyDetailsIndexRoute() {
-  const { company } = useLoaderData<LoaderData>()
+  const { company } = useLoaderData<typeof loader>()
 
   return (
     <CompanyNavigation company={company}>

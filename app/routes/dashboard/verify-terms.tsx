@@ -1,4 +1,4 @@
-import type { LoaderFunction } from '@remix-run/server-runtime'
+import type { LoaderArgs } from '@remix-run/server-runtime'
 
 import { useLoaderData } from '@remix-run/react'
 import { redirect } from '@remix-run/server-runtime'
@@ -13,11 +13,7 @@ import { requireEmployee } from '~/session.server'
 import { serverError } from 'remix-utils'
 import { json } from '@remix-run/node'
 
-type VerifyTermsLoaderData = {
-  signerToken: string
-}
-
-export const loader: LoaderFunction = async ({ request }) => {
+export const loader = async ({ request }: LoaderArgs) => {
   const employee = await requireEmployee(request)
   const employeeHasSignedTerms = await hasSignedTerms(employee.id)
 
@@ -31,13 +27,13 @@ export const loader: LoaderFunction = async ({ request }) => {
     throw serverError('Ha ocurrido un error inesperado al buscar el documento')
   }
 
-  return json<VerifyTermsLoaderData>({
+  return json({
     signerToken: zapsignDocument.signerToken,
   })
 }
 
 const DashboardVerifyTermsRoute = () => {
-  const { signerToken } = useLoaderData<VerifyTermsLoaderData>()
+  const { signerToken } = useLoaderData<typeof loader>()
   return (
     <>
       <div className="mx-auto mt-10 w-full max-w-screen-lg px-2 sm:px-8">
