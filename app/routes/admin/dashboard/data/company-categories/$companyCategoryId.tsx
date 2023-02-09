@@ -7,8 +7,8 @@ import {
   deleteCompanyCategoryById,
   getCompanyCategoryById,
   updateCompanyCategoryById,
-} from '../../../../../services/company-category/company-category.server'
-import { companyCategoryValidator } from '../../../../../services/company-category/company-category.schema'
+} from '~/services/company-category/company-category.server'
+import { companyCategoryValidator } from '~/services/company-category/company-category.schema'
 import { validationError } from 'remix-validated-form'
 import { Modal } from '~/components/Dialog/Modal'
 import { RightPanel } from '~/components/Layout/RightPanel'

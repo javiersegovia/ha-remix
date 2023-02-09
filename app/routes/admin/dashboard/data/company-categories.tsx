@@ -1,5 +1,5 @@
 import type { LoaderFunction } from '@remix-run/server-runtime'
-import type { TableRowProps } from '../../../../components/Lists/Table'
+import type { TableRowProps } from '~/components/Lists/Table'
 
 import React from 'react'
 import { Outlet, useLoaderData } from '@remix-run/react'
@@ -9,7 +9,7 @@ import { TitleWithActions } from '~/components/Layout/TitleWithActions'
 import { requireAdminUserId } from '~/session.server'
 import { json } from '@remix-run/node'
 import { Table } from '~/components/Lists/Table'
-import { getCompanyCategories } from '../../../../services/company-category/company-category.server'
+import { getCompanyCategories } from '~/services/company-category/company-category.server'
 
 type LoaderData = {
   companyCategories: Awaited<ReturnType<typeof getCompanyCategories>>
