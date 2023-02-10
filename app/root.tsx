@@ -205,7 +205,11 @@ export const ErrorBoundary: ErrorBoundaryComponent = ({ error }) => {
 
 export const CatchBoundary = () => {
   const caught = useCatch()
-  const parsedData = caught?.data && JSON.parse(caught.data)
+  const parsedData =
+    caught?.data && typeof caught.data === 'object'
+      ? JSON.parse(caught.data)
+      : caught.data
+
   const message = parsedData?.message || parsedData || caught.statusText
 
   return (

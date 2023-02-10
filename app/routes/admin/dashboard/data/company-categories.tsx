@@ -1,4 +1,4 @@
-import type { LoaderArgs } from '@remix-run/server-runtime'
+import type { LoaderArgs, MetaFunction } from '@remix-run/server-runtime'
 import type { TableRowProps } from '~/components/Lists/Table'
 
 import { json } from '@remix-run/node'
@@ -19,6 +19,12 @@ export const loader = async ({ request }: LoaderArgs) => {
   return json({
     companyCategories,
   })
+}
+
+export const meta: MetaFunction = () => {
+  return {
+    title: '[Admin] Categorías de Compañías | HoyAdelantas',
+  }
 }
 
 export default function CompanyCategoryIndexRoute() {

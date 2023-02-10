@@ -20,7 +20,7 @@ const companySchema = z.object({
       required_error: 'Ingrese el nombre de la compañía',
     })
     .trim()
-    .min(4, 'El nombre debe poseer al menos 4 caracteres'),
+    .min(3, 'El nombre debe poseer al menos 3 caracteres'),
 
   status: z.nativeEnum(CompanyStatus).default(CompanyStatus.INACTIVE),
 

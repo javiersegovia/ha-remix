@@ -21,5 +21,40 @@ export const getEmployeeEnabledBenefits = async (
         in: benefitsIds,
       },
     },
+    select: {
+      slug: true,
+      buttonHref: true,
+      buttonText: true,
+      name: true,
+      mainImage: {
+        select: {
+          id: true,
+          url: true,
+        },
+      },
+      benefitHighlight: {
+        select: {
+          buttonHref: true,
+          buttonText: true,
+          description: true,
+          title: true,
+          isActive: true,
+          image: {
+            select: {
+              id: true,
+              url: true,
+            },
+          },
+        },
+      },
+      benefitCategory: {
+        select: {
+          id: true,
+          name: true,
+          hexColor: true,
+          opacity: true,
+        },
+      },
+    },
   })
 }

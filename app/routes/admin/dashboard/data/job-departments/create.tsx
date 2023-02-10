@@ -34,7 +34,7 @@ export default function JobDepartmentCreateRoute() {
   return (
     <Modal onCloseRedirectTo={onCloseRedirectTo}>
       <RightPanel onCloseRedirectTo={onCloseRedirectTo}>
-        <Title>Crear departamento de trabajo</Title>
+        <Title>Crear área de trabajo</Title>
 
         <JobDepartmentForm buttonText="Crear" />
       </RightPanel>

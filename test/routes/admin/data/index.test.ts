@@ -38,13 +38,11 @@ describe('AdminDashboardDataIndexRoute Loader', () => {
           rowId: 'job-departments',
           items: ['Áreas de trabajo', 4],
           href: '/admin/dashboard/data/job-departments',
-          isDisabled: true,
         },
         {
           rowId: 'banks',
           items: ['Bancos', 3],
           href: '/admin/dashboard/data/banks',
-          isDisabled: true,
         },
         {
           rowId: 'job-positions',
@@ -56,7 +54,6 @@ describe('AdminDashboardDataIndexRoute Loader', () => {
           rowId: 'company-categories',
           items: ['Categorías de compañías', 2],
           href: '/admin/dashboard/data/company-categories',
-          isDisabled: true,
         },
         {
           rowId: 'benefit-categories',

@@ -12,6 +12,11 @@ export const getBenefits = async () => {
     select: {
       id: true,
       name: true,
+      benefitHighlight: {
+        select: {
+          isActive: true,
+        },
+      },
     },
     orderBy: {
       name: 'asc',
@@ -27,7 +32,6 @@ export const getBenefitById = async (benefitId: Benefit['id']) => {
     select: {
       id: true,
       name: true,
-      imageUrl: true,
       buttonText: true,
       buttonHref: true,
       slug: true,
@@ -68,7 +72,6 @@ export const getBenefitById = async (benefitId: Benefit['id']) => {
 
 export const createBenefit = async ({
   name,
-  imageUrl,
   buttonText,
   buttonHref,
   slug,
@@ -116,7 +119,6 @@ export const createBenefit = async ({
     return prisma.benefit.create({
       data: {
         name,
-        imageUrl,
         buttonText,
         buttonHref,
         slug,
@@ -136,6 +138,9 @@ export const createBenefit = async ({
     })
   }
 }
+
+// todo: refactor this function and move all the logic of creating/updating a BenefitHighlight
+// to another service (benefit-highlight.server.ts)
 
 export const updateBenefitById = async (
   data: BenefitInputSchema,
@@ -176,7 +181,6 @@ export const updateBenefitById = async (
 
   const {
     name,
-    imageUrl,
     buttonText,
     buttonHref,
     slug,
@@ -287,7 +291,6 @@ export const updateBenefitById = async (
     },
     data: {
       name,
-      imageUrl: imageUrl || null,
       buttonText: buttonText || null,
       buttonHref: buttonHref || null,
       slug: slug || null,

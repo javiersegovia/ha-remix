@@ -1,4 +1,4 @@
-import type { LoaderArgs } from '@remix-run/server-runtime'
+import type { LoaderArgs, MetaFunction } from '@remix-run/server-runtime'
 import type { TableRowProps } from '~/components/Lists/Table'
 
 import { Outlet, useLoaderData } from '@remix-run/react'
@@ -19,6 +19,12 @@ export const loader = async ({ request }: LoaderArgs) => {
   return json({
     banks,
   })
+}
+
+export const meta: MetaFunction = () => {
+  return {
+    title: '[Admin] Bancos | HoyAdelantas',
+  }
 }
 
 export default function BanksIndexRoute() {

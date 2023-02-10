@@ -3,6 +3,7 @@ import { twMerge } from 'tailwind-merge'
 
 interface BoxProps extends PropsWithChildren {
   className?: string
+  style?: React.CSSProperties
 }
 
 export const Box = ({ children, className, ...otherProps }: BoxProps) => {

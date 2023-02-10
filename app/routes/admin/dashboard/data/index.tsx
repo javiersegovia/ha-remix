@@ -1,4 +1,4 @@
-import type { LoaderFunction } from '@remix-run/server-runtime'
+import type { LoaderFunction, MetaFunction } from '@remix-run/server-runtime'
 import type { TableProps, TableRowProps } from '~/components/Lists/Table'
 
 import { Container } from '~/components/Layout/Container'
@@ -15,6 +15,12 @@ type AdminDashboardIndexRouteLoaderData = {
   rows: (Pick<TableRowProps, 'rowId' | 'href' | 'isDisabled'> & {
     items: (string | number)[]
   })[]
+}
+
+export const meta: MetaFunction = () => {
+  return {
+    title: '[Admin] Data | HoyAdelantas',
+  }
 }
 
 export const loader: LoaderFunction = async ({ request }) => {
@@ -50,6 +56,11 @@ export const loader: LoaderFunction = async ({ request }) => {
 
   const rows: AdminDashboardIndexRouteLoaderData['rows'] = [
     {
+      rowId: 'job-departments',
+      items: ['Áreas de trabajo', jobDepartments],
+      href: '/admin/dashboard/data/job-departments',
+    },
+    {
       rowId: 'banks',
       items: ['Bancos', banks],
       href: '/admin/dashboard/data/banks',
@@ -74,11 +85,6 @@ export const loader: LoaderFunction = async ({ request }) => {
       items: ['Ciudades', cities],
       href: '/admin/dashboard/data/cities',
       isDisabled: true,
-    },
-    {
-      rowId: 'job-departments',
-      items: ['Departamentos de trabajo', jobDepartments],
-      href: '/admin/dashboard/data/job-departments',
     },
     {
       rowId: 'states',

@@ -1,15 +1,22 @@
-import type { Gender, User } from '@prisma/client'
+import type { BenefitCategory, Gender, User } from '@prisma/client'
 import type { LoaderArgs } from '@remix-run/server-runtime'
 
 import { Outlet, useLoaderData } from '@remix-run/react'
 import { json } from '@remix-run/server-runtime'
 
-import { logout, requireUserId } from '~/session.server'
+import { useState } from 'react'
+import { twMerge } from 'tailwind-merge'
+import clsx from 'clsx'
+
 import { prisma } from '~/db.server'
 import { Box } from '~/components/Layout/Box'
 import { Title } from '~/components/Typography/Title'
 import { BenefitCard } from '~/components/Cards/BenefitCard'
 import { getEmployeeEnabledBenefits } from '~/services/permissions/permissions.server'
+import { logout, requireUserId } from '~/session.server'
+import { Button } from '~/components/Button'
+import { Container } from '~/components/Layout/Container'
+import { isValidURL } from '~/utils/isValidURL'
 
 export type DashboardIndexLoaderData = {
   gender: Pick<Gender, 'name'> | null
@@ -29,6 +36,12 @@ const getEmployeeData = (userId: string) => {
       company: {
         select: {
           name: true,
+          description: true,
+          logoImage: {
+            select: {
+              url: true,
+            },
+          },
           benefits: {
             select: {
               id: true,
@@ -39,13 +52,14 @@ const getEmployeeData = (userId: string) => {
       membership: {
         select: { id: true, name: true, benefits: { select: { id: true } } },
       },
-      gender: { select: { name: true } },
-      user: { select: { firstName: true } },
     },
   })
 }
 
-export const loader = async ({ request, context: ctx }: LoaderArgs) => {
+// TODO Javier:
+// This file has some bad practices and code that could be refactored for a better performance and order overall.
+
+export const loader = async ({ request }: LoaderArgs) => {
   const userId = await requireUserId(request)
 
   const employeeData = await getEmployeeData(userId)
@@ -55,67 +69,187 @@ export const loader = async ({ request, context: ctx }: LoaderArgs) => {
     employeeData?.company.benefits
   )
 
+  const benefitHighlights = benefits.reduce((acc, benefit) => {
+    if (benefit.benefitHighlight && benefit.benefitHighlight.isActive) {
+      acc.push(benefit.benefitHighlight)
+    }
+    return acc
+  }, [] as BHighlight[])
+
+  const benefitHash: Record<BenefitCategory['id'], BenefitCategory['name']> = {}
+
+  const benefitCategories = benefits.reduce((acc, benefit) => {
+    if (benefit.benefitCategory && !benefitHash[benefit.benefitCategory.id]) {
+      benefitHash[benefit.benefitCategory.id] = benefit.benefitCategory.name
+      acc.push(benefit.benefitCategory)
+    }
+    return acc
+  }, [] as BCategory[])
+
   if (!employeeData) throw await logout(request)
 
   return json({
-    gender: employeeData.gender,
-    user: employeeData.user,
     benefits,
     company: employeeData.company,
+    benefitHighlights,
+    benefitCategories,
   })
 }
 
+type BHighlight = Awaited<
+  ReturnType<typeof getEmployeeEnabledBenefits>
+>[0]['benefitHighlight']
+
+type BCategory = Awaited<
+  ReturnType<typeof getEmployeeEnabledBenefits>
+>[0]['benefitCategory']
+
 export default function DashboardIndexRoute() {
-  const { gender, user, benefits, company } = useLoaderData<typeof loader>()
+  const { benefitHighlights, benefitCategories, benefits, company } =
+    useLoaderData<typeof loader>()
+
+  const selectedHighlight = benefitHighlights?.[0]
+
+  const [selectedBenefitCategoryId, setSelectedBenefitCategoryId] =
+    useState<number>()
+
+  const filteredBenefits = selectedBenefitCategoryId
+    ? benefits.filter(
+        (benefit) => benefit.benefitCategory?.id === selectedBenefitCategoryId
+      )
+    : benefits
 
   return (
     <>
-      <div className="relative w-full flex-1">
-        <img
-          className="absolute top-0 left-0 opacity-[15%]"
-          src="/images/block_dashboard_overview_yellow.png"
-          alt="Bloque Amarillo"
-        />
-        <img
-          className="absolute bottom-0 right-0 opacity-[15%]"
-          src="/images/block_dashboard_overview_green.png"
-          alt="Bloque Verde"
-        />
+      <div className="relative w-full flex-1 bg-white">
+        {selectedHighlight && (
+          <section className="bg-steelBlue-100 pb-16 pt-10">
+            <Container>
+              <div className="relative z-10 mx-auto w-full max-w-screen-xl px-2 sm:px-10">
+                <Title>Beneficio destacado del mes</Title>
+                <Box className="mt-6 flex flex-col items-center gap-2 overflow-hidden rounded-lg shadow-xl xl:flex-row">
+                  <img
+                    src={selectedHighlight.image?.url}
+                    className="max-h-72 w-full bg-white object-cover"
+                    alt="Highlight"
+                  />
+                  <div className="p-4">
+                    <Title as="h3">{selectedHighlight.title}</Title>
+                    <p className="mt-2 whitespace-pre-wrap text-gray-700">
+                      {selectedHighlight.description}
+                    </p>
+                    <div className="inline-block w-full lg:max-w-[14rem]">
+                      <Button
+                        href={selectedHighlight.buttonHref}
+                        external={isValidURL(selectedHighlight.buttonHref)}
+                        className="mt-5"
+                      >
+                        {selectedHighlight.buttonText}
+                      </Button>
+                    </div>
+                  </div>
+                </Box>
+              </div>
+            </Container>
+          </section>
+        )}
 
-        <section className="relative z-10 mx-auto mt-10 w-full max-w-screen-lg px-2 pb-10 sm:px-10 md:mt-28">
-          <Box className="flex items-center gap-5 px-10 py-10 shadow-xl md:px-10 xl:px-40">
-            <div>
-              <Title as="h1" className="!font-semibold">
-                Hola, {user.firstName}
-              </Title>
-              <p className="mt-2 text-xl font-medium text-steelBlue-900">
-                ¡Tu eres {gender?.name === 'Femenino' ? 'valiosa' : 'valioso'}{' '}
-                para {company.name}! Así que disfruta de todo lo bueno que{' '}
-                {company.name} tiene que ofrecerte.
-              </p>
+        <section className="bg-white py-10 lg:px-10">
+          <section className="mx-auto grid grid-cols-[minmax(170px,_300px)] items-center justify-center gap-4 sm:grid-cols-[repeat(auto-fit,minmax(170px,_200px))] md:gap-5 lg:grid-cols-[repeat(auto-fit,minmax(170px,_1fr))] lg:items-stretch xl:grid-cols-[repeat(5,minmax(170px,200px))]">
+            <div className="col-span-full mb-6 border-b-2 border-blue-100 pb-10">
+              {!company.logoImage && (
+                <Title
+                  as="h3"
+                  className={twMerge(
+                    clsx(
+                      'text-center text-steelBlue-600 lg:text-left',
+                      !company.description && 'lg:text-center'
+                    )
+                  )}
+                >
+                  {company.name}
+                </Title>
+              )}
+
+              {(company.logoImage?.url || company.description) && (
+                <div className="mt-4 flex flex-col items-center justify-center gap-10 lg:flex-row">
+                  {company.logoImage?.url && (
+                    <img
+                      className="w-44 object-contain"
+                      src={company.logoImage.url}
+                      alt={company.name}
+                    />
+                  )}
+
+                  {company.description && (
+                    <p className="whitespace-pre-wrap text-justify">
+                      {company.description}
+                    </p>
+                  )}
+                </div>
+              )}
             </div>
 
-            <img
-              className="w-20"
-              src="/images/bito/bito_1.png"
-              alt="Robot BitO"
-            />
-          </Box>
+            {benefitCategories.length > 0 && (
+              <div className="col-span-full mb-6 flex flex-wrap items-center justify-center gap-4 lg:justify-start">
+                <button
+                  className={twMerge(
+                    clsx(
+                      'rounded-full bg-blue-100 py-1 px-4',
+                      !selectedBenefitCategoryId &&
+                        'bg-steelBlue-700 text-white'
+                    )
+                  )}
+                  type="button"
+                  onClick={() => setSelectedBenefitCategoryId(undefined)}
+                >
+                  Todos
+                </button>
 
-          <section className="mt-10 grid grid-cols-2 items-center gap-4 text-center md:gap-5 lg:grid-cols-3 lg:items-stretch">
-            {benefits.map(({ name, buttonHref, buttonText, imageUrl }) => (
-              <BenefitCard
-                key={name}
-                title={name}
-                buttonText={buttonText}
-                buttonHref={buttonHref}
-                imageUrl={imageUrl}
-              />
-            ))}
+                {benefitCategories.map((benefitCategory) => (
+                  <button
+                    key={benefitCategory?.id}
+                    className={twMerge(
+                      clsx(
+                        'rounded-full bg-blue-100 py-1 px-4',
+                        benefitCategory?.id === selectedBenefitCategoryId &&
+                          'bg-steelBlue-700 text-white'
+                      )
+                    )}
+                    type="button"
+                    onClick={() =>
+                      setSelectedBenefitCategoryId(benefitCategory?.id)
+                    }
+                  >
+                    {benefitCategory?.name}
+                  </button>
+                ))}
+              </div>
+            )}
+
+            {filteredBenefits.map(
+              ({
+                name,
+                buttonHref,
+                buttonText,
+                mainImage,
+                benefitCategory,
+              }) => (
+                <BenefitCard
+                  key={name}
+                  name={name}
+                  buttonText={buttonText}
+                  buttonHref={buttonHref}
+                  mainImage={mainImage}
+                  benefitCategory={benefitCategory}
+                />
+              )
+            )}
           </section>
-          <Outlet />
         </section>
       </div>
+
+      <Outlet />
     </>
   )
 }

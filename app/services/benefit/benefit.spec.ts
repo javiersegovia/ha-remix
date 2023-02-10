@@ -14,6 +14,7 @@ describe('getBenefits', () => {
       .map((benefit) => ({
         id: benefit.id,
         name: benefit.name,
+        benefitHighlight: null,
       }))
       .sort((a, b) => a.name.localeCompare(b.name))
 
@@ -32,15 +33,8 @@ describe('getBenefitById', () => {
       }
     )
 
-    const {
-      id,
-      name,
-      buttonHref,
-      buttonText,
-      imageUrl,
-      slug,
-      benefitCategoryId,
-    } = existingBenefit
+    const { id, name, buttonHref, buttonText, slug, benefitCategoryId } =
+      existingBenefit
 
     const result = await benefitService.getBenefitById(existingBenefit.id)
     expect(result).toEqual<
@@ -50,9 +44,9 @@ describe('getBenefitById', () => {
       name,
       buttonHref,
       buttonText,
-      imageUrl,
       slug,
       mainImage: null,
+      benefitHighlight: null,
       benefitCategoryId,
       subproducts: [
         {

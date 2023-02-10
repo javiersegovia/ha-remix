@@ -122,7 +122,6 @@ const AdminDashboardBenefitDetailsIndexRoute = () => {
 
   const {
     name,
-    imageUrl,
     buttonText,
     buttonHref,
     slug,
@@ -141,7 +140,6 @@ const AdminDashboardBenefitDetailsIndexRoute = () => {
         benefitCategories={benefitCategories}
         defaultValues={{
           name,
-          imageUrl,
           buttonText,
           buttonHref,
           slug,

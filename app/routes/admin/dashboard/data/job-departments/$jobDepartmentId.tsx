@@ -23,13 +23,13 @@ export const loader = async ({ request, params }: LoaderArgs) => {
   const { jobDepartmentId } = params
 
   if (!jobDepartmentId || isNaN(Number(jobDepartmentId))) {
-    throw badRequest('No se encontró el ID del departamento de trabajo')
+    throw badRequest('No se encontró el ID del área de trabajo')
   }
 
   const jobDepartment = await getJobDepartmentById(Number(jobDepartmentId))
 
   if (!jobDepartment) {
-    throw badRequest('No se encontró el departamento de trabajo')
+    throw badRequest('No se encontró el área de trabajo')
   }
 
   return json({ jobDepartment })
@@ -41,7 +41,7 @@ export const action = async ({ request, params }: ActionArgs) => {
   const { jobDepartmentId } = params
 
   if (!jobDepartmentId || isNaN(Number(jobDepartmentId))) {
-    throw badRequest('No se encontró el ID del departamento de trabajo')
+    throw badRequest('No se encontró el ID del área de trabajo')
   }
 
   if (request.method === 'POST') {
@@ -68,7 +68,7 @@ export default function JobDepartmentUpdateRoute() {
   return (
     <Modal onCloseRedirectTo={onCloseRedirectTo}>
       <RightPanel onCloseRedirectTo={onCloseRedirectTo}>
-        <Title>Actualizar departamento de trabajo</Title>
+        <Title>Actualizar área de trabajo</Title>
 
         <JobDepartmentForm
           buttonText="Guardar"

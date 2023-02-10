@@ -1,5 +1,3 @@
-import type { DashboardIndexLoaderData } from '~/routes/dashboard/overview'
-
 import { truncateDB } from 'test/helpers/truncateDB'
 import { createMockEmployee, MOCK_USER } from 'test/setup-test-env'
 import { loader as dashboardOverviewLoader } from '~/routes/dashboard/overview'
@@ -30,6 +28,11 @@ afterAll(() => {
  *  Based on that, we will assign some benefits to a company, and one membership to an employee
  *  And the combination of both inputs should give us different results
  */
+
+// todo Javier: extract this type to a type helper
+type DashboardOverviewLoaderResponse = Awaited<
+  ReturnType<Awaited<ReturnType<typeof dashboardOverviewLoader>>['json']>
+>
 
 const createBenefitsAndMemberships = async () => {
   const [benefitLite_1, benefitLite_2, benefitPremium_1, benefitPremium_2] =
@@ -98,16 +101,16 @@ describe('LOADER /dashboard/overview', () => {
 
     const data = await response.json()
 
-    expect(data).toEqual<DashboardIndexLoaderData>({
-      gender: null,
-      user: {
-        firstName: employee.user.firstName,
-      },
+    expect(data).toEqual<DashboardOverviewLoaderResponse>({
       benefits: [],
       company: {
         benefits: [],
         name: employee.company.name,
+        description: null,
+        logoImage: null,
       },
+      benefitHighlights: [],
+      benefitCategories: [],
     })
   })
 
@@ -140,7 +143,7 @@ describe('LOADER /dashboard/overview', () => {
       },
     })
 
-    await Promise.all([updateCompany, updateEmployee])
+    const [company] = await Promise.all([updateCompany, updateEmployee])
 
     const response: Response = await dashboardOverviewLoader({
       request: new Request(`http://localhost:3000/dashboard/overview`),
@@ -151,20 +154,27 @@ describe('LOADER /dashboard/overview', () => {
 
     const data = await response.json()
 
-    expect(data.benefits).toEqual<DashboardIndexLoaderData['benefits']>([
-      {
-        id: benefitLite_1.id,
-        createdAt: expect.any(String),
-        updatedAt: expect.any(String),
-        name: benefitLite_1.name,
-        buttonHref: benefitLite_1.buttonHref,
-        buttonText: benefitLite_1.buttonText,
-        imageUrl: benefitLite_1.imageUrl,
-        slug: benefitLite_1.slug,
-        benefitCategoryId: null,
-        mainImageId: null,
+    expect(data).toEqual<DashboardOverviewLoaderResponse>({
+      benefits: [
+        {
+          name: benefitLite_1.name,
+          buttonHref: benefitLite_1.buttonHref,
+          buttonText: benefitLite_1.buttonText,
+          slug: benefitLite_1.slug,
+          mainImage: null,
+          benefitCategory: null,
+          benefitHighlight: null,
+        },
+      ],
+      company: {
+        name: company.name,
+        description: company.description,
+        logoImage: null,
+        benefits: expect.arrayContaining([{ id: expect.any(Number) }]),
       },
-    ])
+      benefitCategories: [],
+      benefitHighlights: [],
+    })
   })
 
   test(`if the company has both "Lite" and "Premium" benefits, and the employee has a "Premium" membership,
@@ -205,30 +215,24 @@ describe('LOADER /dashboard/overview', () => {
 
     const data = await response.json()
 
-    expect(data.benefits).toEqual<DashboardIndexLoaderData['benefits']>([
+    expect(data.benefits).toEqual<DashboardOverviewLoaderResponse['benefits']>([
       {
-        id: benefitLite_2.id,
-        createdAt: expect.any(String),
-        updatedAt: expect.any(String),
         name: benefitLite_2.name,
         buttonHref: benefitLite_2.buttonHref,
         buttonText: benefitLite_2.buttonText,
-        imageUrl: benefitLite_2.imageUrl,
         slug: benefitLite_2.slug,
-        benefitCategoryId: null,
-        mainImageId: null,
+        mainImage: null,
+        benefitCategory: null,
+        benefitHighlight: null,
       },
       {
-        id: benefitPremium_2.id,
-        createdAt: expect.any(String),
-        updatedAt: expect.any(String),
         name: benefitPremium_2.name,
         buttonHref: benefitPremium_2.buttonHref,
         buttonText: benefitPremium_2.buttonText,
-        imageUrl: benefitPremium_2.imageUrl,
         slug: benefitPremium_2.slug,
-        benefitCategoryId: null,
-        mainImageId: null,
+        mainImage: null,
+        benefitCategory: null,
+        benefitHighlight: null,
       },
     ])
   })

@@ -28,7 +28,7 @@ export const BenefitFactory = Factory.define<ExtendedBenefit>(
       createdAt: new Date(),
       updatedAt: new Date(),
       name: faker.commerce.productName(),
-      imageUrl: faker.image.imageUrl(),
+      imageUrl: null,
       buttonHref: faker.internet.url(),
       buttonText: faker.datatype.string(),
       slug: faker.datatype.string(),

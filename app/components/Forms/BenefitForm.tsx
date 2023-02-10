@@ -19,12 +19,7 @@ interface BenefitFormProps {
   benefitCategories: Pick<BenefitCategory, 'id' | 'name'>[]
   defaultValues?: Pick<
     BenefitInputSchema,
-    | 'name'
-    | 'imageUrl'
-    | 'buttonText'
-    | 'buttonHref'
-    | 'slug'
-    | 'benefitCategoryId'
+    'name' | 'buttonText' | 'buttonHref' | 'slug' | 'benefitCategoryId'
   > & {
     mainImage?: Pick<Image, 'key' | 'url'> | null
     benefitHighlight:
@@ -47,7 +42,6 @@ export const BenefitForm = ({
 }: BenefitFormProps) => {
   const {
     name,
-    imageUrl,
     buttonText,
     buttonHref,
     slug,
@@ -67,7 +61,6 @@ export const BenefitForm = ({
         validator={benefitValidator}
         defaultValues={{
           name,
-          imageUrl,
           buttonText,
           buttonHref,
           slug,
@@ -93,14 +86,6 @@ export const BenefitForm = ({
 
           <FormGridItem>
             <Input name="name" label="Nombre" type="text" />
-          </FormGridItem>
-
-          <FormGridItem>
-            <Input
-              name="imageUrl"
-              label="URL de la imagen (ícono antiguo)"
-              type="text"
-            />
           </FormGridItem>
 
           <FormGridItem>

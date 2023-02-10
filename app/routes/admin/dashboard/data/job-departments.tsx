@@ -1,4 +1,4 @@
-import type { LoaderArgs } from '@remix-run/server-runtime'
+import type { LoaderArgs, MetaFunction } from '@remix-run/server-runtime'
 import type { TableRowProps } from '~/components/Lists/Table'
 
 import { Outlet, useLoaderData } from '@remix-run/react'
@@ -21,6 +21,12 @@ export const loader = async ({ request }: LoaderArgs) => {
   })
 }
 
+export const meta: MetaFunction = () => {
+  return {
+    title: '[Admin] Áreas de Trabajo | HoyAdelantas',
+  }
+}
+
 export default function JobDepartmentIndexRoute() {
   const { jobDepartments } = useLoaderData<typeof loader>()
 
@@ -37,17 +43,17 @@ export default function JobDepartmentIndexRoute() {
       <Container>
         <TitleWithActions
           className="mb-10"
-          title="Departamentos de trabajo"
+          title="Áreas de trabajo"
           actions={
             <Button href="create" size="SM">
-              Crear departamento de trabajo
+              Crear área de trabajo
             </Button>
           }
         />
         {jobDepartments?.length > 0 ? (
           <Table headings={headings} rows={rows} />
         ) : (
-          <p>No se han encontrado departamentos de trabajo</p>
+          <p>No se han encontrado áreas de trabajo</p>
         )}
       </Container>
       <Outlet />

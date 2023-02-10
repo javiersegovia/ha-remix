@@ -36,7 +36,7 @@ export const JobDepartmentForm = ({
               name="name"
               type="text"
               label="Nombre"
-              placeholder="Ingrese un nombre de departamento"
+              placeholder="Ingrese un nombre de área de trabajo"
             />
           </FormGridItem>
           <FormGridItem className="lg:col-span-12">

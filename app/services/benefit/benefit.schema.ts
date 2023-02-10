@@ -26,8 +26,6 @@ export const benefitSchema = z.object({
    */
   mainImageKey: zfd.text(z.string().trim().nullish()),
 
-  imageUrl: zfd.text(z.string().trim().nullish()),
-
   buttonText: zfd.text(z.string().trim().nullish()),
   buttonHref: zfd.text(z.string().trim().nullish()),
   slug: zfd.text(z.string().trim().nullish()),

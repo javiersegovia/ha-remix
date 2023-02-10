@@ -86,8 +86,9 @@ export const ButtonElement = ({
         clsx(
           'flex w-full transform items-center justify-center rounded-lg text-center text-base font-medium transition duration-100 active:scale-95',
 
-          size === 'MD' && 'px-6 py-4',
+          size === 'XS' && 'px-4 py-2',
           size === 'SM' && 'px-5 py-3',
+          size === 'MD' && 'px-6 py-4',
 
           disabled && 'cursor-not-allowed opacity-40',
 

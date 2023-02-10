@@ -1,4 +1,5 @@
 import { Link } from '@remix-run/react'
+import { FaStar } from 'react-icons/fa'
 import type { getBenefits } from '~/services/benefit/benefit.server'
 import { TableData } from './TableData'
 import { TableHeading } from './TableHeading'
@@ -29,6 +30,15 @@ export function BenefitList({ benefits }: BenefitListProps) {
                       >
                         {benefit.name}
                       </Link>
+                    </TableData>
+
+                    <TableData className="text-right">
+                      {benefit.benefitHighlight?.isActive && (
+                        <p className="inline-flex items-center gap-2 rounded-md bg-indigo-200 px-2 py-1 text-sm font-semibold leading-5 text-indigo-600">
+                          <FaStar className="mb-[2px] text-xs" />
+                          <span>Destacado</span>
+                        </p>
+                      )}
                     </TableData>
                   </tr>
                 ))}

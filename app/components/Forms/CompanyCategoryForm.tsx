@@ -36,7 +36,7 @@ export const CompanyCategoryForm = ({
               name="name"
               type="text"
               label="Nombre"
-              placeholder="Agregue un nombre de categoría de compañía"
+              placeholder="Ingrese un nombre de categoría de compañía"
             />
           </FormGridItem>
           <FormGridItem className="lg:col-span-12">

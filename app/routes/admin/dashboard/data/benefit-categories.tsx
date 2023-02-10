@@ -1,4 +1,4 @@
-import type { LoaderArgs } from '@remix-run/server-runtime'
+import type { LoaderArgs, MetaFunction } from '@remix-run/server-runtime'
 import type { TableRowProps } from '~/components/Lists/Table'
 
 import { Outlet, useLoaderData } from '@remix-run/react'
@@ -19,6 +19,12 @@ export const loader = async ({ request }: LoaderArgs) => {
   return json({
     benefitCategories,
   })
+}
+
+export const meta: MetaFunction = () => {
+  return {
+    title: '[Admin] Categorías de Beneficios | HoyAdelantas',
+  }
 }
 
 export default function BenefitCategoriesIndexRoute() {
