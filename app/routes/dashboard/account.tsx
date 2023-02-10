@@ -3,18 +3,18 @@ import type {
   LoaderArgs,
   MetaFunction,
 } from '@remix-run/server-runtime'
-import { redirect } from '@remix-run/server-runtime'
-import type { CityLoader } from '../__api/cities'
-import type { StateLoader } from '../__api/states'
+import type { loader as cityLoader } from '../__api/cities'
+import type { loader as stateLoader } from '../__api/states'
 
+import { json, redirect } from '@remix-run/server-runtime'
 import { Link, useFetcher, useLoaderData } from '@remix-run/react'
-import { json } from '@remix-run/server-runtime'
 import { useEffect } from 'react'
 import {
   useControlField,
   ValidatedForm,
   validationError,
 } from 'remix-validated-form'
+
 import { DatePicker } from '~/components/FormFields/DatePicker'
 import { FormActions } from '~/components/FormFields/FormActions'
 import { FormGridItem } from '~/components/FormFields/FormGridItem'
@@ -128,8 +128,8 @@ export default function DashboardAccountRoute() {
     formId
   )
 
-  const stateFetcher = useFetcher<StateLoader>()
-  const cityFetcher = useFetcher<CityLoader>()
+  const stateFetcher = useFetcher<typeof stateLoader>()
+  const cityFetcher = useFetcher<typeof cityLoader>()
 
   useEffect(() => {
     if (stateFetcher.type !== 'init' || !countryId) return

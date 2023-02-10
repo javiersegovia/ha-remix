@@ -1,5 +1,5 @@
 import type {
-  ActionFunction,
+  ActionArgs,
   LoaderArgs,
   MetaFunction,
 } from '@remix-run/server-runtime'
@@ -37,7 +37,7 @@ export const loader = async ({ request }: LoaderArgs) => {
   })
 }
 
-export const action: ActionFunction = async ({ request }) => {
+export const action = async ({ request }: ActionArgs) => {
   await requireAdminUserId(request)
 
   const { data, submittedData, error } = await globalSettingsValidator.validate(

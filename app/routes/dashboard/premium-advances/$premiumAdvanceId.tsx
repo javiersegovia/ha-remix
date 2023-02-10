@@ -1,28 +1,27 @@
+import type {
+  MetaFunction,
+  LoaderArgs,
+  ActionArgs,
+} from '@remix-run/server-runtime'
+import type { PayrollAdvanceStatus } from '@prisma/client'
+import type { ExtractRemixResponse } from '~/utils/type-helpers'
+
+import { useLoaderData } from '@remix-run/react'
 import { json } from '@remix-run/server-runtime'
 import { badRequest, notFound, unauthorized } from 'remix-utils'
+import {
+  PremiumAdvanceStatus,
+  PremiumAdvanceHistoryActor,
+} from '@prisma/client'
 
 import { requireEmployee } from '~/session.server'
-
-import type {
-  LoaderFunction,
-  MetaFunction,
-  ActionFunction,
-} from '@remix-run/server-runtime'
-import { useLoaderData } from '@remix-run/react'
-import type { PayrollAdvanceStatus } from '@prisma/client'
-import { PremiumAdvanceHistoryActor } from '@prisma/client'
-import { PremiumAdvanceStatus } from '@prisma/client'
 import {
   getPremiumAdvanceById,
   updatePremiumAdvanceStatus,
 } from '~/services/premium-advance/premium-advance.server'
 import { PremiumAdvanceDetails } from '~/components/PremiumAdvance/PremiumAdvanceDetails'
 
-type LoaderData = {
-  premiumAdvance: NonNullable<Awaited<ReturnType<typeof getPremiumAdvanceById>>>
-}
-
-export const loader: LoaderFunction = async ({ request, params }) => {
+export const loader = async ({ request, params }: LoaderArgs) => {
   const employee = await requireEmployee(request)
   const { premiumAdvanceId } = params
 
@@ -35,21 +34,21 @@ export const loader: LoaderFunction = async ({ request, params }) => {
   const premiumAdvance = await getPremiumAdvanceById(premiumAdvanceId)
 
   if (!premiumAdvance) {
-    return notFound({
+    throw notFound({
       message: 'No se ha encontrado información sobre el adelanto de prima',
     })
   }
 
   if (employee.id !== premiumAdvance.employeeId) {
-    return unauthorized({ message: 'No estás autorizado' })
+    throw unauthorized({ message: 'No estás autorizado' })
   }
 
-  return json<LoaderData>({
+  return json({
     premiumAdvance,
   })
 }
 
-export const action: ActionFunction = async ({ request, params }) => {
+export const action = async ({ request, params }: ActionArgs) => {
   const employee = await requireEmployee(request)
   const formData = await request.formData()
   const subaction = formData.get('subaction') as PayrollAdvanceStatus
@@ -98,13 +97,16 @@ export const meta: MetaFunction = () => {
 }
 
 export default function PremiumAdvanceDetailsRoute() {
-  const { premiumAdvance } =
-    useLoaderData<LoaderData>() as unknown as LoaderData
+  const { premiumAdvance } = useLoaderData<typeof loader>()
 
   return (
     <>
       <PremiumAdvanceDetails
-        premiumAdvance={premiumAdvance}
+        premiumAdvance={
+          premiumAdvance as unknown as ExtractRemixResponse<
+            typeof loader
+          >['premiumAdvance']
+        }
         company={premiumAdvance.company}
         employee={premiumAdvance.employee}
         user={premiumAdvance.employee?.user}

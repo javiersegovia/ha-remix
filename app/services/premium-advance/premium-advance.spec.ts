@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { CompanyStatus, EmployeeStatus } from '@prisma/client'
 import { truncateDB } from 'test/helpers/truncateDB'
 import { CompanyFactory } from '../company/company.factory'
@@ -8,6 +9,8 @@ import { calculatePremiumAdvanceSpecs } from './premium-advance.server'
 beforeEach(async () => {
   await truncateDB()
 })
+
+// todo Javier: finish test
 
 describe('calculatePremiumAdvanceSpecs', () => {
   it(`calculates the premium advance specs correctly`, async () => {

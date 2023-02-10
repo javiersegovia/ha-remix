@@ -1,3 +1,14 @@
+import type {
+  MetaFunction,
+  LoaderArgs,
+  ActionArgs,
+} from '@remix-run/server-runtime'
+
+import {
+  PayrollAdvanceStatus,
+  PayrollAdvanceHistoryActor,
+} from '@prisma/client'
+import { useLoaderData } from '@remix-run/react'
 import { json } from '@remix-run/server-runtime'
 import { badRequest, notFound, unauthorized } from 'remix-utils'
 import {
@@ -6,23 +17,9 @@ import {
 } from '~/services/payroll-advance/payroll-advance.server'
 import { requireEmployee } from '~/session.server'
 
-import type {
-  LoaderFunction,
-  MetaFunction,
-  ActionFunction,
-} from '@remix-run/server-runtime'
-import { useLoaderData } from '@remix-run/react'
 import { PayrollAdvanceDetails } from '~/containers/dashboard/PayrollAdvanceDetails'
-import {
-  PayrollAdvanceStatus,
-  PayrollAdvanceHistoryActor,
-} from '@prisma/client'
 
-type LoaderData = {
-  payrollAdvance: NonNullable<Awaited<ReturnType<typeof getPayrollAdvanceById>>>
-}
-
-export const loader: LoaderFunction = async ({ request, params }) => {
+export const loader = async ({ request, params }: LoaderArgs) => {
   const employee = await requireEmployee(request)
   const { payrollAdvanceId } = params
 
@@ -43,15 +40,15 @@ export const loader: LoaderFunction = async ({ request, params }) => {
   }
 
   if (employee.id !== payrollAdvance.employeeId) {
-    return unauthorized({ message: 'No estás autorizado' })
+    throw unauthorized({ message: 'No estás autorizado' })
   }
 
-  return json<LoaderData>({
+  return json({
     payrollAdvance,
   })
 }
 
-export const action: ActionFunction = async ({ request, params }) => {
+export const action = async ({ request, params }: ActionArgs) => {
   const employee = await requireEmployee(request)
   const formData = await request.formData()
   const subaction = formData.get('subaction') as PayrollAdvanceStatus
@@ -102,7 +99,7 @@ export const meta: MetaFunction = () => {
 }
 
 export default function PayrollAdvanceDetailsRoute() {
-  const { payrollAdvance } = useLoaderData<LoaderData>()
+  const { payrollAdvance } = useLoaderData<typeof loader>()
 
   return (
     <>

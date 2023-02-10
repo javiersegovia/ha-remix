@@ -7,8 +7,8 @@ import type {
   Wallet,
 } from '@prisma/client'
 import type { getBanks } from '~/services/bank/bank.server'
-import type { CityLoader } from '~/routes/__api/cities'
-import type { StateLoader } from '~/routes/__api/states'
+import type { loader as cityLoader } from '~/routes/__api/cities'
+import type { loader as stateLoader } from '~/routes/__api/states'
 import type { Validator } from 'remix-validated-form'
 import type { EmployeeSchemaInput } from '~/services/employee/employee.schema'
 import type { EnumOption } from '~/schemas/helpers'
@@ -204,8 +204,8 @@ export const AdminEmployeeForm = ({
     formId
   )
 
-  const stateFetcher = useFetcher<StateLoader>()
-  const cityFetcher = useFetcher<CityLoader>()
+  const stateFetcher = useFetcher<typeof stateLoader>()
+  const cityFetcher = useFetcher<typeof cityLoader>()
 
   useEffect(() => {
     if (stateFetcher.type !== 'init' || !countryId) return

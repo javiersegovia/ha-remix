@@ -1,5 +1,5 @@
 import type {
-  ActionFunction,
+  ActionArgs,
   LoaderArgs,
   MetaFunction,
 } from '@remix-run/server-runtime'
@@ -38,7 +38,7 @@ export const meta: MetaFunction = () => {
   }
 }
 
-export const action: ActionFunction = async ({ request }) => {
+export const action = async ({ request }: ActionArgs) => {
   const employee = await requireEmployee(request)
 
   const { data, submittedData, error } = await welcomeValidator.validate(

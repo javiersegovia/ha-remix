@@ -1,7 +1,10 @@
+import type { ExtractRemixResponse } from '~/utils/type-helpers'
+
+import { vi } from 'vitest'
 import { truncateDB } from 'test/helpers/truncateDB'
 import { createMockEmployee, MOCK_USER } from 'test/setup-test-env'
+
 import { loader as dashboardOverviewLoader } from '~/routes/dashboard/overview'
-import { vi } from 'vitest'
 import { prisma } from '~/db.server'
 import { MembershipFactory } from '~/services/membership/membership.factory'
 import { BenefitFactory } from '~/services/benefit/benefit.factory'
@@ -29,9 +32,8 @@ afterAll(() => {
  *  And the combination of both inputs should give us different results
  */
 
-// todo Javier: extract this type to a type helper
-type DashboardOverviewLoaderResponse = Awaited<
-  ReturnType<Awaited<ReturnType<typeof dashboardOverviewLoader>>['json']>
+type DashboardOverviewLoaderResponse = ExtractRemixResponse<
+  typeof dashboardOverviewLoader
 >
 
 const createBenefitsAndMemberships = async () => {
@@ -90,7 +92,7 @@ const createBenefitsAndMemberships = async () => {
 }
 
 describe('LOADER /dashboard/overview', () => {
-  it('returns user and gender data', async () => {
+  it('returns all data needed for dashboard overview route', async () => {
     const employee = await createMockEmployee()
     const response: Response = await dashboardOverviewLoader({
       request: new Request(`http://localhost:3000/dashboard/overview`),

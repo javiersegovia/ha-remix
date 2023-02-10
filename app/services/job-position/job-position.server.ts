@@ -46,7 +46,7 @@ export const updateJobPositionById = async (
     })
   } catch (e) {
     console.error(e)
-    throw badRequest('No se encontró el ID del cargo de trabajo')
+    throw badRequest('Error al actualizar el cargo de trabajo')
   }
 }
 
@@ -61,6 +61,6 @@ export const deleteJobPositionById = async (id: JobPosition['id']) => {
     return deletedjobPosition.id
   } catch (e) {
     console.error(e)
-    throw badRequest('No se encontró el ID del cargo de trabajo')
+    throw badRequest('Error al eliminar el cargo de trabajo')
   }
 }

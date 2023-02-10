@@ -1,5 +1,5 @@
 import type { UploadBenefitConsumptionSchemaInput } from '~/services/benefit-consumption/benefit-consumption.schema'
-import type { ActionFunction } from '@remix-run/server-runtime'
+import type { ActionArgs } from '@remix-run/server-runtime'
 
 import { redirect } from '@remix-run/server-runtime'
 import { badRequest } from 'remix-utils'
@@ -8,7 +8,7 @@ import { stringify } from 'csv-stringify/sync'
 import { requireAdminUserId } from '~/session.server'
 import { uploadBenefitConsumptions } from '~/services/benefit-consumption/benefit-consumption.server'
 
-export const action: ActionFunction = async ({ request, params }) => {
+export const action = async ({ request, params }: ActionArgs) => {
   await requireAdminUserId(request)
 
   const { benefitId } = params

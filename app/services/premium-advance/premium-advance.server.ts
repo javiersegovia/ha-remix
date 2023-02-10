@@ -618,7 +618,7 @@ export const verifyIfEmployeeCanRequestPremiumAdvance = ({
   enabledBenefits,
 }: {
   employee: NonNullable<Awaited<ReturnType<typeof getEmployeeById>>>
-  enabledBenefits: Benefit[]
+  enabledBenefits: Pick<Benefit, 'slug'>[]
 }) => {
   let errorMessage: string | null = null
 

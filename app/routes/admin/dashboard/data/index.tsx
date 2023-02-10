@@ -1,5 +1,6 @@
-import type { LoaderFunction, MetaFunction } from '@remix-run/server-runtime'
+import type { LoaderArgs, MetaFunction } from '@remix-run/server-runtime'
 import type { TableProps, TableRowProps } from '~/components/Lists/Table'
+import type { ExtractRemixResponse } from '~/utils/type-helpers'
 
 import { Container } from '~/components/Layout/Container'
 import { Table } from '~/components/Lists/Table'
@@ -11,19 +12,13 @@ import { useLoaderData } from '@remix-run/react'
 
 const headings: TableProps['headings'] = ['Nombre', 'Resultados']
 
-type AdminDashboardIndexRouteLoaderData = {
-  rows: (Pick<TableRowProps, 'rowId' | 'href' | 'isDisabled'> & {
-    items: (string | number)[]
-  })[]
-}
-
 export const meta: MetaFunction = () => {
   return {
     title: '[Admin] Data | HoyAdelantas',
   }
 }
 
-export const loader: LoaderFunction = async ({ request }) => {
+export const loader = async ({ request }: LoaderArgs) => {
   await requireAdminUserId(request)
 
   const [
@@ -54,7 +49,7 @@ export const loader: LoaderFunction = async ({ request }) => {
     prisma.identityDocumentType.count(),
   ])
 
-  const rows: AdminDashboardIndexRouteLoaderData['rows'] = [
+  const rows: TableRowProps[] = [
     {
       rowId: 'job-departments',
       items: ['Áreas de trabajo', jobDepartments],
@@ -124,13 +119,13 @@ export const loader: LoaderFunction = async ({ request }) => {
     },
   ]
 
-  return json<AdminDashboardIndexRouteLoaderData>({
+  return json({
     rows,
   })
 }
 
 const AdminDashboardDataIndexRoute = () => {
-  const { rows } = useLoaderData<AdminDashboardIndexRouteLoaderData>()
+  const { rows } = useLoaderData<typeof loader>()
 
   return (
     <Container>
@@ -138,7 +133,10 @@ const AdminDashboardDataIndexRoute = () => {
         <Title>Modelos de la Base de Datos</Title>
       </div>
 
-      <Table headings={headings} rows={rows} />
+      <Table
+        headings={headings}
+        rows={rows as ExtractRemixResponse<typeof loader>['rows']}
+      />
     </Container>
   )
 }

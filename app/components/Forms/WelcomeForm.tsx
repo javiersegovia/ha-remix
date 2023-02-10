@@ -6,11 +6,11 @@ import type {
 } from '@prisma/client'
 import type { getBankAccountTypes } from '~/services/bank-account-type/bank-account-type.server'
 import type { getIdentityDocumentTypes } from '~/services/identity-document-type/identity-document-type.server'
-import type { StateLoader } from '~/routes/__api/states'
-import type { CityLoader } from '~/routes/__api/cities'
 import type { getCountries } from '~/services/country/country.server'
 import type { getGenders } from '~/services/gender/gender.server'
 import type { getBanks } from '~/services/bank/bank.server'
+import type { loader as stateLoader } from '~/routes/__api/states'
+import type { loader as cityLoader } from '~/routes/__api/cities'
 
 import { useControlField, ValidatedForm } from 'remix-validated-form'
 import { welcomeValidator } from '~/schemas/welcome.schema'
@@ -118,8 +118,8 @@ export const WelcomeForm = ({
     formId
   )
 
-  const stateFetcher = useFetcher<StateLoader>()
-  const cityFetcher = useFetcher<CityLoader>()
+  const stateFetcher = useFetcher<typeof stateLoader>()
+  const cityFetcher = useFetcher<typeof cityLoader>()
 
   useEffect(() => {
     if (stateFetcher.type !== 'init' || !countryId) return

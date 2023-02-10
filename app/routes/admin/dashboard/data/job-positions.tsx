@@ -1,4 +1,4 @@
-import type { LoaderFunction } from '@remix-run/server-runtime'
+import type { LoaderArgs, MetaFunction } from '@remix-run/server-runtime'
 import type { TableRowProps } from '~/components/Lists/Table'
 
 import { Outlet, useLoaderData } from '@remix-run/react'
@@ -11,22 +11,24 @@ import { Table } from '~/components/Lists/Table'
 import { getJobPositions } from '~/services/job-position/job-position.server'
 import { requireAdminUserId } from '~/session.server'
 
-type LoaderData = {
-  jobPositions: Awaited<ReturnType<typeof getJobPositions>>
-}
-
-export const loader: LoaderFunction = async ({ request }) => {
+export const loader = async ({ request }: LoaderArgs) => {
   await requireAdminUserId(request)
 
   const jobPositions = await getJobPositions()
 
-  return json<LoaderData>({
+  return json({
     jobPositions,
   })
 }
 
+export const meta: MetaFunction = () => {
+  return {
+    title: '[Admin] Cargos de Trabajo | HoyAdelantas',
+  }
+}
+
 export default function JobPositionsIndexRoute() {
-  const { jobPositions } = useLoaderData<LoaderData>()
+  const { jobPositions } = useLoaderData<typeof loader>()
 
   const headings = ['Nombre']
 

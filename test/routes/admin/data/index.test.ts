@@ -48,7 +48,6 @@ describe('AdminDashboardDataIndexRoute Loader', () => {
           rowId: 'job-positions',
           items: ['Cargos de trabajo', 5],
           href: '/admin/dashboard/data/job-positions',
-          isDisabled: true,
         },
         {
           rowId: 'company-categories',

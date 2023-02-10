@@ -1,5 +1,6 @@
-import type { ActionFunction } from '@remix-run/server-runtime'
+import type { ActionArgs } from '@remix-run/server-runtime'
 import type { loader as companyDebtLoader } from '../$companyDebtId'
+import type { ExtractRemixResponse } from '~/utils/type-helpers'
 
 import { redirect } from '@remix-run/server-runtime'
 import { badRequest } from 'remix-utils'
@@ -21,7 +22,7 @@ import { companyDebtValidator } from '~/services/company-debt/company-debt.schem
 import { updateCompanyDebt } from '~/services/company-debt/company-debt.server'
 import { requireAdminUserId } from '~/session.server'
 
-export const action: ActionFunction = async ({ request, params }) => {
+export const action = async ({ request, params }: ActionArgs) => {
   await requireAdminUserId(request)
 
   const { companyDebtId } = params
@@ -54,7 +55,7 @@ export default function UpdateDebtModalRoute() {
     'routes/admin/dashboard/debts/$companyDebtId'
   )
   const { companyDebt } =
-    (routeData as Awaited<ReturnType<typeof companyDebtLoader>>) || {}
+    (routeData as ExtractRemixResponse<typeof companyDebtLoader>) || {}
 
   if (!companyDebt) {
     return null

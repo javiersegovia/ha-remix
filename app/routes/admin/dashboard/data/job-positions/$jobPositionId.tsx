@@ -1,4 +1,4 @@
-import type { ActionFunction, LoaderFunction } from '@remix-run/server-runtime'
+import type { ActionArgs, LoaderArgs } from '@remix-run/server-runtime'
 
 import { redirect, json } from '@remix-run/node'
 import { useLoaderData } from '@remix-run/react'
@@ -17,11 +17,7 @@ import {
 } from '~/services/job-position/job-position.server'
 import { requireAdminUserId } from '~/session.server'
 
-type LoaderData = {
-  jobPosition: NonNullable<Awaited<ReturnType<typeof getJobPositionById>>>
-}
-
-export const loader: LoaderFunction = async ({ request, params }) => {
+export const loader = async ({ request, params }: LoaderArgs) => {
   await requireAdminUserId(request)
 
   const { jobPositionId } = params
@@ -35,10 +31,10 @@ export const loader: LoaderFunction = async ({ request, params }) => {
     throw badRequest('No se encontró el cargo de trabajo')
   }
 
-  return json<LoaderData>({ jobPosition })
+  return json({ jobPosition })
 }
 
-export const action: ActionFunction = async ({ request, params }) => {
+export const action = async ({ request, params }: ActionArgs) => {
   await requireAdminUserId(request)
 
   const { jobPositionId } = params
@@ -66,8 +62,9 @@ export const action: ActionFunction = async ({ request, params }) => {
 }
 
 const onCloseRedirectTo = '/admin/dashboard/data/job-positions' as const
+
 export default function BenefitCategoryUpdateRoute() {
-  const { jobPosition } = useLoaderData<LoaderData>()
+  const { jobPosition } = useLoaderData<typeof loader>()
 
   return (
     <Modal onCloseRedirectTo={onCloseRedirectTo}>

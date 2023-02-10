@@ -1,6 +1,6 @@
 import type {
-  ActionFunction,
-  LoaderFunction,
+  ActionArgs,
+  LoaderArgs,
   MetaFunction,
 } from '@remix-run/server-runtime'
 
@@ -21,7 +21,7 @@ const updatePasswordSchema = welcomeSchema.pick({
 })
 const passwordValidator = withZod(updatePasswordSchema)
 
-export const action: ActionFunction = async ({ request }) => {
+export const action = async ({ request }: ActionArgs) => {
   const userId = await requireUserId(request)
   const { data, submittedData, error } = await passwordValidator.validate(
     await request.formData()
@@ -35,7 +35,7 @@ export const action: ActionFunction = async ({ request }) => {
   return redirect('/dashboard')
 }
 
-export const loader: LoaderFunction = async ({ request }) => {
+export const loader = async ({ request }: LoaderArgs) => {
   await requireUserId(request)
   return null
 }

@@ -1,4 +1,4 @@
-import type { ActionFunction } from '@remix-run/server-runtime'
+import type { ActionArgs, LoaderArgs } from '@remix-run/server-runtime'
 
 import { redirect } from '@remix-run/server-runtime'
 import { Modal } from '~/components/Dialog/Modal'
@@ -10,7 +10,12 @@ import { jobPositionValidator } from '~/services/job-position/job-position.schem
 import { validationError } from 'remix-validated-form'
 import { createJobPosition } from '~/services/job-position/job-position.server'
 
-export const action: ActionFunction = async ({ request }) => {
+export const loader = async ({ request }: LoaderArgs) => {
+  await requireAdminUserId(request)
+  return null
+}
+
+export const action = async ({ request }: ActionArgs) => {
   await requireAdminUserId(request)
 
   const formData = await request.formData()

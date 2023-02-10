@@ -1,4 +1,4 @@
-import type { ActionFunction, LoaderArgs } from '@remix-run/server-runtime'
+import type { ActionArgs, LoaderArgs } from '@remix-run/server-runtime'
 
 import { redirect } from '@remix-run/server-runtime'
 import { Link, useLoaderData } from '@remix-run/react'
@@ -26,7 +26,7 @@ export const loader = async ({ request, params }: LoaderArgs) => {
   })
 }
 
-export const action: ActionFunction = async ({ request }) => {
+export const action = async ({ request }: ActionArgs) => {
   await requireAdminUserId(request)
 
   /** We need to access two instances of FormData, one for validation and other for parseMultipartFormData,

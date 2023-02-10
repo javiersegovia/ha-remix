@@ -10,7 +10,7 @@ import { requireAdminUserId } from '~/session.server'
 import { bankValidator } from '~/services/bank/bank.schema'
 import { createBank } from '~/services/bank/bank.server'
 
-export const loader = async ({ request, params }: LoaderArgs) => {
+export const loader = async ({ request }: LoaderArgs) => {
   await requireAdminUserId(request)
   return null
 }

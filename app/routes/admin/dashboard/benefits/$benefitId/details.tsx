@@ -1,4 +1,4 @@
-import type { MetaFunction, ActionFunction, LoaderArgs } from '@remix-run/node'
+import type { MetaFunction, ActionArgs, LoaderArgs } from '@remix-run/node'
 
 import { useLoaderData } from '@remix-run/react'
 import { redirect } from '@remix-run/server-runtime'
@@ -58,7 +58,7 @@ export const loader = async ({ request, params }: LoaderArgs) => {
   })
 }
 
-export const action: ActionFunction = async ({ request, params }) => {
+export const action = async ({ request, params }: ActionArgs) => {
   await requireAdminUserId(request)
 
   const { benefitId } = params

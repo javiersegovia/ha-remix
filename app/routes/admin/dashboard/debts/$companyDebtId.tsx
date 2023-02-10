@@ -1,5 +1,4 @@
-import type { LoaderFunction, MetaFunction } from '@remix-run/server-runtime'
-import type { PayrollAdvanceListProps } from '~/components/Lists/PayrollAdvanceList'
+import type { LoaderArgs, MetaFunction } from '@remix-run/server-runtime'
 
 import { Link, Outlet, useLoaderData } from '@remix-run/react'
 import { badRequest, notFound } from 'remix-utils'
@@ -17,12 +16,7 @@ import { CurrencySymbol } from '~/components/FormFields/CurrencyInput'
 import { Button } from '~/components/Button'
 import { PayrollAdvanceList } from '~/components/Lists/PayrollAdvanceList'
 
-export type CompanyDebtLoaderData = {
-  companyDebt: NonNullable<Awaited<ReturnType<typeof getCompanyDebtById>>>
-  relatedPayrollAdvances: PayrollAdvanceListProps['payrollAdvances']
-}
-
-export const loader: LoaderFunction = async ({ request, params }) => {
+export const loader = async ({ request, params }: LoaderArgs) => {
   await requireAdminUserId(request)
   const { companyDebtId } = params
 
@@ -44,20 +38,20 @@ export const loader: LoaderFunction = async ({ request, params }) => {
   const fiatRelatedList = companyDebt.fiatDebt?.payrollAdvances || []
   const relatedPayrollAdvances = [...fiatRelatedList, ...cryptoRelatedList]
 
-  return json<CompanyDebtLoaderData>({
+  return json({
     companyDebt,
     relatedPayrollAdvances,
   })
 }
 
-export const meta: MetaFunction = ({ data }) => {
+export const meta: MetaFunction<typeof loader> = ({ data }) => {
   if (!data) {
     return {
       title: 'Ha ocurrido un error | HoyAdelantas',
     }
   }
 
-  const { companyDebt } = data as CompanyDebtLoaderData
+  const { companyDebt } = data
 
   const date = new Date(Date.parse(`${companyDebt.createdAt}`))
   const monthName = capitalizeFirstLetter(
@@ -70,8 +64,7 @@ export const meta: MetaFunction = ({ data }) => {
 }
 
 export default function AdminCompanyDebtDetailsRoute() {
-  const { companyDebt, relatedPayrollAdvances } =
-    useLoaderData<CompanyDebtLoaderData>()
+  const { companyDebt, relatedPayrollAdvances } = useLoaderData<typeof loader>()
 
   const date = new Date(Date.parse(companyDebt.createdAt))
   const monthName = capitalizeFirstLetter(

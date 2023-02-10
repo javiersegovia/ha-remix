@@ -37,8 +37,6 @@ export const CompanyFactory = Factory.define<
 >(({ onCreate, associations }) => {
   onCreate((company) => {
     const {
-      countryId: _,
-      membershipId: _2,
       contactPerson,
       id,
       createdAt,
@@ -127,5 +125,7 @@ export const CompanyFactory = Factory.define<
     premiumLastRequestDay: 32,
     premiumPaymentDays: [],
     premiumDispersion: null,
+
+    logoImageId: null,
   }
 })

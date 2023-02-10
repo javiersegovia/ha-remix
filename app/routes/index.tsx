@@ -1,9 +1,8 @@
 import { Link } from '@remix-run/react'
-import type { LoaderFunction } from '@remix-run/server-runtime'
 import { redirect } from '@remix-run/server-runtime'
 import { useOptionalUser } from '~/utils/utils'
 
-export const loader: LoaderFunction = () => {
+export const loader = () => {
   const isDev = process.env.NODE_ENV === 'development'
 
   if (!isDev) {

@@ -1,4 +1,4 @@
-import type { ActionFunction, LoaderArgs } from '@remix-run/server-runtime'
+import type { ActionArgs, LoaderArgs } from '@remix-run/server-runtime'
 
 import { redirect } from '@remix-run/server-runtime'
 import { validationError } from 'remix-validated-form'
@@ -11,12 +11,12 @@ import { requireAdminUserId } from '~/session.server'
 import { companyCategoryValidator } from '~/services/company-category/company-category.schema'
 import { createCompanyCategory } from '~/services/company-category/company-category.server'
 
-export const loader = async ({ request, params }: LoaderArgs) => {
+export const loader = async ({ request }: LoaderArgs) => {
   await requireAdminUserId(request)
   return null
 }
 
-export const action: ActionFunction = async ({ request }) => {
+export const action = async ({ request }: ActionArgs) => {
   await requireAdminUserId(request)
 
   const formData = await request.formData()
