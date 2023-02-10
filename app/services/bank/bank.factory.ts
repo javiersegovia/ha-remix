@@ -4,7 +4,7 @@ import { faker } from '@faker-js/faker'
 import { Factory } from 'fishery'
 import { prisma } from '~/db.server'
 
-export const BankFactory = Factory.define<Bank>(({ onCreate }) => {
+export const BankFactory = Factory.define<Bank>(({ onCreate, sequence }) => {
   onCreate((bank) => {
     const { id: _, ...bankData } = bank
 
@@ -16,7 +16,7 @@ export const BankFactory = Factory.define<Bank>(({ onCreate }) => {
   })
 
   return {
-    id: faker.datatype.number(),
+    id: sequence,
     createdAt: new Date(),
     updatedAt: new Date(),
 

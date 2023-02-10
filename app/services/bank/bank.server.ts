@@ -1,6 +1,10 @@
-import { validationError } from 'remix-validated-form'
-import { prisma } from '~/db.server'
+import type { Bank } from '@prisma/client'
 import type { EmployeeSchemaInput } from '~/services/employee/employee.schema'
+import type { BankSchema } from './bank.schema'
+
+import { validationError } from 'remix-validated-form'
+import { badRequest } from 'remix-utils'
+import { prisma } from '~/db.server'
 
 export const getBanks = () => {
   return prisma.bank.findMany({
@@ -8,7 +12,59 @@ export const getBanks = () => {
       id: true,
       name: true,
     },
+    orderBy: {
+      name: 'asc',
+    },
   })
+}
+
+export const getBankById = async (id: Bank['id']) => {
+  return prisma.bank.findUnique({
+    where: {
+      id,
+    },
+    select: {
+      id: true,
+      name: true,
+    },
+  })
+}
+
+export const createBank = async (data: BankSchema) => {
+  const { name } = data
+  return prisma.bank.create({
+    data: { name },
+  })
+}
+
+export const updateBankById = async (id: Bank['id'], data: BankSchema) => {
+  const { name } = data
+  try {
+    return prisma.bank.update({
+      where: {
+        id,
+      },
+      data: { name },
+    })
+  } catch (e) {
+    console.error(e)
+    throw badRequest('No se encontró el ID del banco')
+  }
+}
+
+export const deleteBankById = async (id: Bank['id']) => {
+  try {
+    const deletedBank = await prisma.bank.delete({
+      where: {
+        id,
+      },
+    })
+
+    return deletedBank.id
+  } catch (e) {
+    console.error(e)
+    throw badRequest('No se encontró el ID del banco')
+  }
 }
 
 export const validateBankAccount = (
