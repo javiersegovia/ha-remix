@@ -229,6 +229,7 @@ export default function DashboardIndexRoute() {
 
             {filteredBenefits.map(
               ({
+                id,
                 name,
                 buttonHref,
                 buttonText,
@@ -236,7 +237,7 @@ export default function DashboardIndexRoute() {
                 benefitCategory,
               }) => (
                 <BenefitCard
-                  key={name}
+                  key={id}
                   name={name}
                   buttonText={buttonText}
                   buttonHref={buttonHref}

@@ -22,6 +22,7 @@ export const getEmployeeEnabledBenefits = async (
       },
     },
     select: {
+      id: true,
       slug: true,
       buttonHref: true,
       buttonText: true,
