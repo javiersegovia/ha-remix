@@ -1,3 +1,4 @@
+import { withZod } from '@remix-validated-form/with-zod'
 import { z } from 'zod'
 import { zfd } from 'zod-form-data'
 
@@ -24,4 +25,5 @@ export const bankSchema = z.object({
     }),
 })
 
-export type BankSchema = z.infer<typeof bankSchema>
+export const bankValidator = withZod(bankSchema)
+export type BankInputSchema = z.infer<typeof bankSchema>

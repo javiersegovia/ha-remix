@@ -52,7 +52,7 @@ describe('updateBankById', () => {
 })
 
 describe('deleteBankById', () => {
-  it('deletes a BenefitCategory and returns the id', async () => {
+  it('deletes a Bank and returns the id', async () => {
     const existingBank = BankFactory.build()
 
     vi.spyOn(prisma.bank, 'delete').mockResolvedValueOnce(existingBank)

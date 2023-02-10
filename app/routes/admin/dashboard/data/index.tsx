@@ -58,13 +58,11 @@ export const loader: LoaderFunction = async ({ request }) => {
       rowId: 'banks',
       items: ['Bancos', banks],
       href: '/admin/dashboard/data/banks',
-      isDisabled: true,
     },
     {
       rowId: 'job-positions',
       items: ['Cargos de trabajo', jobPositions],
       href: '/admin/dashboard/data/job-positions',
-      isDisabled: true,
     },
     {
       rowId: 'company-categories',
