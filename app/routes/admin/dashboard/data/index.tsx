@@ -53,7 +53,6 @@ export const loader: LoaderFunction = async ({ request }) => {
       rowId: 'job-departments',
       items: ['Áreas de trabajo', jobDepartments],
       href: '/admin/dashboard/data/job-departments',
-      isDisabled: true,
     },
     {
       rowId: 'banks',
@@ -71,7 +70,6 @@ export const loader: LoaderFunction = async ({ request }) => {
       rowId: 'company-categories',
       items: ['Categorías de compañías', companyCategories],
       href: '/admin/dashboard/data/company-categories',
-      isDisabled: true,
     },
     {
       rowId: 'benefit-categories',

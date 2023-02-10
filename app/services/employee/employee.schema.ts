@@ -42,7 +42,16 @@ export const employeeSchema = z.object({
 
   phone: zfd.text(z.string().nullable().default(null)),
   address: zfd.text(z.string().nullable().default(null)),
-  numberOfChildren: zfd.numeric(z.number().int().nullish().default(0)),
+  numberOfChildren: zfd.numeric(
+    z
+      .number()
+      .nonnegative({
+        message: 'El número debe ser positivo',
+      })
+      .int()
+      .nullish()
+      .default(0)
+  ),
 
   status: z.nativeEnum(EmployeeStatus).default(EmployeeStatus.INACTIVE),
   roles: z.array(zfd.text(z.nativeEnum(EmployeeRole))).nullish(),

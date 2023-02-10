@@ -5,7 +5,7 @@ import { Factory } from 'fishery'
 import { prisma } from '~/db.server'
 
 export const JobDepartmentFactory = Factory.define<JobDepartment>(
-  ({ onCreate }) => {
+  ({ onCreate, sequence }) => {
     onCreate((jobDepartment) => {
       const { id: _, ...jobDepartmentData } = jobDepartment
 
@@ -17,7 +17,7 @@ export const JobDepartmentFactory = Factory.define<JobDepartment>(
     })
 
     return {
-      id: faker.datatype.number(),
+      id: sequence,
 
       createdAt: new Date(),
       updatedAt: new Date(),
