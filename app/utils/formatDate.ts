@@ -34,11 +34,17 @@ export const parseDate = (date: Date | string) => {
 }
 
 export function sanitizeDate(date?: Date | null) {
-  console.log('date.getTimezoneOffset()')
-  console.log(date?.getTimezoneOffset())
+  if (date) {
+    const year = date?.getUTCFullYear()
+    const month = date?.getUTCMonth()
+    const day = date?.getUTCDate()
+
+    const newDate = new Date(`${year}-${month + 1}-${day} EDT`)
+
+    return newDate
+  }
+
   return date
-    ? new Date(date.getTime() + date.getTimezoneOffset() * 60000)
-    : date
 }
 
 export const ISO_DATE_REGEX = /\d{4}-[01]\d-[0-3]\d/

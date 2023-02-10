@@ -409,6 +409,7 @@ export const updateEmployeeById = async (
         : inactivatedAt
 
     console.log('startedAt')
+    console.log(startedAt)
     console.log(sanitizeDate(startedAt))
 
     return await prisma.employee.update({
