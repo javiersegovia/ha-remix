@@ -39,9 +39,7 @@ export function sanitizeDate(date?: Date | null) {
     const month = date?.getUTCMonth()
     const day = date?.getUTCDate()
 
-    const newDate = new Date(`${year}-${month + 1}-${day} EDT`)
-
-    return newDate
+    return new Date(`${year}-${month + 1}-${day} EDT`)
   }
 
   return date
