@@ -1,32 +1,28 @@
-import type { LoaderFunction } from '@remix-run/server-runtime'
+import type { LoaderArgs } from '@remix-run/server-runtime'
 import type { TableRowProps } from '~/components/Lists/Table'
 
-import React from 'react'
+import { json } from '@remix-run/node'
 import { Outlet, useLoaderData } from '@remix-run/react'
+
 import { Button } from '~/components/Button'
 import { Container } from '~/components/Layout/Container'
 import { TitleWithActions } from '~/components/Layout/TitleWithActions'
-import { requireAdminUserId } from '~/session.server'
-import { json } from '@remix-run/node'
-import { Table } from '~/components/Lists/Table'
 import { getCompanyCategories } from '~/services/company-category/company-category.server'
+import { requireAdminUserId } from '~/session.server'
+import { Table } from '~/components/Lists/Table'
 
-type LoaderData = {
-  companyCategories: Awaited<ReturnType<typeof getCompanyCategories>>
-}
-
-export const loader: LoaderFunction = async ({ request }) => {
+export const loader = async ({ request }: LoaderArgs) => {
   await requireAdminUserId(request)
 
   const companyCategories = await getCompanyCategories()
 
-  return json<LoaderData>({
+  return json({
     companyCategories,
   })
 }
 
 export default function CompanyCategoryIndexRoute() {
-  const { companyCategories } = useLoaderData<LoaderData>()
+  const { companyCategories } = useLoaderData<typeof loader>()
 
   const headings = ['Nombre']
 

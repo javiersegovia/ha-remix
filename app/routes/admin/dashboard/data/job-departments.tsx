@@ -1,32 +1,28 @@
-import type { LoaderFunction } from '@remix-run/server-runtime'
-import type { TableRowProps } from '../../../../components/Lists/Table'
+import type { LoaderArgs } from '@remix-run/server-runtime'
+import type { TableRowProps } from '~/components/Lists/Table'
 
-import React from 'react'
 import { Outlet, useLoaderData } from '@remix-run/react'
+import { json } from '@remix-run/node'
+
 import { Button } from '~/components/Button'
+import { Table } from '~/components/Lists/Table'
 import { Container } from '~/components/Layout/Container'
 import { TitleWithActions } from '~/components/Layout/TitleWithActions'
+import { getJobDepartments } from '~/services/job-department/job-department.server'
 import { requireAdminUserId } from '~/session.server'
-import { getJobDepartments } from '../../../../services/job-department/job-department.server'
-import { json } from '@remix-run/node'
-import { Table } from '~/components/Lists/Table'
 
-type LoaderData = {
-  jobDepartments: Awaited<ReturnType<typeof getJobDepartments>>
-}
-
-export const loader: LoaderFunction = async ({ request }) => {
+export const loader = async ({ request }: LoaderArgs) => {
   await requireAdminUserId(request)
 
   const jobDepartments = await getJobDepartments()
 
-  return json<LoaderData>({
+  return json({
     jobDepartments,
   })
 }
 
 export default function JobDepartmentIndexRoute() {
-  const { jobDepartments } = useLoaderData<LoaderData>()
+  const { jobDepartments } = useLoaderData<typeof loader>()
 
   const headings = ['Nombre']
 
@@ -41,17 +37,17 @@ export default function JobDepartmentIndexRoute() {
       <Container>
         <TitleWithActions
           className="mb-10"
-          title="Área de trabajo"
+          title="Departamentos de trabajo"
           actions={
             <Button href="create" size="SM">
-              Crear área de trabajo
+              Crear departamento de trabajo
             </Button>
           }
         />
         {jobDepartments?.length > 0 ? (
           <Table headings={headings} rows={rows} />
         ) : (
-          <p>No se han encontrado Áreas de trabajo</p>
+          <p>No se han encontrado departamentos de trabajo</p>
         )}
       </Container>
       <Outlet />

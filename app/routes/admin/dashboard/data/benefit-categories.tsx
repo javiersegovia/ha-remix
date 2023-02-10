@@ -40,7 +40,7 @@ export default function BenefitCategoriesIndexRoute() {
           title="Categorías de beneficios"
           actions={
             <Button href="create" size="SM">
-              Crear categoría
+              Crear categoría de beneficio
             </Button>
           }
         />

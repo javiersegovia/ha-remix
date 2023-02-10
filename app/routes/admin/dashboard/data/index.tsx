@@ -50,11 +50,6 @@ export const loader: LoaderFunction = async ({ request }) => {
 
   const rows: AdminDashboardIndexRouteLoaderData['rows'] = [
     {
-      rowId: 'job-departments',
-      items: ['Áreas de trabajo', jobDepartments],
-      href: '/admin/dashboard/data/job-departments',
-    },
-    {
       rowId: 'banks',
       items: ['Bancos', banks],
       href: '/admin/dashboard/data/banks',
@@ -79,6 +74,11 @@ export const loader: LoaderFunction = async ({ request }) => {
       items: ['Ciudades', cities],
       href: '/admin/dashboard/data/cities',
       isDisabled: true,
+    },
+    {
+      rowId: 'job-departments',
+      items: ['Departamentos de trabajo', jobDepartments],
+      href: '/admin/dashboard/data/job-departments',
     },
     {
       rowId: 'states',

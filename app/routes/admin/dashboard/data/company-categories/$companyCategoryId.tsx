@@ -1,43 +1,42 @@
-import type { ActionFunction, LoaderFunction } from '@remix-run/server-runtime'
-import { redirect } from '@remix-run/server-runtime'
-import { requireAdminUserId } from '~/session.server'
+import type { ActionArgs, LoaderArgs } from '@remix-run/server-runtime'
+import { json, redirect } from '@remix-run/node'
+import { useLoaderData } from '@remix-run/react'
 import { badRequest } from 'remix-utils'
-import { json } from '@remix-run/node'
+import { validationError } from 'remix-validated-form'
+
 import {
   deleteCompanyCategoryById,
   getCompanyCategoryById,
   updateCompanyCategoryById,
 } from '~/services/company-category/company-category.server'
+import { requireAdminUserId } from '~/session.server'
 import { companyCategoryValidator } from '~/services/company-category/company-category.schema'
-import { validationError } from 'remix-validated-form'
 import { Modal } from '~/components/Dialog/Modal'
 import { RightPanel } from '~/components/Layout/RightPanel'
 import { Title } from '~/components/Typography/Title'
 import { CompanyCategoryForm } from '~/components/Forms/CompanyCategoryForm'
-import { useLoaderData } from '@remix-run/react'
 
-type LoaderData = {
-  companyCategory: NonNullable<
-    Awaited<ReturnType<typeof getCompanyCategoryById>>
-  >
-}
-export const loader: LoaderFunction = async ({ request, params }) => {
+export const loader = async ({ request, params }: LoaderArgs) => {
   await requireAdminUserId(request)
 
   const { companyCategoryId } = params
+
   if (!companyCategoryId || isNaN(Number(companyCategoryId))) {
     throw badRequest('No se encontró el ID de la categoría de compañía')
   }
+
   const companyCategory = await getCompanyCategoryById(
     Number(companyCategoryId)
   )
+
   if (!companyCategory) {
     throw badRequest('No se encontró la categoría de compañía')
   }
-  return json<LoaderData>({ companyCategory })
+
+  return json({ companyCategory })
 }
 
-export const action: ActionFunction = async ({ request, params }) => {
+export const action = async ({ request, params }: ActionArgs) => {
   await requireAdminUserId(request)
 
   const { companyCategoryId } = params
@@ -51,6 +50,7 @@ export const action: ActionFunction = async ({ request, params }) => {
 
     const { data, submittedData, error } =
       await companyCategoryValidator.validate(formData)
+
     if (error) {
       return validationError(error, submittedData)
     }
@@ -65,7 +65,8 @@ export const action: ActionFunction = async ({ request, params }) => {
 const onCloseRedirectTo = '/admin/dashboard/data/company-categories' as const
 
 export default function CompanyCategoryUpdateRoute() {
-  const { companyCategory } = useLoaderData<LoaderData>()
+  const { companyCategory } = useLoaderData<typeof loader>()
+
   return (
     <Modal onCloseRedirectTo={onCloseRedirectTo}>
       <RightPanel onCloseRedirectTo={onCloseRedirectTo}>

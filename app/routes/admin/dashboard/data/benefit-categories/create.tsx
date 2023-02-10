@@ -1,4 +1,5 @@
 import type { ActionFunction } from '@remix-run/server-runtime'
+
 import { redirect } from '@remix-run/node'
 import { validationError } from 'remix-validated-form'
 
@@ -33,7 +34,7 @@ export default function BenefitCategoriesCreateRoute() {
   return (
     <Modal onCloseRedirectTo={onCloseRedirectTo}>
       <RightPanel onCloseRedirectTo={onCloseRedirectTo}>
-        <Title>Crear categoría</Title>
+        <Title>Crear categoría de beneficio</Title>
 
         <BenefitCategoryForm buttonText="Crear" />
       </RightPanel>

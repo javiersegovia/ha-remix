@@ -1,4 +1,4 @@
-import type { ActionFunction, LoaderFunction } from '@remix-run/server-runtime'
+import type { ActionArgs, LoaderArgs } from '@remix-run/server-runtime'
 
 import { redirect, json } from '@remix-run/node'
 import { useLoaderData } from '@remix-run/react'
@@ -17,14 +17,11 @@ import {
 } from '~/services/bank/bank.server'
 import { requireAdminUserId } from '~/session.server'
 
-type LoaderData = {
-  bank: NonNullable<Awaited<ReturnType<typeof getBankById>>>
-}
-
-export const loader: LoaderFunction = async ({ request, params }) => {
+export const loader = async ({ request, params }: LoaderArgs) => {
   await requireAdminUserId(request)
 
   const { bankId } = params
+
   if (!bankId || isNaN(Number(bankId))) {
     throw badRequest('No se encontró el ID del banco')
   }
@@ -35,10 +32,10 @@ export const loader: LoaderFunction = async ({ request, params }) => {
     throw badRequest('No se encontró el banco')
   }
 
-  return json<LoaderData>({ bank })
+  return json({ bank })
 }
 
-export const action: ActionFunction = async ({ request, params }) => {
+export const action = async ({ request, params }: ActionArgs) => {
   await requireAdminUserId(request)
 
   const { bankId } = params
@@ -66,8 +63,9 @@ export const action: ActionFunction = async ({ request, params }) => {
 }
 
 const onCloseRedirectTo = '/admin/dashboard/data/banks' as const
+
 export default function BenefitCategoryUpdateRoute() {
-  const { bank } = useLoaderData<LoaderData>()
+  const { bank } = useLoaderData<typeof loader>()
 
   return (
     <Modal onCloseRedirectTo={onCloseRedirectTo}>

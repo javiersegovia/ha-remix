@@ -4,7 +4,7 @@ import * as bankService from './bank.server'
 import { deleteBankById, updateBankById } from './bank.server'
 
 describe('getBanks', () => {
-  test('should return an array of banks', async () => {
+  it('returns an array of banks', async () => {
     const banks = BankFactory.buildList(3)
     vi.spyOn(prisma.bank, 'findMany').mockResolvedValueOnce(banks)
     expect(await bankService.getBanks()).toEqual(banks)
@@ -12,7 +12,7 @@ describe('getBanks', () => {
 })
 
 describe('getBankById', () => {
-  it('returns a Banks', async () => {
+  it('returns a bank', async () => {
     const expectedBank = BankFactory.build()
     vi.spyOn(prisma.bank, 'findUnique').mockResolvedValueOnce(expectedBank)
 
@@ -52,7 +52,7 @@ describe('updateBankById', () => {
 })
 
 describe('deleteBankById', () => {
-  it('deletes a Bank and returns the id', async () => {
+  it('deletes a bank and returns the id', async () => {
     const existingBank = BankFactory.build()
 
     vi.spyOn(prisma.bank, 'delete').mockResolvedValueOnce(existingBank)

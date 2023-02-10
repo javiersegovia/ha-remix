@@ -1,4 +1,4 @@
-import type { LoaderFunction } from '@remix-run/server-runtime'
+import type { LoaderArgs } from '@remix-run/server-runtime'
 import type { TableRowProps } from '~/components/Lists/Table'
 
 import { Outlet, useLoaderData } from '@remix-run/react'
@@ -11,22 +11,18 @@ import { Table } from '~/components/Lists/Table'
 import { getBanks } from '~/services/bank/bank.server'
 import { requireAdminUserId } from '~/session.server'
 
-type LoaderData = {
-  banks: Awaited<ReturnType<typeof getBanks>>
-}
-
-export const loader: LoaderFunction = async ({ request }) => {
+export const loader = async ({ request }: LoaderArgs) => {
   await requireAdminUserId(request)
 
   const banks = await getBanks()
 
-  return json<LoaderData>({
+  return json({
     banks,
   })
 }
 
 export default function BanksIndexRoute() {
-  const { banks } = useLoaderData<LoaderData>()
+  const { banks } = useLoaderData<typeof loader>()
 
   const headings = ['Nombre']
 

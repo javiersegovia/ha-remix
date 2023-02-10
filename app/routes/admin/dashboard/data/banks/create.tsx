@@ -1,4 +1,4 @@
-import type { ActionFunction } from '@remix-run/server-runtime'
+import type { ActionArgs, LoaderArgs } from '@remix-run/server-runtime'
 import { redirect } from '@remix-run/node'
 import { validationError } from 'remix-validated-form'
 
@@ -10,11 +10,15 @@ import { requireAdminUserId } from '~/session.server'
 import { bankValidator } from '~/services/bank/bank.schema'
 import { createBank } from '~/services/bank/bank.server'
 
-export const action: ActionFunction = async ({ request }) => {
+export const loader = async ({ request, params }: LoaderArgs) => {
+  await requireAdminUserId(request)
+  return null
+}
+
+export const action = async ({ request }: ActionArgs) => {
   await requireAdminUserId(request)
 
   const formData = await request.formData()
-
   const { data, submittedData, error } = await bankValidator.validate(formData)
 
   if (error) {

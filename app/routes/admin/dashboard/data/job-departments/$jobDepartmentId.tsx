@@ -1,51 +1,49 @@
-import type { ActionFunction, LoaderFunction } from '@remix-run/server-runtime'
-import { redirect } from '@remix-run/server-runtime'
+import type { ActionArgs, LoaderArgs } from '@remix-run/server-runtime'
+
 import { badRequest } from 'remix-utils'
 import { validationError } from 'remix-validated-form'
+import { json, redirect } from '@remix-run/node'
+import { useLoaderData } from '@remix-run/react'
+
 import { Modal } from '~/components/Dialog/Modal'
 import { JobDepartmentForm } from '~/components/Forms/JobDepartmentForm'
 import { RightPanel } from '~/components/Layout/RightPanel'
 import { Title } from '~/components/Typography/Title'
+import { getJobDepartmentById } from '~/services/job-department/job-department.server'
 import { jobDepartmentValidator } from '~/services/job-department/job-department.schema'
 import {
   deleteJobDepartmentById,
   updateJobDepartmentById,
 } from '~/services/job-department/job-department.server'
 import { requireAdminUserId } from '~/session.server'
-import { getJobDepartmentById } from '../../../../../services/job-department/job-department.server'
-import { json } from '@remix-run/node'
-import { useLoaderData } from '@remix-run/react'
 
-type LoaderData = {
-  jobDepartment: NonNullable<Awaited<ReturnType<typeof getJobDepartmentById>>>
-}
-
-export const loader: LoaderFunction = async ({ request, params }) => {
+export const loader = async ({ request, params }: LoaderArgs) => {
   await requireAdminUserId(request)
 
   const { jobDepartmentId } = params
 
   if (!jobDepartmentId || isNaN(Number(jobDepartmentId))) {
-    throw badRequest('No se encontró el ID del área de trabajo')
+    throw badRequest('No se encontró el ID del departamento de trabajo')
   }
 
   const jobDepartment = await getJobDepartmentById(Number(jobDepartmentId))
 
   if (!jobDepartment) {
-    throw badRequest('No se encontró el área de trabajo')
+    throw badRequest('No se encontró el departamento de trabajo')
   }
 
-  return json<LoaderData>({ jobDepartment })
+  return json({ jobDepartment })
 }
 
-export const action: ActionFunction = async ({ request, params }) => {
+export const action = async ({ request, params }: ActionArgs) => {
   await requireAdminUserId(request)
 
   const { jobDepartmentId } = params
 
   if (!jobDepartmentId || isNaN(Number(jobDepartmentId))) {
-    throw badRequest('No se encontró el ID del área de trabajo')
+    throw badRequest('No se encontró el ID del departamento de trabajo')
   }
+
   if (request.method === 'POST') {
     const formData = await request.formData()
 
@@ -65,11 +63,12 @@ export const action: ActionFunction = async ({ request, params }) => {
 const onCloseRedirectTo = '/admin/dashboard/data/job-departments' as const
 
 export default function JobDepartmentUpdateRoute() {
-  const { jobDepartment } = useLoaderData<LoaderData>()
+  const { jobDepartment } = useLoaderData<typeof loader>()
+
   return (
     <Modal onCloseRedirectTo={onCloseRedirectTo}>
       <RightPanel onCloseRedirectTo={onCloseRedirectTo}>
-        <Title>Actualizar área de trabajo</Title>
+        <Title>Actualizar departamento de trabajo</Title>
 
         <JobDepartmentForm
           buttonText="Guardar"
