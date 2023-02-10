@@ -9,6 +9,7 @@ import type {
   CompanyCategory,
   CompanyContactPerson,
   Country,
+  Image,
 } from '@prisma/client'
 import type { Validator } from 'remix-validated-form'
 
@@ -22,6 +23,7 @@ import { Select } from '../FormFields/Select'
 import { FormGridItem } from '../FormFields/FormGridItem'
 import { FormGridWrapper } from '../FormFields/FormGridWrapper'
 import { SelectMultiple } from '../FormFields/SelectMultiple'
+import { ImageInput } from '../FormFields/ImageInput'
 
 const companyStatusList: EnumOption[] = [
   { name: 'Activa', value: CompanyStatus.ACTIVE },
@@ -49,13 +51,14 @@ interface CompanyFormProps<T = CompanySchemaInput> {
     | 'name'
     | 'countryId'
   > & {
-    country?: Pick<Country, 'id'>
+    logoImage?: Pick<Image, 'url' | 'key'> | null
+    country?: Pick<Country, 'id'> | null
     categories?: Pick<CompanyCategory, 'id'>[]
     benefits?: Pick<Benefit, 'id'>[]
     contactPerson?: Pick<
       CompanyContactPerson,
       'firstName' | 'lastName' | 'phone'
-    >
+    > | null
   }
 }
 
@@ -83,7 +86,12 @@ export const CompanyForm = ({
     benefits: companyBenefits,
     countryId,
     contactPerson,
+    logoImage,
   } = defaultValues || {}
+
+  // todo Javier: block buttons onSubmit transition
+  // const transition = useTransition()
+  // const isLoading = transition.state !== 'idle'
 
   return (
     <>
@@ -91,6 +99,7 @@ export const CompanyForm = ({
         id="CompanyForm"
         validator={validator}
         method="post"
+        encType="multipart/form-data"
         defaultValues={{
           address,
           description,
@@ -115,6 +124,16 @@ export const CompanyForm = ({
           </Title>
 
           <FormGridWrapper>
+            <FormGridItem isFullWidth>
+              <ImageInput
+                name="logoImage"
+                alt="Logo de la compañía"
+                currentImageUrl={logoImage?.url}
+                currentImageKey={logoImage?.key}
+                isCentered
+              />
+            </FormGridItem>
+
             <FormGridItem>
               <Input
                 name="name"
@@ -123,6 +142,7 @@ export const CompanyForm = ({
                 placeholder="Nombre de la compañía"
               />
             </FormGridItem>
+
             <FormGridItem>
               <Input
                 name="address"
@@ -131,7 +151,8 @@ export const CompanyForm = ({
                 placeholder="Dirección de la compañía"
               />
             </FormGridItem>
-            <FormGridItem className="lg:col-span-12">
+
+            <FormGridItem isFullWidth>
               <Input
                 name="description"
                 type="text"

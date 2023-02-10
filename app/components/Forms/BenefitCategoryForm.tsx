@@ -12,7 +12,7 @@ import { Button, ButtonColorVariants } from '~/components/Button'
 
 interface BenefitCategoryFormProps {
   buttonText: string
-  defaultValues?: Pick<BenefitCategory, 'name'>
+  defaultValues?: Pick<BenefitCategory, 'name' | 'hexColor' | 'opacity'>
   showDeleteButton?: boolean
 }
 
@@ -31,7 +31,7 @@ export const BenefitCategoryForm = ({
         defaultValues={defaultValues}
       >
         <FormGridWrapper>
-          <FormGridItem className="lg:col-span-12">
+          <FormGridItem isFullWidth>
             <Input
               name="name"
               type="text"
@@ -39,7 +39,27 @@ export const BenefitCategoryForm = ({
               placeholder="Ingrese un nombre de categoría"
             />
           </FormGridItem>
-          <FormGridItem className="lg:col-span-12">
+
+          <FormGridItem isFullWidth>
+            <Input
+              name="hexColor"
+              type="text"
+              label="Color HEX"
+              placeholder="Ingrese un color en formato hexadecimal"
+            />
+          </FormGridItem>
+
+          <FormGridItem isFullWidth>
+            <Input
+              name="opacity"
+              type="number"
+              step={0.1}
+              label="Opacidad"
+              placeholder="Ingrese un número entre 0 y 1"
+            />
+          </FormGridItem>
+
+          <FormGridItem isFullWidth>
             <Button type="submit">{buttonText}</Button>
           </FormGridItem>
         </FormGridWrapper>

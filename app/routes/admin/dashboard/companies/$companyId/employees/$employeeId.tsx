@@ -121,11 +121,11 @@ export default function AdminDashboardCompanyUpdateEmployeeRoute() {
   } = useLoaderData<typeof loader>()
 
   return (
-    <section className="mx-auto w-full max-w-screen-lg pb-10">
+    <>
       <Title>Actualizar colaborador</Title>
 
       {employee ? (
-        <div className="mt-5">
+        <div className="mt-10">
           <AdminEmployeeForm
             defaultValues={{
               ...employee,
@@ -158,6 +158,6 @@ export default function AdminDashboardCompanyUpdateEmployeeRoute() {
       ) : (
         <p>Ha ocurrido un error.</p>
       )}
-    </section>
+    </>
   )
 }

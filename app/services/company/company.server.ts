@@ -8,6 +8,8 @@ import {
   connectOrDisconnect,
   setMany,
 } from '~/utils/relationships'
+import { getS3ObjectUrl } from '../aws/s3.server'
+import { deleteImageByKey } from '../image/image.server'
 
 export const getCompanies = async () => {
   return prisma.company.findMany({
@@ -25,6 +27,25 @@ export const getCompanies = async () => {
       employees: {
         _count: 'desc',
       },
+    },
+  })
+}
+
+export const getCompanyById = async (id: Company['id']) => {
+  return prisma.company.findUnique({
+    where: { id },
+    include: {
+      logoImage: {
+        select: {
+          id: true,
+          key: true,
+          url: true,
+        },
+      },
+      benefits: true,
+      categories: true,
+      country: true,
+      contactPerson: true,
     },
   })
 }
@@ -68,6 +89,7 @@ export const createCompany = async (formData: CompanySchemaInput) => {
     name,
     address,
     phone: companyPhone,
+    logoImageKey,
   } = formData
 
   const { firstName, lastName, phone } = contactPerson || {}
@@ -99,6 +121,15 @@ export const createCompany = async (formData: CompanySchemaInput) => {
 
         contactPerson: createContactPerson,
         status,
+
+        logoImage: logoImageKey
+          ? {
+              create: {
+                key: logoImageKey,
+                url: getS3ObjectUrl(logoImageKey),
+              },
+            }
+          : undefined,
 
         paymentDays: paymentDays || {
           set: [],
@@ -141,13 +172,18 @@ export const updateCompanyById = async (
     premiumPaymentDays,
     premiumDispersion,
     premiumLastRequestDay,
+    logoImageKey,
     ...companyData
   } = formData
 
   // await requireCompany({ where: { id: companyId } }) // Todo: Make "requireCompany" function return types compatible with Prisma types (e.g, adding an "include")
   const existingCompany = await prisma.company.findUnique({
     where: { id: companyId },
-    select: { contactPerson: { select: { id: true } }, countryId: true },
+    select: {
+      logoImage: { select: { key: true } },
+      contactPerson: { select: { id: true } },
+      countryId: true,
+    },
   })
 
   if (!existingCompany) {
@@ -176,6 +212,27 @@ export const updateCompanyById = async (
           delete: !!existingCompany.contactPerson?.id,
         }
 
+  if (
+    existingCompany.logoImage &&
+    logoImageKey !== existingCompany.logoImage.key
+  ) {
+    await deleteImageByKey(existingCompany.logoImage.key)
+  }
+
+  const isNewLogoImage = existingCompany.logoImage
+    ? existingCompany.logoImage.key !== logoImageKey
+    : Boolean(logoImageKey)
+
+  const createLogoImage =
+    isNewLogoImage && logoImageKey
+      ? {
+          create: {
+            key: logoImageKey,
+            url: getS3ObjectUrl(logoImageKey),
+          },
+        }
+      : undefined
+
   try {
     const company = await prisma.company.update({
       where: {
@@ -190,6 +247,8 @@ export const updateCompanyById = async (
 
         contactPerson: upsertContactPerson,
         status,
+
+        logoImage: createLogoImage,
 
         paymentDays: paymentDays || {
           set: [],

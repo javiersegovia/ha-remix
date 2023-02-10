@@ -39,6 +39,23 @@ export const getBenefitById = async (benefitId: Benefit['id']) => {
           url: true,
         },
       },
+      benefitHighlight: {
+        select: {
+          id: true,
+          title: true,
+          buttonHref: true,
+          buttonText: true,
+          description: true,
+          isActive: true,
+          image: {
+            select: {
+              id: true,
+              key: true,
+              url: true,
+            },
+          },
+        },
+      },
       subproducts: {
         select: {
           id: true,
@@ -57,8 +74,9 @@ export const createBenefit = async ({
   slug,
   mainImageKey,
   benefitCategoryId,
+  benefitHighlight,
 }: BenefitInputSchema) => {
-  const mainImage: Prisma.BenefitCreateInput['mainImage'] = mainImageKey
+  const createMainImage: Prisma.BenefitCreateInput['mainImage'] = mainImageKey
     ? {
         create: {
           key: mainImageKey,
@@ -66,6 +84,33 @@ export const createBenefit = async ({
         },
       }
     : undefined
+
+  let createBenefitHighlight: Prisma.BenefitCreateInput['benefitHighlight'] =
+    undefined
+
+  if (benefitHighlight) {
+    const { title, description, imageKey, isActive } = benefitHighlight
+
+    if (!imageKey) {
+      throw badRequest('Por favor, sube una imagen para el beneficio destacado')
+    }
+
+    createBenefitHighlight = {
+      create: {
+        title,
+        description,
+        isActive,
+        buttonHref: benefitHighlight.buttonHref,
+        buttonText: benefitHighlight.buttonText,
+        image: {
+          create: {
+            key: imageKey,
+            url: getS3ObjectUrl(imageKey),
+          },
+        },
+      },
+    }
+  }
 
   try {
     return prisma.benefit.create({
@@ -76,7 +121,8 @@ export const createBenefit = async ({
         buttonHref,
         slug,
         benefitCategory: connect(benefitCategoryId),
-        mainImage,
+        mainImage: createMainImage,
+        benefitHighlight: createBenefitHighlight,
       },
       select: {
         id: true,
@@ -109,6 +155,16 @@ export const updateBenefitById = async (
           url: true,
         },
       },
+      benefitHighlight: {
+        select: {
+          id: true,
+          image: {
+            select: {
+              key: true,
+            },
+          },
+        },
+      },
     },
   })
 
@@ -126,24 +182,104 @@ export const updateBenefitById = async (
     slug,
     mainImageKey,
     benefitCategoryId,
-    delete_mainImage,
+    benefitHighlight,
   } = data
-  const existingMainImage = benefitToUpdate.mainImage
 
-  /** We will delete the existingMainImage ONLY if we receive a new mainImageKey or the delete_mainImage checkbox field as true. (Check ImageInput Component)
+  const deletePromises: Promise<any>[] = []
+
+  /** If we have a current image, we will check if the current key is different from the received value.
+   *  If it is different, then we will delete the current image, because we will set a new value (a new key, or an empty value).
+   *
+   * If we don't have a current image, we will check if we have a received value.
+   * If we have a received value, we will set a new image.
+   * If we don't have a received value, we will not set a new image.
    */
-  if (existingMainImage && (mainImageKey || delete_mainImage)) {
-    await deleteImageByKey(existingMainImage.key)
+  const currentMainImageKey = benefitToUpdate.mainImage?.key
+  const isNewMainImageKey = currentMainImageKey
+    ? currentMainImageKey !== mainImageKey
+    : Boolean(mainImageKey)
+
+  if (currentMainImageKey && currentMainImageKey !== mainImageKey) {
+    deletePromises.push(deleteImageByKey(currentMainImageKey))
   }
 
-  const mainImage: Prisma.BenefitUpdateInput['mainImage'] = mainImageKey
-    ? {
-        create: {
-          key: mainImageKey,
-          url: getS3ObjectUrl(mainImageKey),
-        },
-      }
-    : undefined
+  const currentBenefitHighlightImageKey =
+    benefitToUpdate.benefitHighlight?.image?.key
+
+  const isNewBenefitHighlightImageKey = currentBenefitHighlightImageKey
+    ? currentBenefitHighlightImageKey !== benefitHighlight?.imageKey
+    : Boolean(benefitHighlight?.imageKey)
+
+  if (
+    currentBenefitHighlightImageKey &&
+    currentBenefitHighlightImageKey !== benefitHighlight?.imageKey
+  ) {
+    deletePromises.push(deleteImageByKey(currentBenefitHighlightImageKey))
+  }
+
+  await Promise.all(deletePromises)
+
+  const createMainImage: Prisma.BenefitUpdateInput['mainImage'] =
+    isNewMainImageKey && mainImageKey
+      ? {
+          create: {
+            key: mainImageKey,
+            url: getS3ObjectUrl(mainImageKey),
+          },
+        }
+      : undefined
+
+  let upsertBenefitHighlight: Prisma.BenefitUpdateInput['benefitHighlight'] = {
+    delete: Boolean(benefitToUpdate.benefitHighlight?.id),
+  }
+
+  if (benefitHighlight) {
+    const { title, description, imageKey, isActive } = benefitHighlight
+
+    // If we DON'T have an existing BenefitHighlight, we should create it.
+    // Hence, we should throw an error if we don't have an imageKey.
+    // todo check this
+    if (!benefitToUpdate.benefitHighlight && !imageKey) {
+      throw badRequest(null, {
+        statusText: 'Por favor, sube una imagen para el beneficio destacado',
+      })
+    }
+
+    upsertBenefitHighlight = !benefitToUpdate.benefitHighlight
+      ? {
+          create: {
+            title,
+            description,
+            isActive,
+            buttonHref: benefitHighlight.buttonHref,
+            buttonText: benefitHighlight.buttonText,
+            image: {
+              create: {
+                key: imageKey as string,
+                url: getS3ObjectUrl(imageKey as string),
+              },
+            },
+          },
+        }
+      : {
+          update: {
+            title,
+            description,
+            isActive,
+            buttonHref: benefitHighlight.buttonHref,
+            buttonText: benefitHighlight.buttonText,
+            image:
+              imageKey && isNewBenefitHighlightImageKey
+                ? {
+                    create: {
+                      key: imageKey,
+                      url: getS3ObjectUrl(imageKey),
+                    },
+                  }
+                : undefined,
+          },
+        }
+  }
 
   return prisma.benefit.update({
     where: {
@@ -155,11 +291,12 @@ export const updateBenefitById = async (
       buttonText: buttonText || null,
       buttonHref: buttonHref || null,
       slug: slug || null,
-      mainImage,
+      mainImage: createMainImage,
       benefitCategory: connectOrDisconnect(
         benefitCategoryId,
         Boolean(benefitToUpdate.benefitCategoryId)
       ),
+      benefitHighlight: upsertBenefitHighlight,
     },
     select: {
       id: true,
@@ -181,6 +318,16 @@ export const deleteBenefitById = async (benefitId: Benefit['id']) => {
           key: true,
         },
       },
+      benefitHighlight: {
+        select: {
+          image: {
+            select: {
+              id: true,
+              key: true,
+            },
+          },
+        },
+      },
     },
   })
 
@@ -188,11 +335,21 @@ export const deleteBenefitById = async (benefitId: Benefit['id']) => {
     return null
   }
 
+  const deletePromises: Promise<any>[] = []
+
   if (benefitToDelete.mainImage) {
-    await deleteImageByKey(benefitToDelete.mainImage.key)
+    deletePromises.push(deleteImageByKey(benefitToDelete.mainImage.key))
+  }
+
+  if (benefitToDelete.benefitHighlight?.image) {
+    deletePromises.push(
+      deleteImageByKey(benefitToDelete.benefitHighlight.image.key)
+    )
   }
 
   try {
+    await Promise.all(deletePromises)
+
     const deleted = await prisma.benefit.delete({
       where: {
         id: benefitId,

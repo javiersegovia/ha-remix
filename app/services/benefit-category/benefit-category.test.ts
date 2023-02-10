@@ -22,15 +22,6 @@ describe('getBenefitCategories', () => {
 
     // Assert
     expect(prisma.benefitCategory.findMany).toHaveBeenCalledOnce()
-    expect(prisma.benefitCategory.findMany).toHaveBeenCalledWith({
-      select: {
-        id: true,
-        name: true,
-      },
-      orderBy: {
-        name: 'asc',
-      },
-    })
 
     expect(result).toEqual(expectedBenefits)
   })

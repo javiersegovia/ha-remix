@@ -1,8 +1,8 @@
 import type { ActionArgs, LoaderArgs, MetaFunction } from '@remix-run/node'
+import { json, unstable_parseMultipartFormData } from '@remix-run/node'
 
 import { useLoaderData } from '@remix-run/react'
 import { redirect } from '@remix-run/node'
-import { json } from '@remix-run/node'
 import { validationError } from 'remix-validated-form'
 
 import { requireAdminUserId } from '~/session.server'
@@ -16,6 +16,7 @@ import { getCompanyCategories } from '~/services/company-category/company-catego
 import { CompanyForm } from '~/components/Forms/CompanyForm'
 import { FormActions } from '~/components/FormFields/FormActions'
 import { Title } from '~/components/Typography/Title'
+import { uploadHandler } from '~/services/aws/s3.server'
 
 export const loader = async ({ request }: LoaderArgs) => {
   await requireAdminUserId(request)
@@ -36,13 +37,22 @@ export const meta: MetaFunction = () => {
 export async function action({ request }: ActionArgs) {
   await requireAdminUserId(request)
 
-  const { data, submittedData, error } = await validator.validate(
-    await request.formData()
-  )
+  const clonedRequest = request.clone()
+  const formData = await clonedRequest.formData()
+
+  const { data, submittedData, error } = await validator.validate(formData)
 
   if (error) {
     return validationError(error, submittedData)
   }
+
+  const imageFormData = await unstable_parseMultipartFormData(
+    request,
+    uploadHandler
+  )
+  const logoImageNewKey = imageFormData.get('logoImage')
+  data.logoImageKey =
+    typeof logoImageNewKey === 'string' ? logoImageNewKey : data.logoImageKey
 
   const { company, error: companyError } = await createCompany(data)
 

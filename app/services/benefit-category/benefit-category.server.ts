@@ -24,6 +24,8 @@ export const getBenefitCategoryById = async (id: BenefitCategory['id']) => {
     select: {
       id: true,
       name: true,
+      hexColor: true,
+      opacity: true,
     },
   })
 }
@@ -64,6 +66,6 @@ export const deleteBenefitCategoryById = async (id: BenefitCategory['id']) => {
     return deletedBenefitCategory.id
   } catch (e) {
     console.error(e)
-    throw badRequest('No se encontró el ID de la categoría de beneficio')
+    throw badRequest('No se pudo eliminar la categoría de beneficio')
   }
 }

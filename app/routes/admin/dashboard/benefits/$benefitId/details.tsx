@@ -85,16 +85,25 @@ export const action: ActionFunction = async ({ request, params }) => {
     }
 
     const imageFormData = await parseMultipartFormData(request, uploadHandler)
-    const key = imageFormData.get('mainImage')
-    const mainImageKey = typeof key === 'string' ? key : undefined
+    const mainImageNewKey = imageFormData.get('mainImage')
 
-    await updateBenefitById(
-      {
-        ...data,
-        mainImageKey,
-      },
-      parseFloat(benefitId)
+    // If we have a string, it means that the image was created on AWS, so we can use the new key
+    // If we don't, we should use the old key that came from the form
+    data.mainImageKey =
+      typeof mainImageNewKey === 'string' ? mainImageNewKey : data.mainImageKey
+
+    const benefitHighlightImageNewKey = imageFormData.get(
+      'benefitHighlight.image'
     )
+
+    if (data.benefitHighlight) {
+      data.benefitHighlight.imageKey =
+        typeof benefitHighlightImageNewKey === 'string'
+          ? benefitHighlightImageNewKey
+          : data.benefitHighlight?.imageKey
+    }
+
+    await updateBenefitById(data, parseFloat(benefitId))
 
     return redirect(`/admin/dashboard/benefits`)
   } else if (request.method === 'DELETE') {
@@ -111,8 +120,16 @@ export const action: ActionFunction = async ({ request, params }) => {
 const AdminDashboardBenefitDetailsIndexRoute = () => {
   const { benefit, benefitCategories } = useLoaderData<typeof loader>()
 
-  const { name, imageUrl, buttonText, buttonHref, slug, benefitCategoryId } =
-    benefit
+  const {
+    name,
+    imageUrl,
+    buttonText,
+    buttonHref,
+    slug,
+    benefitCategoryId,
+    benefitHighlight,
+    mainImage,
+  } = benefit
 
   return (
     <section className="my-10">
@@ -129,7 +146,8 @@ const AdminDashboardBenefitDetailsIndexRoute = () => {
           buttonHref,
           slug,
           benefitCategoryId,
-          mainImageUrl: benefit.mainImage?.url,
+          mainImage,
+          benefitHighlight,
         }}
       />
     </section>

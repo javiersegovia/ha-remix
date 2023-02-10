@@ -18,6 +18,7 @@ import { Title } from '~/components/Typography/Title'
 import { globalSettingsValidator } from '~/services/global-settings/global-settings.schema'
 import { requireAdminUserId } from '~/session.server'
 import { FormGridItem } from '~/components/FormFields/FormGridItem'
+import { Container } from '~/components/Layout/Container'
 
 const globalSettingsFormId = 'GlobalSettingsForm' as const
 
@@ -59,15 +60,13 @@ export const meta: MetaFunction = () => {
 
 export default function AdminSettingsRoute() {
   return (
-    <section className="mx-auto w-full max-w-screen-lg pb-10">
+    <Container className="pb-10">
       <ValidatedForm
         id={globalSettingsFormId}
         method="post"
         validator={globalSettingsValidator}
       >
-        <Title as="h1" className="py-4">
-          Configuración General
-        </Title>
+        <Title className="mb-8 mt-2">Configuración general</Title>
 
         <Box className="p-5">
           <div className="grid grid-cols-12 gap-5">
@@ -103,6 +102,6 @@ export default function AdminSettingsRoute() {
           <FormActions title="Guardar" />
         </Box>
       </ValidatedForm>
-    </section>
+    </Container>
   )
 }

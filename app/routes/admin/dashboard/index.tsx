@@ -1,11 +1,14 @@
 import type { LoaderArgs, MetaFunction } from '@remix-run/server-runtime'
 import { useFetcher, useLoaderData } from '@remix-run/react'
 
+import { ValidatedForm } from 'remix-validated-form'
+import { withZod } from '@remix-validated-form/with-zod'
+import { z } from 'zod'
 import { FaHandHolding, FaHandHoldingUsd } from 'react-icons/fa'
 import { RiMoneyDollarCircleLine } from 'react-icons/ri'
 import { json } from '@remix-run/node'
-import { CurrencySymbol } from '~/components/FormFields/CurrencyInput'
 
+import { CurrencySymbol } from '~/components/FormFields/CurrencyInput'
 import { Title } from '~/components/Typography/Title'
 import { requireAdminUserId } from '~/session.server'
 import { getLastPaymentMonths } from '~/utils/paymentMonths'
@@ -14,9 +17,7 @@ import { formatMoney } from '~/utils/formatMoney'
 import { Box } from '~/components/Layout/Box'
 import { Select } from '~/components/FormFields/Select'
 import { PaymentDayList } from '~/components/Lists/PaymentDaysList'
-import { ValidatedForm } from 'remix-validated-form'
-import { withZod } from '@remix-validated-form/with-zod'
-import { z } from 'zod'
+import { Container } from '~/components/Layout/Container'
 
 const lastPaymentMonths = getLastPaymentMonths()
 
@@ -45,7 +46,7 @@ export default function AdminDashboardIndexRoute() {
 
   return (
     <>
-      <section className="mx-auto w-full max-w-screen-lg">
+      <Container>
         <div className="my-2 flex flex-col items-center justify-between gap-6 lg:flex-row">
           <Title as="h1">Resumen del mes</Title>
 
@@ -155,7 +156,7 @@ export default function AdminDashboardIndexRoute() {
         <div className="pb-8" />
 
         <PaymentDayList requestDays={requestDays} />
-      </section>
+      </Container>
     </>
   )
 }

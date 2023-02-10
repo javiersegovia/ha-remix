@@ -58,24 +58,25 @@ model Company {
   premiumPaymentDays    Int[]
   premiumLastRequestDay Int?   @default(25)
 
-  country          Country?              @relation(fields: [countryId], references: [id], onDelete: SetNull)
-  countryId        Int?
-  employees        Employee[]
-  banks            Bank[]
-  categories       CompanyCategory[]
-  contactPerson    CompanyContactPerson?
-  cryptocurrencies Cryptocurrency[]
-  companyTaxes     CompanyTax[]
-  payrollAdvances  PayrollAdvance[]
-  premiumAdvances  PremiumAdvance[]
-
-  benefits     Benefit[]
+  country      Country?    @relation(fields: [countryId], references: [id], onDelete: SetNull)
+  countryId    Int?
   membership   Membership? @relation(fields: [membershipId], references: [id], onDelete: SetNull)
   membershipId Int?
+  logoImage    Image?      @relation(fields: [logoImageId], references: [id], onDelete: SetNull)
+  logoImageId  String?
 
-  companyFiatDebts   CompanyFiatDebt[]
+  banks              Bank[]
+  benefits           Benefit[]
+  categories         CompanyCategory[]
   companyCryptoDebts CompanyCryptoDebt[]
   companyDebts       CompanyDebt[]
+  companyFiatDebts   CompanyFiatDebt[]
+  companyTaxes       CompanyTax[]
+  contactPerson      CompanyContactPerson?
+  cryptocurrencies   Cryptocurrency[]
+  employees          Employee[]
+  payrollAdvances    PayrollAdvance[]
+  premiumAdvances    PremiumAdvance[]
 }
 
 enum CompanyStatus {
@@ -768,7 +769,7 @@ model Benefit {
   buttonHref String?
 
   // @deprecated Use "mainImage" instead
-  imageUrl   String?
+  imageUrl String?
 
   mainImage   Image?  @relation(fields: [mainImageId], references: [id], onDelete: SetNull)
   mainImageId String?
@@ -776,10 +777,11 @@ model Benefit {
   benefitCategory   BenefitCategory? @relation(fields: benefitCategoryId, references: id, onDelete: SetNull)
   benefitCategoryId Int?
 
-  companies    Company[]
-  membership   Membership[]
-  subproducts  BenefitSubproduct[]
-  consumptions BenefitConsumption[]
+  companies        Company[]
+  membership       Membership[]
+  subproducts      BenefitSubproduct[]
+  consumptions     BenefitConsumption[]
+  benefitHighlight BenefitHighlight?
 }
 
 model BenefitSubproduct {
@@ -817,9 +819,29 @@ model BenefitCategory {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  name String
+  name     String
+  hexColor String?
+  opacity  Float?
 
   benefits Benefit[]
+}
+
+model BenefitHighlight {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  title       String
+  description String
+  buttonText  String
+  buttonHref  String
+  isActive    Boolean @default(false)
+
+  image   Image?  @relation(fields: [imageId], references: [id], onDelete: SetNull)
+  imageId String?
+
+  benefit   Benefit @relation(fields: [benefitId], references: [id], onDelete: Cascade)
+  benefitId Int     @unique
 }
 
 model Image {
@@ -830,5 +852,7 @@ model Image {
   url String
   key String @unique
 
-  benefits Benefit[]
+  benefits          Benefit[]
+  benefitHighlights BenefitHighlight[]
+  companies         Company[]
 }

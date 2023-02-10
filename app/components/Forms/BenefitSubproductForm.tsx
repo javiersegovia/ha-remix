@@ -41,7 +41,7 @@ export const BenefitSubproductForm = ({
         method="post"
       >
         <FormGridWrapper>
-          <FormGridItem className="lg:col-span-12">
+          <FormGridItem isFullWidth>
             <Input
               name="name"
               label="Nombre"
@@ -50,7 +50,7 @@ export const BenefitSubproductForm = ({
             />
           </FormGridItem>
 
-          <FormGridItem className="lg:col-span-12">
+          <FormGridItem isFullWidth>
             <Input
               name="discount"
               label="Descuento"
@@ -59,7 +59,7 @@ export const BenefitSubproductForm = ({
             />
           </FormGridItem>
 
-          <FormGridItem className="lg:col-span-12">
+          <FormGridItem isFullWidth>
             <Button type="submit">{buttonText}</Button>
           </FormGridItem>
         </FormGridWrapper>

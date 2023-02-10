@@ -43,10 +43,7 @@ export default function PayrollAdvancesIndexRoute() {
         <>
           <div className="my-8 flex flex-col items-center gap-4 lg:flex-row lg:items-center lg:justify-between">
             <>
-              <Title
-                as="h1"
-                className="ml-1 flex-1 whitespace-nowrap text-center lg:text-left"
-              >
+              <Title className="ml-1 flex-1 whitespace-nowrap text-center lg:text-left">
                 Adelantos de Nómina
               </Title>
 

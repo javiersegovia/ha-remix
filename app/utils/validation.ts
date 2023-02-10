@@ -1,28 +1,23 @@
-import type { ZodError, ZodSchema } from 'zod'
+import type { ZodSchema } from 'zod'
 
-export type ActionErrors<T> = Partial<Record<keyof T, string>>
+import { z } from 'zod'
 
-export async function validateSchema<SchemaInput>({
-  request,
-  schema,
-}: {
-  request: Request
-  schema: ZodSchema
-}) {
-  const body = Object.fromEntries(await request.formData())
-
-  try {
-    const formData = schema.parse(body) as SchemaInput
-
-    return { formData, errors: null }
-  } catch (e) {
-    const errors = e as ZodError<SchemaInput>
-    return {
-      formData: body as SchemaInput,
-      errors: errors.issues?.reduce((acc: ActionErrors<SchemaInput>, curr) => {
-        const key = curr.path[0] as keyof SchemaInput
-        return { ...acc, [key]: curr.message }
-      }, {}),
+export const preprocessNullableObject = <T extends ZodSchema>(schema: T) =>
+  z.preprocess((obj) => {
+    if (typeof obj === 'object' && obj !== null) {
+      const sanitizedObject = Object.keys(obj)
+        .filter((key) => {
+          const value: any = obj[key as keyof typeof obj]
+          if (typeof value === 'object' && value instanceof File) {
+            return value.size > 0 && Boolean(value.name)
+          }
+          return Boolean(value)
+        })
+        .reduce(
+          (acc, key) => ({ ...acc, [key]: obj[key as keyof typeof obj] }),
+          {}
+        )
+      return Object.keys(sanitizedObject).length > 0 ? sanitizedObject : null
     }
-  }
-}
+    return obj
+  }, schema)

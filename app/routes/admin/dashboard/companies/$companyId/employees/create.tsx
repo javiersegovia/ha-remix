@@ -102,10 +102,10 @@ export default function AdminDashboardCompanyCreateEmployeeRoute() {
   } = useLoaderData<typeof loader>()
 
   return (
-    <section className="mx-auto w-full max-w-screen-lg pb-10">
+    <>
       <Title>Crear nuevo colaborador</Title>
 
-      <div className="mt-5">
+      <div className="mt-10">
         <AdminEmployeeForm
           {...{
             countries,
@@ -124,6 +124,6 @@ export default function AdminDashboardCompanyCreateEmployeeRoute() {
           actions={<FormActions title="Crear" />}
         />
       </div>
-    </section>
+    </>
   )
 }

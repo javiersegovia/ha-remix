@@ -21,6 +21,8 @@ export const BenefitCategoryFactory = Factory.define<BenefitCategory>(
       createdAt: faker.date.past(),
       updatedAt: faker.date.past(),
       name: faker.commerce.department(),
+      hexColor: faker.internet.color(),
+      opacity: faker.datatype.number({ min: 0, max: 1, precision: 0.1 }),
     }
   }
 )

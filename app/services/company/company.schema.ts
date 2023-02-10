@@ -4,7 +4,17 @@ import { CompanyStatus } from '@prisma/client'
 import { formatPaymentDays } from '../../schemas/helpers'
 import { withZod } from '@remix-validated-form/with-zod'
 
+const MAX_FILE_SIZE = 500000 as const
+
 const companySchema = z.object({
+  logoImage: z
+    .any()
+    .refine(
+      (files) => (files?.[0] ? files?.[0]?.size <= MAX_FILE_SIZE : true),
+      `El tamaño máximo es de 5MB.`
+    ),
+  logoImageKey: zfd.text(z.string().trim().nullish()),
+
   name: z
     .string({
       required_error: 'Ingrese el nombre de la compañía',

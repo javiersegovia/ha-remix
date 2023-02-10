@@ -44,10 +44,25 @@ export const action: ActionFunction = async ({ request }) => {
   }
 
   const imageFormData = await parseMultipartFormData(request, uploadHandler)
-  const key = imageFormData.get('mainImage')
-  const mainImageKey = typeof key === 'string' ? key : undefined
+  const mainImage = imageFormData.get('mainImage')
+  const mainImageKey = typeof mainImage === 'string' ? mainImage : undefined
 
-  await createBenefit({ ...data, mainImageKey })
+  const benefitHighlightImage = imageFormData.get('benefitHighlight.image')
+  const benefitHighlightImageKey =
+    typeof benefitHighlightImage === 'string'
+      ? benefitHighlightImage
+      : undefined
+
+  await createBenefit({
+    ...data,
+    mainImageKey,
+    benefitHighlight: data.benefitHighlight
+      ? {
+          ...data.benefitHighlight,
+          imageKey: benefitHighlightImageKey,
+        }
+      : undefined,
+  })
 
   return redirect(`/admin/dashboard/benefits`)
 }

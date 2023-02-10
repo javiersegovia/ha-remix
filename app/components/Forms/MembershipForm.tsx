@@ -58,11 +58,11 @@ export const MembershipForm = ({
           method="post"
         >
           <FormGridWrapper>
-            <FormGridItem className="lg:col-span-12">
+            <FormGridItem isFullWidth>
               <Input name="name" label="Nombre" type="text" />
             </FormGridItem>
 
-            <FormGridItem className="lg:col-span-12">
+            <FormGridItem isFullWidth>
               <SelectMultiple
                 name="benefitsIds"
                 label="Beneficios"
@@ -71,7 +71,7 @@ export const MembershipForm = ({
               />
             </FormGridItem>
 
-            <FormGridItem className="lg:col-span-12">
+            <FormGridItem isFullWidth>
               <Button type="submit">{buttonText}</Button>
             </FormGridItem>
           </FormGridWrapper>

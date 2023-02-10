@@ -1,4 +1,5 @@
 import type { LoaderArgs, MetaFunction } from '@remix-run/server-runtime'
+import type { INavPath } from '~/components/SideBar/DashboardSideBar'
 
 import { Outlet, useLoaderData } from '@remix-run/react'
 import { json } from '@remix-run/node'
@@ -6,7 +7,6 @@ import { HiOutlineHome } from 'react-icons/hi'
 import { MdPersonOutline } from 'react-icons/md'
 import { RiFileList2Line } from 'react-icons/ri'
 
-import type { INavPath } from '~/components/SideBar/DashboardSideBar'
 import { DashboardSideBar } from '~/components/SideBar/DashboardSideBar'
 import { requireUser } from '~/session.server'
 import { prisma } from '~/db.server'
