@@ -1,6 +1,6 @@
 import type { Bank } from '@prisma/client'
 import type { EmployeeSchemaInput } from '~/services/employee/employee.schema'
-import type { BankSchema } from './bank.schema'
+import type { BankInputSchema } from './bank.schema'
 
 import { validationError } from 'remix-validated-form'
 import { badRequest } from 'remix-utils'
@@ -30,14 +30,14 @@ export const getBankById = async (id: Bank['id']) => {
   })
 }
 
-export const createBank = async (data: BankSchema) => {
+export const createBank = async (data: BankInputSchema) => {
   const { name } = data
   return prisma.bank.create({
     data: { name },
   })
 }
 
-export const updateBankById = async (id: Bank['id'], data: BankSchema) => {
+export const updateBankById = async (id: Bank['id'], data: BankInputSchema) => {
   const { name } = data
   try {
     return prisma.bank.update({

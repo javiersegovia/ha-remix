@@ -10,8 +10,11 @@ import { BankForm } from '~/components/Forms/BankForm'
 import { RightPanel } from '~/components/Layout/RightPanel'
 import { Title } from '~/components/Typography/Title'
 import { bankValidator } from '~/services/bank/bank.schema'
-import { getBankById } from '~/services/bank/bank.server'
-import { deleteBankById, updateBankById } from '~/services/bank/bank.server'
+import {
+  deleteBankById,
+  updateBankById,
+  getBankById,
+} from '~/services/bank/bank.server'
 import { requireAdminUserId } from '~/session.server'
 
 type LoaderData = {
