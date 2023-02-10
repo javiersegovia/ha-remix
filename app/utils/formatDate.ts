@@ -35,7 +35,7 @@ export const parseDate = (date: Date | string) => {
 
 export function sanitizeDate(date?: Date | null) {
   return date
-    ? new Date(date.getTime() - date.getTimezoneOffset() * -60000)
+    ? new Date(date.getTime() - date.getTimezoneOffset() * 60000)
     : date
 }
 

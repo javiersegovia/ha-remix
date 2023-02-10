@@ -13,6 +13,7 @@ import { Box } from '../Layout/Box'
 import { Select } from '../FormFields/Select'
 import { Title } from '../Typography/Title'
 import { Toggle } from '../FormFields/Toggle'
+import clsx from 'clsx'
 
 interface BenefitFormProps {
   buttonText: string
@@ -106,11 +107,13 @@ export const BenefitForm = ({
             />
           </FormGridItem>
 
-          {process.env.NODE_ENV === 'development' && (
-            <FormGridItem>
-              <Input name="slug" label="Slug (identificador)" type="text" />
-            </FormGridItem>
-          )}
+          <FormGridItem
+            className={clsx(
+              process.env.NODE_ENV !== 'development' && 'invisible h-0 w-0'
+            )}
+          >
+            <Input name="slug" label="Slug (identificador)" type="text" />
+          </FormGridItem>
         </FormGridWrapper>
 
         <div className="my-10 h-[1px] w-full border-b border-dashed border-gray-300" />
