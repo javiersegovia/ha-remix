@@ -52,7 +52,7 @@ export default function UpdatePasswordRoute() {
       <div className="container mx-auto px-0 sm:px-4">
         <img
           className="mx-auto block"
-          src="/logo/logo_hoyadelantas_white_over_blue.png"
+          src="https://ht-benefits-assets.s3.amazonaws.com/logo_beneficios_blanco.png"
           alt="Logo HoyAdelantas"
           width="256"
           height="44.2"

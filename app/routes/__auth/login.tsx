@@ -85,7 +85,7 @@ export default function LoginRemixRoute() {
         <div className="container mx-auto px-0 pt-20 sm:px-4">
           <img
             className="mx-auto block"
-            src="/logo/logo_hoyadelantas_white_over_green.png"
+            src="https://ht-benefits-assets.s3.amazonaws.com/logo_beneficios_blanco.png"
             alt="Logo HoyAdelantas"
             width="256"
             height="44.2"

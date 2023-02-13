@@ -195,10 +195,6 @@ export default function DashboardAccountRoute() {
         defaultValues={formDefaultValues}
       >
         <Box className="p-5">
-          <Title as="h1" className="pb-4 pt-3">
-            Mis datos
-          </Title>
-
           <Title as="h2" className="pb-4 pt-3">
             Mis datos de contacto
           </Title>

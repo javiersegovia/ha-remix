@@ -28,12 +28,11 @@ const LogoPoweredBy = ({
       )}
     >
       <img
-        src="/logo/logo_hoyadelantas_white_over_blue.png"
+        src="https://ht-benefits-assets.s3.amazonaws.com/logo_beneficios_blanco.png"
         alt="Logo HoyAdelantas"
         width="168"
         height="29"
       />
-      <span className="text-xs font-light">Powered by HoyTrabajas</span>
     </Link>
   )
 }
