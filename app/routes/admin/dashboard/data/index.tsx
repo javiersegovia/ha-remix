@@ -91,7 +91,6 @@ export const loader = async ({ request }: LoaderArgs) => {
       rowId: 'genders',
       items: ['Géneros', genders],
       href: '/admin/dashboard/data/genders',
-      isDisabled: true,
     },
     {
       rowId: 'currencies',
