@@ -8,6 +8,7 @@ import { TbStars } from 'react-icons/tb'
 import { MdAttachMoney } from 'react-icons/md'
 import { FiSettings } from 'react-icons/fi'
 import { AiOutlineDatabase, AiOutlineThunderbolt } from 'react-icons/ai'
+import { RiShieldUserLine } from 'react-icons/ri'
 
 import { requireAdminUser } from '~/session.server'
 import { DashboardColorVariant } from '~/components/SideBar/DashboardSideBar'
@@ -54,6 +55,11 @@ const navPaths: INavPath[] = [
     icon: AiOutlineDatabase,
     title: 'Data',
     path: '/admin/dashboard/data',
+  },
+  {
+    icon: RiShieldUserLine,
+    title: 'Roles y permisos',
+    path: '/admin/dashboard/user-roles',
   },
   {
     icon: FiSettings,
