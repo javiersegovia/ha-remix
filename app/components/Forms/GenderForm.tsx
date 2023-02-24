@@ -6,8 +6,9 @@ import { Input } from '~/components/FormFields/Input'
 
 import { FormGridWrapper } from '~/components/FormFields/FormGridWrapper'
 import { FormGridItem } from '~/components/FormFields/FormGridItem'
-import { Button, ButtonColorVariants } from '~/components/Button'
+import { ButtonColorVariants } from '~/components/Button'
 import { genderValidator } from '~/services/gender/gender.schema'
+import { SubmitButton } from '../SubmitButton'
 
 interface GenderFormProps {
   buttonText: string
@@ -39,16 +40,16 @@ export const GenderForm = ({
             />
           </FormGridItem>
           <FormGridItem className="lg:col-span-12">
-            <Button type="submit">{buttonText}</Button>
+            <SubmitButton>{buttonText}</SubmitButton>
           </FormGridItem>
         </FormGridWrapper>
       </ValidatedForm>
 
       {showDeleteButton && (
         <Form method="delete">
-          <Button type="submit" variant={ButtonColorVariants.WARNING}>
+          <SubmitButton variant={ButtonColorVariants.WARNING}>
             Eliminar
-          </Button>
+          </SubmitButton>
         </Form>
       )}
     </>

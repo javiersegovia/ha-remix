@@ -1,10 +1,12 @@
 import type { BenefitCategory, BenefitHighlight, Image } from '@prisma/client'
 import type { BenefitInputSchema } from '~/services/benefit/benefit.schema'
 
-import { Form, useTransition } from '@remix-run/react'
+import clsx from 'clsx'
+import { Form } from '@remix-run/react'
 import { ValidatedForm } from 'remix-validated-form'
 import { benefitValidator } from '~/services/benefit/benefit.schema'
-import { Button, ButtonColorVariants } from '../Button'
+
+import { ButtonColorVariants } from '../Button'
 import { FormGridItem } from '../FormFields/FormGridItem'
 import { FormGridWrapper } from '../FormFields/FormGridWrapper'
 import { ImageInput } from '../FormFields/ImageInput'
@@ -13,7 +15,7 @@ import { Box } from '../Layout/Box'
 import { Select } from '../FormFields/Select'
 import { Title } from '../Typography/Title'
 import { Toggle } from '../FormFields/Toggle'
-import clsx from 'clsx'
+import { SubmitButton } from '../SubmitButton'
 
 interface BenefitFormProps {
   buttonText: string
@@ -50,9 +52,6 @@ export const BenefitForm = ({
     benefitCategoryId,
     benefitHighlight,
   } = defaultValues || {}
-
-  const transition = useTransition()
-  const isLoading = transition.state !== 'idle'
 
   return (
     <Box className="mt-auto flex w-full flex-col  space-y-5 rounded-xl p-5 md:w-auto">
@@ -173,27 +172,18 @@ export const BenefitForm = ({
       </ValidatedForm>
 
       <div className="ml-auto flex gap-5">
-        <Button
-          type="submit"
-          className=" inline-block w-auto"
-          form="BenefitForm"
-          disabled={isLoading}
-          isLoading={isLoading}
-        >
+        <SubmitButton className=" inline-block w-auto" form="BenefitForm">
           {formButtonText}
-        </Button>
+        </SubmitButton>
 
         {showDelete && (
           <Form method="delete" className="inline-block">
-            <Button
-              type="submit"
+            <SubmitButton
               variant={ButtonColorVariants.WARNING}
               className="inline-block w-auto"
-              disabled={isLoading}
-              isLoading={isLoading}
             >
               Eliminar
-            </Button>
+            </SubmitButton>
           </Form>
         )}
       </div>

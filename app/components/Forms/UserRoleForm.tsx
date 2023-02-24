@@ -7,9 +7,10 @@ import { Input } from '~/components/FormFields/Input'
 import { FormGridWrapper } from '~/components/FormFields/FormGridWrapper'
 import { FormGridItem } from '~/components/FormFields/FormGridItem'
 
-import { Button, ButtonColorVariants } from '~/components/Button'
+import { ButtonColorVariants } from '~/components/Button'
 import { userRoleValidator } from '~/services/user-role/user-role.schema'
 import { Box } from '../Layout/Box'
+import { SubmitButton } from '../SubmitButton'
 
 interface UserRoleFormProps {
   buttonText: string
@@ -43,16 +44,16 @@ export const UserRoleForm = ({
 
         <FormGridWrapper>
           <FormGridItem isFullWidth>
-            <Button type="submit">{buttonText}</Button>
+            <SubmitButton className="mt-5">{buttonText}</SubmitButton>
           </FormGridItem>
         </FormGridWrapper>
       </ValidatedForm>
 
       {showDeleteButton && (
         <Form method="delete">
-          <Button type="submit" variant={ButtonColorVariants.WARNING}>
+          <SubmitButton variant={ButtonColorVariants.WARNING}>
             Eliminar
-          </Button>
+          </SubmitButton>
         </Form>
       )}
     </Box>

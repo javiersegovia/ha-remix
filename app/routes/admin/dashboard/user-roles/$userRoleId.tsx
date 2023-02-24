@@ -24,8 +24,8 @@ import { findOrCreateManyPermissions } from '~/services/permissions/permissions.
 import type { TableRowProps } from '~/components/Lists/Table'
 import { Table } from '~/components/Lists/Table'
 import { userRolePermissionsValidator } from '~/services/user-role/role-permissions.schema'
-import { Button } from '~/components/Button'
 import { RepeteableCheckbox } from '~/components/FormFields/RepeteableCheckbox'
+import { SubmitButton } from '~/components/SubmitButton'
 
 export const meta: MetaFunction = () => {
   return {
@@ -97,31 +97,27 @@ export const action = async ({ request, params }: ActionArgs) => {
 export default function UserRoleUpdateRoute() {
   const { userRole, permissions } = useLoaderData<typeof loader>()
 
-  const permissionRows: TableRowProps[] = permissions.map(
-    (permission, index) => {
-      const { name, description } = permission
+  const permissionRows: TableRowProps[] = permissions.map((permission) => {
+    const { name, description } = permission
 
-      return {
-        rowId: permission.id,
-        items: [
-          <div
-            key={`${permission.id}${name}`}
-            className="max-w-xs whitespace-pre-wrap"
-          >
-            <div className="text-sm text-steelBlue-700">{name}</div>
-            <div className="mt-1 text-xs italic text-gray-400">
-              {description}
-            </div>
-          </div>,
-          <RepeteableCheckbox
-            key={`${permission.id}_checkbox`}
-            name="permissions"
-            value={permission.code}
-          />,
-        ],
-      }
+    return {
+      rowId: permission.id,
+      items: [
+        <div
+          key={`${permission.id}${name}`}
+          className="max-w-xs whitespace-pre-wrap"
+        >
+          <div className="text-sm text-steelBlue-700">{name}</div>
+          <div className="mt-1 text-xs italic text-gray-400">{description}</div>
+        </div>,
+        <RepeteableCheckbox
+          key={`${permission.id}_checkbox`}
+          name="permissions"
+          value={permission.code}
+        />,
+      ],
     }
-  )
+  })
 
   return (
     <Container className="xl:max-w-2xl">
@@ -153,9 +149,7 @@ export default function UserRoleUpdateRoute() {
       >
         <Table headings={['Descripción', '']} rows={permissionRows} />
 
-        <Button type="submit" className="mt-5">
-          Actualizar
-        </Button>
+        <SubmitButton className="mt-5">Actualizar permisos</SubmitButton>
       </ValidatedForm>
     </Container>
   )

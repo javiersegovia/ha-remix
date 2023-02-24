@@ -1,7 +1,7 @@
 import type { PropsWithChildren } from 'react'
-import { useIsSubmitting } from 'remix-validated-form'
-
 import type { ButtonProps } from './Button'
+
+import { useTransition } from '@remix-run/react'
 import { Button } from './Button'
 
 export const SubmitButton = ({
@@ -10,13 +10,15 @@ export const SubmitButton = ({
   showSpinner = false,
   ...props
 }: PropsWithChildren<ButtonProps> & { showSpinner?: boolean }) => {
-  const isSubmitting = useIsSubmitting()
+  const transition = useTransition()
+  const inProcess = transition.state !== 'idle'
+
   return (
     <Button
       {...props}
       type="submit"
-      disabled={isSubmitting || disabled}
-      isLoading={showSpinner && isSubmitting}
+      disabled={inProcess || disabled}
+      isLoading={showSpinner && inProcess}
     >
       {children}
     </Button>

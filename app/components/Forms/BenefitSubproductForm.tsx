@@ -3,13 +3,14 @@ import type { BenefitSubproduct } from '@prisma/client'
 import { Form } from '@remix-run/react'
 import { ValidatedForm } from 'remix-validated-form'
 
-import { Button, ButtonColorVariants } from '../Button'
+import { ButtonColorVariants } from '../Button'
 import { FormGridItem } from '../FormFields/FormGridItem'
 import { FormGridWrapper } from '../FormFields/FormGridWrapper'
 import { Input } from '../FormFields/Input'
 import { Title } from '../Typography/Title'
 import { benefitSubproductValidator } from '~/services/benefit-subproduct/benefit-subproduct.schema'
 import { RightPanel } from '../Layout/RightPanel'
+import { SubmitButton } from '../SubmitButton'
 
 interface MembershipFormProps {
   title: string
@@ -60,16 +61,16 @@ export const BenefitSubproductForm = ({
           </FormGridItem>
 
           <FormGridItem isFullWidth>
-            <Button type="submit">{buttonText}</Button>
+            <SubmitButton>{buttonText}</SubmitButton>
           </FormGridItem>
         </FormGridWrapper>
       </ValidatedForm>
 
       {showDelete && (
         <Form method="delete">
-          <Button type="submit" variant={ButtonColorVariants.WARNING}>
+          <SubmitButton variant={ButtonColorVariants.WARNING}>
             Eliminar
-          </Button>
+          </SubmitButton>
         </Form>
       )}
     </RightPanel>

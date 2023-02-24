@@ -8,7 +8,8 @@ import { Input } from '~/components/FormFields/Input'
 import { FormGridWrapper } from '~/components/FormFields/FormGridWrapper'
 import { FormGridItem } from '~/components/FormFields/FormGridItem'
 
-import { Button, ButtonColorVariants } from '~/components/Button'
+import { ButtonColorVariants } from '~/components/Button'
+import { SubmitButton } from '../SubmitButton'
 
 interface BenefitCategoryFormProps {
   buttonText: string
@@ -60,16 +61,16 @@ export const BenefitCategoryForm = ({
           </FormGridItem>
 
           <FormGridItem isFullWidth>
-            <Button type="submit">{buttonText}</Button>
+            <SubmitButton>{buttonText}</SubmitButton>
           </FormGridItem>
         </FormGridWrapper>
       </ValidatedForm>
 
       {showDeleteButton && (
         <Form method="delete">
-          <Button type="submit" variant={ButtonColorVariants.WARNING}>
+          <SubmitButton variant={ButtonColorVariants.WARNING}>
             Eliminar
-          </Button>
+          </SubmitButton>
         </Form>
       )}
     </>

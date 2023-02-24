@@ -6,12 +6,13 @@ import { ValidatedForm } from 'remix-validated-form'
 import type { getBenefits } from '~/services/benefit/benefit.server'
 
 import { membershipValidator } from '~/services/membership/membership.schema'
-import { Button, ButtonColorVariants } from '../Button'
+import { ButtonColorVariants } from '../Button'
 import { FormGridItem } from '../FormFields/FormGridItem'
 import { FormGridWrapper } from '../FormFields/FormGridWrapper'
 import { Input } from '../FormFields/Input'
 import { SelectMultiple } from '../FormFields/SelectMultiple'
 import { Box } from '../Layout/Box'
+import { SubmitButton } from '../SubmitButton'
 import { Title } from '../Typography/Title'
 
 interface MembershipFormProps {
@@ -72,16 +73,16 @@ export const MembershipForm = ({
             </FormGridItem>
 
             <FormGridItem isFullWidth>
-              <Button type="submit">{buttonText}</Button>
+              <SubmitButton>{buttonText}</SubmitButton>
             </FormGridItem>
           </FormGridWrapper>
         </ValidatedForm>
 
         {showDelete && (
           <Form method="delete">
-            <Button type="submit" variant={ButtonColorVariants.WARNING}>
+            <SubmitButton variant={ButtonColorVariants.WARNING}>
               Eliminar
-            </Button>
+            </SubmitButton>
           </Form>
         )}
       </Box>
