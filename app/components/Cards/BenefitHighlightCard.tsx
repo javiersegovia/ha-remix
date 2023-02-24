@@ -18,13 +18,13 @@ export const BenefitHighlightCard = ({
   benefitHighlight,
 }: BenefitHighlightCardProps) => {
   return (
-    <Box className="flex h-full flex-col items-center gap-2 overflow-hidden rounded-lg xl:flex-row">
+    <Box className="grid h-full grid-cols-5 items-stretch gap-2 overflow-hidden rounded-lg xl:flex-row">
       <img
         src={benefitHighlight.image?.url}
-        className="max-h-72 w-full bg-white object-cover"
+        className="col-span-3 w-full bg-white object-cover"
         alt="Highlight"
       />
-      <div className="p-4">
+      <div className="col-span-2 min-w-[40%] p-4">
         <Title as="h3">{benefitHighlight.title}</Title>
         <p className="mt-2 whitespace-pre-wrap text-gray-700">
           {benefitHighlight.description}

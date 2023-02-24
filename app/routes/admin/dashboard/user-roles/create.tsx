@@ -1,5 +1,9 @@
 import { Link } from '@remix-run/react'
-import type { ActionArgs, LoaderArgs } from '@remix-run/server-runtime'
+import type {
+  ActionArgs,
+  LoaderArgs,
+  MetaFunction,
+} from '@remix-run/server-runtime'
 
 import { redirect } from '@remix-run/server-runtime'
 import { AiOutlineArrowLeft } from 'react-icons/ai'
@@ -15,6 +19,12 @@ import { requireAdminUserId } from '~/session.server'
 export const loader = async ({ request }: LoaderArgs) => {
   await requireAdminUserId(request)
   return null
+}
+
+export const meta: MetaFunction = () => {
+  return {
+    title: '[Admin] Crear Rol de Usuario | HoyTrabajas Beneficios',
+  }
 }
 
 export const action = async ({ request }: ActionArgs) => {

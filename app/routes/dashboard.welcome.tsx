@@ -34,7 +34,7 @@ export const loader = async ({ request }: LoaderArgs) => {
 
 export const meta: MetaFunction = () => {
   return {
-    title: '[Admin] Bienvenido | HoyAdelantas',
+    title: '[Admin] Bienvenido | HoyTrabajas Beneficios',
   }
 }
 
@@ -70,7 +70,7 @@ export default function DashboardWelcomeRoute() {
         <img
           className="mx-auto block object-contain"
           src="https://ht-benefits-assets.s3.amazonaws.com/logo_beneficios_blanco.png"
-          alt="Logo HoyAdelantas"
+          alt="Logo HoyTrabajas Beneficios"
           width="256"
         />
 

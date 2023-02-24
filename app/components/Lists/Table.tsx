@@ -66,8 +66,8 @@ export const TableRow = ({ rowId, href, items, isDisabled }: TableRowProps) => {
     <>
       {items.map((item, index) => {
         return (
-          <TableData key={`${rowId}_${item}`} isCentered={index !== 0}>
-            <span
+          <TableData key={`${rowId}_${index}`} isCentered={index !== 0}>
+            <div
               className={clsx(
                 isDisabled && 'pointer-events-none text-gray-400'
               )}
@@ -85,7 +85,7 @@ export const TableRow = ({ rowId, href, items, isDisabled }: TableRowProps) => {
               ) : (
                 item
               )}
-            </span>
+            </div>
           </TableData>
         )
       })}

@@ -1,7 +1,6 @@
 import type { BankAccountType } from '@prisma/client'
 import type { BankAccountTypeInputSchema } from './bank-account-type.schema'
 
-import { validationError } from 'remix-validated-form'
 import { badRequest } from 'remix-utils'
 import { prisma } from '~/db.server'
 

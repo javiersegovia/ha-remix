@@ -29,7 +29,7 @@ const LogoPoweredBy = ({
     >
       <img
         src="https://ht-benefits-assets.s3.amazonaws.com/logo_beneficios_blanco.png"
-        alt="Logo HoyAdelantas"
+        alt="Logo HoyTrabajas Beneficios"
         width="168"
         height="29"
       />

@@ -65,7 +65,7 @@ export const NavItem: React.FC<TNavItemProps> = ({
         <Link
           to={path}
           className={clsx(
-            'group flex cursor-pointer items-center rounded-2xl py-3 pl-6 text-base font-bold transition',
+            'group flex cursor-pointer items-center rounded-2xl py-3 pl-6 text-base font-semibold transition',
             isPrimary &&
               (isCurrentPath
                 ? 'bg-steelBlue-200 text-steelBlue-400'

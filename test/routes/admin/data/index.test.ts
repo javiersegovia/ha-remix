@@ -75,7 +75,6 @@ describe('AdminDashboardDataIndexRoute Loader', () => {
           rowId: 'genders',
           items: ['Géneros', 2],
           href: '/admin/dashboard/data/genders',
-          isDisabled: true,
         },
         {
           rowId: 'currencies',

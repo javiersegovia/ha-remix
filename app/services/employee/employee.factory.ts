@@ -12,6 +12,7 @@ import type {
   Membership,
   State,
   User,
+  UserRole,
   Wallet,
 } from '@prisma/client'
 
@@ -22,7 +23,9 @@ import { prisma } from '~/db.server'
 import { connect } from '~/utils/relationships'
 
 type ExtendedEmployee = Employee & {
-  user: Pick<User, 'id' | 'email' | 'firstName' | 'lastName'>
+  user: Pick<User, 'id' | 'email' | 'firstName' | 'lastName'> & {
+    role?: UserRole
+  }
   company: Company
   country?: Country
   state?: State
@@ -65,7 +68,7 @@ export const EmployeeFactory = Factory.define<ExtendedEmployee>(
         phone,
         address,
       } = employee
-      const { email, firstName, lastName } = user
+      const { email, firstName, lastName, role } = user
 
       return prisma.employee.create({
         data: {
@@ -98,6 +101,7 @@ export const EmployeeFactory = Factory.define<ExtendedEmployee>(
               email,
               firstName,
               lastName,
+              role: connect(role?.id),
             },
           },
         },
@@ -148,6 +152,7 @@ export const EmployeeFactory = Factory.define<ExtendedEmployee>(
         email: faker.internet.email(),
         firstName: faker.name.firstName(),
         lastName: faker.name.lastName(),
+        roleId: associations.user?.role?.id || null,
       },
 
       bankAccountId: associations.bankAccount?.id || null,

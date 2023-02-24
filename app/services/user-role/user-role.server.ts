@@ -1,4 +1,4 @@
-import type { UserRole } from '@prisma/client'
+import type { PermissionCode, UserRole } from '@prisma/client'
 import type { UserRoleInputSchema } from './user-role.schema'
 
 import { prisma } from '~/db.server'
@@ -24,6 +24,12 @@ export const getUserRoleById = async (id: UserRole['id']) => {
     select: {
       id: true,
       name: true,
+      permissions: {
+        select: {
+          id: true,
+          code: true,
+        },
+      },
     },
   })
 }
@@ -53,6 +59,22 @@ export const updateUserRoleById = async (
       'Ha ocurrido un error, no se encontro el ID del rol de usuario'
     )
   }
+}
+
+export const updateUserRolePermissionsById = async (
+  roleId: UserRole['id'],
+  permissionCodes: PermissionCode[]
+) => {
+  return prisma.userRole.update({
+    where: {
+      id: roleId,
+    },
+    data: {
+      permissions: {
+        set: permissionCodes.map((code) => ({ code })),
+      },
+    },
+  })
 }
 
 export const deleteUserRoleById = async (id: UserRole['id']) => {

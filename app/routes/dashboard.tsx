@@ -69,7 +69,7 @@ export const loader = async ({ request }: LoaderArgs) => {
 
 export const meta: MetaFunction = () => {
   return {
-    title: 'Inicio | HoyAdelantas',
+    title: 'Inicio | HoyTrabajas Beneficios',
   }
 }
 

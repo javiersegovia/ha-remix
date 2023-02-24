@@ -39,16 +39,6 @@ model AdminUser {
   premiumAdvanceHistories PremiumAdvanceHistory[]
 }
 
-model UserRole {
-  id        String   @id @default(cuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  name String @unique
-
-  users User[]
-}
-
 model Company {
   id        String   @id @default(cuid())
   createdAt DateTime @default(now())
@@ -867,4 +857,34 @@ model Image {
   benefits          Benefit[]
   benefitHighlights BenefitHighlight[]
   companies         Company[]
+}
+
+model UserRole {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  name String @unique
+
+  users       User[]
+  permissions Permission[]
+}
+
+model Permission {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  name        String
+  description String?
+  code        PermissionCode @unique
+
+  userRoles UserRole[]
+}
+
+enum PermissionCode {
+  MANAGE_EMPLOYEE_MAIN_INFORMATION
+  MANAGE_EMPLOYEE_FINANCIAL_INFORMATION
+  MANAGE_COMPANY
+  MANAGE_BENEFIT_CATEGORY
 }

@@ -22,7 +22,7 @@ export const loader = async ({ request }: LoaderArgs) => {
 
 export const meta: MetaFunction = () => {
   return {
-    title: '[Admin] Roles de usuario | HoyAdelantas',
+    title: '[Admin] Roles de Usuario | HoyTrabajas Beneficios',
   }
 }
 
@@ -41,7 +41,7 @@ export default function UserRoleIndexRoute() {
       <Container>
         <TitleWithActions
           className="mb-10"
-          title="Roles de usuario"
+          title="Roles de Usuario"
           actions={
             <Button href="create" size="SM">
               Crear rol

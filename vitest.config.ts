@@ -12,7 +12,7 @@ export default defineConfig({
     clearMocks: false,
     globals: true,
     environment: 'happy-dom',
-    setupFiles: ['./test/setup-test-env.ts'],
+    setupFiles: ['./test/setup-test-env.ts', 'jest-extended/all'],
     includeSource: ['./app/**/**.{test,spec}.{js,ts,jsx,tsx}'],
     testTimeout: 10000,
     coverage: {

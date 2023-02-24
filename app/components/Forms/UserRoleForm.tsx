@@ -10,7 +10,6 @@ import { FormGridItem } from '~/components/FormFields/FormGridItem'
 import { Button, ButtonColorVariants } from '~/components/Button'
 import { userRoleValidator } from '~/services/user-role/user-role.schema'
 import { Box } from '../Layout/Box'
-import { Title } from '../Typography/Title'
 
 interface UserRoleFormProps {
   buttonText: string
@@ -31,9 +30,6 @@ export const UserRoleForm = ({
         method="post"
         defaultValues={defaultValues}
       >
-        <Title as="h4" className="mb-10">
-          Información principal
-        </Title>
         <FormGridWrapper>
           <FormGridItem isFullWidth>
             <Input
@@ -47,9 +43,7 @@ export const UserRoleForm = ({
 
         <FormGridWrapper>
           <FormGridItem isFullWidth>
-            <Button type="submit" className="">
-              {buttonText}
-            </Button>
+            <Button type="submit">{buttonText}</Button>
           </FormGridItem>
         </FormGridWrapper>
       </ValidatedForm>

@@ -3,6 +3,8 @@ import { installGlobals } from '@remix-run/node'
 import '@testing-library/jest-dom/extend-expect'
 import invariant from 'tiny-invariant'
 import { prisma } from '~/db.server'
+import 'jest-extended'
+import 'jest-extended/all'
 
 installGlobals()
 

@@ -3,7 +3,7 @@ import { redirect } from '@remix-run/node'
 import { Link, useSearchParams } from '@remix-run/react'
 import { ValidatedForm, validationError } from 'remix-validated-form'
 
-import { verifyUserLogin } from '~/services/user.server'
+import { verifyUserLogin } from '~/services/user/user.server'
 import { createUserSession, getUserIdFromSession } from '~/session.server'
 import { safeRedirect } from '~/utils/utils'
 import { loginValidator } from '~/schemas/login.schema'
@@ -63,7 +63,7 @@ export async function action({ request }: ActionArgs) {
 
 export const meta: MetaFunction = () => {
   return {
-    title: 'Inicio de sesión | HoyAdelantas',
+    title: 'Inicio de sesión | HoyTrabajas Beneficios',
   }
 }
 

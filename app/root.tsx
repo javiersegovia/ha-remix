@@ -60,7 +60,7 @@ if (typeof document === 'undefined') React.useLayoutEffect = React.useEffect
 
 export const meta: MetaFunction = () => ({
   charset: 'utf-8',
-  title: 'HoyAdelantas',
+  title: 'HoyTrabajas Beneficios',
   viewport: 'width=device-width,initial-scale=1',
 })
 
@@ -191,7 +191,7 @@ export const ErrorBoundary: ErrorBoundaryComponent = ({ error }) => {
   return (
     <html lang="es" className="h-full">
       <head>
-        <title>Error | HoyAdelantas</title>
+        <title>Error | HoyTrabajas Beneficios</title>
         <Meta />
         <Links />
       </head>
@@ -220,7 +220,7 @@ export const CatchBoundary = () => {
   return (
     <html lang="es" className="h-full">
       <head>
-        <title>Error | HoyAdelantas</title>
+        <title>Error | HoyTrabajas Beneficios</title>
         <Meta />
         <Links />
       </head>

@@ -3,7 +3,7 @@ import type { User } from '@prisma/client'
 import { createCookieSessionStorage, redirect } from '@remix-run/node'
 import invariant from 'tiny-invariant'
 
-import { getUserById } from '~/services/user.server'
+import { getUserById } from '~/services/user/user.server'
 import { getAdminUserById } from '~/services/admin-user.server'
 import { getEmployeeById } from '~/services/employee/employee.server'
 
