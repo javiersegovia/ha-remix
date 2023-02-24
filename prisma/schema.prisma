@@ -23,6 +23,8 @@ model User {
   loginExpiration DateTime?
 
   employee Employee?
+  role     UserRole? @relation(fields: [roleId], references: [id], onDelete: SetNull)
+  roleId   String?
 }
 
 model AdminUser {
@@ -35,6 +37,16 @@ model AdminUser {
   payrollAdvanceTransfers PayrollAdvanceTransfer[]
   payrollAdvanceHistories PayrollAdvanceHistory[]
   premiumAdvanceHistories PremiumAdvanceHistory[]
+}
+
+model UserRole {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  name String @unique
+
+  users User[]
 }
 
 model Company {
