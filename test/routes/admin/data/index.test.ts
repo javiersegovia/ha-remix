@@ -98,7 +98,6 @@ describe('AdminDashboardDataIndexRoute Loader', () => {
           rowId: 'identity-document-types',
           items: ['Tipos de documento de identidad', 4],
           href: '/admin/dashboard/data/identity-document-types',
-          isDisabled: true,
         },
       ],
     })

@@ -35,6 +35,7 @@ export const getEmployeeEnabledBenefits = async (
       },
       benefitHighlight: {
         select: {
+          id: true,
           buttonHref: true,
           buttonText: true,
           description: true,

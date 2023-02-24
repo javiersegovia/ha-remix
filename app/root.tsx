@@ -28,6 +28,9 @@ import tailwindStylesheetUrl from './styles/tailwind.css'
 import ErrorContainer from './containers/ErrorContainer'
 import { Toaster } from 'react-hot-toast'
 
+import reactSlickStylesheetUrl from 'slick-carousel/slick/slick.css'
+import reactSlickThemeStylesheetUrl from 'slick-carousel/slick/slick-theme.css'
+
 export const links: LinksFunction = () => {
   return [
     {
@@ -42,6 +45,8 @@ export const links: LinksFunction = () => {
     },
     { rel: 'shortcut icon', href: '/favicon.png' },
     { rel: 'stylesheet', href: nProgressStyles },
+    { rel: 'stylesheet', href: reactSlickStylesheetUrl },
+    { rel: 'stylesheet', href: reactSlickThemeStylesheetUrl },
     { rel: 'stylesheet', href: tailwindStylesheetUrl },
     {
       rel: 'stylesheet',

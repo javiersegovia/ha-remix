@@ -159,6 +159,7 @@ describe('LOADER /dashboard/overview', () => {
     expect(data).toEqual<DashboardOverviewLoaderResponse>({
       benefits: [
         {
+          id: benefitLite_1.id,
           name: benefitLite_1.name,
           buttonHref: benefitLite_1.buttonHref,
           buttonText: benefitLite_1.buttonText,
@@ -219,6 +220,7 @@ describe('LOADER /dashboard/overview', () => {
 
     expect(data.benefits).toEqual<DashboardOverviewLoaderResponse['benefits']>([
       {
+        id: benefitLite_2.id,
         name: benefitLite_2.name,
         buttonHref: benefitLite_2.buttonHref,
         buttonText: benefitLite_2.buttonText,
@@ -228,6 +230,7 @@ describe('LOADER /dashboard/overview', () => {
         benefitHighlight: null,
       },
       {
+        id: benefitPremium_2.id,
         name: benefitPremium_2.name,
         buttonHref: benefitPremium_2.buttonHref,
         buttonText: benefitPremium_2.buttonText,

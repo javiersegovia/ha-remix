@@ -9,14 +9,13 @@ import { twMerge } from 'tailwind-merge'
 import clsx from 'clsx'
 
 import { prisma } from '~/db.server'
-import { Box } from '~/components/Layout/Box'
 import { Title } from '~/components/Typography/Title'
 import { BenefitCard } from '~/components/Cards/BenefitCard'
 import { getEmployeeEnabledBenefits } from '~/services/permissions/permissions.server'
 import { logout, requireUserId } from '~/session.server'
-import { Button } from '~/components/Button'
 import { Container } from '~/components/Layout/Container'
-import { isValidURL } from '~/utils/isValidURL'
+import { Carousel } from '~/components/Carousels/Carousel'
+import { BenefitHighlightCard } from '~/components/Cards/BenefitHighlightCard'
 
 export type DashboardIndexLoaderData = {
   gender: Pick<Gender, 'name'> | null
@@ -108,7 +107,7 @@ export default function DashboardIndexRoute() {
   const { benefitHighlights, benefitCategories, benefits, company } =
     useLoaderData<typeof loader>()
 
-  const selectedHighlight = benefitHighlights?.[0]
+  const carouselBenefitHighlights = benefitHighlights.slice(0, 3)
 
   const [selectedBenefitCategoryId, setSelectedBenefitCategoryId] =
     useState<number>()
@@ -122,33 +121,24 @@ export default function DashboardIndexRoute() {
   return (
     <>
       <div className="relative w-full flex-1 bg-white">
-        {selectedHighlight && (
-          <section className="bg-steelBlue-100 pb-16 pt-10">
+        {benefitHighlights?.length > 0 && (
+          <section className="overflow-hidden bg-steelBlue-100 pb-16 pt-10">
             <Container>
               <div className="relative z-10 mx-auto w-full max-w-screen-xl px-2 sm:px-10">
-                <Title>Beneficio destacado del mes</Title>
-                <Box className="mt-6 flex flex-col items-center gap-2 overflow-hidden rounded-lg shadow-xl xl:flex-row">
-                  <img
-                    src={selectedHighlight.image?.url}
-                    className="max-h-72 w-full bg-white object-cover"
-                    alt="Highlight"
-                  />
-                  <div className="p-4">
-                    <Title as="h3">{selectedHighlight.title}</Title>
-                    <p className="mt-2 whitespace-pre-wrap text-gray-700">
-                      {selectedHighlight.description}
-                    </p>
-                    <div className="inline-block w-full lg:max-w-[14rem]">
-                      <Button
-                        href={selectedHighlight.buttonHref}
-                        external={isValidURL(selectedHighlight.buttonHref)}
-                        className="mt-5"
-                      >
-                        {selectedHighlight.buttonText}
-                      </Button>
-                    </div>
-                  </div>
-                </Box>
+                <Title>
+                  {benefitHighlights?.length > 1
+                    ? 'Beneficios destacados del mes'
+                    : 'Beneficio destacado del mes'}
+                </Title>
+
+                <Carousel className="mt-5 rounded-lg">
+                  {carouselBenefitHighlights.map((benefitHighlight) => (
+                    <BenefitHighlightCard
+                      key={benefitHighlight!.id}
+                      benefitHighlight={benefitHighlight!}
+                    />
+                  ))}
+                </Carousel>
               </div>
             </Container>
           </section>
