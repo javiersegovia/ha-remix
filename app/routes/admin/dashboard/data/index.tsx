@@ -109,7 +109,6 @@ export const loader = async ({ request }: LoaderArgs) => {
       rowId: 'bank-account-types',
       items: ['Tipos de cuenta bancaria', bankAccountTypes],
       href: '/admin/dashboard/data/bank-account-types',
-      isDisabled: true,
     },
     {
       rowId: 'identity-document-types',

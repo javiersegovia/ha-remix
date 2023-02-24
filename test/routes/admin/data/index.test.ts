@@ -93,7 +93,6 @@ describe('AdminDashboardDataIndexRoute Loader', () => {
           rowId: 'bank-account-types',
           items: ['Tipos de cuenta bancaria', 2],
           href: '/admin/dashboard/data/bank-account-types',
-          isDisabled: true,
         },
         {
           rowId: 'identity-document-types',
