@@ -56,17 +56,3 @@ export default function MembershipsIndexRoute() {
     </>
   )
 }
-
-// const ManagementButtons = () => {
-//   return (
-//     <div className="mt-4 flex w-full items-center justify-center gap-4 md:w-auto lg:mt-0">
-//       <Button
-//         href="/admin/dashboard/memberships/create"
-//         className="flex items-center px-4"
-//       >
-//         <HiPlus className="mr-3" />
-//         Crear membresía
-//       </Button>
-//     </div>
-//   )
-// }

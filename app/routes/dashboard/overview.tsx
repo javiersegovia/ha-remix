@@ -64,6 +64,8 @@ export const loader = async ({ request }: LoaderArgs) => {
 
   const employeeData = await getEmployeeData(userId)
 
+  if (!employeeData) throw await logout(request)
+
   const benefits = await getEmployeeEnabledBenefits(
     employeeData?.membership?.benefits,
     employeeData?.company.benefits
@@ -85,8 +87,6 @@ export const loader = async ({ request }: LoaderArgs) => {
     }
     return acc
   }, [] as BCategory[])
-
-  if (!employeeData) throw await logout(request)
 
   return json({
     benefits,
