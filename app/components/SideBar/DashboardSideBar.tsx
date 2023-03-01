@@ -33,7 +33,7 @@ const LogoPoweredBy = ({
         width="168"
         height="29"
       />
-      <p className="mt-2 px-4 text-left text-xs">
+      <p className="mt-2 hidden px-4 text-left text-xs md:block">
         2023-HoyTrabajas.com ® - Todos los derechos reservados.
       </p>
     </Link>
