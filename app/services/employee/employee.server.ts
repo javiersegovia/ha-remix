@@ -16,8 +16,8 @@ import {
   PayrollAdvancePaymentMethod,
 } from '@prisma/client'
 import { EmployeeStatus } from '@prisma/client'
-import { Response, json } from '@remix-run/node'
-import { badRequest } from 'remix-utils'
+import { Response } from '@remix-run/node'
+import { badRequest, notFound } from '~/utils/responses'
 import { hash } from 'bcryptjs'
 import { prisma } from '~/db.server'
 import { connect, connectOrDisconnect } from '~/utils/relationships'
@@ -135,7 +135,10 @@ export const requireEmployee = async (
   })
 
   if (!employee) {
-    throw json({ error: 'La compañía no ha sido encontrada', status: 404 })
+    throw notFound({
+      message: 'La compañía no ha sido encontrada',
+      redirect: '/',
+    })
   }
 
   return employee
@@ -465,7 +468,10 @@ export const updateEmployeeById = async (
   } catch (err) {
     // Todo LOGGER: Log error and save to a file
     console.error(err)
-    throw badRequest('Ha ocurrido un error inesperado')
+    throw badRequest({
+      message: 'Ha ocurrido un error inesperado',
+      redirect: null,
+    })
   }
 }
 
@@ -523,7 +529,10 @@ export const updateEmployeeByWelcomeForm = async (
   } catch (err) {
     // Todo LOGGER: Log error and save to a file
     console.error(err)
-    throw badRequest('Ha ocurrido un error inesperado')
+    throw badRequest({
+      message: 'Ha ocurrido un error inesperado',
+      redirect: null,
+    })
   }
 }
 
@@ -598,7 +607,10 @@ export const updateEmployeeByAccountForm = async (
   } catch (err) {
     // Todo LOGGER: Log error and save to a file
     console.error(err)
-    throw badRequest('Ha ocurrido un error inesperado')
+    throw badRequest({
+      message: 'Ha ocurrido un error inesperado',
+      redirect: null,
+    })
   }
 }
 
@@ -611,7 +623,10 @@ export const uploadEmployees = async (
   })
 
   if (!company) {
-    throw badRequest('No se ha encontrado el ID de la compañía')
+    throw badRequest({
+      message: 'No se ha encontrado el ID de la compañía',
+      redirect: null,
+    })
   }
 
   const errorResponses: Record<string, string[]> = {}

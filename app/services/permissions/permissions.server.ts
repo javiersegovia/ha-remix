@@ -1,5 +1,5 @@
 import type { Benefit, PermissionCode, User, UserRole } from '@prisma/client'
-import { badRequest } from 'remix-utils'
+import { badRequest } from '~/utils/responses'
 import { prisma } from '~/db.server'
 import { defaultPermissions } from './permissions.list'
 
@@ -66,7 +66,11 @@ export const getEmployeeEnabledBenefits = async (
 export const findOrCreatePermissionByCode = async (code: PermissionCode) => {
   const permission = defaultPermissions.find((p) => p.code === code)
 
-  if (!permission) throw badRequest(`Permission with code ${code} not found`)
+  if (!permission)
+    throw badRequest({
+      message: `Permiso de código ${code} no encontrado`,
+      redirect: null,
+    })
 
   return await prisma.permission.upsert({
     where: {
@@ -132,7 +136,11 @@ export const hasPermissionByUserRoleId = async (
     },
   })
 
-  if (!role) throw badRequest(`Role with id ${roleId} not found`)
+  if (!role)
+    throw badRequest({
+      message: `Rol con ID ${roleId} no encontrado`,
+      redirect: null,
+    })
 
   return role.permissions.some((p) => p.code === permissionCode)
 }
@@ -158,7 +166,11 @@ export const hasPermissionByUserId = async (
     },
   })
 
-  if (!user) throw badRequest(`User with id ${userId} not found`)
+  if (!user)
+    throw badRequest({
+      message: `Usuario con ID ${userId} no encontrado`,
+      redirect: null,
+    })
 
   return user.role?.permissions.some((p) => p.code === permissionCode)
 }
@@ -169,7 +181,10 @@ export const requirePermissionByUserRoleId = async (
 ) => {
   const hasPermission = await hasPermissionByUserRoleId(roleId, permissionCode)
   if (!hasPermission) {
-    throw badRequest(`No estás autorizado para realizar esta acción`)
+    throw badRequest({
+      message: `No estás autorizado para realizar esta acción`,
+      redirect: null, // todo: replace this redirect with a "Unauthorized" route
+    })
   }
 }
 
@@ -179,6 +194,9 @@ export const requirePermissionByUserId = async (
 ) => {
   const hasPermission = await hasPermissionByUserId(userId, permissionCode)
   if (!hasPermission) {
-    throw badRequest(`No estás autorizado para realizar esta acción`)
+    throw badRequest({
+      message: `No estás autorizado para realizar esta acción`,
+      redirect: null, // todo: replace this redirect with a "Unauthorized" route
+    })
   }
 }

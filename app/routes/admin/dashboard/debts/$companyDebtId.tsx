@@ -1,7 +1,7 @@
 import type { LoaderArgs, MetaFunction } from '@remix-run/server-runtime'
 
 import { Link, Outlet, useLoaderData } from '@remix-run/react'
-import { badRequest, notFound } from 'remix-utils'
+import { badRequest, notFound } from '~/utils/responses'
 import { es } from 'date-fns/locale'
 import { format } from 'date-fns'
 
@@ -22,7 +22,8 @@ export const loader = async ({ request, params }: LoaderArgs) => {
 
   if (!companyDebtId) {
     throw badRequest({
-      message: 'No se ha encontrado el ID del adelanto de nómina',
+      message: 'No se ha encontrado el ID de la novedad',
+      redirect: '/admin/dashboard',
     })
   }
 
@@ -30,7 +31,8 @@ export const loader = async ({ request, params }: LoaderArgs) => {
 
   if (!companyDebt) {
     throw notFound({
-      message: 'No se ha encontrado información sobre el adelanto de nómina',
+      message: 'No se ha encontrado información sobre la novedad',
+      redirect: '/admin/dashboard/debts',
     })
   }
 

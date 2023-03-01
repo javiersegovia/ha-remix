@@ -1,7 +1,7 @@
 import type { JobDepartment } from '@prisma/client'
 import type { JobDepartmentInputSchema } from './job-department.schema'
 
-import { badRequest } from 'remix-utils'
+import { badRequest } from '~/utils/responses'
 import { prisma } from '~/db.server'
 
 export const getJobDepartments = async () => {
@@ -49,9 +49,10 @@ export const updateJobDepartmentById = async (
     })
   } catch (e) {
     console.error(e)
-    throw badRequest(
-      'Ha ocurrido un error, no se encontro el ID del Departamento'
-    )
+    throw badRequest({
+      message: 'Ha ocurrido un error, no se encontro el ID del Departamento',
+      redirect: null,
+    })
   }
 }
 
@@ -66,8 +67,9 @@ export const deleteJobDepartmentById = async (id: JobDepartment['id']) => {
     return deletedJobDepartment.id
   } catch (e) {
     console.error(e)
-    throw badRequest(
-      'Ha ocurrido un error, no se encontro el ID del Departamento'
-    )
+    throw badRequest({
+      message: 'Ha ocurrido un error, no se encontro el ID del Departamento',
+      redirect: null,
+    })
   }
 }

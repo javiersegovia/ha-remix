@@ -2,7 +2,7 @@ import type { LoaderArgs } from '@remix-run/server-runtime'
 
 import { useLoaderData, useTransition } from '@remix-run/react'
 import { json } from '@remix-run/server-runtime'
-import { badRequest } from 'remix-utils'
+import { badRequest } from '~/utils/responses'
 import { Button } from '~/components/Button'
 import { requireAdminUserId } from '~/session.server'
 
@@ -11,7 +11,10 @@ export const loader = async ({ request, params }: LoaderArgs) => {
   const { companyId } = params
 
   if (!companyId) {
-    throw badRequest('No se ha encontrado el ID de la compañía')
+    throw badRequest({
+      message: 'No se ha encontrado el ID de la compañía',
+      redirect: '/admin/dashboard/companies',
+    })
   }
 
   return json({ companyId })

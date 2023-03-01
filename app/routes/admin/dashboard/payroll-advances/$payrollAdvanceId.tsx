@@ -8,7 +8,7 @@ import type {
 import { PayrollAdvanceHistoryActor } from '@prisma/client'
 import { useLoaderData } from '@remix-run/react'
 import { json } from '@remix-run/server-runtime'
-import { badRequest, notFound } from 'remix-utils'
+import { badRequest, notFound } from '~/utils/responses'
 import { PayrollAdvanceDetails } from '~/containers/dashboard/PayrollAdvanceDetails'
 import {
   getPayrollAdvanceById,
@@ -23,6 +23,7 @@ export const loader = async ({ request, params }: LoaderArgs) => {
   if (!payrollAdvanceId) {
     throw notFound({
       message: 'No se ha encontrado el ID del adelanto de nómina',
+      redirect: '/admin/dashboard/payroll-advances',
     })
   }
 
@@ -33,6 +34,7 @@ export const loader = async ({ request, params }: LoaderArgs) => {
   if (!payrollAdvance) {
     throw notFound({
       message: 'No se ha encontrado información sobre el adelanto de nómina',
+      redirect: '/admin/dashboard/payroll-advances',
     })
   }
 
@@ -49,7 +51,10 @@ export const action = async ({ request, params }: ActionArgs) => {
   const { payrollAdvanceId } = params
 
   if (!payrollAdvanceId) {
-    throw badRequest('No se ha encontrado el ID del adelanto de nómina')
+    throw badRequest({
+      message: 'No se ha encontrado el ID del adelanto de nómina',
+      redirect: '/admin/dashboard/payroll-advances',
+    })
   }
 
   const payrollAdvance = await getPayrollAdvanceById(
@@ -59,6 +64,7 @@ export const action = async ({ request, params }: ActionArgs) => {
   if (!payrollAdvance || !payrollAdvance?.employee?.user) {
     throw badRequest({
       message: 'No se han encontrado todos los datos del adelanto de nómina',
+      redirect: '/admin/dashboard/payroll-advances',
     })
   }
 

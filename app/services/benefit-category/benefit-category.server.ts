@@ -1,5 +1,5 @@
 import type { BenefitCategory } from '@prisma/client'
-import { badRequest } from 'remix-utils'
+import { badRequest } from '~/utils/responses'
 
 import { prisma } from '~/db.server'
 import type { BenefitCategoryInputSchema } from './benefit-category.schema'
@@ -51,7 +51,10 @@ export const updateBenefitCategoryById = async (
     })
   } catch (e) {
     console.error(e)
-    throw badRequest('No se encontró el ID de la categoría de beneficio')
+    throw badRequest({
+      message: 'No se encontró el ID de la categoría de beneficio',
+      redirect: null,
+    })
   }
 }
 
@@ -66,6 +69,9 @@ export const deleteBenefitCategoryById = async (id: BenefitCategory['id']) => {
     return deletedBenefitCategory.id
   } catch (e) {
     console.error(e)
-    throw badRequest('No se pudo eliminar la categoría de beneficio')
+    throw badRequest({
+      message: 'No se pudo eliminar la categoría de beneficio',
+      redirect: null,
+    })
   }
 }

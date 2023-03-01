@@ -3,7 +3,7 @@ import type { ActionArgs, LoaderArgs } from '@remix-run/server-runtime'
 import { redirect, json } from '@remix-run/node'
 import { useLoaderData } from '@remix-run/react'
 import { validationError } from 'remix-validated-form'
-import { badRequest } from 'remix-utils'
+import { badRequest } from '~/utils/responses'
 
 import { Modal } from '~/components/Dialog/Modal'
 import { BenefitCategoryForm } from '~/components/Forms/BenefitCategoryForm'
@@ -22,7 +22,10 @@ export const loader = async ({ request, params }: LoaderArgs) => {
 
   const { benefitCategoryId } = params
   if (!benefitCategoryId || isNaN(Number(benefitCategoryId))) {
-    throw badRequest('No se encontró el ID de la categoría de beneficio')
+    throw badRequest({
+      message: 'No se encontró el ID de la categoría de beneficio',
+      redirect: '/admin/dashboard/data/benefit-categories',
+    })
   }
 
   const benefitCategory = await getBenefitCategoryById(
@@ -30,7 +33,10 @@ export const loader = async ({ request, params }: LoaderArgs) => {
   )
 
   if (!benefitCategory) {
-    throw badRequest('No se encontró la categoría de beneficio')
+    throw badRequest({
+      message: 'No se encontró la categoría de beneficio',
+      redirect: '/admin/dashboard/data/benefit-categories',
+    })
   }
 
   return json({ benefitCategory })
@@ -41,7 +47,10 @@ export const action = async ({ request, params }: ActionArgs) => {
 
   const { benefitCategoryId } = params
   if (!benefitCategoryId || isNaN(Number(benefitCategoryId))) {
-    throw badRequest('No se encontró el ID de la categoría de beneficio')
+    throw badRequest({
+      message: 'No se encontró el ID de la categoría de beneficio',
+      redirect: '/admin/dashboard/data/benefit-categories',
+    })
   }
 
   if (request.method === 'POST') {

@@ -23,7 +23,7 @@ export default function ErrorContainer({
 
   return (
     <section className="flex min-h-screen flex-col items-center justify-center bg-gray-50 sm:bg-steelBlue-900">
-      <div className="my-10 max-w-2xl rounded-3xl bg-gray-50 px-8 py-10 text-center lg:min-w-[400px]">
+      <div className="my-10 max-w-2xl rounded-md bg-gray-50 px-8 py-10 text-center lg:min-w-[400px]">
         <h1 className="text-4xl font-bold text-red-500">{title}</h1>
 
         <section className="mt-10 text-left">
@@ -33,7 +33,7 @@ export default function ErrorContainer({
           </>
 
           {message && (
-            <p className="mx-auto mt-6 rounded-[15px] bg-red-200 p-3 text-sm text-red-700">
+            <p className="mx-auto mt-6 rounded-md bg-red-200 p-3 text-sm text-red-700">
               {message}
             </p>
           )}
@@ -70,7 +70,7 @@ export default function ErrorContainer({
         </Button>
 
         {isDev && errorString && (
-          <p className="mx-auto mt-6 rounded-[15px] bg-red-200 p-3 text-sm text-red-700">
+          <p className="mx-auto mt-6 rounded-md bg-red-200 p-3 text-sm text-red-700">
             {errorString}
           </p>
         )}

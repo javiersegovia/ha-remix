@@ -3,7 +3,7 @@ import type { EmployeeSchemaInput } from '~/services/employee/employee.schema'
 import type { BankInputSchema } from './bank.schema'
 
 import { validationError } from 'remix-validated-form'
-import { badRequest } from 'remix-utils'
+import { badRequest } from '~/utils/responses'
 import { prisma } from '~/db.server'
 
 export const getBanks = () => {
@@ -48,7 +48,10 @@ export const updateBankById = async (id: Bank['id'], data: BankInputSchema) => {
     })
   } catch (e) {
     console.error(e)
-    throw badRequest('No se encontró el ID del banco')
+    throw badRequest({
+      message: 'Hubo error al actualizar el banco',
+      redirect: null,
+    })
   }
 }
 
@@ -63,7 +66,10 @@ export const deleteBankById = async (id: Bank['id']) => {
     return deletedBank.id
   } catch (e) {
     console.error(e)
-    throw badRequest('No se encontró el ID del banco')
+    throw badRequest({
+      message: 'Hubo un error al eliminar el banco',
+      redirect: null,
+    })
   }
 }
 

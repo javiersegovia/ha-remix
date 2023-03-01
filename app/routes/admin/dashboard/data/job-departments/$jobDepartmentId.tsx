@@ -1,6 +1,6 @@
 import type { ActionArgs, LoaderArgs } from '@remix-run/server-runtime'
 
-import { badRequest } from 'remix-utils'
+import { badRequest } from '~/utils/responses'
 import { validationError } from 'remix-validated-form'
 import { json, redirect } from '@remix-run/node'
 import { useLoaderData } from '@remix-run/react'
@@ -23,13 +23,19 @@ export const loader = async ({ request, params }: LoaderArgs) => {
   const { jobDepartmentId } = params
 
   if (!jobDepartmentId || isNaN(Number(jobDepartmentId))) {
-    throw badRequest('No se encontró el ID del área de trabajo')
+    throw badRequest({
+      message: 'No se encontró el ID del área de trabajo',
+      redirect: '/admin/dashboard/data/job-departments',
+    })
   }
 
   const jobDepartment = await getJobDepartmentById(Number(jobDepartmentId))
 
   if (!jobDepartment) {
-    throw badRequest('No se encontró el área de trabajo')
+    throw badRequest({
+      message: 'No se encontró el área de trabajo',
+      redirect: '/admin/dashboard/data/job-departments',
+    })
   }
 
   return json({ jobDepartment })
@@ -41,7 +47,10 @@ export const action = async ({ request, params }: ActionArgs) => {
   const { jobDepartmentId } = params
 
   if (!jobDepartmentId || isNaN(Number(jobDepartmentId))) {
-    throw badRequest('No se encontró el ID del área de trabajo')
+    throw badRequest({
+      message: 'No se encontró el ID del área de trabajo',
+      redirect: '/admin/dashboard/data/job-departments',
+    })
   }
 
   if (request.method === 'POST') {

@@ -2,7 +2,7 @@ import type { LoaderArgs } from '@remix-run/server-runtime'
 
 import { useLoaderData, useTransition } from '@remix-run/react'
 import { json } from '@remix-run/node'
-import { badRequest } from 'remix-utils'
+import { badRequest } from '~/utils/responses'
 
 import { requireAdminUserId } from '~/session.server'
 import { Modal } from '~/components/Dialog/Modal'
@@ -17,8 +17,9 @@ export const loader = async ({ request, params }: LoaderArgs) => {
   const { benefitId } = params
 
   if (!benefitId) {
-    throw badRequest(null, {
-      statusText: 'No se ha encontrado el ID del beneficio',
+    throw badRequest({
+      message: 'No se ha encontrado el ID del beneficio',
+      redirect: '/admin/dashboard/benefits',
     })
   }
 

@@ -4,7 +4,7 @@ import { redirect } from '@remix-run/server-runtime'
 import { useLoaderData } from '@remix-run/react'
 import { json } from '@remix-run/node'
 import { validationError } from 'remix-validated-form'
-import { notFound } from 'remix-utils'
+import { notFound } from '~/utils/responses'
 
 import { requireAdminUserId } from '~/session.server'
 
@@ -19,8 +19,9 @@ export const loader = async ({ request, params }: LoaderArgs) => {
   const { benefitId } = params
 
   if (!benefitId) {
-    throw notFound(null, {
-      statusText: 'No se ha encontrado el ID del beneficio',
+    throw notFound({
+      message: 'No se ha encontrado el ID del beneficio',
+      redirect: '/admin/dashboard/benefits',
     })
   }
 
@@ -35,8 +36,9 @@ export const action = async ({ request, params }: ActionArgs) => {
   const { benefitId } = params
 
   if (!benefitId || isNaN(Number(benefitId))) {
-    throw notFound(null, {
-      statusText: 'No se ha encontrado el ID del beneficio',
+    throw notFound({
+      message: 'No se ha encontrado el ID del beneficio',
+      redirect: '/admin/dashboard/benefits',
     })
   }
 

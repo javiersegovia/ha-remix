@@ -3,7 +3,7 @@ import type { ActionArgs, LoaderArgs } from '@remix-run/server-runtime'
 import { redirect, json } from '@remix-run/node'
 import { useLoaderData } from '@remix-run/react'
 import { validationError } from 'remix-validated-form'
-import { badRequest } from 'remix-utils'
+import { badRequest } from '~/utils/responses'
 
 import { Modal } from '~/components/Dialog/Modal'
 import { BankAccountTypeForm } from '~/components/Forms/BankAccountTypeForm'
@@ -23,7 +23,10 @@ export const loader = async ({ request, params }: LoaderArgs) => {
   const { bankAccountTypeId } = params
 
   if (!bankAccountTypeId || isNaN(Number(bankAccountTypeId))) {
-    throw badRequest('No se encontró el ID del tipo de cuenta bancaria')
+    throw badRequest({
+      message: 'No se encontró el ID del tipo de cuenta bancaria',
+      redirect: '/admin/dashboard/data/bank-account-types',
+    })
   }
 
   const bankAccountType = await getBankAccountTypeById(
@@ -31,7 +34,10 @@ export const loader = async ({ request, params }: LoaderArgs) => {
   )
 
   if (!bankAccountType) {
-    throw badRequest('No se encontró el tipo de cuenta bancaria')
+    throw badRequest({
+      message: 'No se encontró el tipo de cuenta bancaria',
+      redirect: '/admin/dashboard/data/bank-account-types',
+    })
   }
 
   return json({ bankAccountType })
@@ -42,7 +48,10 @@ export const action = async ({ request, params }: ActionArgs) => {
 
   const { bankAccountTypeId } = params
   if (!bankAccountTypeId || isNaN(Number(bankAccountTypeId))) {
-    throw badRequest('No se encontró el ID del tipo de cuenta bancaria')
+    throw badRequest({
+      message: 'No se encontró el ID del tipo de cuenta bancaria',
+      redirect: '/admin/dashboard/data/bank-account-types',
+    })
   }
 
   if (request.method === 'POST') {

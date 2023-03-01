@@ -2,7 +2,7 @@ import type { UploadBenefitConsumptionSchemaInput } from '~/services/benefit-con
 import type { ActionArgs } from '@remix-run/server-runtime'
 
 import { redirect } from '@remix-run/server-runtime'
-import { badRequest } from 'remix-utils'
+import { badRequest } from '~/utils/responses'
 import { parse } from 'csv-parse/sync'
 import { stringify } from 'csv-stringify/sync'
 import { requireAdminUserId } from '~/session.server'
@@ -14,23 +14,19 @@ export const action = async ({ request, params }: ActionArgs) => {
   const { benefitId } = params
 
   if (!benefitId) {
-    throw badRequest(null, {
-      statusText: 'No se ha encontrado el ID del beneficio',
+    throw badRequest({
+      message: 'No se ha encontrado el ID del beneficio',
+      redirect: '/admin/dashboard/benefits',
     })
   }
 
   const formData = await request.formData()
   const csvFile = formData.get('csvFile')
 
-  if (!csvFile) {
-    throw badRequest(null, {
-      statusText: 'No se ha encontrado el archivo CSV',
-    })
-  }
-
-  if (!(csvFile instanceof File)) {
-    throw badRequest(null, {
-      statusText: 'No se ha encontrado el archivo CSV',
+  if (!csvFile || !(csvFile instanceof File)) {
+    throw badRequest({
+      message: 'No se ha encontrado el archivo CSV',
+      redirect: `/admin/dashboard/benefits/${benefitId}/consumptions`,
     })
   }
 
@@ -79,6 +75,9 @@ export const action = async ({ request, params }: ActionArgs) => {
     return redirect(`/admin/dashboard/benefits/${benefitId}/consumptions`)
   } catch (e) {
     console.error(e)
-    throw badRequest('Ha ocurrido un error inesperado.')
+    throw badRequest({
+      message: 'Ha ocurrido un error inesperado.',
+      redirect: `/admin/dashboard/benefits/${benefitId}/consumptions`,
+    })
   }
 }

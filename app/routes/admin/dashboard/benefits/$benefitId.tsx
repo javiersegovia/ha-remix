@@ -3,20 +3,22 @@ import type { TabItem } from '~/components/Tabs/Tabs'
 
 import { Link, Outlet, useLoaderData } from '@remix-run/react'
 import { json } from '@remix-run/node'
-import { badRequest } from 'remix-utils'
+import { badRequest } from '~/utils/responses'
 import { AiOutlineArrowLeft } from 'react-icons/ai'
 
 import { requireAdminUserId } from '~/session.server'
 import { Container } from '~/components/Layout/Container'
 import { Tabs } from '~/components/Tabs/Tabs'
+import { useToastError } from '~/hooks/useToastError'
 
 export const loader = async ({ request, params }: LoaderArgs) => {
   await requireAdminUserId(request)
   const { benefitId } = params
 
   if (!benefitId) {
-    throw badRequest(null, {
-      statusText: 'No se ha encontrado el ID del beneficio',
+    throw badRequest({
+      message: 'No se ha encontrado el ID del beneficio',
+      redirect: '/admin/dashboard/benefits',
     })
   }
 
@@ -58,4 +60,9 @@ export default function UpdateBenefitRoute() {
       <Outlet context={benefitId} />
     </Container>
   )
+}
+
+export const CatchBoundary = () => {
+  useToastError()
+  return null
 }

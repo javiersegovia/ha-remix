@@ -2,10 +2,11 @@ import { EmployeeRole, EmployeeStatus } from '@prisma/client'
 import { withZod } from '@remix-validated-form/with-zod'
 import { z } from 'zod'
 import { zfd } from 'zod-form-data'
+import { prisma } from '~/db.server'
 import { zDate } from '../../schemas/helpers'
 import { bankAccountSchema } from '../bank/bank.schema'
 
-export const employeeSchema = z.object({
+export const employeeSchemaClient = z.object({
   salaryFiat: zfd.numeric(z.number().nullish().default(null)),
   salaryCrypto: zfd.numeric(z.number().nullish().default(null)),
   advanceMaxAmount: zfd.numeric(z.number().default(0)),
@@ -130,5 +131,20 @@ export const employeeSchema = z.object({
     .default(null),
 })
 
-export const employeeValidator = withZod(employeeSchema)
-export type EmployeeSchemaInput = z.infer<typeof employeeSchema>
+export const employeeSchemaServer = employeeSchemaClient.refine(
+  async (data) => {
+    const exist = await prisma.user.findUnique({
+      where: {
+        email: data.user.email,
+      },
+    })
+
+    return Boolean(!exist)
+  },
+  { message: 'El correo electrónico ya está en uso', path: ['user.email'] }
+)
+
+export const employeeValidatorClient = withZod(employeeSchemaClient)
+export const employeeValidatorServer = withZod(employeeSchemaServer)
+
+export type EmployeeSchemaInput = z.infer<typeof employeeSchemaClient>

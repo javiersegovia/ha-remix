@@ -9,7 +9,7 @@ import type {
 import { PremiumAdvanceHistoryActor } from '@prisma/client'
 import { useLoaderData } from '@remix-run/react'
 import { json } from '@remix-run/server-runtime'
-import { badRequest, notFound } from 'remix-utils'
+import { badRequest, notFound } from '~/utils/responses'
 import { requireAdminUser, requireAdminUserId } from '~/session.server'
 import { PremiumAdvanceDetails } from '~/components/PremiumAdvance/PremiumAdvanceDetails'
 import {
@@ -27,7 +27,8 @@ export const loader = async ({ request, params }: LoaderArgs) => {
 
   if (!premiumAdvanceId) {
     throw notFound({
-      message: 'No se ha encontrado el ID del adelanto de nómina',
+      message: 'No se ha encontrado el ID del adelanto de prima',
+      redirect: '/admin/dashboard/premium-advances',
     })
   }
 
@@ -35,7 +36,8 @@ export const loader = async ({ request, params }: LoaderArgs) => {
 
   if (!premiumAdvance) {
     throw notFound({
-      message: 'No se ha encontrado información sobre el adelanto de nómina',
+      message: 'No se ha encontrado información sobre el adelanto de prima',
+      redirect: '/admin/dashboard/premium-advances',
     })
   }
 
@@ -52,14 +54,18 @@ export const action = async ({ request, params }: ActionArgs) => {
   const { premiumAdvanceId } = params
 
   if (!premiumAdvanceId) {
-    throw badRequest('No se ha encontrado el ID del adelanto de nómina')
+    throw badRequest({
+      message: 'No se ha encontrado el ID del adelanto de prima',
+      redirect: '/admin/dashboard/premium-advances',
+    })
   }
 
   const premiumAdvance = await getPremiumAdvanceById(premiumAdvanceId)
 
   if (!premiumAdvance || !premiumAdvance?.employee?.user) {
     throw badRequest({
-      message: 'No se han encontrado todos los datos del adelanto de nómina',
+      message: 'No se han encontrado todos los datos del adelanto de prima',
+      redirect: '/admin/dashboard/premium-advances',
     })
   }
 

@@ -3,7 +3,9 @@ import type { SignatureDetailsResponse } from './signature.interface'
 
 import { ZapsignDocumentStatus } from '@prisma/client'
 import { fetch } from '@remix-run/node'
-import { badRequest, serverError } from 'remix-utils'
+import { serverError } from 'remix-utils'
+
+import { badRequest } from '~/utils/responses'
 import { prisma } from '~/db.server'
 
 /** ! Right now, we only use ZapSign on Terms & Conditions.
@@ -30,11 +32,17 @@ export const hasSignedTerms = async (
   })
 
   if (!employeeData) {
-    throw badRequest('El usuario no ha sido encontrado')
+    throw badRequest({
+      message: 'El usuario no ha sido encontrado',
+      redirect: null,
+    })
   }
 
   if (!employeeData.phone) {
-    throw badRequest('El número telefónico no ha sido registrado')
+    throw badRequest({
+      message: 'El número telefónico no ha sido registrado',
+      redirect: null,
+    })
   }
 
   const document = await prisma.zapsignDocument.findFirst({

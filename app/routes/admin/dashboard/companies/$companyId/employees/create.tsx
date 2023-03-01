@@ -12,7 +12,10 @@ import { validationError } from 'remix-validated-form'
 import { FormActions } from '~/components/FormFields/FormActions'
 import { AdminEmployeeForm } from '~/components/Forms/AdminEmployeeForm'
 import { Title } from '~/components/Typography/Title'
-import { employeeValidator } from '~/services/employee/employee.schema'
+import {
+  employeeValidatorClient,
+  employeeValidatorServer,
+} from '~/services/employee/employee.schema'
 import { getBanks, validateBankAccount } from '~/services/bank/bank.server'
 import { requireCompany } from '~/services/company/company.server'
 import { getCountries } from '~/services/country/country.server'
@@ -57,7 +60,7 @@ export const action = async ({ request, params }: ActionArgs) => {
   await requireAdminUserId(request)
 
   const { data, submittedData, error, formId } =
-    await employeeValidator.validate(await request.formData())
+    await employeeValidatorServer.validate(await request.formData())
 
   if (error) {
     return validationError(error, submittedData)
@@ -120,7 +123,7 @@ export default function AdminDashboardCompanyCreateEmployeeRoute() {
             cryptocurrencies,
             cryptoNetworks,
           }}
-          validator={employeeValidator}
+          validator={employeeValidatorClient}
           actions={<FormActions title="Crear" />}
         />
       </div>

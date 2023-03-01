@@ -11,7 +11,7 @@ import {
   unstable_parseMultipartFormData as parseMultipartFormData,
 } from '@remix-run/server-runtime'
 import { validationError } from 'remix-validated-form'
-import { badRequest, notFound } from 'remix-utils'
+import { badRequest, notFound } from '~/utils/responses'
 
 import { CompanyForm } from '~/components/Forms/CompanyForm'
 import { FormActions } from '~/components/FormFields/FormActions'
@@ -32,8 +32,9 @@ export const loader = async ({ request, params }: LoaderArgs) => {
   const { companyId } = params
 
   if (!companyId) {
-    throw badRequest(null, {
-      statusText: 'No se ha encontrado el ID de la compañía',
+    throw badRequest({
+      message: 'No se ha encontrado el ID de la compañía',
+      redirect: '/admin/dashboard/companies',
     })
   }
 
@@ -42,6 +43,7 @@ export const loader = async ({ request, params }: LoaderArgs) => {
   if (!company) {
     throw notFound({
       message: 'No se ha encontrado información sobre la compañía',
+      redirect: '/admin/dashboard/companies',
     })
   }
 
@@ -72,10 +74,10 @@ export async function action({ request, params }: ActionArgs) {
   const { companyId } = params
 
   if (!companyId) {
-    throw json(
-      { error: 'El ID de la compañía no ha sido encontrado' },
-      { status: 400 }
-    )
+    throw badRequest({
+      message: 'El ID de la compañía no ha sido encontrado',
+      redirect: '/admin/dashboard/companies',
+    })
   }
 
   const clonedRequest = request.clone()

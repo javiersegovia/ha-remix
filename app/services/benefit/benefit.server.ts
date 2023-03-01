@@ -2,7 +2,7 @@ import type { Benefit, Prisma } from '@prisma/client'
 import type { BenefitInputSchema } from './benefit.schema'
 
 import { prisma } from '~/db.server'
-import { badRequest, notFound } from 'remix-utils'
+import { badRequest, notFound } from '~/utils/responses'
 import { getS3ObjectUrl } from '../aws/s3.server'
 import { connect, connectOrDisconnect } from '~/utils/relationships'
 import { deleteImageByKey } from '../image/image.server'
@@ -95,7 +95,10 @@ export const createBenefit = async ({
     const { title, description, imageKey, isActive } = benefitHighlight
 
     if (!imageKey) {
-      throw badRequest('Por favor, sube una imagen para el beneficio destacado')
+      throw badRequest({
+        message: 'Por favor, sube una imagen para el beneficio destacado',
+        redirect: null,
+      })
     }
 
     createBenefitHighlight = {
@@ -133,8 +136,9 @@ export const createBenefit = async ({
     })
   } catch (e) {
     console.error(e)
-    throw badRequest(null, {
-      statusText: 'Ocurrió un error inesperado al crear el beneficio',
+    throw badRequest({
+      message: 'Ocurrió un error inesperado al crear el beneficio',
+      redirect: null,
     })
   }
 }
@@ -174,8 +178,9 @@ export const updateBenefitById = async (
   })
 
   if (!benefitToUpdate) {
-    throw notFound(null, {
-      statusText: 'No se pudo encontrar el beneficio a actualizar',
+    throw notFound({
+      message: 'No se pudo encontrar el beneficio a actualizar',
+      redirect: '/admin/dashboard/benefits',
     })
   }
 
@@ -244,8 +249,9 @@ export const updateBenefitById = async (
     // Hence, we should throw an error if we don't have an imageKey.
     // todo check this
     if (!benefitToUpdate.benefitHighlight && !imageKey) {
-      throw badRequest(null, {
-        statusText: 'Por favor, sube una imagen para el beneficio destacado',
+      throw badRequest({
+        message: 'Por favor, sube una imagen para el beneficio destacado',
+        redirect: null,
       })
     }
 
@@ -362,8 +368,9 @@ export const deleteBenefitById = async (benefitId: Benefit['id']) => {
     return deleted.id
   } catch (e) {
     console.error(e)
-    throw badRequest(null, {
-      statusText: 'Ocurrió un error inesperado al eliminar el beneficio',
+    throw badRequest({
+      message: 'Ocurrió un error inesperado al eliminar el beneficio',
+      redirect: null,
     })
   }
 }

@@ -3,7 +3,7 @@ import type { ActionArgs, LoaderArgs } from '@remix-run/server-runtime'
 import { redirect, json } from '@remix-run/node'
 import { useLoaderData } from '@remix-run/react'
 import { validationError } from 'remix-validated-form'
-import { badRequest } from 'remix-utils'
+import { badRequest } from '~/utils/responses'
 
 import { Modal } from '~/components/Dialog/Modal'
 import { IdentityDocumentTypeForm } from '~/components/Forms/IdentityDocumentTypeForm'
@@ -23,7 +23,10 @@ export const loader = async ({ request, params }: LoaderArgs) => {
   const { identityDocumentTypeId } = params
 
   if (!identityDocumentTypeId || isNaN(Number(identityDocumentTypeId))) {
-    throw badRequest('No se encontró el ID del tipo de documento de identidad')
+    throw badRequest({
+      message: 'No se encontró el ID del tipo de documento de identidad',
+      redirect: '/admin/dashboard/data/identity-document-types',
+    })
   }
 
   const identityDocumentType = await getIdentityDocumentTypeById(
@@ -31,7 +34,10 @@ export const loader = async ({ request, params }: LoaderArgs) => {
   )
 
   if (!identityDocumentType) {
-    throw badRequest('No se encontró el tipo de documento de identidad')
+    throw badRequest({
+      message: 'No se encontró el tipo de documento de identidad',
+      redirect: '/admin/dashboard/data/identity-document-types',
+    })
   }
 
   return json({ identityDocumentType })
@@ -42,7 +48,10 @@ export const action = async ({ request, params }: ActionArgs) => {
 
   const { identityDocumentTypeId } = params
   if (!identityDocumentTypeId || isNaN(Number(identityDocumentTypeId))) {
-    throw badRequest('No se encontró el ID del tipo de documento de identidad')
+    throw badRequest({
+      message: 'No se encontró el ID del tipo de documento de identidad',
+      redirect: '/admin/dashboard/data/identity-document-types',
+    })
   }
 
   if (request.method === 'POST') {

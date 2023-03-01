@@ -10,7 +10,7 @@ import {
 } from '@prisma/client'
 import { useLoaderData } from '@remix-run/react'
 import { json } from '@remix-run/server-runtime'
-import { badRequest, notFound, unauthorized } from 'remix-utils'
+import { badRequest, notFound, unauthorized } from '~/utils/responses'
 import {
   getPayrollAdvanceById,
   updatePayrollAdvanceStatus,
@@ -26,6 +26,7 @@ export const loader = async ({ request, params }: LoaderArgs) => {
   if (!payrollAdvanceId) {
     throw notFound({
       message: 'No se ha encontrado el ID del adelanto de nómina',
+      redirect: '/dashboard/payroll-advances',
     })
   }
 
@@ -36,11 +37,15 @@ export const loader = async ({ request, params }: LoaderArgs) => {
   if (!payrollAdvance) {
     throw notFound({
       message: 'No se ha encontrado información sobre el adelanto de nómina',
+      redirect: '/dashboard/payroll-advances',
     })
   }
 
   if (employee.id !== payrollAdvance.employeeId) {
-    throw unauthorized({ message: 'No estás autorizado' })
+    throw unauthorized({
+      message: 'No estás autorizado',
+      redirect: '/dashboard/payroll-advances',
+    })
   }
 
   return json({
@@ -56,7 +61,10 @@ export const action = async ({ request, params }: ActionArgs) => {
   const { payrollAdvanceId } = params
 
   if (!payrollAdvanceId) {
-    throw badRequest('No se ha encontrado el ID del adelanto de nómina')
+    throw badRequest({
+      message: 'No se ha encontrado el ID del adelanto de nómina',
+      redirect: '/dashboard/payroll-advances',
+    })
   }
 
   const payrollAdvance = await getPayrollAdvanceById(
@@ -64,12 +72,16 @@ export const action = async ({ request, params }: ActionArgs) => {
   )
 
   if (!payrollAdvance) {
-    throw badRequest('No se ha encontrado el ID del adelanto de nómina')
+    throw badRequest({
+      message: 'No se ha encontrado el ID del adelanto de nómina',
+      redirect: '/dashboard/payroll-advances',
+    })
   }
 
   if (employee.id !== payrollAdvance.employeeId) {
     throw unauthorized({
       message: 'No tienes permisos para ejecutar esta acción',
+      redirect: '/dashboard/payroll-advances',
     })
   }
 
@@ -87,9 +99,11 @@ export const action = async ({ request, params }: ActionArgs) => {
     return null
   }
 
-  throw badRequest(
-    'Ha ocurrido un error en los datos subministrados dentro del formulario.'
-  )
+  throw badRequest({
+    message:
+      'Ha ocurrido un error en los datos subministrados dentro del formulario.',
+    redirect: '/dashboard/payroll-advances',
+  })
 }
 
 export const meta: MetaFunction = () => {

@@ -2,7 +2,7 @@ import type { PermissionCode, UserRole } from '@prisma/client'
 import type { UserRoleInputSchema } from './user-role.schema'
 
 import { prisma } from '~/db.server'
-import { badRequest } from 'remix-utils'
+import { badRequest } from '~/utils/responses'
 
 export const getUserRoles = () => {
   return prisma.userRole.findMany({
@@ -55,9 +55,10 @@ export const updateUserRoleById = async (
     })
   } catch (e) {
     console.error(e)
-    throw badRequest(
-      'Ha ocurrido un error, no se encontro el ID del rol de usuario'
-    )
+    throw badRequest({
+      message: 'Ha ocurrido un error al actualizar el rol de usuario',
+      redirect: null,
+    })
   }
 }
 
@@ -87,8 +88,9 @@ export const deleteUserRoleById = async (id: UserRole['id']) => {
     return deletedUserRole.id
   } catch (e) {
     console.error(e)
-    throw badRequest(
-      'Ha ocurrido un error, no se encontro el ID del rol de usuario'
-    )
+    throw badRequest({
+      message: 'Ha ocurrido un error al eliminar el rol de usuario',
+      redirect: null,
+    })
   }
 }

@@ -1,6 +1,6 @@
 import type { MembershipInputSchema } from './membership.schema'
 import { prisma } from '~/db.server'
-import { badRequest, notFound } from 'remix-utils'
+import { badRequest, notFound } from '~/utils/responses'
 import type { Membership } from '@prisma/client'
 import { connectMany, setMany } from '~/utils/relationships'
 
@@ -57,8 +57,9 @@ export const createMembership = async ({
     })
   } catch (e) {
     console.error(e)
-    throw badRequest(null, {
-      statusText: 'Ocurrió un error inesperado al crear la membresía',
+    throw badRequest({
+      message: 'Ocurrió un error inesperado al crear la membresía',
+      redirect: null,
     })
   }
 }
@@ -74,8 +75,9 @@ export const updateMembershipById = async (
   })
 
   if (!membership) {
-    throw notFound(null, {
-      statusText: 'No se pudo encontrar la membresía a actualizar',
+    throw notFound({
+      message: 'No se pudo encontrar la membresía a actualizar',
+      redirect: null,
     })
   }
 
@@ -105,8 +107,9 @@ export const deleteMembershipById = async (membershipId: Membership['id']) => {
     return deleted.id
   } catch (e) {
     console.error(e)
-    throw badRequest(null, {
-      statusText: 'Ocurrió un error inesperado al eliminar la membresía',
+    throw badRequest({
+      message: 'Ocurrió un error inesperado al eliminar la membresía',
+      redirect: null,
     })
   }
 }

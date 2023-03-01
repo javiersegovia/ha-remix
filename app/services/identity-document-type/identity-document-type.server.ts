@@ -1,7 +1,7 @@
 import type { IdentityDocumentType } from '@prisma/client'
 import type { IdentityDocumentTypeInputSchema } from './identity-document-type.schema'
 
-import { badRequest } from 'remix-utils'
+import { badRequest } from '~/utils/responses'
 import { prisma } from '~/db.server'
 
 export const getIdentityDocumentTypes = () => {
@@ -50,7 +50,10 @@ export const updateIdentityDocumentTypeById = async (
     })
   } catch (e) {
     console.error(e)
-    throw badRequest('No se encontró el ID del tipo de documento de identidad')
+    throw badRequest({
+      message: 'No se encontró el ID del tipo de documento de identidad',
+      redirect: null,
+    })
   }
 }
 
@@ -68,6 +71,9 @@ export const deleteIdentityDocumentTypeById = async (
     return deletedIdentityDocumentType.id
   } catch (e) {
     console.error(e)
-    throw badRequest('No se encontró el ID del tipo de documento de identidad')
+    throw badRequest({
+      message: 'No se encontró el ID del tipo de documento de identidad',
+      redirect: null,
+    })
   }
 }

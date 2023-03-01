@@ -10,6 +10,7 @@ import { TitleWithActions } from '~/components/Layout/TitleWithActions'
 import { Table } from '~/components/Lists/Table'
 import { getBankAccountTypes } from '~/services/bank-account-type/bank-account-type.server'
 import { requireAdminUserId } from '~/session.server'
+import { useToastError } from '~/hooks/useToastError'
 
 export const loader = async ({ request }: LoaderArgs) => {
   await requireAdminUserId(request)
@@ -23,7 +24,7 @@ export const loader = async ({ request }: LoaderArgs) => {
 
 export const meta: MetaFunction = () => {
   return {
-    title: '[Admin] Tipo de cuentas bancarias | HoyAdelantas',
+    title: '[Admin] Tipo de cuentas bancarias | HoyTrabajas Beneficios',
   }
 }
 
@@ -61,4 +62,9 @@ export default function BankAccountTypesIndexRoute() {
       <Outlet />
     </>
   )
+}
+
+export const CatchBoundary = () => {
+  useToastError()
+  return null
 }

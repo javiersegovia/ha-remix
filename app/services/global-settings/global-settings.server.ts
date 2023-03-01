@@ -1,7 +1,7 @@
 import type { GlobalSettingsInputSchema } from './global-settings.schema'
 
 import { prisma } from '~/db.server'
-import { badRequest } from 'remix-utils'
+import { badRequest } from '~/utils/responses'
 
 export const getGlobalSettings = () => {
   return prisma.globalSettings.findFirst()
@@ -26,8 +26,10 @@ export const upsertGlobalSettings = async (data: GlobalSettingsInputSchema) => {
   } catch (e) {
     // todo: Add logger
     console.error(e)
-    throw badRequest(
-      'Ha ocurrido un error inesperado al actualizar la configuración general'
-    )
+    throw badRequest({
+      message:
+        'Ha ocurrido un error inesperado al actualizar la configuración general',
+      redirect: null,
+    })
   }
 }

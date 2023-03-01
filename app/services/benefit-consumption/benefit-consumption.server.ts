@@ -1,7 +1,7 @@
 import type { Benefit } from '@prisma/client'
 import type { UploadBenefitConsumptionSchemaInput } from './benefit-consumption.schema'
 
-import { badRequest } from 'remix-utils'
+import { badRequest } from '~/utils/responses'
 import { prisma } from '~/db.server'
 import { connect } from '~/utils/relationships'
 import { uploadBenefitConsumptionsSchema } from './benefit-consumption.schema'
@@ -46,7 +46,10 @@ export const uploadBenefitConsumptions = async (
   })
 
   if (!benefit) {
-    throw badRequest('No se ha encontrado el ID del beneficio')
+    throw badRequest({
+      message: 'No se ha encontrado el ID del beneficio',
+      redirect: null,
+    })
   }
 
   const errorResponses: Record<string, string[]> = {}

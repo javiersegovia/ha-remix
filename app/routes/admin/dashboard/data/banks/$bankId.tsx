@@ -3,7 +3,7 @@ import type { ActionArgs, LoaderArgs } from '@remix-run/server-runtime'
 import { redirect, json } from '@remix-run/node'
 import { useLoaderData } from '@remix-run/react'
 import { validationError } from 'remix-validated-form'
-import { badRequest } from 'remix-utils'
+import { badRequest } from '~/utils/responses'
 
 import { Modal } from '~/components/Dialog/Modal'
 import { BankForm } from '~/components/Forms/BankForm'
@@ -23,13 +23,19 @@ export const loader = async ({ request, params }: LoaderArgs) => {
   const { bankId } = params
 
   if (!bankId || isNaN(Number(bankId))) {
-    throw badRequest('No se encontró el ID del banco')
+    throw badRequest({
+      message: 'No se encontró el ID del banco',
+      redirect: '/admin/dashboard/data/banks',
+    })
   }
 
   const bank = await getBankById(Number(bankId))
 
   if (!bank) {
-    throw badRequest('No se encontró el banco')
+    throw badRequest({
+      message: 'No se encontró el banco',
+      redirect: '/admin/dashboard/data/banks',
+    })
   }
 
   return json({ bank })
@@ -40,7 +46,10 @@ export const action = async ({ request, params }: ActionArgs) => {
 
   const { bankId } = params
   if (!bankId || isNaN(Number(bankId))) {
-    throw badRequest('No se encontró el ID del banco')
+    throw badRequest({
+      message: 'No se encontró el ID del banco',
+      redirect: '/admin/dashboard/data/banks',
+    })
   }
 
   if (request.method === 'POST') {

@@ -1,7 +1,7 @@
 import type { JobPosition } from '@prisma/client'
 import type { JobPositionInputSchema } from './job-position.schema'
 
-import { badRequest } from 'remix-utils'
+import { badRequest } from '~/utils/responses'
 import { prisma } from '~/db.server'
 
 export const getJobPositions = async () => {
@@ -46,7 +46,10 @@ export const updateJobPositionById = async (
     })
   } catch (e) {
     console.error(e)
-    throw badRequest('Error al actualizar el cargo de trabajo')
+    throw badRequest({
+      message: 'Error al actualizar el cargo de trabajo',
+      redirect: null,
+    })
   }
 }
 
@@ -61,6 +64,9 @@ export const deleteJobPositionById = async (id: JobPosition['id']) => {
     return deletedjobPosition.id
   } catch (e) {
     console.error(e)
-    throw badRequest('Error al eliminar el cargo de trabajo')
+    throw badRequest({
+      message: 'Error al eliminar el cargo de trabajo',
+      redirect: null,
+    })
   }
 }

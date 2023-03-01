@@ -2,7 +2,7 @@ import type { ActionArgs, LoaderArgs } from '@remix-run/server-runtime'
 
 import { json } from '@remix-run/node'
 import { useLoaderData } from '@remix-run/react'
-import { badRequest, notFound } from 'remix-utils'
+import { badRequest, notFound } from '~/utils/responses'
 import { redirect } from '@remix-run/server-runtime'
 import { validationError } from 'remix-validated-form'
 import { MembershipForm } from '~/components/Forms/MembershipForm'
@@ -21,8 +21,9 @@ export const loader = async ({ request, params }: LoaderArgs) => {
   const { membershipId } = params
 
   if (!membershipId) {
-    throw badRequest(null, {
-      statusText: 'No se ha encontrado el ID de la membresía',
+    throw badRequest({
+      message: 'No se ha encontrado el ID de la membresía',
+      redirect: '/admin/dashboard/memberships',
     })
   }
 
@@ -31,6 +32,7 @@ export const loader = async ({ request, params }: LoaderArgs) => {
   if (!membership) {
     throw notFound({
       message: 'No se ha encontrado información sobre la membresía',
+      redirect: '/admin/dashboard/memberships',
     })
   }
   return json({
@@ -45,8 +47,9 @@ export const action = async ({ request, params }: ActionArgs) => {
   const { membershipId } = params
 
   if (!membershipId) {
-    throw badRequest(null, {
-      statusText: 'No se ha encontrado el ID de la membresía',
+    throw badRequest({
+      message: 'No se ha encontrado el ID de la membresía',
+      redirect: '/admin/dashboard/memberships',
     })
   }
 
@@ -67,8 +70,9 @@ export const action = async ({ request, params }: ActionArgs) => {
     return redirect(`/admin/dashboard/memberships`)
   }
 
-  throw badRequest(null, {
-    statusText: 'El método HTTP utilizado es inválido',
+  throw badRequest({
+    message: 'El método HTTP utilizado es inválido',
+    redirect: '/admin/dashboard/memberships',
   })
 }
 

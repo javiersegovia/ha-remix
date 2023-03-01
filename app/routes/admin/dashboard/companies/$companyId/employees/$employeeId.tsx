@@ -7,12 +7,15 @@ import type {
 import { useLoaderData } from '@remix-run/react'
 import { redirect } from '@remix-run/node'
 import { json } from '@remix-run/server-runtime'
-import { badRequest } from 'remix-utils'
+import { badRequest } from '~/utils/responses'
 import { validationError } from 'remix-validated-form'
 import { FormActions } from '~/components/FormFields/FormActions'
 import { AdminEmployeeForm } from '~/components/Forms/AdminEmployeeForm'
 import { Title } from '~/components/Typography/Title'
-import { employeeValidator } from '~/services/employee/employee.schema'
+import {
+  employeeValidatorClient,
+  employeeValidatorServer,
+} from '~/services/employee/employee.schema'
 import { getBanks, validateBankAccount } from '~/services/bank/bank.server'
 import { getCountries } from '~/services/country/country.server'
 import { getCryptocurrencies } from '~/services/crypto-currency/crypto-currency.server'
@@ -33,16 +36,22 @@ import { prisma } from '~/db.server'
 
 export const loader = async ({ request, params }: LoaderArgs) => {
   await requireAdminUserId(request)
-  const { employeeId } = params
+  const { employeeId, companyId } = params
 
   if (!employeeId) {
-    throw badRequest('No pudimos encontrar el ID del empleado')
+    throw badRequest({
+      message: 'No pudimos encontrar el ID del empleado',
+      redirect: `/admin/dashboard/companies/${companyId}/employees`,
+    })
   }
   const employeExists = prisma.employee.findUnique({
     where: { id: employeeId },
   })
   if (!employeExists) {
-    throw badRequest('No pudimos encontrar el ID del empleado')
+    throw badRequest({
+      message: 'No pudimos encontrar el ID del empleado',
+      redirect: `/admin/dashboard/companies/${companyId}/employees`,
+    })
   }
 
   // todo: test Promise.all with remix-utils utility to improve load times
@@ -80,7 +89,9 @@ export const action = async ({ request, params }: ActionArgs) => {
   await requireAdminUserId(request)
 
   const { data, submittedData, error, formId } =
-    await employeeValidator.validate(await request.formData())
+    await employeeValidatorServer.validate(await request.formData())
+
+  console.log({ data, error })
 
   if (error) {
     return validationError(error, submittedData)
@@ -93,9 +104,17 @@ export const action = async ({ request, params }: ActionArgs) => {
 
   const { companyId, employeeId } = params
 
-  if (!employeeId || !companyId) {
+  if (!companyId) {
     throw badRequest({
-      message: 'No se ha encontrado la ID de la compañía o el colaborador',
+      message: 'No se ha encontrado la ID de la compañía',
+      redirect: `/admin/dashboard/companies`,
+    })
+  }
+
+  if (!employeeId) {
+    throw badRequest({
+      message: 'No se ha encontrado la ID del colaborador',
+      redirect: `/admin/dashboard/companies/${companyId}/employees`,
     })
   }
 
@@ -151,7 +170,7 @@ export default function AdminDashboardCompanyUpdateEmployeeRoute() {
             currencies={currencies}
             cryptocurrencies={cryptocurrencies}
             cryptoNetworks={cryptoNetworks}
-            validator={employeeValidator}
+            validator={employeeValidatorClient}
             actions={<FormActions title="Guardar" />}
           />
         </div>

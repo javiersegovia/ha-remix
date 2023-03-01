@@ -1,7 +1,7 @@
 import type { User } from '@prisma/client'
 
 import ms from 'ms'
-import { badRequest } from 'remix-utils'
+import { badRequest } from '~/utils/responses'
 import { randomBytes } from 'crypto'
 import { hash } from 'bcryptjs'
 import { promisify } from 'util'
@@ -128,9 +128,10 @@ export const updatePassword = async (userId: User['id'], password: string) => {
     })
   } catch (e) {
     console.error(e)
-    throw badRequest(
-      'Ha ocurrido un error durante la actualización de la contraseña'
-    )
+    throw badRequest({
+      message: 'Ha ocurrido un error durante la actualización de la contraseña',
+      redirect: null,
+    })
   }
 }
 

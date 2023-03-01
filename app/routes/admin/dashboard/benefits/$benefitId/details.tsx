@@ -2,7 +2,7 @@ import type { MetaFunction, ActionArgs, LoaderArgs } from '@remix-run/node'
 
 import { useLoaderData } from '@remix-run/react'
 import { redirect } from '@remix-run/server-runtime'
-import { badRequest, notFound } from 'remix-utils'
+import { badRequest, notFound } from '~/utils/responses'
 import { validationError } from 'remix-validated-form'
 import { BenefitForm } from '~/components/Forms/BenefitForm'
 import { Title } from '~/components/Typography/Title'
@@ -38,9 +38,10 @@ export const loader = async ({ request, params }: LoaderArgs) => {
   await requireAdminUserId(request)
   const { benefitId } = params
 
-  if (!benefitId) {
-    throw badRequest(null, {
-      statusText: 'No se ha encontrado el ID del beneficio',
+  if (!benefitId || isNaN(parseFloat(benefitId))) {
+    throw badRequest({
+      message: 'No se ha encontrado el ID del beneficio',
+      redirect: '/admin/dashboard/benefits',
     })
   }
 
@@ -49,6 +50,7 @@ export const loader = async ({ request, params }: LoaderArgs) => {
   if (!benefit) {
     throw notFound({
       message: 'No se ha encontrado información sobre el beneficio',
+      redirect: '/admin/dashboard/benefits',
     })
   }
 
@@ -64,8 +66,9 @@ export const action = async ({ request, params }: ActionArgs) => {
   const { benefitId } = params
 
   if (!benefitId) {
-    throw badRequest(null, {
-      statusText: 'No se ha encontrado el ID del beneficio',
+    throw badRequest({
+      message: 'No se ha encontrado el ID del beneficio',
+      redirect: '/app/dashboard/benefits',
     })
   }
 
@@ -112,8 +115,9 @@ export const action = async ({ request, params }: ActionArgs) => {
     return redirect(`/admin/dashboard/benefits`)
   }
 
-  throw badRequest(null, {
-    statusText: 'El método HTTP utilizado es inválido',
+  throw badRequest({
+    message: 'El método HTTP utilizado es inválido',
+    redirect: '/admin/dashboard/benefits',
   })
 }
 
