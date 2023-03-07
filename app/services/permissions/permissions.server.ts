@@ -168,13 +168,14 @@ export const hasPermissionByUserId = async (
     },
   })
 
-  if (!user)
+  if (!user) {
     throw badRequest({
       message: `Usuario con ID ${userId} no encontrado`,
       redirect: null,
     })
+  }
 
-  return user.role?.permissions.some((p) => p.code === permissionCode)
+  return Boolean(user.role?.permissions.some((p) => p.code === permissionCode))
 }
 
 export const requirePermissionByUserRoleId = async (

@@ -9,12 +9,14 @@ import { Container } from '~/components/Layout/Container'
 import { TitleWithActions } from '~/components/Layout/TitleWithActions'
 import { Table } from '~/components/Lists/Table'
 import { getBenefitCategories } from '~/services/benefit-category/benefit-category.server'
-import { requireAdminUserId } from '~/session.server'
+import { requireUserId } from '~/session.server'
+import { Tabs } from '~/components/Tabs/Tabs'
+import { manageBenefitPaths } from './benefits'
 
 export const loader = async ({ request }: LoaderArgs) => {
-  await requireAdminUserId(request)
+  await requireUserId(request)
 
-  const benefitCategories = await getBenefitCategories()
+  const benefitCategories = await getBenefitCategories() // todo: check
 
   return json({
     benefitCategories,
@@ -23,7 +25,7 @@ export const loader = async ({ request }: LoaderArgs) => {
 
 export const meta: MetaFunction = () => {
   return {
-    title: '[Admin] Categorías de Beneficios | HoyTrabajas Beneficios',
+    title: 'Categorías de Beneficios | HoyTrabajas Beneficios',
   }
 }
 
@@ -34,13 +36,15 @@ export default function BenefitCategoriesIndexRoute() {
 
   const rows: TableRowProps[] = benefitCategories?.map((benefitCategory) => ({
     rowId: benefitCategory.id,
-    href: `/admin/dashboard/data/benefit-categories/${benefitCategory.id}`,
+    href: `/dashboard/manage/benefit-categories/${benefitCategory.id}`,
     items: [benefitCategory.name],
   }))
 
   return (
     <>
-      <Container>
+      <Container className="w-full">
+        <Tabs items={manageBenefitPaths} className="mt-10 mb-8" />
+
         <TitleWithActions
           className="mb-10"
           title="Categorías de beneficios"

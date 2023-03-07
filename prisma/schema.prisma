@@ -67,18 +67,20 @@ model Company {
   logoImage    Image?      @relation(fields: [logoImageId], references: [id], onDelete: SetNull)
   logoImageId  String?
 
-  banks              Bank[]
-  benefits           Benefit[]
-  categories         CompanyCategory[]
-  companyCryptoDebts CompanyCryptoDebt[]
-  companyDebts       CompanyDebt[]
-  companyFiatDebts   CompanyFiatDebt[]
-  companyTaxes       CompanyTax[]
-  contactPerson      CompanyContactPerson?
-  cryptocurrencies   Cryptocurrency[]
-  employees          Employee[]
-  payrollAdvances    PayrollAdvance[]
-  premiumAdvances    PremiumAdvance[]
+  banks                    Bank[]
+  benefits                 Benefit[]
+  categories               CompanyCategory[]
+  companyCryptoDebts       CompanyCryptoDebt[]
+  companyDebts             CompanyDebt[]
+  companyFiatDebts         CompanyFiatDebt[]
+  companyTaxes             CompanyTax[]
+  contactPerson            CompanyContactPerson?
+  cryptocurrencies         Cryptocurrency[]
+  employees                Employee[]
+  payrollAdvances          PayrollAdvance[]
+  premiumAdvances          PremiumAdvance[]
+  companyBenefits          CompanyBenefit[]
+  companyBenefitCategories CompanyBenefitCategory[]
 }
 
 enum CompanyStatus {
@@ -784,6 +786,32 @@ model Benefit {
   subproducts      BenefitSubproduct[]
   consumptions     BenefitConsumption[]
   benefitHighlight BenefitHighlight?
+
+  companyBenefit CompanyBenefit?
+}
+
+model CompanyBenefit {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  companyId String
+
+  benefit   Benefit @relation(fields: [benefitId], references: [id])
+  benefitId Int     @unique
+}
+
+model CompanyBenefitCategory {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  companyId String
+
+  benefitCategory   BenefitCategory @relation(fields: benefitCategoryId, references: id, onDelete: Cascade)
+  benefitCategoryId Int             @unique
 }
 
 model BenefitSubproduct {
@@ -826,6 +854,8 @@ model BenefitCategory {
   opacity  Float?
 
   benefits Benefit[]
+
+  companyBenefitCategory CompanyBenefitCategory?
 }
 
 model BenefitHighlight {

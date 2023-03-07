@@ -22,13 +22,14 @@ const currentLocationIsInsideNavPath = (
 
 interface TabsProps {
   items: TabItem[]
+  className?: string
 }
 
-export const Tabs = ({ items }: TabsProps) => {
+export const Tabs = ({ items, className }: TabsProps) => {
   const { pathname, search } = useLocation()
 
   return (
-    <div className="grid grid-cols-12 gap-6">
+    <div className={twMerge(clsx('grid grid-cols-12 gap-6', className))}>
       <div className="col-span-12">
         <nav className="col-span-12 flex flex-col-reverse lg:col-span-4 lg:block 2xl:col-span-4">
           <Box className="grid grid-flow-col overflow-hidden rounded-lg p-[6px] text-sm">

@@ -98,6 +98,17 @@ export default function AdminDashboardRoute() {
     })
   }
 
+  navPaths.push({
+    icon: MdPersonOutline,
+    title: 'Administrar',
+    subPaths: [
+      {
+        title: 'Beneficios',
+        path: '/dashboard/manage/benefits',
+      },
+    ],
+  })
+
   return (
     <DashboardSideBar paths={navPaths} logoHref="/dashboard">
       <Outlet />

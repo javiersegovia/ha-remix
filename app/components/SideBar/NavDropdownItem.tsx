@@ -34,15 +34,15 @@ export const NavDropdownItem: React.FC<NavDropdownItemProps> = ({
   const [showDropdown, setShowDropdown] = useState(insideCurrentPath)
 
   return (
-    <div className="px-2 py-1">
+    <div className="w-full">
       <button
         type="button"
         className={clsx(
-          'flex w-full cursor-pointer items-center rounded-full px-4 py-3 font-medium transition',
+          'flex w-full cursor-pointer items-center rounded-2xl px-4 py-3  text-base font-semibold transition',
           variant === 'PRIMARY' &&
             (insideCurrentPath
-              ? `bg-steelBlue-600 text-white`
-              : `hover:bg-steelBlue-600`),
+              ? `bg-steelBlue-200 text-steelBlue-400`
+              : `hover:bg-steelBlue-200 hover:text-steelBlue-400`),
           variant === 'DARK' &&
             (insideCurrentPath ? `bg-gray-700 text-white` : `hover:bg-gray-700`)
         )}
@@ -73,13 +73,13 @@ export const NavDropdownItem: React.FC<NavDropdownItemProps> = ({
         leaveFrom="opacity-100 translate-y-0"
         leaveTo="opacity-0 translate-y-1"
       >
-        <div className="mb-1">
+        <div className="mt-2 mb-1">
           {subPaths.map(({ path, title }) => (
             <Link
               key={title + path}
               to={path}
               className={clsx(
-                'flex cursor-pointer items-center py-2 pl-10 pr-4 transition hover:text-white hover:underline',
+                'flex cursor-pointer items-center py-2 pl-8 pr-4 text-sm transition hover:text-white hover:underline',
                 location.pathname === path && 'underline'
               )}
             >
