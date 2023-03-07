@@ -66,11 +66,12 @@ export const getEmployeeEnabledBenefits = async (
 export const findOrCreatePermissionByCode = async (code: PermissionCode) => {
   const permission = defaultPermissions.find((p) => p.code === code)
 
-  if (!permission)
+  if (!permission) {
     throw badRequest({
       message: `Permiso de código ${code} no encontrado`,
       redirect: null,
     })
+  }
 
   return await prisma.permission.upsert({
     where: {
@@ -136,11 +137,12 @@ export const hasPermissionByUserRoleId = async (
     },
   })
 
-  if (!role)
+  if (!role) {
     throw badRequest({
       message: `Rol con ID ${roleId} no encontrado`,
       redirect: null,
     })
+  }
 
   return role.permissions.some((p) => p.code === permissionCode)
 }
