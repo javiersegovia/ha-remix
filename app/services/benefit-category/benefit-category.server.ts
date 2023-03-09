@@ -1,4 +1,4 @@
-import type { BenefitCategory } from '@prisma/client'
+import type { BenefitCategory, CompanyBenefitCategory } from '@prisma/client'
 import { badRequest } from '~/utils/responses'
 
 import { prisma } from '~/db.server'
@@ -15,7 +15,32 @@ export const getBenefitCategories = async () => {
     },
   })
 }
+export const getBenefitCategoryByCompanyBenefitCategoryId = async (
+  id: CompanyBenefitCategory['id']
+) => {
+  return prisma.companyBenefitCategory.findUnique({
+    where: {
+      id,
+    },
+    select: {
+      benefitCategoryId: true,
+    },
+  })
+}
 
+export const getBenefitCategoryWithoutCompanyBenefitCategory = async (
+  id: CompanyBenefitCategory['id']
+) => {
+  return prisma.benefitCategory.findUnique({
+    where: { id },
+    select: {
+      id: true,
+      name: true,
+      hexColor: true,
+      opacity: true,
+    },
+  })
+}
 export const getBenefitCategoryById = async (id: BenefitCategory['id']) => {
   return prisma.benefitCategory.findUnique({
     where: {
