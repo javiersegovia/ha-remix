@@ -41,6 +41,8 @@ export const employeeSchemaClient = z.object({
         })
         .trim()
     ),
+
+    roleId: zfd.text(z.string().nullable().default(null)),
   }),
 
   phone: zfd.text(z.string().nullable().default(null)),
@@ -131,6 +133,7 @@ export const employeeSchemaClient = z.object({
     .default(null),
 })
 
+// Todo: Refactor this function to be able to use it with "update" functions
 export const employeeSchemaServer = employeeSchemaClient.refine(
   async (data) => {
     const exist = await prisma.user.findUnique({

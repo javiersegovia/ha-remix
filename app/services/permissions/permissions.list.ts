@@ -13,8 +13,8 @@ export const defaultPermissions = [
     description: 'Nombre, logo, descripción, teléfono, dirección...',
   },
   {
-    code: PermissionCode.MANAGE_BENEFIT_CATEGORY,
-    name: 'Crear, editar o eliminar categorías de beneficios',
+    code: PermissionCode.MANAGE_BENEFIT,
+    name: 'Crear, editar o eliminar beneficios asociados a la empresa',
   },
   {
     code: PermissionCode.MANAGE_EMPLOYEE_MAIN_INFORMATION,

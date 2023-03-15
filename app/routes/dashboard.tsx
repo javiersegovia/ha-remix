@@ -1,6 +1,8 @@
 import type { LoaderArgs, MetaFunction } from '@remix-run/server-runtime'
 import type { INavPath } from '~/components/SideBar/DashboardSideBar'
+import type { User } from '@prisma/client'
 
+import { PermissionCode } from '@prisma/client'
 import { Outlet, useLoaderData } from '@remix-run/react'
 import { json } from '@remix-run/node'
 import { HiOutlineHome } from 'react-icons/hi'
@@ -10,7 +12,10 @@ import { RiFileList2Line } from 'react-icons/ri'
 import { DashboardSideBar } from '~/components/SideBar/DashboardSideBar'
 import { requireUser } from '~/session.server'
 import { prisma } from '~/db.server'
-import { getEmployeeEnabledBenefits } from '~/services/permissions/permissions.server'
+import {
+  getEmployeeEnabledBenefits,
+  hasPermissionByUserId,
+} from '~/services/permissions/permissions.server'
 
 export type DashboardLoaderData = {
   user: Awaited<ReturnType<typeof requireUser>>
@@ -18,13 +23,41 @@ export type DashboardLoaderData = {
   hasPayrollAdvances: boolean
 }
 
-export const loader = async ({ request }: LoaderArgs) => {
-  const user = await requireUser(request)
+const defaultNavPaths: INavPath[] = [
+  {
+    icon: HiOutlineHome,
+    path: '/dashboard/overview',
+    title: 'Beneficios',
+  },
+  {
+    icon: MdPersonOutline,
+    path: '/dashboard/account',
+    title: 'Datos del perfil',
+  },
+]
 
-  const employeeData = await prisma.employee.findFirst({
+const historyNavPath: INavPath = {
+  icon: RiFileList2Line,
+  path: '/dashboard/history/payroll-advances',
+  title: 'Historial',
+}
+
+const companyManagementNavPath: INavPath = {
+  icon: MdPersonOutline,
+  title: 'Administrar',
+  subPaths: [
+    {
+      title: 'Beneficios',
+      path: '/dashboard/manage/benefits',
+    },
+  ],
+}
+
+const getEmployeeData = (userId: User['id']) => {
+  return prisma.employee.findFirst({
     where: {
       user: {
-        id: user.id,
+        id: userId,
       },
     },
     select: {
@@ -48,6 +81,12 @@ export const loader = async ({ request }: LoaderArgs) => {
       },
     },
   })
+}
+
+export const loader = async ({ request }: LoaderArgs) => {
+  const user = await requireUser(request)
+
+  const employeeData = await getEmployeeData(user.id)
 
   const benefits = await getEmployeeEnabledBenefits(
     employeeData?.membership?.benefits,
@@ -58,12 +97,29 @@ export const loader = async ({ request }: LoaderArgs) => {
     ? benefits.some((b) => b.slug === process.env.SLUG_PAYROLL_ADVANCE)
     : true
 
-  const hasPayrollAdvances = !!employeeData?.payrollAdvances?.length
+  const hasPayrollAdvances = Boolean(employeeData?.payrollAdvances?.length)
+
+  const canManageBenefits = await hasPermissionByUserId(
+    user.id,
+    PermissionCode.MANAGE_BENEFIT
+  )
+
+  const navPaths = [...defaultNavPaths]
+
+  if (canUsePayrollAdvances || hasPayrollAdvances) {
+    navPaths.push(historyNavPath)
+  }
+
+  if (canManageBenefits) {
+    navPaths.push(companyManagementNavPath)
+  }
 
   return json({
     user,
+    navPaths,
     canUsePayrollAdvances,
     hasPayrollAdvances,
+    canManageBenefits,
   })
 }
 
@@ -74,43 +130,10 @@ export const meta: MetaFunction = () => {
 }
 
 export default function AdminDashboardRoute() {
-  const { canUsePayrollAdvances, hasPayrollAdvances } =
-    useLoaderData<typeof loader>()
-
-  const navPaths: INavPath[] = [
-    {
-      icon: HiOutlineHome,
-      path: '/dashboard/overview',
-      title: 'Beneficios',
-    },
-    {
-      icon: MdPersonOutline,
-      path: '/dashboard/account',
-      title: 'Datos del perfil',
-    },
-  ]
-
-  if (canUsePayrollAdvances || hasPayrollAdvances) {
-    navPaths.push({
-      icon: RiFileList2Line,
-      path: '/dashboard/history/payroll-advances',
-      title: 'Historial',
-    })
-  }
-
-  navPaths.push({
-    icon: MdPersonOutline,
-    title: 'Administrar',
-    subPaths: [
-      {
-        title: 'Beneficios',
-        path: '/dashboard/manage/benefits',
-      },
-    ],
-  })
+  const { navPaths } = useLoaderData<typeof loader>()
 
   return (
-    <DashboardSideBar paths={navPaths} logoHref="/dashboard">
+    <DashboardSideBar paths={navPaths as INavPath[]} logoHref="/dashboard">
       <Outlet />
     </DashboardSideBar>
   )

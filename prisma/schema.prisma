@@ -798,7 +798,7 @@ model CompanyBenefit {
   company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
   companyId String
 
-  benefit   Benefit @relation(fields: [benefitId], references: [id])
+  benefit   Benefit @relation(fields: [benefitId], references: [id], onDelete: Cascade)
   benefitId Int     @unique
 }
 
@@ -916,5 +916,8 @@ enum PermissionCode {
   MANAGE_EMPLOYEE_MAIN_INFORMATION
   MANAGE_EMPLOYEE_FINANCIAL_INFORMATION
   MANAGE_COMPANY
+  MANAGE_BENEFIT
+
+  // Deprecated 
   MANAGE_BENEFIT_CATEGORY
 }

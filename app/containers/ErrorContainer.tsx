@@ -4,7 +4,6 @@ import { Button, ButtonColorVariants } from '~/components/Button'
 interface ErrorContainerProps {
   title: string
   message?: React.ReactNode | string | null
-  status?: number
   showSuggestions?: boolean
   errorString?: string
 }
@@ -12,7 +11,6 @@ interface ErrorContainerProps {
 export default function ErrorContainer({
   title,
   message,
-  status,
   errorString,
   showSuggestions = false,
 }: ErrorContainerProps) {

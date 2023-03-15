@@ -109,6 +109,7 @@ export const findOrCreateManyPermissions = async () => {
 }
 
 export const deleteUnusedPermissions = () => {
+  console.log(defaultPermissions)
   return prisma.permission.deleteMany({
     where: {
       NOT: {
@@ -186,7 +187,7 @@ export const requirePermissionByUserRoleId = async (
   if (!hasPermission) {
     throw badRequest({
       message: `No estás autorizado para realizar esta acción`,
-      redirect: null, // todo: replace this redirect with a "Unauthorized" route
+      redirect: '/unauthorized',
     })
   }
 }
@@ -199,7 +200,7 @@ export const requirePermissionByUserId = async (
   if (!hasPermission) {
     throw badRequest({
       message: `No estás autorizado para realizar esta acción`,
-      redirect: null, // todo: replace this redirect with a "Unauthorized" route
+      redirect: '/unauthorized',
     })
   }
 }

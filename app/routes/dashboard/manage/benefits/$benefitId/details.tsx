@@ -1,9 +1,14 @@
 import type { MetaFunction, ActionArgs, LoaderArgs } from '@remix-run/node'
 
+import {
+  json,
+  unstable_parseMultipartFormData as parseMultipartFormData,
+} from '@remix-run/node'
 import { useLoaderData } from '@remix-run/react'
 import { redirect } from '@remix-run/server-runtime'
-import { badRequest, notFound } from '~/utils/responses'
 import { validationError } from 'remix-validated-form'
+
+import { badRequest, notFound } from '~/utils/responses'
 import { BenefitForm } from '~/components/Forms/BenefitForm'
 import { Title } from '~/components/Typography/Title'
 import { benefitValidator } from '~/services/benefit/benefit.schema'
@@ -12,36 +17,45 @@ import {
   getBenefitById,
   updateBenefitById,
 } from '~/services/benefit/benefit.server'
-import { requireAdminUserId } from '~/session.server'
-import {
-  json,
-  unstable_parseMultipartFormData as parseMultipartFormData,
-} from '@remix-run/node'
+import { requireEmployee, requireUserId } from '~/session.server'
 import { uploadHandler } from '~/services/aws/s3.server'
-import { getBenefitCategoriesWithoutCompanies } from '~/services/benefit-category/benefit-category.server'
+import {
+  getBenefitCategoriesByCompanyId,
+  getBenefitCategoriesWithoutCompanies,
+} from '~/services/benefit-category/benefit-category.server'
+import { Container } from '~/components/Layout/Container'
+import { useToastError } from '~/hooks/useToastError'
+import { requirePermissionByUserId } from '~/services/permissions/permissions.server'
+import { PermissionCode } from '@prisma/client'
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => {
   if (!data) {
     return {
-      title: '[Admin] Beneficio no encontrado | HoyAdelantas',
+      title: 'Beneficio no encontrado | HoyTrabajas Beneficios',
     }
   }
 
   const { benefit } = data
 
   return {
-    title: `[Admin] ${benefit.name} | HoyAdelantas`,
+    title: `${benefit.name} | HoyTrabajas Beneficios`,
   }
 }
 
 export const loader = async ({ request, params }: LoaderArgs) => {
-  await requireAdminUserId(request)
+  const employee = await requireEmployee(request)
+
+  await requirePermissionByUserId(
+    employee.userId,
+    PermissionCode.MANAGE_BENEFIT
+  )
+
   const { benefitId } = params
 
   if (!benefitId || isNaN(parseFloat(benefitId))) {
     throw badRequest({
       message: 'No se ha encontrado el ID del beneficio',
-      redirect: '/admin/dashboard/benefits',
+      redirect: '/dashboard/manage/benefits',
     })
   }
 
@@ -50,25 +64,30 @@ export const loader = async ({ request, params }: LoaderArgs) => {
   if (!benefit) {
     throw notFound({
       message: 'No se ha encontrado información sobre el beneficio',
-      redirect: '/admin/dashboard/benefits',
+      redirect: '/dashboard/manage/benefits',
     })
   }
 
+  const benefitCategories = await getBenefitCategoriesWithoutCompanies()
+  const companyBenefitCategories = await getBenefitCategoriesByCompanyId(
+    employee.companyId
+  )
+
   return json({
     benefit,
-    benefitCategories: await getBenefitCategoriesWithoutCompanies(),
+    benefitCategories: [...companyBenefitCategories, ...benefitCategories],
   })
 }
 
 export const action = async ({ request, params }: ActionArgs) => {
-  await requireAdminUserId(request)
+  await requireUserId(request)
 
   const { benefitId } = params
 
   if (!benefitId) {
     throw badRequest({
       message: 'No se ha encontrado el ID del beneficio',
-      redirect: '/app/dashboard/benefits',
+      redirect: '/dashboard/manage/benefits',
     })
   }
 
@@ -106,22 +125,26 @@ export const action = async ({ request, params }: ActionArgs) => {
           : data.benefitHighlight?.imageKey
     }
 
-    await updateBenefitById(data, parseFloat(benefitId))
+    await updateBenefitById(
+      data,
+      parseFloat(benefitId),
+      '/dashboard/manage/benefits'
+    )
 
-    return redirect(`/admin/dashboard/benefits`)
+    return redirect(`/dashboard/manage/benefits`)
   } else if (request.method === 'DELETE') {
     await deleteBenefitById(parseFloat(benefitId))
 
-    return redirect(`/admin/dashboard/benefits`)
+    return redirect(`/dashboard/manage/benefits`)
   }
 
   throw badRequest({
     message: 'El método HTTP utilizado es inválido',
-    redirect: '/admin/dashboard/benefits',
+    redirect: '/dashboard/manage/benefits',
   })
 }
 
-const AdminDashboardBenefitDetailsIndexRoute = () => {
+const CompanyBenefitDetailsIndexRoute = () => {
   const { benefit, benefitCategories } = useLoaderData<typeof loader>()
 
   const {
@@ -135,25 +158,32 @@ const AdminDashboardBenefitDetailsIndexRoute = () => {
   } = benefit
 
   return (
-    <section className="my-10">
-      <Title className="mb-10">Actualizar beneficio</Title>
+    <Container className="my-10 w-full">
+      <section className="my-10">
+        <Title className="mb-10">Actualizar beneficio</Title>
 
-      <BenefitForm
-        buttonText="Guardar"
-        showDelete
-        benefitCategories={benefitCategories}
-        defaultValues={{
-          name,
-          buttonText,
-          buttonHref,
-          slug,
-          benefitCategoryId,
-          mainImage,
-          benefitHighlight,
-        }}
-      />
-    </section>
+        <BenefitForm
+          buttonText="Guardar"
+          showDelete
+          benefitCategories={benefitCategories}
+          defaultValues={{
+            name,
+            buttonText,
+            buttonHref,
+            slug,
+            benefitCategoryId,
+            mainImage,
+            benefitHighlight,
+          }}
+        />
+      </section>
+    </Container>
   )
 }
 
-export default AdminDashboardBenefitDetailsIndexRoute
+export default CompanyBenefitDetailsIndexRoute
+
+export const CatchBoundary = () => {
+  useToastError()
+  return null
+}

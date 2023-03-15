@@ -8,13 +8,13 @@ import { Button } from '~/components/Button'
 import { Container } from '~/components/Layout/Container'
 import { TitleWithActions } from '~/components/Layout/TitleWithActions'
 import { Table } from '~/components/Lists/Table'
-import { getBenefitCategories } from '~/services/benefit-category/benefit-category.server'
+import { getBenefitCategoriesWithoutCompanies } from '~/services/benefit-category/benefit-category.server'
 import { requireAdminUserId } from '~/session.server'
 
 export const loader = async ({ request }: LoaderArgs) => {
   await requireAdminUserId(request)
 
-  const benefitCategories = await getBenefitCategories()
+  const benefitCategories = await getBenefitCategoriesWithoutCompanies()
 
   return json({
     benefitCategories,

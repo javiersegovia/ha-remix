@@ -30,6 +30,7 @@ import { createEmployee } from '~/services/employee/employee.server'
 import { getBankAccountTypes } from '~/services/bank-account-type/bank-account-type.server'
 import { getIdentityDocumentTypes } from '~/services/identity-document-type/identity-document-type.server'
 import { getMemberships } from '~/services/membership/membership.server'
+import { getUserRoles } from '~/services/user-role/user-role.server'
 
 export const loader = async ({ request }: LoaderArgs) => {
   await requireAdminUserId(request)
@@ -47,6 +48,7 @@ export const loader = async ({ request }: LoaderArgs) => {
     cryptoNetworks: await getCryptoNetworks(),
     cryptocurrencies: await getCryptocurrencies(),
     memberships: await getMemberships(),
+    userRoles: await getUserRoles(),
   })
 }
 
@@ -102,6 +104,7 @@ export default function AdminDashboardCompanyCreateEmployeeRoute() {
     currencies,
     cryptocurrencies,
     cryptoNetworks,
+    userRoles,
   } = useLoaderData<typeof loader>()
 
   return (
@@ -122,6 +125,7 @@ export default function AdminDashboardCompanyCreateEmployeeRoute() {
             currencies,
             cryptocurrencies,
             cryptoNetworks,
+            userRoles,
           }}
           validator={employeeValidatorClient}
           actions={<FormActions title="Crear" />}

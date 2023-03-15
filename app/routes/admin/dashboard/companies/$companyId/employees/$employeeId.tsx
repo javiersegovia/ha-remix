@@ -12,10 +12,7 @@ import { validationError } from 'remix-validated-form'
 import { FormActions } from '~/components/FormFields/FormActions'
 import { AdminEmployeeForm } from '~/components/Forms/AdminEmployeeForm'
 import { Title } from '~/components/Typography/Title'
-import {
-  employeeValidatorClient,
-  employeeValidatorServer,
-} from '~/services/employee/employee.schema'
+import { employeeValidatorClient } from '~/services/employee/employee.schema'
 import { getBanks, validateBankAccount } from '~/services/bank/bank.server'
 import { getCountries } from '~/services/country/country.server'
 import { getCryptocurrencies } from '~/services/crypto-currency/crypto-currency.server'
@@ -33,6 +30,7 @@ import { getMemberships } from '~/services/membership/membership.server'
 import { getBankAccountTypes } from '~/services/bank-account-type/bank-account-type.server'
 import { getIdentityDocumentTypes } from '~/services/identity-document-type/identity-document-type.server'
 import { prisma } from '~/db.server'
+import { getUserRoles } from '~/services/user-role/user-role.server'
 
 export const loader = async ({ request, params }: LoaderArgs) => {
   await requireAdminUserId(request)
@@ -68,6 +66,7 @@ export const loader = async ({ request, params }: LoaderArgs) => {
     cryptoNetworks: await getCryptoNetworks(),
     cryptocurrencies: await getCryptocurrencies(),
     memberships: await getMemberships(),
+    userRoles: await getUserRoles(),
   })
 }
 
@@ -89,9 +88,7 @@ export const action = async ({ request, params }: ActionArgs) => {
   await requireAdminUserId(request)
 
   const { data, submittedData, error, formId } =
-    await employeeValidatorServer.validate(await request.formData())
-
-  console.log({ data, error })
+    await employeeValidatorClient.validate(await request.formData())
 
   if (error) {
     return validationError(error, submittedData)
@@ -137,6 +134,7 @@ export default function AdminDashboardCompanyUpdateEmployeeRoute() {
     cryptocurrencies,
     cryptoNetworks,
     memberships,
+    userRoles,
   } = useLoaderData<typeof loader>()
 
   return (
@@ -170,6 +168,7 @@ export default function AdminDashboardCompanyUpdateEmployeeRoute() {
             currencies={currencies}
             cryptocurrencies={cryptocurrencies}
             cryptoNetworks={cryptoNetworks}
+            userRoles={userRoles}
             validator={employeeValidatorClient}
             actions={<FormActions title="Guardar" />}
           />

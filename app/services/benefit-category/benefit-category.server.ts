@@ -1,11 +1,15 @@
-import type { BenefitCategory, CompanyBenefitCategory } from '@prisma/client'
+import type { BenefitCategory, Company } from '@prisma/client'
 import { badRequest } from '~/utils/responses'
 
 import { prisma } from '~/db.server'
 import type { BenefitCategoryInputSchema } from './benefit-category.schema'
+import { connect } from '~/utils/relationships'
 
-export const getBenefitCategories = async () => {
+export const getBenefitCategoriesWithoutCompanies = async () => {
   return prisma.benefitCategory.findMany({
+    where: {
+      companyBenefitCategory: null,
+    },
     select: {
       id: true,
       name: true,
@@ -15,32 +19,26 @@ export const getBenefitCategories = async () => {
     },
   })
 }
-export const getBenefitCategoryByCompanyBenefitCategoryId = async (
-  id: CompanyBenefitCategory['id']
+
+export const getBenefitCategoriesByCompanyId = async (
+  companyId: Company['id']
 ) => {
-  return prisma.companyBenefitCategory.findUnique({
+  return prisma.benefitCategory.findMany({
     where: {
-      id,
+      companyBenefitCategory: {
+        companyId,
+      },
     },
     select: {
-      benefitCategoryId: true,
+      id: true,
+      name: true,
+    },
+    orderBy: {
+      name: 'asc',
     },
   })
 }
 
-export const getBenefitCategoryWithoutCompanyBenefitCategory = async (
-  id: CompanyBenefitCategory['id']
-) => {
-  return prisma.benefitCategory.findUnique({
-    where: { id },
-    select: {
-      id: true,
-      name: true,
-      hexColor: true,
-      opacity: true,
-    },
-  })
-}
 export const getBenefitCategoryById = async (id: BenefitCategory['id']) => {
   return prisma.benefitCategory.findUnique({
     where: {
@@ -67,12 +65,17 @@ export const updateBenefitCategoryById = async (
   id: BenefitCategory['id'],
   data: BenefitCategoryInputSchema
 ) => {
+  const { hexColor, opacity, name } = data
   try {
     return prisma.benefitCategory.update({
       where: {
         id,
       },
-      data,
+      data: {
+        name,
+        hexColor: hexColor || null,
+        opacity: opacity || null,
+      },
     })
   } catch (e) {
     console.error(e)
@@ -99,4 +102,18 @@ export const deleteBenefitCategoryById = async (id: BenefitCategory['id']) => {
       redirect: null,
     })
   }
+}
+
+export const createCompanyBenefitCategory = async (
+  data: BenefitCategoryInputSchema,
+  companyId: Company['id']
+) => {
+  return prisma.companyBenefitCategory.create({
+    data: {
+      benefitCategory: {
+        create: data,
+      },
+      company: connect(companyId),
+    },
+  })
 }

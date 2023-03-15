@@ -1,4 +1,8 @@
-import type { ActionArgs, LoaderArgs } from '@remix-run/server-runtime'
+import type {
+  ActionArgs,
+  LoaderArgs,
+  MetaFunction,
+} from '@remix-run/server-runtime'
 
 import { redirect } from '@remix-run/server-runtime'
 import { Link, useLoaderData } from '@remix-run/react'
@@ -9,25 +13,47 @@ import {
 import { validationError } from 'remix-validated-form'
 import { AiOutlineArrowLeft } from 'react-icons/ai'
 
+import {
+  getBenefitCategoriesByCompanyId,
+  getBenefitCategoriesWithoutCompanies,
+} from '~/services/benefit-category/benefit-category.server'
 import { benefitValidator } from '~/services/benefit/benefit.schema'
-import { requireAdminUserId } from '~/session.server'
+import { requireEmployee } from '~/session.server'
+import { uploadHandler } from '~/services/aws/s3.server'
 import { createBenefit } from '~/services/benefit/benefit.server'
 import { BenefitForm } from '~/components/Forms/BenefitForm'
 import { Container } from '~/components/Layout/Container'
 import { Title } from '~/components/Typography/Title'
-import { getBenefitCategoriesWithoutCompanies } from '~/services/benefit-category/benefit-category.server'
-import { uploadHandler } from '~/services/aws/s3.server'
+import { requirePermissionByUserId } from '~/services/permissions/permissions.server'
+import { PermissionCode } from '@prisma/client'
+import { useToastError } from '~/hooks/useToastError'
+
+export const meta: MetaFunction = () => {
+  return {
+    title: 'Crear beneficio | HoyTrabajas Beneficios',
+  }
+}
 
 export const loader = async ({ request }: LoaderArgs) => {
-  await requireAdminUserId(request)
+  const employee = await requireEmployee(request)
+
+  await requirePermissionByUserId(
+    employee.userId,
+    PermissionCode.MANAGE_BENEFIT
+  )
+
+  const benefitCategories = await getBenefitCategoriesWithoutCompanies()
+  const companyBenefitCategories = await getBenefitCategoriesByCompanyId(
+    employee.companyId
+  )
 
   return json({
-    benefitCategories: await getBenefitCategoriesWithoutCompanies(),
+    benefitCategories: [...companyBenefitCategories, ...benefitCategories],
   })
 }
 
 export const action = async ({ request }: ActionArgs) => {
-  await requireAdminUserId(request)
+  const employee = await requireEmployee(request)
 
   /** We need to access two instances of FormData, one for validation and other for parseMultipartFormData,
    * hence we need to clone the request to avoid consuming the original request body
@@ -53,27 +79,30 @@ export const action = async ({ request }: ActionArgs) => {
       ? benefitHighlightImage
       : undefined
 
-  await createBenefit({
-    ...data,
-    mainImageKey,
-    benefitHighlight: data.benefitHighlight
-      ? {
-          ...data.benefitHighlight,
-          imageKey: benefitHighlightImageKey,
-        }
-      : undefined,
-  })
+  await createBenefit(
+    {
+      ...data,
+      mainImageKey,
+      benefitHighlight: data.benefitHighlight
+        ? {
+            ...data.benefitHighlight,
+            imageKey: benefitHighlightImageKey,
+          }
+        : undefined,
+    },
+    employee.companyId
+  )
 
-  return redirect(`/admin/dashboard/benefits`)
+  return redirect(`/dashboard/manage/benefits`)
 }
 
 export default function CreateBenefitRoute() {
   const { benefitCategories } = useLoaderData<typeof loader>()
 
   return (
-    <Container>
+    <Container className="my-10 w-full">
       <Link
-        to="/admin/dashboard/benefits"
+        to="/dashboard/manage/benefits"
         className="ml-auto mb-10 flex gap-3 font-medium text-cyan-600"
       >
         <AiOutlineArrowLeft className="text-2xl" />
@@ -85,4 +114,9 @@ export default function CreateBenefitRoute() {
       <BenefitForm benefitCategories={benefitCategories} buttonText="Crear" />
     </Container>
   )
+}
+
+export const CatchBoundary = () => {
+  useToastError()
+  return null
 }

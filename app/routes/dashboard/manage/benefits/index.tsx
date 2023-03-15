@@ -5,11 +5,14 @@ import { useLoaderData } from '@remix-run/react'
 import { Button } from '~/components/Button'
 import { BenefitList } from '~/components/Lists/BenefitList'
 import { Container } from '~/components/Layout/Container'
-import { getBenefits } from '~/services/benefit/benefit.server'
+import { getCompanyBenefits } from '~/services/benefit/benefit.server'
 import { requireUserId } from '~/session.server'
 import { TitleWithActions } from '~/components/Layout/TitleWithActions'
 import { ButtonIconVariants } from '~/components/Button'
 import { Tabs } from '~/components/Tabs/Tabs'
+import { requirePermissionByUserId } from '~/services/permissions/permissions.server'
+import { PermissionCode } from '@prisma/client'
+import { useToastError } from '~/hooks/useToastError'
 
 export const meta: MetaFunction = () => {
   return {
@@ -29,10 +32,12 @@ export const manageBenefitPaths = [
 ]
 
 export const loader = async ({ request }: LoaderArgs) => {
-  await requireUserId(request)
+  const userId = await requireUserId(request)
+
+  await requirePermissionByUserId(userId, PermissionCode.MANAGE_BENEFIT)
 
   return json({
-    benefits: await getBenefits(), // todo: check
+    benefits: await getCompanyBenefits(),
   })
 }
 
@@ -72,4 +77,9 @@ export default function BenefitIndexRoute() {
       </Container>
     </>
   )
+}
+
+export const CatchBoundary = () => {
+  useToastError()
+  return null
 }

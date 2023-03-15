@@ -77,6 +77,7 @@ export const getEmployeeById = async (employeeId: Employee['id']) => {
           firstName: true,
           lastName: true,
           email: true,
+          roleId: true,
         },
       },
     },
@@ -265,6 +266,7 @@ export const createEmployee = async (
           create: {
             ...newUser,
             password: user.password ? await hash(user.password, 10) : undefined,
+            role: connect(user.roleId),
           },
         },
         status,
@@ -461,6 +463,7 @@ export const updateEmployeeById = async (
           update: {
             ...user,
             password: user.password ? await hash(user.password, 10) : undefined,
+            roleId: user.roleId,
           },
         },
       },

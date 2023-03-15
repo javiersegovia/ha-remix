@@ -2,21 +2,31 @@ import type { LoaderArgs, MetaFunction } from '@remix-run/server-runtime'
 import type { TableRowProps } from '~/components/Lists/Table'
 
 import { Outlet, useLoaderData } from '@remix-run/react'
+import { PermissionCode } from '@prisma/client'
 import { json } from '@remix-run/node'
 
-import { Button } from '~/components/Button'
-import { Container } from '~/components/Layout/Container'
+import { Button, ButtonIconVariants } from '~/components/Button'
 import { TitleWithActions } from '~/components/Layout/TitleWithActions'
+import { Container } from '~/components/Layout/Container'
 import { Table } from '~/components/Lists/Table'
-import { getBenefitCategories } from '~/services/benefit-category/benefit-category.server'
-import { requireUserId } from '~/session.server'
 import { Tabs } from '~/components/Tabs/Tabs'
+import { useToastError } from '~/hooks/useToastError'
+import { requireEmployee } from '~/session.server'
 import { manageBenefitPaths } from './benefits'
+import { getBenefitCategoriesByCompanyId } from '~/services/benefit-category/benefit-category.server'
+import { requirePermissionByUserId } from '~/services/permissions/permissions.server'
 
 export const loader = async ({ request }: LoaderArgs) => {
-  await requireUserId(request)
+  const employee = await requireEmployee(request)
 
-  const benefitCategories = await getBenefitCategories() // todo: check
+  await requirePermissionByUserId(
+    employee.userId,
+    PermissionCode.MANAGE_BENEFIT
+  )
+
+  const benefitCategories = await getBenefitCategoriesByCompanyId(
+    employee.companyId
+  )
 
   return json({
     benefitCategories,
@@ -49,7 +59,7 @@ export default function BenefitCategoriesIndexRoute() {
           className="mb-10"
           title="Categorías de beneficios"
           actions={
-            <Button href="create" size="SM">
+            <Button href="create" size="SM" icon={ButtonIconVariants.CREATE}>
               Crear categoría de beneficio
             </Button>
           }
@@ -58,11 +68,16 @@ export default function BenefitCategoriesIndexRoute() {
         {benefitCategories?.length > 0 ? (
           <Table headings={headings} rows={rows} />
         ) : (
-          <p>No se han encontrado categorías de beneficios.</p>
+          <p>No se han encontrado categorías de beneficios</p>
         )}
       </Container>
 
       <Outlet />
     </>
   )
+}
+
+export const CatchBoundary = () => {
+  useToastError()
+  return null
 }

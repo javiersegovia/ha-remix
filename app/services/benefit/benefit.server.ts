@@ -1,4 +1,4 @@
-import type { Benefit, Prisma } from '@prisma/client'
+import type { Benefit, Company, Prisma } from '@prisma/client'
 import type { BenefitInputSchema } from './benefit.schema'
 
 import { prisma } from '~/db.server'
@@ -9,6 +9,9 @@ import { deleteImageByKey } from '../image/image.server'
 
 export const getBenefits = async () => {
   return prisma.benefit.findMany({
+    where: {
+      companyBenefit: null,
+    },
     select: {
       id: true,
       name: true,
@@ -70,15 +73,20 @@ export const getBenefitById = async (benefitId: Benefit['id']) => {
   })
 }
 
-export const createBenefit = async ({
-  name,
-  buttonText,
-  buttonHref,
-  slug,
-  mainImageKey,
-  benefitCategoryId,
-  benefitHighlight,
-}: BenefitInputSchema) => {
+export const createBenefit = async (
+  data: BenefitInputSchema,
+  companyId?: Company['id']
+) => {
+  const {
+    name,
+    buttonText,
+    buttonHref,
+    slug,
+    mainImageKey,
+    benefitCategoryId,
+    benefitHighlight,
+  } = data
+
   const createMainImage: Prisma.BenefitCreateInput['mainImage'] = mainImageKey
     ? {
         create: {
@@ -128,6 +136,13 @@ export const createBenefit = async ({
         benefitCategory: connect(benefitCategoryId),
         mainImage: createMainImage,
         benefitHighlight: createBenefitHighlight,
+        companyBenefit: companyId
+          ? {
+              create: {
+                companyId,
+              },
+            }
+          : undefined,
       },
       select: {
         id: true,
@@ -148,7 +163,8 @@ export const createBenefit = async ({
 
 export const updateBenefitById = async (
   data: BenefitInputSchema,
-  benefitId: Benefit['id']
+  benefitId: Benefit['id'],
+  redirectTo: string = '/admin/dashboard/benefits'
 ) => {
   const benefitToUpdate = await prisma.benefit.findFirst({
     where: {
@@ -180,7 +196,7 @@ export const updateBenefitById = async (
   if (!benefitToUpdate) {
     throw notFound({
       message: 'No se pudo encontrar el beneficio a actualizar',
-      redirect: '/admin/dashboard/benefits',
+      redirect: redirectTo,
     })
   }
 
@@ -373,4 +389,24 @@ export const deleteBenefitById = async (benefitId: Benefit['id']) => {
       redirect: null,
     })
   }
+}
+
+export const getCompanyBenefits = async () => {
+  return prisma.benefit.findMany({
+    where: {
+      NOT: { companyBenefit: null },
+    },
+    select: {
+      id: true,
+      name: true,
+      benefitHighlight: {
+        select: {
+          isActive: true,
+        },
+      },
+    },
+    orderBy: {
+      name: 'asc',
+    },
+  })
 }

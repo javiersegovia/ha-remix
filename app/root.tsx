@@ -18,6 +18,7 @@ import {
   useLocation,
   useTransition,
   useRevalidator,
+  useNavigate,
 } from '@remix-run/react'
 
 import { toast, ToastBar, Toaster } from 'react-hot-toast'
@@ -158,7 +159,7 @@ export default function App() {
         )}
       </head>
 
-      <body className="min-h-full">
+      <body className="h-full min-h-full">
         {isProd && (
           <noscript
             dangerouslySetInnerHTML={{
@@ -243,7 +244,16 @@ export const ErrorBoundary: ErrorBoundaryComponent = ({ error }) => {
 
 export const CatchBoundary = () => {
   const caught = useCatch()
+  const navigate = useNavigate()
+
   const message = caught?.data?.message || caught?.data || caught.statusText
+  const redirect = caught?.data?.redirect
+
+  useEffect(() => {
+    if (redirect) {
+      navigate(redirect)
+    }
+  }, [navigate, redirect])
 
   return (
     <html lang="es" className="h-full">
@@ -253,11 +263,7 @@ export const CatchBoundary = () => {
         <Links />
       </head>
       <body>
-        <ErrorContainer
-          title="Oops. Error."
-          message={message}
-          status={caught.status}
-        />
+        <ErrorContainer title="Oops. Error." message={message} />
         <Scripts />
         <LiveReload />
       </body>
