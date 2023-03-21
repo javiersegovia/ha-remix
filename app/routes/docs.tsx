@@ -9,11 +9,11 @@ const paths = [
       { title: 'Compañías', href: '/docs/super-admin/companies' },
       {
         title: 'Compañías - Colaboradores',
-        href: '/docs/super-admin/companies/employees',
+        href: '/docs/super-admin/employees',
       },
       {
         title: 'Compañías - Novedades',
-        href: '/docs/super-admin/companies/debts',
+        href: '/docs/super-admin/debts',
       },
     ],
   },
