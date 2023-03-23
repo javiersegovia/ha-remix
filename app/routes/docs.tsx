@@ -17,7 +17,7 @@ const paths = [
       },
       {
         title: 'Adelantos',
-        href: '/docs/super-admin/advances',
+        href: '/docs/super-admin/payroll-advances',
       },
       {
         title: 'Beneficios',
