@@ -19,6 +19,34 @@ const paths = [
         title: 'Adelantos',
         href: '/docs/super-admin/advances',
       },
+      {
+        title: 'Beneficios',
+        href: '/docs/super-admin/benefits',
+      },
+      {
+        title: 'Beneficios - Subproductos',
+        href: '/docs/super-admin/subproducts',
+      },
+      {
+        title: 'Beneficios - Consumo',
+        href: '/docs/super-admin/consumption',
+      },
+      {
+        title: 'Membresías',
+        href: '/docs/super-admin/membership',
+      },
+      {
+        title: 'Data',
+        href: '/docs/super-admin/data',
+      },
+      {
+        title: 'Roles y permisos',
+        href: '/docs/super-admin/roles',
+      },
+      {
+        title: 'Configuración',
+        href: '/docs/super-admin/config',
+      },
     ],
   },
   {
