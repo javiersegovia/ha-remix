@@ -22,6 +22,7 @@ export function BenefitList({
               <thead className="bg-gray-50">
                 <tr>
                   <TableHeading title="Nombre" />
+                  <TableHeading title="" />
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200 bg-white">

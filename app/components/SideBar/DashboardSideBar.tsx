@@ -171,7 +171,7 @@ export const DashboardSideBar = ({
           <LogoPoweredBy href={logoHref} className="mx-auto w-[200px]" />
         </nav>
 
-        <div className="ml-0 flex flex-1 flex-col bg-gray-50 transition md:ml-56">
+        <div className="ml-0 flex flex-1 flex-col bg-gray-100 transition md:ml-56">
           {children}
         </div>
 

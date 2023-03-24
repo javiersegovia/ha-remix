@@ -45,12 +45,7 @@ const historyNavPath: INavPath = {
 const companyManagementNavPath: INavPath = {
   icon: MdPersonOutline,
   title: 'Administrar',
-  subPaths: [
-    {
-      title: 'Beneficios',
-      path: '/dashboard/manage/benefits',
-    },
-  ],
+  subPaths: [],
 }
 
 const getEmployeeData = (userId: User['id']) => {
@@ -104,6 +99,11 @@ export const loader = async ({ request }: LoaderArgs) => {
     PermissionCode.MANAGE_BENEFIT
   )
 
+  const canManageEmployeesMainInformation = await hasPermissionByUserId(
+    user.id,
+    PermissionCode.MANAGE_EMPLOYEE_MAIN_INFORMATION
+  )
+
   const navPaths = [...defaultNavPaths]
 
   if (canUsePayrollAdvances || hasPayrollAdvances) {
@@ -111,15 +111,26 @@ export const loader = async ({ request }: LoaderArgs) => {
   }
 
   if (canManageBenefits) {
+    companyManagementNavPath.subPaths.push({
+      title: 'Beneficios',
+      path: '/dashboard/manage/benefits',
+    })
+  }
+
+  if (canManageEmployeesMainInformation) {
+    companyManagementNavPath.subPaths.push({
+      title: 'Colaboradores',
+      path: '/dashboard/manage/employees',
+    })
+  }
+
+  if (canManageBenefits || canManageEmployeesMainInformation) {
     navPaths.push(companyManagementNavPath)
   }
 
   return json({
     user,
     navPaths,
-    canUsePayrollAdvances,
-    hasPayrollAdvances,
-    canManageBenefits,
   })
 }
 

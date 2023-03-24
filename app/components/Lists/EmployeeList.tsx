@@ -11,9 +11,13 @@ import { EmployeeStatusPill } from '../Pills/EmployeeStatusPill'
 
 interface EmployeeListProps {
   employees: Awaited<ReturnType<typeof getEmployeesByCompanyId>>
+  showEmployeeGroup?: boolean
 }
 
-export function EmployeeList({ employees }: EmployeeListProps) {
+export function EmployeeList({
+  employees,
+  showEmployeeGroup,
+}: EmployeeListProps) {
   return (
     <div className="flex flex-col">
       <div className="-my-2 overflow-x-auto xl:-mx-8">
@@ -25,7 +29,10 @@ export function EmployeeList({ employees }: EmployeeListProps) {
                   <TableHeading title="Nombre completo" />
                   <TableHeading title="Cupo aprobado" isCentered />
                   <TableHeading title="Cupo disponible" isCentered />
-                  <TableHeading title="Membresía" isCentered />
+                  <TableHeading
+                    title={showEmployeeGroup ? 'Grupo' : 'Membresía'}
+                    isCentered
+                  />
                   <TableHeading title="Estado" isCentered />
                 </tr>
               </thead>

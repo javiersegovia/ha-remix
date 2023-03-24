@@ -29,7 +29,7 @@ export const Table = ({ headings, rows }: TableProps) => {
                     <TableHeading
                       key={heading}
                       title={heading}
-                      className="bg-white text-base text-steelBlue-600"
+                      className="text-base"
                       isCentered={index !== 0}
                     />
                   ))}

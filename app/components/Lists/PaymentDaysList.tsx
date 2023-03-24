@@ -49,9 +49,11 @@ export const PaymentDayList = ({ requestDays }: PaymentDayListProps) => {
                             {formatDate(dayNumber)}
                           </div>
                         </TableData>
+
                         <TableData isCentered>
                           <p>{quantity}</p>
                         </TableData>
+
                         <TableData isCentered>
                           {REQUESTED && REQUESTED?.BANK_ACCOUNT > 0 && (
                             <div>
@@ -61,6 +63,7 @@ export const PaymentDayList = ({ requestDays }: PaymentDayListProps) => {
                               )}
                             </div>
                           )}
+
                           {REQUESTED && REQUESTED?.WALLET > 0 && (
                             <div>
                               {formatMoney(
@@ -69,37 +72,36 @@ export const PaymentDayList = ({ requestDays }: PaymentDayListProps) => {
                               )}
                             </div>
                           )}
+
                           {!REQUESTED?.BANK_ACCOUNT && !REQUESTED?.WALLET && (
                             <p className="font-medium text-green-600">-</p>
                           )}
                         </TableData>
+
                         <TableData isCentered>
-                          {REQUESTED &&
-                            REQUESTED?.BANK_ACCOUNT > 0 &&
-                            APPROVED &&
-                            APPROVED?.BANK_ACCOUNT > 0 && (
-                              <div className="text-yellow-600">
-                                {formatMoney(
-                                  APPROVED?.BANK_ACCOUNT,
-                                  CurrencySymbol.COP
-                                )}
-                              </div>
-                            )}
-                          {REQUESTED &&
-                            REQUESTED?.WALLET > 0 &&
-                            APPROVED &&
-                            APPROVED?.WALLET > 0 && (
-                              <div className="text-yellow-600">
-                                {formatMoney(
-                                  APPROVED.WALLET,
-                                  CurrencySymbol.BUSD
-                                )}
-                              </div>
-                            )}
+                          {APPROVED && APPROVED?.BANK_ACCOUNT > 0 && (
+                            <div>
+                              {formatMoney(
+                                APPROVED?.BANK_ACCOUNT,
+                                CurrencySymbol.COP
+                              )}
+                            </div>
+                          )}
+
+                          {APPROVED && APPROVED?.WALLET > 0 && (
+                            <div>
+                              {formatMoney(
+                                APPROVED.WALLET,
+                                CurrencySymbol.BUSD
+                              )}
+                            </div>
+                          )}
+
                           {!APPROVED?.BANK_ACCOUNT && !APPROVED?.WALLET && (
                             <p className="font-medium text-green-600">-</p>
                           )}
                         </TableData>
+
                         <TableData isCentered>
                           {PAID?.BANK_ACCOUNT && (
                             <div>
@@ -109,11 +111,13 @@ export const PaymentDayList = ({ requestDays }: PaymentDayListProps) => {
                               )}
                             </div>
                           )}
+
                           {PAID?.WALLET && (
                             <div>
                               {formatMoney(PAID?.WALLET, CurrencySymbol.BUSD)}
                             </div>
                           )}
+
                           {!PAID?.BANK_ACCOUNT && !PAID?.WALLET && (
                             <p className="font-medium text-red-600">-</p>
                           )}
