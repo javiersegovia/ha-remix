@@ -15,6 +15,10 @@ const paths = [
         title: 'Compañías - Novedades',
         href: '/docs/super-admin/companies/debts',
       },
+      {
+        title: 'Adelantos',
+        href: '/docs/super-admin/advances',
+      },
     ],
   },
   {
