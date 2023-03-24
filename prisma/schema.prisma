@@ -70,17 +70,21 @@ model Company {
   banks                    Bank[]
   benefits                 Benefit[]
   categories               CompanyCategory[]
+  companyBenefits          CompanyBenefit[]
+  companyBenefitCategories CompanyBenefitCategory[]
   companyCryptoDebts       CompanyCryptoDebt[]
   companyDebts             CompanyDebt[]
   companyFiatDebts         CompanyFiatDebt[]
   companyTaxes             CompanyTax[]
   contactPerson            CompanyContactPerson?
+
   cryptocurrencies         Cryptocurrency[]
+
   employees                Employee[]
+  employeeGroups           EmployeeGroup[]
+
   payrollAdvances          PayrollAdvance[]
   premiumAdvances          PremiumAdvance[]
-  companyBenefits          CompanyBenefit[]
-  companyBenefitCategories CompanyBenefitCategory[]
 }
 
 enum CompanyStatus {
@@ -180,7 +184,7 @@ model Employee {
   advanceMaxAmount       Float  @default(0)
   advanceAvailableAmount Float  @default(0)
 
-  currency   Currency? @relation(fields: [currencyId], references: [id])
+  currency   Currency? @relation(fields: [currencyId], references: [id], onDelete: SetNull)
   currencyId Int?
 
   documentIssueDate DateTime? // Timestamp
@@ -213,12 +217,15 @@ model Employee {
   membership      Membership?    @relation(fields: [membershipId], references: [id], onDelete: SetNull)
   membershipId    Int?
 
-  country   Country? @relation(fields: [countryId], references: [id], onDelete: SetNull)
-  countryId Int?
-  state     State?   @relation(fields: [stateId], references: [id], onDelete: SetNull)
-  stateId   Int?
-  city      City?    @relation(fields: [cityId], references: [id], onDelete: SetNull)
-  cityId    Int?
+  country         Country?       @relation(fields: [countryId], references: [id], onDelete: SetNull)
+  countryId       Int?
+  state           State?         @relation(fields: [stateId], references: [id], onDelete: SetNull)
+  stateId         Int?
+  city            City?          @relation(fields: [cityId], references: [id], onDelete: SetNull)
+  cityId          Int?
+
+  employeeGroup   EmployeeGroup? @relation(fields: [employeeGroupId], references: [id], onDelete: SetNull)
+  employeeGroupId String?
 
   zapsignDocuments ZapsignDocument[]
 
@@ -229,7 +236,9 @@ model Employee {
 
   payrollAdvanceHistories PayrollAdvanceHistory[]
   premiumAdvanceHistories PremiumAdvanceHistory[]
-  benefitConsumptions     BenefitConsumption[]
+
+  benefits            Benefit[]
+  benefitConsumptions BenefitConsumption[]
 }
 
 enum EmployeeRole {
@@ -241,6 +250,20 @@ enum EmployeeRole {
 enum EmployeeStatus {
   ACTIVE
   INACTIVE
+}
+
+model EmployeeGroup {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  name String
+
+  company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  companyId String
+
+  employees Employee[]
+  benefits  Benefit[]
 }
 
 model Gender {
@@ -421,7 +444,7 @@ model Currency {
   name String @unique
   code String @unique
 
-  country          Country?          @relation(fields: [countryId], references: [id])
+  country          Country?          @relation(fields: [countryId], references: [id], onDelete: SetNull)
   countryId        Int?
   employees        Employee[]
   companyFiatDebts CompanyFiatDebt[]
@@ -448,7 +471,7 @@ model Wallet {
 
   address String
 
-  network          CryptoNetwork?  @relation(fields: [networkId], references: [id])
+  network          CryptoNetwork?  @relation(fields: [networkId], references: [id], onDelete: SetNull)
   networkId        Int?
   cryptocurrency   Cryptocurrency? @relation(fields: [cryptocurrencyId], references: [id], onDelete: Cascade)
   cryptocurrencyId Int?
@@ -781,12 +804,13 @@ model Benefit {
   benefitCategory   BenefitCategory? @relation(fields: benefitCategoryId, references: id, onDelete: SetNull)
   benefitCategoryId Int?
 
+  employees        Employee[]
+  employeeGroups   EmployeeGroup[]
   companies        Company[]
   membership       Membership[]
   subproducts      BenefitSubproduct[]
   consumptions     BenefitConsumption[]
   benefitHighlight BenefitHighlight?
-
   companyBenefit CompanyBenefit?
 }
 
