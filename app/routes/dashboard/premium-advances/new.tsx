@@ -51,6 +51,7 @@ export const loader = async ({ request }: LoaderArgs) => {
 
   const { errorMessage, canUsePremiumAdvances } =
     verifyIfEmployeeCanRequestPremiumAdvance({ employee, enabledBenefits })
+  console.log({ canUsePremiumAdvances, errorMessage })
 
   if (!canUsePremiumAdvances) {
     return redirect('/')
