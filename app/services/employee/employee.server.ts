@@ -246,7 +246,7 @@ export const createEmployee = async (
         advanceMaxAmount,
         address,
         phone,
-        numberOfChildren: numberOfChildren || undefined,
+        numberOfChildren: numberOfChildren || 0,
         roles: roles || undefined,
 
         birthDay: sanitizeDate(birthDay),
@@ -426,8 +426,8 @@ export const updateEmployeeById = async (
         address,
         phone,
         status,
-        numberOfChildren: numberOfChildren || undefined,
-        roles: roles || undefined,
+        numberOfChildren: numberOfChildren || 0,
+        roles: roles || [],
 
         membership: connect(membershipId),
         gender: connectOrDisconnect(genderId, !!existingEmployee.genderId),
@@ -501,7 +501,7 @@ export const updateEmployeeByWelcomeForm = async (
         documentIssueDate: sanitizeDate(documentIssueDate),
         address,
         phone,
-        numberOfChildren: numberOfChildren || undefined,
+        numberOfChildren: numberOfChildren || 0,
 
         gender: connectOrDisconnect(genderId, !!existingEmployee.genderId),
         country: connectOrDisconnect(countryId, !!existingEmployee.countryId),
@@ -576,7 +576,7 @@ export const updateEmployeeByAccountForm = async (
         documentIssueDate: sanitizeDate(documentIssueDate),
         address,
         phone,
-        numberOfChildren: numberOfChildren || undefined,
+        numberOfChildren: numberOfChildren || 0,
 
         gender: connectOrDisconnect(genderId, !!existingEmployee.genderId),
         country: connectOrDisconnect(countryId, !!existingEmployee.countryId),
