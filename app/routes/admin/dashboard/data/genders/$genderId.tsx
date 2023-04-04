@@ -24,7 +24,7 @@ export const loader = async ({ request, params }: LoaderArgs) => {
   if (!genderId || isNaN(Number(genderId))) {
     throw badRequest({
       message: 'No se encontró el ID del género',
-      redirect: '/admin/dashboard/data/genders',
+      redirect: onCloseRedirectTo,
     })
   }
 
@@ -33,7 +33,7 @@ export const loader = async ({ request, params }: LoaderArgs) => {
   if (!gender) {
     throw badRequest({
       message: 'No se encontró el género',
-      redirect: '/admin/dashboard/data/genders',
+      redirect: onCloseRedirectTo,
     })
   }
   return json({ gender })
@@ -47,7 +47,7 @@ export const action = async ({ request, params }: ActionArgs) => {
   if (!genderId || isNaN(Number(genderId))) {
     throw badRequest({
       message: 'No se encontró el ID del género',
-      redirect: '/admin/dashboard/data/genders',
+      redirect: onCloseRedirectTo,
     })
   }
 
@@ -67,7 +67,7 @@ export const action = async ({ request, params }: ActionArgs) => {
     await deleteGenderById(Number(genderId))
   }
 
-  return redirect('/admin/dashboard/data/genders')
+  return redirect(onCloseRedirectTo)
 }
 
 const onCloseRedirectTo = '/admin/dashboard/data/genders' as const

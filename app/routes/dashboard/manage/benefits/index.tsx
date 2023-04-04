@@ -1,17 +1,18 @@
 import type { LoaderArgs, MetaFunction } from '@remix-run/server-runtime'
 
+import { PermissionCode } from '@prisma/client'
 import { json } from '@remix-run/node'
 import { useLoaderData } from '@remix-run/react'
+
 import { Button } from '~/components/Button'
 import { BenefitList } from '~/components/Lists/BenefitList'
 import { Container } from '~/components/Layout/Container'
-import { getCompanyBenefits } from '~/services/benefit/benefit.server'
-import { requireUserId } from '~/session.server'
+import { getCompanyBenefitsByCompanyId } from '~/services/benefit/benefit.server'
+import { requireEmployee } from '~/session.server'
 import { TitleWithActions } from '~/components/Layout/TitleWithActions'
 import { ButtonIconVariants } from '~/components/Button'
 import { Tabs } from '~/components/Tabs/Tabs'
 import { requirePermissionByUserId } from '~/services/permissions/permissions.server'
-import { PermissionCode } from '@prisma/client'
 import { useToastError } from '~/hooks/useToastError'
 
 export const meta: MetaFunction = () => {
@@ -32,12 +33,15 @@ export const manageBenefitPaths = [
 ]
 
 export const loader = async ({ request }: LoaderArgs) => {
-  const userId = await requireUserId(request)
+  const employee = await requireEmployee(request)
 
-  await requirePermissionByUserId(userId, PermissionCode.MANAGE_BENEFIT)
+  await requirePermissionByUserId(
+    employee.userId,
+    PermissionCode.MANAGE_BENEFIT
+  )
 
   return json({
-    benefits: await getCompanyBenefits(),
+    benefits: await getCompanyBenefitsByCompanyId(employee.companyId),
   })
 }
 

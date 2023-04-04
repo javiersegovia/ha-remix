@@ -66,7 +66,7 @@ export const deleteGenderById = async (id: Gender['id']) => {
   } catch (e) {
     console.error(e)
     throw badRequest({
-      message: 'Ha ocurrido un error, no se encontró el ID del género',
+      message: 'Ha ocurrido un error al eliminar el género',
       redirect: null,
     })
   }

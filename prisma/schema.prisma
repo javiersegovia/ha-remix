@@ -78,13 +78,13 @@ model Company {
   companyTaxes             CompanyTax[]
   contactPerson            CompanyContactPerson?
 
-  cryptocurrencies         Cryptocurrency[]
+  cryptocurrencies Cryptocurrency[]
 
-  employees                Employee[]
-  employeeGroups           EmployeeGroup[]
+  employees      Employee[]
+  employeeGroups EmployeeGroup[]
 
-  payrollAdvances          PayrollAdvance[]
-  premiumAdvances          PremiumAdvance[]
+  payrollAdvances PayrollAdvance[]
+  premiumAdvances PremiumAdvance[]
 }
 
 enum CompanyStatus {
@@ -217,12 +217,12 @@ model Employee {
   membership      Membership?    @relation(fields: [membershipId], references: [id], onDelete: SetNull)
   membershipId    Int?
 
-  country         Country?       @relation(fields: [countryId], references: [id], onDelete: SetNull)
-  countryId       Int?
-  state           State?         @relation(fields: [stateId], references: [id], onDelete: SetNull)
-  stateId         Int?
-  city            City?          @relation(fields: [cityId], references: [id], onDelete: SetNull)
-  cityId          Int?
+  country   Country? @relation(fields: [countryId], references: [id], onDelete: SetNull)
+  countryId Int?
+  state     State?   @relation(fields: [stateId], references: [id], onDelete: SetNull)
+  stateId   Int?
+  city      City?    @relation(fields: [cityId], references: [id], onDelete: SetNull)
+  cityId    Int?
 
   employeeGroup   EmployeeGroup? @relation(fields: [employeeGroupId], references: [id], onDelete: SetNull)
   employeeGroupId String?
@@ -811,7 +811,7 @@ model Benefit {
   subproducts      BenefitSubproduct[]
   consumptions     BenefitConsumption[]
   benefitHighlight BenefitHighlight?
-  companyBenefit CompanyBenefit?
+  companyBenefit   CompanyBenefit?
 }
 
 model CompanyBenefit {
@@ -937,8 +937,10 @@ model Permission {
 }
 
 enum PermissionCode {
+  MANAGE_EMPLOYEE_GROUP
   MANAGE_EMPLOYEE_MAIN_INFORMATION
   MANAGE_EMPLOYEE_FINANCIAL_INFORMATION
+
   MANAGE_COMPANY
   MANAGE_BENEFIT
 

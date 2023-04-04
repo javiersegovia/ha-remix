@@ -3,6 +3,7 @@ import { withZod } from '@remix-validated-form/with-zod'
 import { z } from 'zod'
 import { zfd } from 'zod-form-data'
 import { prisma } from '~/db.server'
+import { preprocessNullableObject } from '~/utils/validation'
 import { zDate } from '../../schemas/helpers'
 import { bankAccountSchema } from '../bank/bank.schema'
 
@@ -151,3 +152,49 @@ export const employeeValidatorClient = withZod(employeeSchemaClient)
 export const employeeValidatorServer = withZod(employeeSchemaServer)
 
 export type EmployeeSchemaInput = z.infer<typeof employeeSchemaClient>
+
+export const companyDashboardEmployeeSchema = employeeSchemaClient
+  .pick({
+    user: true,
+    phone: true,
+    address: true,
+    numberOfChildren: true,
+    status: true,
+    countryId: true,
+    stateId: true,
+    cityId: true,
+    genderId: true,
+
+    jobDepartmentId: true,
+    jobPositionId: true,
+
+    inactivatedAt: true,
+    startedAt: true,
+
+    documentIssueDate: true,
+    birthDay: true,
+  })
+  .extend({
+    bankAccount: preprocessNullableObject(
+      z
+        .object({
+          bankId: zfd.numeric(z.number().int()),
+          accountNumber: zfd.text(z.string().trim()),
+          accountTypeId: zfd.numeric(z.number().int()),
+          identityDocument: z.object({
+            documentTypeId: zfd.numeric(z.number().int()),
+            value: zfd.text(z.string().trim()),
+          }),
+        })
+        .nullish()
+    ),
+  })
+
+// todo update BankAccount schema references with preprocessNullableObject on employee forms
+
+export const companyDashboardEmployeeValidatorServer = withZod(
+  companyDashboardEmployeeSchema
+)
+export type CompanyDashboardEmployeeSchemaInput = z.infer<
+  typeof companyDashboardEmployeeSchema
+>

@@ -27,6 +27,7 @@ import { Container } from '~/components/Layout/Container'
 import { useToastError } from '~/hooks/useToastError'
 import { requirePermissionByUserId } from '~/services/permissions/permissions.server'
 import { PermissionCode } from '@prisma/client'
+import { GoBack } from '~/components/Button/GoBack'
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => {
   if (!data) {
@@ -159,6 +160,8 @@ const CompanyBenefitDetailsIndexRoute = () => {
 
   return (
     <Container className="my-10 w-full">
+      <GoBack redirectTo="/dashboard/manage/benefits" />
+
       <section className="my-10">
         <Title className="mb-10">Actualizar beneficio</Title>
 

@@ -1,0 +1,2 @@
+-- AlterEnum
+ALTER TYPE "PermissionCode" ADD VALUE 'MANAGE_EMPLOYEE_GROUP';

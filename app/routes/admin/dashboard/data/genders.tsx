@@ -1,9 +1,9 @@
 import type { LoaderArgs, MetaFunction } from '@remix-run/server-runtime'
 import type { TableRowProps } from '~/components/Lists/Table'
-import { Table } from '~/components/Lists/Table'
 
 import { json } from '@remix-run/node'
 import { Outlet, useLoaderData } from '@remix-run/react'
+import { Table } from '~/components/Lists/Table'
 import { requireAdminUserId } from '~/session.server'
 import { getGenders } from '~/services/gender/gender.server'
 import { Container } from '~/components/Layout/Container'
@@ -22,7 +22,7 @@ export const loader = async ({ request }: LoaderArgs) => {
 
 export const meta: MetaFunction = () => {
   return {
-    title: '[Admin] Géneros | HoyAdelantas',
+    title: '[Admin] Géneros | HoyTrabajas Beneficios',
   }
 }
 
@@ -36,6 +36,7 @@ export default function GenderIndexRoute() {
     href: `/admin/dashboard/data/genders/${genders.id}`,
     items: [genders.name],
   }))
+
   return (
     <>
       <Container>

@@ -86,7 +86,7 @@ export const action = async ({ request }: ActionArgs) => {
 
 export const meta: MetaFunction = () => {
   return {
-    title: 'Mi perfil | HoyAdelantas',
+    title: 'Mi perfil | HoyTrabajas Beneficios',
   }
 }
 

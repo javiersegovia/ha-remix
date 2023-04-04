@@ -391,10 +391,14 @@ export const deleteBenefitById = async (benefitId: Benefit['id']) => {
   }
 }
 
-export const getCompanyBenefits = async () => {
+export const getCompanyBenefitsByCompanyId = async (
+  companyId: Company['id']
+) => {
   return prisma.benefit.findMany({
     where: {
-      NOT: { companyBenefit: null },
+      companyBenefit: {
+        companyId,
+      },
     },
     select: {
       id: true,
@@ -409,4 +413,36 @@ export const getCompanyBenefits = async () => {
       name: 'asc',
     },
   })
+}
+
+export const getAvailableBenefitsByCompanyId = async (
+  companyId: Company['id']
+) => {
+  const enabledBenefits = await prisma.company.findUnique({
+    where: { id: companyId },
+    select: {
+      benefits: {
+        select: {
+          id: true,
+          name: true,
+        },
+      },
+    },
+  })
+
+  const companyBenefits = await prisma.benefit.findMany({
+    where: {
+      companyBenefit: {
+        companyId,
+      },
+    },
+    select: {
+      id: true,
+      name: true,
+    },
+  })
+
+  return [...(enabledBenefits?.benefits || []), ...companyBenefits].sort(
+    (a, b) => a.name.localeCompare(b.name)
+  )
 }

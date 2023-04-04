@@ -8,7 +8,10 @@ import { requireEmployee } from '~/session.server'
 import { TitleWithActions } from '~/components/Layout/TitleWithActions'
 import { ButtonIconVariants } from '~/components/Button'
 import { Tabs } from '~/components/Tabs/Tabs'
-import { requirePermissionByUserId } from '~/services/permissions/permissions.server'
+import {
+  hasPermissionByUserId,
+  requirePermissionByUserId,
+} from '~/services/permissions/permissions.server'
 import { PermissionCode } from '@prisma/client'
 import { useToastError } from '~/hooks/useToastError'
 import { getEmployeesByCompanyId } from '~/services/employee/employee.server'
@@ -20,7 +23,7 @@ export const meta: MetaFunction = () => {
   }
 }
 
-export const manageBenefitPaths = [
+export const employeeTabPaths = [
   {
     title: 'Colaboradores',
     path: '/dashboard/manage/employees',
@@ -36,26 +39,34 @@ export const loader = async ({ request }: LoaderArgs) => {
 
   await requirePermissionByUserId(
     employee.userId,
-    PermissionCode.MANAGE_BENEFIT
+    PermissionCode.MANAGE_EMPLOYEE_MAIN_INFORMATION
+  )
+
+  const canManageEmployeeGroup = await hasPermissionByUserId(
+    employee.userId,
+    PermissionCode.MANAGE_EMPLOYEE_GROUP
   )
 
   return json({
     employees: await getEmployeesByCompanyId(employee.companyId),
+    canManageEmployeeGroup,
   })
 }
 
 export default function DashboardEmployeesIndexRoute() {
-  const { employees } = useLoaderData<typeof loader>()
+  const { employees, canManageEmployeeGroup } = useLoaderData<typeof loader>()
 
   return (
     <>
       <Container className="w-full pb-10">
-        <Tabs items={manageBenefitPaths} className="mt-10 mb-8" />
+        {canManageEmployeeGroup && (
+          <Tabs items={employeeTabPaths} className="mt-10" />
+        )}
 
         <>
           <TitleWithActions
             title="Colaboradores"
-            className="mb-10"
+            className="my-10"
             actions={
               <Button
                 href="/dashboard/manage/employees/create"

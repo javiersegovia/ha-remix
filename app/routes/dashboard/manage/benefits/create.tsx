@@ -5,13 +5,12 @@ import type {
 } from '@remix-run/server-runtime'
 
 import { redirect } from '@remix-run/server-runtime'
-import { Link, useLoaderData } from '@remix-run/react'
+import { useLoaderData } from '@remix-run/react'
 import {
   unstable_parseMultipartFormData as parseMultipartFormData,
   json,
 } from '@remix-run/node'
 import { validationError } from 'remix-validated-form'
-import { AiOutlineArrowLeft } from 'react-icons/ai'
 
 import {
   getBenefitCategoriesByCompanyId,
@@ -27,6 +26,7 @@ import { Title } from '~/components/Typography/Title'
 import { requirePermissionByUserId } from '~/services/permissions/permissions.server'
 import { PermissionCode } from '@prisma/client'
 import { useToastError } from '~/hooks/useToastError'
+import { GoBack } from '~/components/Button/GoBack'
 
 export const meta: MetaFunction = () => {
   return {
@@ -101,13 +101,7 @@ export default function CreateBenefitRoute() {
 
   return (
     <Container className="my-10 w-full">
-      <Link
-        to="/dashboard/manage/benefits"
-        className="ml-auto mb-10 flex gap-3 font-medium text-cyan-600"
-      >
-        <AiOutlineArrowLeft className="text-2xl" />
-        <span className="tracking-widest">Regresar</span>
-      </Link>
+      <GoBack redirectTo="/dashboard/manage/benefits" />
 
       <Title className="mb-10">Crear beneficio</Title>
 

@@ -109,7 +109,6 @@ export const findOrCreateManyPermissions = async () => {
 }
 
 export const deleteUnusedPermissions = () => {
-  console.log(defaultPermissions)
   return prisma.permission.deleteMany({
     where: {
       NOT: {
