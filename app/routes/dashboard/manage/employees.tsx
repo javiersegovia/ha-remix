@@ -1,7 +1,7 @@
 import type { LoaderArgs, MetaFunction } from '@remix-run/server-runtime'
 
 import { json } from '@remix-run/node'
-import { useLoaderData } from '@remix-run/react'
+import { Outlet, useLoaderData } from '@remix-run/react'
 import { Button } from '~/components/Button'
 import { Container } from '~/components/Layout/Container'
 import { requireEmployee } from '~/session.server'
@@ -15,7 +15,7 @@ import {
 import { PermissionCode } from '@prisma/client'
 import { useToastError } from '~/hooks/useToastError'
 import { getEmployeesByCompanyId } from '~/services/employee/employee.server'
-import { EmployeeList } from '~/components/Lists/EmployeeList'
+import { CompanyEmployeeList } from '~/components/Lists/CompanyEmployeeList'
 
 export const meta: MetaFunction = () => {
   return {
@@ -69,7 +69,7 @@ export default function DashboardEmployeesIndexRoute() {
             className="my-10"
             actions={
               <Button
-                href="/dashboard/manage/employees/create"
+                href="/dashboard/manage/employees/create/account"
                 className="flex items-center px-4"
                 size="SM"
                 icon={ButtonIconVariants.CREATE}
@@ -80,12 +80,14 @@ export default function DashboardEmployeesIndexRoute() {
           />
 
           {employees?.length > 0 ? (
-            <EmployeeList employees={employees} showEmployeeGroup />
+            <CompanyEmployeeList employees={employees} />
           ) : (
             <p>No se han encontrado colaboradores</p>
           )}
         </>
       </Container>
+
+      <Outlet />
     </>
   )
 }

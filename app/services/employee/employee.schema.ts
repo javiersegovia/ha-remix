@@ -198,3 +198,40 @@ export const companyDashboardEmployeeValidatorServer = withZod(
 export type CompanyDashboardEmployeeSchemaInput = z.infer<
   typeof companyDashboardEmployeeSchema
 >
+
+export const employeeAccountSectionSchema = employeeSchemaClient
+  .extend({
+    benefitsIds: z.array(zfd.numeric(z.number())).nullish(),
+    employeeGroupsIds: z.array(zfd.text(z.string())).nullish(),
+  })
+  .pick({
+    user: true,
+    status: true,
+    benefitsIds: true,
+    employeeGroupsIds: true,
+  })
+
+export const employeeAccountSectionValidator = withZod(
+  employeeAccountSectionSchema
+)
+
+export type EmployeeAccountSectionSchemaInput = z.infer<
+  typeof employeeAccountSectionSchema
+>
+
+export const employeeAccountSectionSchemaWithEmailVerification =
+  employeeAccountSectionSchema.refine(
+    async (data) => {
+      const exist = await prisma.user.findUnique({
+        where: {
+          email: data.user.email,
+        },
+      })
+
+      return Boolean(!exist)
+    },
+    { message: 'El correo electrónico ya está en uso', path: ['user.email'] }
+  )
+
+export const employeeAccountSectionSchemaWithEmailVerificationValidator =
+  withZod(employeeAccountSectionSchemaWithEmailVerification)

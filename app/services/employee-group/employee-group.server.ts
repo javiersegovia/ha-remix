@@ -15,6 +15,15 @@ export const getEmployeeGroupsByCompanyId = async (
     orderBy: {
       name: 'asc',
     },
+    select: {
+      name: true,
+      id: true,
+      benefits: {
+        select: {
+          _count: true,
+        },
+      },
+    },
   })
 }
 

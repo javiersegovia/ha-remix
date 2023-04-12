@@ -4,16 +4,14 @@ import type {
   MetaFunction,
 } from '@remix-run/server-runtime'
 
-import { useLoaderData } from '@remix-run/react'
+import { Outlet, useMatches } from '@remix-run/react'
 import { redirect } from '@remix-run/node'
 import { json } from '@remix-run/server-runtime'
 import { PermissionCode } from '@prisma/client'
 import { validationError } from 'remix-validated-form'
 
-import { FormActions } from '~/components/FormFields/FormActions'
-import { Title } from '~/components/Typography/Title'
 import { companyDashboardEmployeeValidatorServer } from '~/services/employee/employee.schema'
-import { getBanks, validateBankAccount } from '~/services/bank/bank.server'
+import { getBanks } from '~/services/bank/bank.server'
 import { getCountries } from '~/services/country/country.server'
 import { getGenders } from '~/services/gender/gender.server'
 import { getJobDepartments } from '~/services/job-department/job-department.server'
@@ -30,7 +28,9 @@ import {
 import { getAvailableBenefitsByCompanyId } from '~/services/benefit/benefit.server'
 import { Container } from '~/components/Layout/Container'
 import { GoBack } from '~/components/Button/GoBack'
-import { EmployeeForm } from '~/components/Forms/EmployeeForm'
+import type { TabItem } from '~/components/Tabs/Tabs'
+import { TabDesign } from '~/components/Tabs/Tabs'
+import { Tabs } from '~/components/Tabs/Tabs'
 
 export const loader = async ({ request, params }: LoaderArgs) => {
   const currentEmployee = await requireEmployee(request)
@@ -128,26 +128,53 @@ export const action = async ({ request, params }: ActionArgs) => {
   return redirect(`/dashboard/manage/employees`, 301)
 }
 
+// const tabPaths: TabItem[] = [
+//   {
+//     title: 'Cuenta de usuario',
+//     path: '/dashboard/manage/employees/create/account',
+//   },
+//   {
+//     title: 'Información complementaria',
+//     path: '/dashboard/manage/employees/create/extra-information',
+//     disabled: true,
+//   },
+//   {
+//     title: 'Cuenta bancaria',
+//     path: '/dashboard/manage/employees/create/bank-account',
+//     disabled: true,
+//   },
+// ]
+
 export default function CompanyDashboardCreateEmployeeRoute() {
-  const {
-    countries,
-    jobPositions,
-    jobDepartments,
-    banks,
-    bankAccountTypes,
-    identityDocumentTypes,
-    genders,
-    userRoles,
-    canManageFinancialInformation,
-  } = useLoaderData<typeof loader>()
+  // const {
+  //   countries,
+  //   jobPositions,
+  //   jobDepartments,
+  //   banks,
+  //   bankAccountTypes,
+  //   identityDocumentTypes,
+  //   genders,
+  //   userRoles,
+  //   canManageFinancialInformation,
+  // } = useLoaderData<typeof loader>()
+
+  const matches = useMatches()
+  const tabPaths = matches.find(
+    (match) => match.handle && match.handle.tabPaths
+  )?.handle?.tabPaths as TabItem[]
 
   return (
     <Container className="w-full py-10">
-      <GoBack redirectTo="/dashboard/manage/employees" />
+      <GoBack
+        redirectTo="/dashboard/manage/employees"
+        description="Crear colaborador"
+      />
 
-      <Title>Crear colaborador</Title>
+      <Tabs items={tabPaths || []} design={TabDesign.UNDERLINE} />
 
-      <div className="mt-10">
+      <Outlet />
+
+      {/* <div className="mt-10">
         <EmployeeForm
           countries={countries}
           jobPositions={jobPositions}
@@ -163,7 +190,7 @@ export default function CompanyDashboardCreateEmployeeRoute() {
             canManageFinancialInformation,
           }}
         />
-      </div>
+      </div> */}
     </Container>
   )
 }

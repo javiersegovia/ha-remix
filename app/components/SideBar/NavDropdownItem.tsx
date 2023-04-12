@@ -41,8 +41,8 @@ export const NavDropdownItem: React.FC<NavDropdownItemProps> = ({
           'flex w-full cursor-pointer items-center rounded-2xl px-4 py-3  text-base font-semibold transition',
           variant === 'PRIMARY' &&
             (insideCurrentPath
-              ? `bg-steelBlue-200 text-steelBlue-400`
-              : `hover:bg-steelBlue-200 hover:text-steelBlue-400`),
+              ? `bg-steelBlue-300 text-steelBlue-700`
+              : `hover:bg-steelBlue-300 hover:text-steelBlue-700`),
           variant === 'DARK' &&
             (insideCurrentPath ? `bg-gray-700 text-white` : `hover:bg-gray-700`)
         )}

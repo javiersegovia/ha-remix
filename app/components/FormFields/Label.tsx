@@ -4,17 +4,19 @@ import { twMerge } from 'tailwind-merge'
 
 interface ILabelProps {
   htmlFor: string
+  required?: boolean
   description?: string
   className?: string
   children?: React.ReactNode
 }
 
 export const labelStyles =
-  'mb-1 block text-xs font-medium text-steelBlue-600' as const
+  'mb-1 block text-xs font-medium text-steelBlue-700' as const
 
 export const Label = ({
   htmlFor = '',
   className = '',
+  required = false,
   description,
   children,
   ...otherProps
@@ -25,7 +27,11 @@ export const Label = ({
       className={twMerge(clsx('block', className))}
       {...otherProps}
     >
-      {description && <span className={labelStyles}>{description}</span>}
+      {description && (
+        <p className={labelStyles}>
+          {description} {required && <span className="text-red-500">*</span>}
+        </p>
+      )}
       {children}
     </label>
   )

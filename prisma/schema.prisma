@@ -224,8 +224,7 @@ model Employee {
   city      City?    @relation(fields: [cityId], references: [id], onDelete: SetNull)
   cityId    Int?
 
-  employeeGroup   EmployeeGroup? @relation(fields: [employeeGroupId], references: [id], onDelete: SetNull)
-  employeeGroupId String?
+  employeeGroups EmployeeGroup[]
 
   zapsignDocuments ZapsignDocument[]
 

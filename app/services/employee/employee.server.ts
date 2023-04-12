@@ -10,6 +10,7 @@ import type { WelcomeSchemaInput } from '~/schemas/welcome.schema'
 import type { EditAccountSchemaInput } from '~/schemas/edit-account.schema'
 import type {
   CompanyDashboardEmployeeSchemaInput,
+  EmployeeAccountSectionSchemaInput,
   EmployeeSchemaInput,
 } from './employee.schema'
 
@@ -23,7 +24,11 @@ import { Response } from '@remix-run/node'
 import { badRequest, notFound } from '~/utils/responses'
 import { hash } from 'bcryptjs'
 import { prisma } from '~/db.server'
-import { connect, connectOrDisconnect } from '~/utils/relationships'
+import {
+  connect,
+  connectMany,
+  connectOrDisconnect,
+} from '~/utils/relationships'
 import { generateExpirationDate, generateRandomToken } from '../auth.server'
 import { sendInvitation } from '../email/email.server'
 import { sanitizeDate } from '~/utils/formatDate'
@@ -117,7 +122,7 @@ export const getEmployeesByCompanyId = async (
           name: true,
         },
       },
-      employeeGroup: {
+      employeeGroups: {
         select: {
           name: true,
         },
@@ -450,6 +455,77 @@ export const createEmployeeByCompanyAdminForm = async (
     // Todo LOGGER: Log error and save to a file
     console.error(err)
     return { error: err, employee: null }
+  }
+}
+
+export const createEmployeeByCompanyAdminAccountSectionForm = async (
+  data: EmployeeAccountSectionSchemaInput,
+  companyId: Company['id']
+) => {
+  const {
+    user,
+    status = EmployeeStatus.INACTIVE,
+    benefitsIds,
+    employeeGroupsIds,
+  } = data
+
+  try {
+    const {
+      loginExpiration,
+      loginToken,
+      firstName,
+      lastName,
+      email,
+      verifiedEmail,
+    } = await generateCreateUserInput(user)
+
+    const employee = await prisma.employee.create({
+      data: {
+        user: {
+          create: {
+            loginExpiration,
+            loginToken,
+            firstName,
+            lastName,
+            email,
+            verifiedEmail,
+            role: connect(user.roleId),
+          },
+        },
+        status,
+        company: connect(companyId),
+
+        benefits: connectMany(benefitsIds),
+        employeeGroups: connectMany(employeeGroupsIds),
+
+        currency: {
+          connectOrCreate: {
+            where: {
+              code: 'COP',
+            },
+            create: {
+              code: 'COP',
+              name: 'Peso Colombiano',
+            },
+          },
+        },
+      },
+    })
+
+    sendInvitation({
+      firstName: user.firstName,
+      destination: user.email,
+      token: loginToken,
+    })
+
+    return employee
+  } catch (err) {
+    // Todo LOGGER: Log error and save to a file
+    console.error(err)
+    return badRequest({
+      message: 'Ocurrió un error durante la creación del colaborador',
+      redirect: '/dashboard/manage/employees',
+    })
   }
 }
 

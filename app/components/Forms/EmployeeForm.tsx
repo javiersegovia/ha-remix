@@ -9,7 +9,6 @@ import type { getBanks } from '~/services/bank/bank.server'
 import type { loader as cityLoader } from '~/routes/__api/cities'
 import type { loader as stateLoader } from '~/routes/__api/states'
 import type { Validator } from 'remix-validated-form'
-import { useFormContext } from 'remix-validated-form'
 import type { CompanyDashboardEmployeeSchemaInput } from '~/services/employee/employee.schema'
 import type { EnumOption } from '~/schemas/helpers'
 import type { getCountries } from '~/services/country/country.server'
@@ -197,10 +196,6 @@ export const EmployeeForm = ({
     setValue: setCityIdValue,
   })
 
-  const { fieldErrors } = useFormContext(formId)
-
-  console.log({ fieldErrors })
-
   return (
     <ValidatedForm
       id={formId}
@@ -220,6 +215,7 @@ export const EmployeeForm = ({
               type="text"
               label="Nombre"
               placeholder="Nombre del colaborador"
+              required
             />
           </FormGridItem>
 
@@ -229,6 +225,7 @@ export const EmployeeForm = ({
               type="text"
               label="Apellido"
               placeholder="Apellido del colaborador"
+              required
             />
           </FormGridItem>
 
@@ -238,6 +235,7 @@ export const EmployeeForm = ({
               type="text"
               label="Correo electrónico"
               placeholder="Correo electrónico del colaborador"
+              required
             />
           </FormGridItem>
 

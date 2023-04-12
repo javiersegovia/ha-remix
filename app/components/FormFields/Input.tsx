@@ -16,6 +16,7 @@ export const inputDisabledStyles =
 type TInputProps = {
   name: string
   type: string
+  required?: boolean
   label?: string
   placeholder?: string
   error?: string
@@ -35,6 +36,7 @@ export const Input: React.FC<TInput> = ({
   type = 'text',
   label,
   error,
+  required = false,
   disabled,
   isTextArea = false,
   defaultValue,
@@ -47,7 +49,12 @@ export const Input: React.FC<TInput> = ({
   const fieldError: string | undefined = error || formError
 
   return (
-    <Label htmlFor={name} description={label} className="block w-full">
+    <Label
+      htmlFor={name}
+      description={label}
+      className="block w-full"
+      required={required}
+    >
       <Tagname
         {...otherProps}
         {...getInputProps({

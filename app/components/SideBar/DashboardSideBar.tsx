@@ -88,7 +88,7 @@ export const DashboardSideBar = ({
     <>
       <section
         className={clsx(
-          'flex min-h-screen flex-col bg-steelBlue-900',
+          'flex min-h-screen flex-col bg-steelBlue-800',
           variant === 'DARK' && 'bg-gray-900'
         )}
       >
@@ -109,7 +109,7 @@ export const DashboardSideBar = ({
         <nav
           ref={navRef}
           className={clsx(
-            'fixed left-0 top-0 z-20 flex w-full origin-left transform flex-col items-stretch overflow-y-auto overflow-x-hidden bg-steelBlue-900 px-3 pb-10 md:h-full md:w-56 md:translate-y-0',
+            'fixed left-0 top-0 z-20 flex w-full origin-left transform flex-col items-stretch overflow-y-auto overflow-x-hidden bg-steelBlue-800 px-3 pb-10 md:h-full md:w-56 md:translate-y-0',
             showMobileMenu ? 'translate-y-0' : '-translate-y-full',
             variant === 'DARK' && 'bg-gray-900'
           )}
