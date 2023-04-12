@@ -106,7 +106,7 @@ export function EmployeeList({ employees }: EmployeeListProps) {
                     </TableData>
 
                     <TableData isCentered>
-                      <p className="text-xs font-semibold text-gray-700">
+                      <p className="whitespace-pre-wrap text-xs font-semibold text-gray-700">
                         {employee.membership?.name || '-'}
                       </p>
                     </TableData>

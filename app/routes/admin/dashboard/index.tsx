@@ -18,14 +18,13 @@ import { Box } from '~/components/Layout/Box'
 import { Select } from '~/components/FormFields/Select'
 import { PaymentDayList } from '~/components/Lists/PaymentDaysList'
 import { Container } from '~/components/Layout/Container'
-
-const lastPaymentMonths = getLastPaymentMonths()
+import { useEffect } from 'react'
 
 const validator = withZod(z.object({ month: z.string() }))
 
 export const meta: MetaFunction = () => {
   return {
-    title: '[Admin] Resumen | HoyAdelantas',
+    title: '[Admin] Resumen | HoyTrabajas Beneficios',
   }
 }
 
@@ -33,22 +32,31 @@ export const loader = async ({ request }: LoaderArgs) => {
   await requireAdminUserId(request)
   const url = new URL(request.url)
   const month = url.searchParams.get('month')
+  const lastPaymentMonths = getLastPaymentMonths()
   const data = await getMonthlyOverview(month || lastPaymentMonths[0].id)
 
-  return json(data)
+  return json({ ...data, lastPaymentMonths })
 }
 
 export default function AdminDashboardIndexRoute() {
   const loaderData = useLoaderData<typeof loader>()
   const fetcher = useFetcher<typeof loader>()
 
-  const { overview, requestDays } = fetcher?.data || loaderData
+  const { overview, requestDays, lastPaymentMonths } =
+    fetcher?.data || loaderData
+
+  useEffect(() => {
+    if (fetcher.type === 'init') {
+      fetcher.load(`/admin/dashboard?index&month=${lastPaymentMonths[0]?.id}`)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [fetcher])
 
   return (
     <>
       <Container>
         <div className="my-2 flex flex-col items-center justify-between gap-6 lg:flex-row">
-          <Title as="h1">Resumen del mes</Title>
+          <Title as="h1">Resumen del mes (Nómina)</Title>
 
           <div className="w-full md:w-72">
             <ValidatedForm

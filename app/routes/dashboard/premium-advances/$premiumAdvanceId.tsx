@@ -8,7 +8,7 @@ import type { ExtractRemixResponse } from '~/utils/type-helpers'
 
 import { useLoaderData } from '@remix-run/react'
 import { json } from '@remix-run/server-runtime'
-import { badRequest, notFound, unauthorized } from 'remix-utils'
+import { badRequest, notFound, unauthorized } from '~/utils/responses'
 import {
   PremiumAdvanceStatus,
   PremiumAdvanceHistoryActor,
@@ -28,6 +28,7 @@ export const loader = async ({ request, params }: LoaderArgs) => {
   if (!premiumAdvanceId) {
     throw notFound({
       message: 'No se ha encontrado el ID del adelanto de prima',
+      redirect: '/dashboard/premium-advances',
     })
   }
 
@@ -36,11 +37,15 @@ export const loader = async ({ request, params }: LoaderArgs) => {
   if (!premiumAdvance) {
     throw notFound({
       message: 'No se ha encontrado información sobre el adelanto de prima',
+      redirect: '/dashboard/premium-advances',
     })
   }
 
   if (employee.id !== premiumAdvance.employeeId) {
-    throw unauthorized({ message: 'No estás autorizado' })
+    throw unauthorized({
+      message: 'No estás autorizado',
+      redirect: '/dashboard/premium-advances',
+    })
   }
 
   return json({
@@ -56,18 +61,25 @@ export const action = async ({ request, params }: ActionArgs) => {
   const { premiumAdvanceId } = params
 
   if (!premiumAdvanceId) {
-    throw badRequest('No se ha encontrado el ID del adelanto de prima')
+    throw badRequest({
+      message: 'No se ha encontrado el ID del adelanto de prima',
+      redirect: '/dashboard/premium-advances',
+    })
   }
 
   const premiumAdvance = await getPremiumAdvanceById(premiumAdvanceId)
 
   if (!premiumAdvance) {
-    throw badRequest('No se ha encontrado el ID del adelanto de prima')
+    throw badRequest({
+      message: 'No se ha encontrado el ID del adelanto de prima',
+      redirect: '/dashboard/premium-advances',
+    })
   }
 
   if (employee.id !== premiumAdvance.employeeId) {
     throw unauthorized({
       message: 'No tienes permisos para ejecutar esta acción',
+      redirect: '/dashboard/premium-advances',
     })
   }
 
@@ -85,9 +97,11 @@ export const action = async ({ request, params }: ActionArgs) => {
     return null
   }
 
-  throw badRequest(
-    'Ha ocurrido un error en los datos subministrados dentro del formulario.'
-  )
+  throw badRequest({
+    message:
+      'Ha ocurrido un error en los datos subministrados dentro del formulario.',
+    redirect: '/dashboard/premium-advances',
+  })
 }
 
 export const meta: MetaFunction = () => {

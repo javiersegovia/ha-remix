@@ -3,12 +3,12 @@ import { BenefitCategoryFactory } from './benefit-category.factory'
 import {
   createBenefitCategory,
   deleteBenefitCategoryById,
-  getBenefitCategories,
+  getBenefitCategoriesWithoutCompanies,
   getBenefitCategoryById,
   updateBenefitCategoryById,
 } from './benefit-category.server'
 
-describe('getBenefitCategories', () => {
+describe('getBenefitCategoriesWithoutCompanies', () => {
   it('returns an array of Benefit Categories', async () => {
     // Arrange
     const expectedBenefits = BenefitCategoryFactory.buildList(3)
@@ -18,7 +18,7 @@ describe('getBenefitCategories', () => {
     )
 
     // Act
-    const result = await getBenefitCategories()
+    const result = await getBenefitCategoriesWithoutCompanies()
 
     // Assert
     expect(prisma.benefitCategory.findMany).toHaveBeenCalledOnce()

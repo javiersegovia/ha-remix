@@ -8,7 +8,11 @@ import type {
 import type { UploadEmployeeSchemaInput } from '~/schemas/upload-employees.schema'
 import type { WelcomeSchemaInput } from '~/schemas/welcome.schema'
 import type { EditAccountSchemaInput } from '~/schemas/edit-account.schema'
-import type { EmployeeSchemaInput } from './employee.schema'
+import type {
+  CompanyDashboardEmployeeSchemaInput,
+  EmployeeAccountSectionSchemaInput,
+  EmployeeSchemaInput,
+} from './employee.schema'
 
 import {
   EmployeeRole,
@@ -16,11 +20,15 @@ import {
   PayrollAdvancePaymentMethod,
 } from '@prisma/client'
 import { EmployeeStatus } from '@prisma/client'
-import { Response, json } from '@remix-run/node'
-import { badRequest } from 'remix-utils'
+import { Response } from '@remix-run/node'
+import { badRequest, notFound } from '~/utils/responses'
 import { hash } from 'bcryptjs'
 import { prisma } from '~/db.server'
-import { connect, connectOrDisconnect } from '~/utils/relationships'
+import {
+  connect,
+  connectMany,
+  connectOrDisconnect,
+} from '~/utils/relationships'
 import { generateExpirationDate, generateRandomToken } from '../auth.server'
 import { sendInvitation } from '../email/email.server'
 import { sanitizeDate } from '~/utils/formatDate'
@@ -77,6 +85,7 @@ export const getEmployeeById = async (employeeId: Employee['id']) => {
           firstName: true,
           lastName: true,
           email: true,
+          roleId: true,
         },
       },
     },
@@ -113,6 +122,11 @@ export const getEmployeesByCompanyId = async (
           name: true,
         },
       },
+      employeeGroups: {
+        select: {
+          name: true,
+        },
+      },
       user: {
         select: {
           id: true,
@@ -135,7 +149,10 @@ export const requireEmployee = async (
   })
 
   if (!employee) {
-    throw json({ error: 'La compañía no ha sido encontrada', status: 404 })
+    throw notFound({
+      message: 'La compañía no ha sido encontrada',
+      redirect: '/',
+    })
   }
 
   return employee
@@ -262,6 +279,7 @@ export const createEmployee = async (
           create: {
             ...newUser,
             password: user.password ? await hash(user.password, 10) : undefined,
+            role: connect(user.roleId),
           },
         },
         status,
@@ -297,6 +315,217 @@ export const createEmployee = async (
     // Todo LOGGER: Log error and save to a file
     console.error(err)
     return { error: err, employee: null }
+  }
+}
+
+export const createEmployeeByCompanyAdminForm = async (
+  data: CompanyDashboardEmployeeSchemaInput,
+  companyId: Company['id']
+) => {
+  const {
+    user,
+    status = EmployeeStatus.INACTIVE,
+    bankAccount,
+
+    birthDay,
+    documentIssueDate,
+
+    genderId,
+    countryId,
+    jobDepartmentId,
+    jobPositionId,
+    stateId,
+    cityId,
+
+    address,
+    numberOfChildren,
+    phone,
+
+    startedAt,
+    inactivatedAt,
+  } = data
+
+  const userExists = await prisma.user.findFirst({
+    where: {
+      email: {
+        equals: user.email,
+        mode: 'insensitive',
+      },
+    },
+  })
+
+  if (userExists) {
+    return {
+      fieldErrors: { 'user.email': 'El correo ya está en uso' },
+      employee: null,
+    }
+  }
+
+  const createBankAccount: Prisma.EmployeeCreateInput['bankAccount'] =
+    bankAccount &&
+    bankAccount.bankId &&
+    bankAccount.accountNumber &&
+    bankAccount.accountTypeId &&
+    bankAccount.identityDocument?.documentTypeId &&
+    bankAccount.identityDocument?.value
+      ? {
+          create: {
+            accountNumber: bankAccount.accountNumber,
+            bank: connect(bankAccount.bankId),
+
+            accountType: connect(bankAccount.accountTypeId),
+
+            identityDocument: {
+              create: {
+                value: bankAccount.identityDocument.value,
+                documentType: connect(
+                  bankAccount.identityDocument.documentTypeId
+                ),
+              },
+            },
+          },
+        }
+      : undefined
+
+  try {
+    const {
+      loginExpiration,
+      loginToken,
+      firstName,
+      lastName,
+      email,
+      verifiedEmail,
+    } = await generateCreateUserInput(user)
+
+    const employee = await prisma.employee.create({
+      data: {
+        startedAt: sanitizeDate(startedAt),
+        inactivatedAt: sanitizeDate(inactivatedAt),
+        address,
+        phone,
+        numberOfChildren: numberOfChildren || undefined,
+
+        birthDay: sanitizeDate(birthDay),
+        documentIssueDate: sanitizeDate(documentIssueDate),
+
+        gender: connect(genderId),
+        country: connect(countryId),
+        state: connect(stateId),
+        city: connect(cityId),
+
+        user: {
+          create: {
+            loginExpiration,
+            loginToken,
+            firstName,
+            lastName,
+            email,
+            verifiedEmail,
+            role: connect(user.roleId),
+          },
+        },
+        status,
+        company: connect(companyId),
+        jobDepartment: connect(jobDepartmentId),
+        jobPosition: connect(jobPositionId),
+
+        currency: {
+          connectOrCreate: {
+            where: {
+              code: 'COP',
+            },
+            create: {
+              code: 'COP',
+              name: 'Peso Colombiano',
+            },
+          },
+        },
+        bankAccount: createBankAccount,
+      },
+    })
+
+    sendInvitation({
+      firstName: user.firstName,
+      destination: user.email,
+      token: loginToken,
+    })
+
+    return { employee }
+  } catch (err) {
+    // Todo LOGGER: Log error and save to a file
+    console.error(err)
+    return { error: err, employee: null }
+  }
+}
+
+export const createEmployeeByCompanyAdminAccountSectionForm = async (
+  data: EmployeeAccountSectionSchemaInput,
+  companyId: Company['id']
+) => {
+  const {
+    user,
+    status = EmployeeStatus.INACTIVE,
+    benefitsIds,
+    employeeGroupsIds,
+  } = data
+
+  try {
+    const {
+      loginExpiration,
+      loginToken,
+      firstName,
+      lastName,
+      email,
+      verifiedEmail,
+    } = await generateCreateUserInput(user)
+
+    const employee = await prisma.employee.create({
+      data: {
+        user: {
+          create: {
+            loginExpiration,
+            loginToken,
+            firstName,
+            lastName,
+            email,
+            verifiedEmail,
+            role: connect(user.roleId),
+          },
+        },
+        status,
+        company: connect(companyId),
+
+        benefits: connectMany(benefitsIds),
+        employeeGroups: connectMany(employeeGroupsIds),
+
+        currency: {
+          connectOrCreate: {
+            where: {
+              code: 'COP',
+            },
+            create: {
+              code: 'COP',
+              name: 'Peso Colombiano',
+            },
+          },
+        },
+      },
+    })
+
+    sendInvitation({
+      firstName: user.firstName,
+      destination: user.email,
+      token: loginToken,
+    })
+
+    return employee
+  } catch (err) {
+    // Todo LOGGER: Log error and save to a file
+    console.error(err)
+    return badRequest({
+      message: 'Ocurrió un error durante la creación del colaborador',
+      redirect: '/dashboard/manage/employees',
+    })
   }
 }
 
@@ -458,6 +687,7 @@ export const updateEmployeeById = async (
           update: {
             ...user,
             password: user.password ? await hash(user.password, 10) : undefined,
+            roleId: user.roleId,
           },
         },
       },
@@ -465,7 +695,133 @@ export const updateEmployeeById = async (
   } catch (err) {
     // Todo LOGGER: Log error and save to a file
     console.error(err)
-    throw badRequest('Ha ocurrido un error inesperado')
+    throw badRequest({
+      message: 'Ha ocurrido un error inesperado',
+      redirect: null,
+    })
+  }
+}
+
+export const updateEmployeeByCompanyAdminForm = async (
+  data: CompanyDashboardEmployeeSchemaInput,
+  employeeId: Employee['id']
+) => {
+  const existingEmployee = await requireEmployee({ where: { id: employeeId } })
+
+  const {
+    status = EmployeeStatus.INACTIVE,
+
+    birthDay,
+    documentIssueDate,
+
+    genderId,
+    countryId,
+    jobDepartmentId,
+    jobPositionId,
+
+    stateId,
+    cityId,
+
+    address,
+    numberOfChildren,
+    phone,
+
+    user,
+    bankAccount,
+
+    inactivatedAt,
+    startedAt,
+  } = data
+
+  const upsertBankAccount: Prisma.EmployeeUpdateInput['bankAccount'] =
+    bankAccount
+      ? {
+          upsert: {
+            create: {
+              accountNumber: bankAccount.accountNumber,
+              bank: connect(bankAccount.bankId),
+              accountType: connect(bankAccount.accountTypeId),
+              identityDocument: {
+                create: {
+                  value: bankAccount.identityDocument?.value,
+                  documentType: connect(
+                    bankAccount.identityDocument?.documentTypeId
+                  ),
+                },
+              },
+            },
+            update: {
+              accountNumber: bankAccount.accountNumber,
+              bank: connect(bankAccount.bankId),
+              accountType: connect(bankAccount.accountTypeId),
+              identityDocument: {
+                update: {
+                  value: bankAccount.identityDocument?.value,
+                  documentType: connect(
+                    bankAccount.identityDocument?.documentTypeId
+                  ),
+                },
+              },
+            },
+          },
+        }
+      : {
+          delete: !!existingEmployee.bankAccountId,
+        }
+
+  try {
+    const newInactivatedAt =
+      existingEmployee.status === EmployeeStatus.ACTIVE &&
+      status === EmployeeStatus.INACTIVE
+        ? new Date()
+        : inactivatedAt
+
+    return await prisma.employee.update({
+      where: {
+        id: employeeId,
+      },
+      data: {
+        startedAt: sanitizeDate(startedAt),
+        inactivatedAt: sanitizeDate(newInactivatedAt),
+
+        birthDay: sanitizeDate(birthDay),
+        documentIssueDate: sanitizeDate(documentIssueDate),
+        address,
+        phone,
+        status,
+        numberOfChildren: numberOfChildren || undefined,
+
+        gender: connectOrDisconnect(genderId, !!existingEmployee.genderId),
+        country: connectOrDisconnect(countryId, !!existingEmployee.countryId),
+        state: connectOrDisconnect(stateId, !!existingEmployee.stateId),
+        city: connectOrDisconnect(cityId, !!existingEmployee.cityId),
+        jobDepartment: connectOrDisconnect(
+          jobDepartmentId,
+          !!existingEmployee.jobDepartmentId
+        ),
+        jobPosition: connectOrDisconnect(
+          jobPositionId,
+          !!existingEmployee.jobPositionId
+        ),
+
+        bankAccount: upsertBankAccount,
+
+        user: {
+          update: {
+            ...user,
+            password: user.password ? await hash(user.password, 10) : undefined,
+            roleId: user.roleId,
+          },
+        },
+      },
+    })
+  } catch (err) {
+    // Todo LOGGER: Log error and save to a file
+    console.error(err)
+    throw badRequest({
+      message: 'Ha ocurrido un error inesperado',
+      redirect: null,
+    })
   }
 }
 
@@ -523,7 +879,10 @@ export const updateEmployeeByWelcomeForm = async (
   } catch (err) {
     // Todo LOGGER: Log error and save to a file
     console.error(err)
-    throw badRequest('Ha ocurrido un error inesperado')
+    throw badRequest({
+      message: 'Ha ocurrido un error inesperado',
+      redirect: null,
+    })
   }
 }
 
@@ -598,7 +957,10 @@ export const updateEmployeeByAccountForm = async (
   } catch (err) {
     // Todo LOGGER: Log error and save to a file
     console.error(err)
-    throw badRequest('Ha ocurrido un error inesperado')
+    throw badRequest({
+      message: 'Ha ocurrido un error inesperado',
+      redirect: null,
+    })
   }
 }
 
@@ -611,7 +973,10 @@ export const uploadEmployees = async (
   })
 
   if (!company) {
-    throw badRequest('No se ha encontrado el ID de la compañía')
+    throw badRequest({
+      message: 'No se ha encontrado el ID de la compañía',
+      redirect: null,
+    })
   }
 
   const errorResponses: Record<string, string[]> = {}

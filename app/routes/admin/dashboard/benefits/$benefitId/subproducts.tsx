@@ -3,7 +3,7 @@ import type { TableRowProps } from '~/components/Lists/Table'
 
 import { Outlet, useLoaderData } from '@remix-run/react'
 import { json } from '@remix-run/node'
-import { badRequest } from 'remix-utils'
+import { badRequest } from '~/utils/responses'
 
 import { Table } from '~/components/Lists/Table'
 import { Button, ButtonIconVariants } from '~/components/Button'
@@ -14,8 +14,9 @@ export const loader = async ({ request, params }: LoaderArgs) => {
   const { benefitId } = params
 
   if (!benefitId) {
-    throw badRequest(null, {
-      statusText: 'No se ha encontrado el ID del beneficio',
+    throw badRequest({
+      message: 'No se ha encontrado el ID del beneficio',
+      redirect: '/admin/dashboard/benefits',
     })
   }
 

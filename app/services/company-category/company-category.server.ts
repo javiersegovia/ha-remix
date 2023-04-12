@@ -1,7 +1,7 @@
 import type { CompanyCategory } from '@prisma/client'
 import { prisma } from '~/db.server'
 import type { CompanyCategoryInputSchema } from './company-category.schema'
-import { badRequest } from 'remix-utils'
+import { badRequest } from '~/utils/responses'
 
 export const getCompanyCategories = () => {
   return prisma.companyCategory.findMany({
@@ -50,9 +50,11 @@ export const updateCompanyCategoryById = async (
     })
   } catch (e) {
     console.error(e)
-    throw badRequest(
-      'Ha ocurrido un error, no se encontro el ID de la categoría de la compañía'
-    )
+    throw badRequest({
+      message:
+        'Ha ocurrido un error, no se encontro el ID de la categoría de la compañía',
+      redirect: null,
+    })
   }
 }
 
@@ -66,8 +68,10 @@ export const deleteCompanyCategoryById = async (id: CompanyCategory['id']) => {
     return deletedCompanyCategory.id
   } catch (e) {
     console.error(e)
-    throw badRequest(
-      'Ha ocurrido un error, no se encontro el ID de la categoría de la compañía'
-    )
+    throw badRequest({
+      message:
+        'Ha ocurrido un error, no se encontro el ID de la categoría de la compañía',
+      redirect: null,
+    })
   }
 }

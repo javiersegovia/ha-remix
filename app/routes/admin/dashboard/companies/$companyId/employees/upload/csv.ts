@@ -2,7 +2,7 @@ import type { UploadEmployeeSchemaInput } from '~/schemas/upload-employees.schem
 import type { ActionArgs } from '@remix-run/server-runtime'
 
 import { redirect } from '@remix-run/server-runtime'
-import { badRequest } from 'remix-utils'
+import { badRequest } from '~/utils/responses'
 import { parse } from 'csv-parse/sync'
 import { stringify } from 'csv-stringify/sync'
 import { requireAdminUserId } from '~/session.server'
@@ -14,14 +14,20 @@ export const action = async ({ request, params }: ActionArgs) => {
   const { companyId } = params
 
   if (!companyId) {
-    throw badRequest('No se ha encontrado el ID de la compañía')
+    throw badRequest({
+      message: 'No se ha encontrado el ID de la compañía',
+      redirect: '/admin/dashboard/companies',
+    })
   }
 
   const formData = await request.formData()
   const csvFile = formData.get('csvFile') as File
 
   if (!csvFile) {
-    throw badRequest('No se ha encontrado el archivo CSV')
+    throw badRequest({
+      message: 'No se ha encontrado el archivo CSV',
+      redirect: `/admin/dashboard/companies/${companyId}/employees/upload`,
+    })
   }
 
   const csvString = await csvFile.text()
@@ -79,6 +85,9 @@ export const action = async ({ request, params }: ActionArgs) => {
     return redirect(`/admin/dashboard/companies/${companyId}/employees`)
   } catch (e) {
     console.error(e)
-    throw badRequest('Ha ocurrido un error inesperado.')
+    throw badRequest({
+      message: 'Ha ocurrido un error inesperado.',
+      redirect: `/admin/dashboard/companies/${companyId}/employees/upload`,
+    })
   }
 }

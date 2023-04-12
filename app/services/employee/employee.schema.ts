@@ -2,10 +2,12 @@ import { EmployeeRole, EmployeeStatus } from '@prisma/client'
 import { withZod } from '@remix-validated-form/with-zod'
 import { z } from 'zod'
 import { zfd } from 'zod-form-data'
+import { prisma } from '~/db.server'
+import { preprocessNullableObject } from '~/utils/validation'
 import { zDate } from '../../schemas/helpers'
 import { bankAccountSchema } from '../bank/bank.schema'
 
-export const employeeSchema = z.object({
+export const employeeSchemaClient = z.object({
   salaryFiat: zfd.numeric(z.number().nullish().default(null)),
   salaryCrypto: zfd.numeric(z.number().nullish().default(null)),
   advanceMaxAmount: zfd.numeric(z.number().default(0)),
@@ -40,6 +42,8 @@ export const employeeSchema = z.object({
         })
         .trim()
     ),
+
+    roleId: zfd.text(z.string().nullable().default(null)),
   }),
 
   phone: zfd.text(z.string().nullable().default(null)),
@@ -130,5 +134,104 @@ export const employeeSchema = z.object({
     .default(null),
 })
 
-export const employeeValidator = withZod(employeeSchema)
-export type EmployeeSchemaInput = z.infer<typeof employeeSchema>
+// Todo: Refactor this function to be able to use it with "update" functions
+export const employeeSchemaServer = employeeSchemaClient.refine(
+  async (data) => {
+    const exist = await prisma.user.findUnique({
+      where: {
+        email: data.user.email,
+      },
+    })
+
+    return Boolean(!exist)
+  },
+  { message: 'El correo electrónico ya está en uso', path: ['user.email'] }
+)
+
+export const employeeValidatorClient = withZod(employeeSchemaClient)
+export const employeeValidatorServer = withZod(employeeSchemaServer)
+
+export type EmployeeSchemaInput = z.infer<typeof employeeSchemaClient>
+
+export const companyDashboardEmployeeSchema = employeeSchemaClient
+  .pick({
+    user: true,
+    phone: true,
+    address: true,
+    numberOfChildren: true,
+    status: true,
+    countryId: true,
+    stateId: true,
+    cityId: true,
+    genderId: true,
+
+    jobDepartmentId: true,
+    jobPositionId: true,
+
+    inactivatedAt: true,
+    startedAt: true,
+
+    documentIssueDate: true,
+    birthDay: true,
+  })
+  .extend({
+    bankAccount: preprocessNullableObject(
+      z
+        .object({
+          bankId: zfd.numeric(z.number().int()),
+          accountNumber: zfd.text(z.string().trim()),
+          accountTypeId: zfd.numeric(z.number().int()),
+          identityDocument: z.object({
+            documentTypeId: zfd.numeric(z.number().int()),
+            value: zfd.text(z.string().trim()),
+          }),
+        })
+        .nullish()
+    ),
+  })
+
+// todo update BankAccount schema references with preprocessNullableObject on employee forms
+
+export const companyDashboardEmployeeValidatorServer = withZod(
+  companyDashboardEmployeeSchema
+)
+export type CompanyDashboardEmployeeSchemaInput = z.infer<
+  typeof companyDashboardEmployeeSchema
+>
+
+export const employeeAccountSectionSchema = employeeSchemaClient
+  .extend({
+    benefitsIds: z.array(zfd.numeric(z.number())).nullish(),
+    employeeGroupsIds: z.array(zfd.text(z.string())).nullish(),
+  })
+  .pick({
+    user: true,
+    status: true,
+    benefitsIds: true,
+    employeeGroupsIds: true,
+  })
+
+export const employeeAccountSectionValidator = withZod(
+  employeeAccountSectionSchema
+)
+
+export type EmployeeAccountSectionSchemaInput = z.infer<
+  typeof employeeAccountSectionSchema
+>
+
+export const employeeAccountSectionSchemaWithEmailVerification =
+  employeeAccountSectionSchema.refine(
+    async (data) => {
+      const exist = await prisma.user.findUnique({
+        where: {
+          email: data.user.email,
+        },
+      })
+
+      return Boolean(!exist)
+    },
+    { message: 'El correo electrónico ya está en uso', path: ['user.email'] }
+  )
+
+export const employeeAccountSectionSchemaWithEmailVerificationValidator =
+  withZod(employeeAccountSectionSchemaWithEmailVerification)

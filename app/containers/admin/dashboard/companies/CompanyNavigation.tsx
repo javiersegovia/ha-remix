@@ -36,9 +36,6 @@ export const CompanyNavigation = ({
       <Container className="pb-10">
         <div className="my-8">
           <Title>{company?.name || 'Detalles de compañía'}</Title>
-          <p className="mt-1 block text-xs uppercase text-gray-500">
-            {company?.id}
-          </p>
         </div>
 
         <Tabs items={navPaths} />

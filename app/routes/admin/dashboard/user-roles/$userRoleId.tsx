@@ -5,7 +5,7 @@ import type {
 } from '@remix-run/server-runtime'
 import { json, redirect } from '@remix-run/node'
 import { Link, useLoaderData } from '@remix-run/react'
-import { badRequest } from 'remix-utils'
+import { badRequest } from '~/utils/responses'
 import { validationError, ValidatedForm } from 'remix-validated-form'
 
 import { requireAdminUserId } from '~/session.server'
@@ -39,13 +39,19 @@ export const loader = async ({ request, params }: LoaderArgs) => {
   const { userRoleId } = params
 
   if (!userRoleId) {
-    throw badRequest('No se encontró el ID del rol de usuario')
+    throw badRequest({
+      message: 'No se encontró el ID del rol de usuario',
+      redirect: '/admin/dashboard/user-roles',
+    })
   }
 
   const userRole = await getUserRoleById(userRoleId)
 
   if (!userRole) {
-    throw badRequest('No se encontró el ID del rol de usuario')
+    throw badRequest({
+      message: 'No se encontró el ID del rol de usuario',
+      redirect: '/admin/dashboard/user-roles',
+    })
   }
 
   const permissions = await findOrCreateManyPermissions()
@@ -59,7 +65,10 @@ export const action = async ({ request, params }: ActionArgs) => {
   const { userRoleId } = params
 
   if (!userRoleId) {
-    throw badRequest('No se encontró el ID del rol de usuario')
+    throw badRequest({
+      message: 'No se encontró el ID del rol de usuario',
+      redirect: '/admin/dashboard/user-roles',
+    })
   }
 
   if (request.method === 'POST') {

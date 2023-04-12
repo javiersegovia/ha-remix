@@ -3,7 +3,7 @@ import type { loader as companyDebtLoader } from '../$companyDebtId'
 import type { ExtractRemixResponse } from '~/utils/type-helpers'
 
 import { redirect } from '@remix-run/server-runtime'
-import { badRequest } from 'remix-utils'
+import { badRequest } from '~/utils/responses'
 import { ValidatedForm, validationError } from 'remix-validated-form'
 
 import { Modal } from '~/components/Dialog/Modal'
@@ -28,7 +28,10 @@ export const action = async ({ request, params }: ActionArgs) => {
   const { companyDebtId } = params
 
   if (!companyDebtId) {
-    throw badRequest('No se ha encontrado el ID de la novedad')
+    throw badRequest({
+      message: 'No se ha encontrado el ID de la novedad',
+      redirect: '/admin/dashboard',
+    })
   }
 
   const { data, submittedData, error, formId } =

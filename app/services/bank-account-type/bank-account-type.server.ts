@@ -1,7 +1,7 @@
 import type { BankAccountType } from '@prisma/client'
 import type { BankAccountTypeInputSchema } from './bank-account-type.schema'
 
-import { badRequest } from 'remix-utils'
+import { badRequest } from '~/utils/responses'
 import { prisma } from '~/db.server'
 
 export const getBankAccountTypes = () => {
@@ -48,7 +48,10 @@ export const updateBankAccountTypeById = async (
     })
   } catch (e) {
     console.error(e)
-    throw badRequest('No se encontró el ID del tipo de cuenta bancaria')
+    throw badRequest({
+      message: 'No se encontró el ID del tipo de cuenta bancaria',
+      redirect: null,
+    })
   }
 }
 
@@ -63,6 +66,9 @@ export const deleteBankAccountTypeById = async (id: BankAccountType['id']) => {
     return deletedBankAccountType.id
   } catch (e) {
     console.error(e)
-    throw badRequest('No se encontró el ID del tipo de cuenta bancaria')
+    throw badRequest({
+      message: 'No se encontró el ID del tipo de cuenta bancaria',
+      redirect: null,
+    })
   }
 }

@@ -12,7 +12,7 @@ import { ButtonIconVariants } from '~/components/Button'
 
 export const meta: MetaFunction = () => {
   return {
-    title: '[Admin] Beneficios | HoyAdelantas',
+    title: '[Admin] Beneficios | HoyTrabajas Beneficios',
   }
 }
 

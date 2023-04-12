@@ -1,0 +1,139 @@
+import type { Employee, User } from '@prisma/client'
+import type { Validator } from 'remix-validated-form'
+import type { EmployeeAccountSectionSchemaInput } from '~/services/employee/employee.schema'
+import type { getAvailableBenefitsByCompanyId } from '~/services/benefit/benefit.server'
+import type { EnumOption } from '~/schemas/helpers'
+
+import type { getUserRoles } from '~/services/user-role/user-role.server'
+
+import { EmployeeStatus } from '@prisma/client'
+import { ValidatedForm } from 'remix-validated-form'
+
+import { Box } from '~/components/Layout/Box'
+import { FormGridWrapper } from '~/components/FormFields/FormGridWrapper'
+import { FormGridItem } from '~/components/FormFields/FormGridItem'
+import { Input } from '../../FormFields/Input'
+import { Select } from '~/components/FormFields/Select'
+import { SelectMultiple } from '~/components/FormFields/SelectMultiple'
+import type { getEmployeeGroupsByCompanyId } from '~/services/employee-group/employee-group.server'
+
+const employeeStatusList: EnumOption[] = [
+  { name: 'Activo', value: EmployeeStatus.ACTIVE },
+  { name: 'Inactivo', value: EmployeeStatus.INACTIVE },
+]
+
+interface EmployeeFormProps<T = EmployeeAccountSectionSchemaInput> {
+  actions: JSX.Element
+  userRoles: Awaited<ReturnType<typeof getUserRoles>>
+  benefits: Awaited<ReturnType<typeof getAvailableBenefitsByCompanyId>>
+  employeeGroups: Awaited<ReturnType<typeof getEmployeeGroupsByCompanyId>>
+  validator: Validator<T>
+  defaultValues?: Pick<Employee, 'status'> & {
+    user: Pick<User, 'email' | 'firstName' | 'lastName' | 'roleId'>
+  }
+}
+
+export const EmployeeAccountForm = ({
+  defaultValues,
+  actions,
+  userRoles,
+  employeeGroups,
+  benefits,
+  validator,
+}: EmployeeFormProps) => {
+  const { status, user } = defaultValues || {}
+
+  const formDefaultValues = {
+    status: status || EmployeeStatus.INACTIVE,
+    user: {
+      firstName: user?.firstName || '',
+      email: user?.email || '',
+      lastName: user?.lastName || '',
+      roleId: user?.roleId || '',
+    },
+  }
+
+  const formId = 'EmployeeForm'
+
+  return (
+    <ValidatedForm
+      id={formId}
+      validator={validator}
+      method="post"
+      defaultValues={formDefaultValues}
+    >
+      <Box className="p-5 shadow-sm">
+        <FormGridWrapper>
+          <FormGridItem>
+            <Input
+              name="user.firstName"
+              type="text"
+              label="Nombre"
+              placeholder="Nombre del colaborador"
+              required
+            />
+          </FormGridItem>
+
+          <FormGridItem>
+            <Input
+              name="user.lastName"
+              type="text"
+              label="Apellido"
+              placeholder="Apellido del colaborador"
+              required
+            />
+          </FormGridItem>
+
+          <FormGridItem>
+            <Input
+              name="user.email"
+              type="text"
+              label="Correo electrónico"
+              placeholder="Correo electrónico del colaborador"
+              required
+            />
+          </FormGridItem>
+
+          <FormGridItem>
+            <Select
+              name="status"
+              label="Estado"
+              placeholder="Estado"
+              options={employeeStatusList}
+            />
+          </FormGridItem>
+
+          <FormGridItem>
+            <Select
+              name="user.roleId"
+              label="Rol"
+              placeholder="Rol de usuario"
+              options={userRoles}
+              isClearable
+            />
+          </FormGridItem>
+
+          <FormGridItem isFullWidth>
+            <SelectMultiple
+              name="benefitsIds"
+              label="Beneficios"
+              placeholder="Beneficios habilitados para este usuario, adicionales a los del grupo"
+              options={benefits}
+            />
+          </FormGridItem>
+
+          <FormGridItem isFullWidth>
+            <SelectMultiple
+              name="employeeGroupsIds"
+              label="Grupo de colaboradores"
+              placeholder="Seleccione uno o más grupos de colaboradores"
+              options={employeeGroups}
+            />
+          </FormGridItem>
+        </FormGridWrapper>
+      </Box>
+
+      {actions}
+    </ValidatedForm>
+  )
+}

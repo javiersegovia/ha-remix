@@ -18,18 +18,23 @@ import {
   useLocation,
   useTransition,
   useRevalidator,
+  useNavigate,
 } from '@remix-run/react'
+
+import { toast, ToastBar, Toaster } from 'react-hot-toast'
+
+import clsx from 'clsx'
+import { RiCheckboxCircleFill, RiCloseFill } from 'react-icons/ri'
+import { MdOutlineError } from 'react-icons/md'
 
 import NProgress from 'nprogress'
 import nProgressStyles from 'nprogress/nprogress.css'
+import reactSlickStylesheetUrl from 'slick-carousel/slick/slick.css'
+import reactSlickThemeStylesheetUrl from 'slick-carousel/slick/slick-theme.css'
 
 import { getUser } from './session.server'
 import tailwindStylesheetUrl from './styles/tailwind.css'
 import ErrorContainer from './containers/ErrorContainer'
-import { Toaster } from 'react-hot-toast'
-
-import reactSlickStylesheetUrl from 'slick-carousel/slick/slick.css'
-import reactSlickThemeStylesheetUrl from 'slick-carousel/slick/slick-theme.css'
 
 export const links: LinksFunction = () => {
   return [
@@ -154,7 +159,7 @@ export default function App() {
         )}
       </head>
 
-      <body className="min-h-full">
+      <body className="h-full min-h-full">
         {isProd && (
           <noscript
             dangerouslySetInnerHTML={{
@@ -164,18 +169,47 @@ export default function App() {
           />
         )}
 
-        <Toaster
-          position="top-right"
-          toastOptions={{
-            duration: 3500,
-            success: {
-              className: 'text-green-600 text-sm font-medium',
-            },
-            error: {
-              className: 'text-red-600 text-sm font-medium',
-            },
-          }}
-        />
+        <Toaster position="top-center">
+          {(t) => (
+            <ToastBar
+              toast={t}
+              style={{
+                padding: 0,
+                alignItems: 'flex-start',
+                boxShadow: 'none',
+              }}
+            >
+              {({ message }) => (
+                <div
+                  className={clsx(
+                    'flex justify-between rounded-md border py-2 px-6 text-sm font-medium text-black shadow-md',
+                    t.type === 'success' && 'border-green-400 bg-green-100',
+                    t.type === 'error' && 'border-red-400  bg-red-50'
+                  )}
+                >
+                  {t.type === 'success' && (
+                    <RiCheckboxCircleFill className="my-1 mr-3 text-3xl text-green-500" />
+                  )}
+
+                  {t.type === 'error' && (
+                    <MdOutlineError className="my-1 mr-3 text-3xl text-red-500" />
+                  )}
+
+                  {message}
+
+                  {t.type === 'error' && (
+                    <button
+                      onClick={() => toast.dismiss(t.id)}
+                      className="my-1 flex text-xl text-gray-400"
+                    >
+                      <RiCloseFill />
+                    </button>
+                  )}
+                </div>
+              )}
+            </ToastBar>
+          )}
+        </Toaster>
 
         <Outlet />
         <ScrollRestoration />
@@ -210,12 +244,16 @@ export const ErrorBoundary: ErrorBoundaryComponent = ({ error }) => {
 
 export const CatchBoundary = () => {
   const caught = useCatch()
-  const parsedData =
-    caught?.data && typeof caught.data === 'object'
-      ? JSON.parse(caught.data)
-      : caught.data
+  const navigate = useNavigate()
 
-  const message = parsedData?.message || parsedData || caught.statusText
+  const message = caught?.data?.message || caught?.data || caught.statusText
+  const redirect = caught?.data?.redirect
+
+  useEffect(() => {
+    if (redirect) {
+      navigate(redirect)
+    }
+  }, [navigate, redirect])
 
   return (
     <html lang="es" className="h-full">
@@ -225,11 +263,7 @@ export const CatchBoundary = () => {
         <Links />
       </head>
       <body>
-        <ErrorContainer
-          title="Oops. Error."
-          message={message}
-          status={caught.status}
-        />
+        <ErrorContainer title="Oops. Error." message={message} />
         <Scripts />
         <LiveReload />
       </body>

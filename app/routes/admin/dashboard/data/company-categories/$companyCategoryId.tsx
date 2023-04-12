@@ -1,7 +1,7 @@
 import type { ActionArgs, LoaderArgs } from '@remix-run/server-runtime'
 import { json, redirect } from '@remix-run/node'
 import { useLoaderData } from '@remix-run/react'
-import { badRequest } from 'remix-utils'
+import { badRequest } from '~/utils/responses'
 import { validationError } from 'remix-validated-form'
 
 import {
@@ -22,7 +22,10 @@ export const loader = async ({ request, params }: LoaderArgs) => {
   const { companyCategoryId } = params
 
   if (!companyCategoryId || isNaN(Number(companyCategoryId))) {
-    throw badRequest('No se encontró el ID de la categoría de compañía')
+    throw badRequest({
+      message: 'No se encontró el ID de la categoría de compañía',
+      redirect: '/admin/dashboard/data/company-categories',
+    })
   }
 
   const companyCategory = await getCompanyCategoryById(
@@ -30,7 +33,10 @@ export const loader = async ({ request, params }: LoaderArgs) => {
   )
 
   if (!companyCategory) {
-    throw badRequest('No se encontró la categoría de compañía')
+    throw badRequest({
+      message: 'No se encontró la categoría de compañía',
+      redirect: '/admin/dashboard/data/company-categories',
+    })
   }
 
   return json({ companyCategory })
@@ -42,7 +48,10 @@ export const action = async ({ request, params }: ActionArgs) => {
   const { companyCategoryId } = params
 
   if (!companyCategoryId || isNaN(Number(companyCategoryId))) {
-    throw badRequest('No se encontró el ID de la categoría de compañía')
+    throw badRequest({
+      message: 'No se encontró el ID de la categoría de compañía',
+      redirect: '/admin/dashboard/data/company-categories',
+    })
   }
 
   if (request.method === 'POST') {

@@ -6,9 +6,13 @@ import { TableHeading } from './TableHeading'
 
 interface BenefitListProps {
   benefits: Awaited<ReturnType<typeof getBenefits>>
+  baseUrl?: string
 }
 
-export function BenefitList({ benefits }: BenefitListProps) {
+export function BenefitList({
+  benefits,
+  baseUrl = '/admin/dashboard/benefits',
+}: BenefitListProps) {
   return (
     <div className="flex flex-col">
       <div className="-my-2 overflow-x-auto xl:-mx-8">
@@ -18,6 +22,7 @@ export function BenefitList({ benefits }: BenefitListProps) {
               <thead className="bg-gray-50">
                 <tr>
                   <TableHeading title="Nombre" />
+                  <TableHeading title="" />
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200 bg-white">
@@ -25,7 +30,7 @@ export function BenefitList({ benefits }: BenefitListProps) {
                   <tr key={benefit.id} className="hover:bg-gray-100">
                     <TableData>
                       <Link
-                        to={`/admin/dashboard/benefits/${benefit.id}/details`}
+                        to={`${baseUrl}/${benefit.id}/details`}
                         className="text-sm font-medium text-gray-900 underline hover:text-cyan-600"
                       >
                         {benefit.name}

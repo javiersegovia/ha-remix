@@ -1,7 +1,7 @@
 import type { ActionArgs, LoaderArgs } from '@remix-run/server-runtime'
 import { json, redirect } from '@remix-run/node'
 import { useLoaderData } from '@remix-run/react'
-import { badRequest } from 'remix-utils'
+import { badRequest } from '~/utils/responses'
 import { validationError } from 'remix-validated-form'
 
 import { requireAdminUserId } from '~/session.server'
@@ -12,7 +12,7 @@ import {
   deleteGenderById,
   getGenderById,
   updateGenderById,
-} from '../../../../../services/gender/gender.server'
+} from '~/services/gender/gender.server'
 import { genderValidator } from '~/services/gender/gender.schema'
 import { GenderForm } from '~/components/Forms/GenderForm'
 
@@ -22,13 +22,19 @@ export const loader = async ({ request, params }: LoaderArgs) => {
   const { genderId } = params
 
   if (!genderId || isNaN(Number(genderId))) {
-    throw badRequest('No se encontró el ID del género')
+    throw badRequest({
+      message: 'No se encontró el ID del género',
+      redirect: onCloseRedirectTo,
+    })
   }
 
   const gender = await getGenderById(Number(genderId))
 
   if (!gender) {
-    throw badRequest('No se encontró el género')
+    throw badRequest({
+      message: 'No se encontró el género',
+      redirect: onCloseRedirectTo,
+    })
   }
   return json({ gender })
 }
@@ -39,7 +45,10 @@ export const action = async ({ request, params }: ActionArgs) => {
   const { genderId } = params
 
   if (!genderId || isNaN(Number(genderId))) {
-    throw badRequest('No se encontró el ID del género')
+    throw badRequest({
+      message: 'No se encontró el ID del género',
+      redirect: onCloseRedirectTo,
+    })
   }
 
   if (request.method === 'POST') {
@@ -58,7 +67,7 @@ export const action = async ({ request, params }: ActionArgs) => {
     await deleteGenderById(Number(genderId))
   }
 
-  return redirect('/admin/dashboard/data/genders')
+  return redirect(onCloseRedirectTo)
 }
 
 const onCloseRedirectTo = '/admin/dashboard/data/genders' as const

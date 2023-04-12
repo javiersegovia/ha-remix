@@ -1,5 +1,5 @@
 import type { Gender } from '@prisma/client'
-import { badRequest } from 'remix-utils'
+import { badRequest } from '~/utils/responses'
 import { prisma } from '~/db.server'
 import type { GenderInputSchema } from './gender.schema'
 
@@ -48,7 +48,10 @@ export const updateGenderById = async (
     })
   } catch (e) {
     console.error(e)
-    throw badRequest('Ha ocurrido un error, no se encontró el ID del género')
+    throw badRequest({
+      message: 'Ha ocurrido un error, no se encontró el ID del género',
+      redirect: null,
+    })
   }
 }
 
@@ -62,6 +65,9 @@ export const deleteGenderById = async (id: Gender['id']) => {
     return deletedGender.id
   } catch (e) {
     console.error(e)
-    throw badRequest('Ha ocurrido un error, no se encontró el ID del género')
+    throw badRequest({
+      message: 'Ha ocurrido un error al eliminar el género',
+      redirect: null,
+    })
   }
 }

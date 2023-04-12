@@ -2,7 +2,7 @@ import type { z } from 'zod'
 
 import { withZod } from '@remix-validated-form/with-zod'
 import { welcomeSchema } from './welcome.schema'
-import { employeeSchema } from '~/services/employee/employee.schema'
+import { employeeSchemaClient } from '~/services/employee/employee.schema'
 
 export const editAccountSchema = welcomeSchema
   .pick({
@@ -19,7 +19,7 @@ export const editAccountSchema = welcomeSchema
     bankAccount: true,
   })
   .merge(
-    employeeSchema.pick({
+    employeeSchemaClient.pick({
       wallet: true,
     })
   )

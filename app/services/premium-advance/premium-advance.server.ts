@@ -14,7 +14,7 @@ import { PremiumAdvanceHistoryActor } from '@prisma/client'
 import { prisma } from '~/db.server'
 import { CLIENT_URL, sendEmail } from '../email/email.server'
 import { PremiumAdvanceStatus } from '@prisma/client'
-import { badRequest, forbidden, notFound } from 'remix-utils'
+import { badRequest, forbidden, notFound } from '~/utils/responses'
 import { connect } from '~/utils/relationships'
 import { sanitizeDate } from '~/utils/formatDate'
 import { formatDistanceStrict } from 'date-fns'
@@ -105,19 +105,34 @@ export const calculatePremiumAdvanceSpecs = async (
     })) || {}
 
   if (employeeData?.status === EmployeeStatus.INACTIVE) {
-    throw badRequest('La cuenta del usuario se encuentra inactiva')
+    throw badRequest({
+      message: 'La cuenta del usuario se encuentra inactiva',
+      redirect: null,
+    })
   }
   if (employeeData?.company.status === CompanyStatus.INACTIVE) {
-    throw badRequest('La cuenta de la empresa se encuentra inactiva')
+    throw badRequest({
+      message: 'La cuenta de la empresa se encuentra inactiva',
+      redirect: null,
+    })
   }
   if (!employeeData?.salaryFiat) {
-    throw badRequest('El salario no ha sido registrado')
+    throw badRequest({
+      message: 'El salario no ha sido registrado',
+      redirect: null,
+    })
   }
   if (!employeeData?.startedAt) {
-    throw badRequest('La fecha de ingreso a la compañía no ha sido registrada')
+    throw badRequest({
+      message: 'La fecha de ingreso a la compañía no ha sido registrada',
+      redirect: null,
+    })
   }
   if (!employeeData?.bankAccount) {
-    throw badRequest('La cuenta bancaria no ha sido registrada')
+    throw badRequest({
+      message: 'La cuenta bancaria no ha sido registrada',
+      redirect: null,
+    })
   }
 
   const currentTimestamp = new Date().getTime()
@@ -208,7 +223,10 @@ export const calculatePremiumAdvanceCost = async (
   })
 
   if (!employeeData) {
-    throw notFound('El usuario no ha sido encontrado')
+    throw notFound({
+      message: 'El usuario no ha sido encontrado',
+      redirect: null,
+    })
   }
 
   const globalSettings = await prisma.globalSettings.findFirst({
@@ -381,9 +399,11 @@ export const createPremiumAdvance = async (
     return { premiumAdvance }
   } catch (e) {
     console.error(e)
-    throw forbidden(
-      'Ocurrió un error durante la creación del adelanto de prima. Por favor contacta a un administrador'
-    )
+    throw forbidden({
+      message:
+        'Ocurrió un error durante la creación del adelanto de prima. Por favor contacta a un administrador',
+      redirect: null,
+    })
   }
 }
 
@@ -404,13 +424,17 @@ export const updatePremiumAdvanceStatus = async ({
   actor: PremiumAdvanceHistoryActor
 }) => {
   if (premiumAdvance.status === toStatus) {
-    throw badRequest('El adelanto de nómina ya se encuentra actualizado')
+    throw badRequest({
+      message: 'El adelanto de nómina ya se encuentra actualizado',
+      redirect: null,
+    })
   }
 
   if (premiumAdvance.status === PAID) {
-    throw badRequest(
-      'El adelanto de nómina ya fue pagado, no puede actualizarse'
-    )
+    throw badRequest({
+      message: 'El adelanto de nómina ya fue pagado, no puede actualizarse',
+      redirect: null,
+    })
   }
 
   const createHistory: Prisma.PremiumAdvanceUpdateInput['history'] = {
@@ -496,9 +520,11 @@ export const updatePremiumAdvanceStatus = async ({
   } catch (e) {
     // Todo LOGGER: Log error and save to a file
     console.error(e)
-    throw badRequest(
-      'Ha ocurrido un error durante la actualización del adelanto de nómina'
-    )
+    throw badRequest({
+      message:
+        'Ha ocurrido un error durante la actualización del adelanto de nómina',
+      redirect: null,
+    })
   }
 }
 

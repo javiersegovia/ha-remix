@@ -12,7 +12,10 @@ import { validationError } from 'remix-validated-form'
 import { FormActions } from '~/components/FormFields/FormActions'
 import { AdminEmployeeForm } from '~/components/Forms/AdminEmployeeForm'
 import { Title } from '~/components/Typography/Title'
-import { employeeValidator } from '~/services/employee/employee.schema'
+import {
+  employeeValidatorClient,
+  employeeValidatorServer,
+} from '~/services/employee/employee.schema'
 import { getBanks, validateBankAccount } from '~/services/bank/bank.server'
 import { requireCompany } from '~/services/company/company.server'
 import { getCountries } from '~/services/country/country.server'
@@ -27,6 +30,7 @@ import { createEmployee } from '~/services/employee/employee.server'
 import { getBankAccountTypes } from '~/services/bank-account-type/bank-account-type.server'
 import { getIdentityDocumentTypes } from '~/services/identity-document-type/identity-document-type.server'
 import { getMemberships } from '~/services/membership/membership.server'
+import { getUserRoles } from '~/services/user-role/user-role.server'
 
 export const loader = async ({ request }: LoaderArgs) => {
   await requireAdminUserId(request)
@@ -44,12 +48,13 @@ export const loader = async ({ request }: LoaderArgs) => {
     cryptoNetworks: await getCryptoNetworks(),
     cryptocurrencies: await getCryptocurrencies(),
     memberships: await getMemberships(),
+    userRoles: await getUserRoles(),
   })
 }
 
 export const meta: MetaFunction = () => {
   return {
-    title: '[Admin] Crear colaborador | HoyAdelantas',
+    title: '[Admin] Crear colaborador | HoyTrabajas Beneficios',
   }
 }
 
@@ -57,7 +62,7 @@ export const action = async ({ request, params }: ActionArgs) => {
   await requireAdminUserId(request)
 
   const { data, submittedData, error, formId } =
-    await employeeValidator.validate(await request.formData())
+    await employeeValidatorServer.validate(await request.formData())
 
   if (error) {
     return validationError(error, submittedData)
@@ -99,6 +104,7 @@ export default function AdminDashboardCompanyCreateEmployeeRoute() {
     currencies,
     cryptocurrencies,
     cryptoNetworks,
+    userRoles,
   } = useLoaderData<typeof loader>()
 
   return (
@@ -119,8 +125,9 @@ export default function AdminDashboardCompanyCreateEmployeeRoute() {
             currencies,
             cryptocurrencies,
             cryptoNetworks,
+            userRoles,
           }}
-          validator={employeeValidator}
+          validator={employeeValidatorClient}
           actions={<FormActions title="Crear" />}
         />
       </div>

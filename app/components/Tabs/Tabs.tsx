@@ -1,11 +1,11 @@
 import { Link, useLocation } from '@remix-run/react'
 import clsx from 'clsx'
 import { twMerge } from 'tailwind-merge'
-import { Box } from '../Layout/Box'
 
 export type TabItem = {
   title: string
   path: string
+  disabled?: boolean
 }
 
 /** This function is used to style the "active" path inside the navigation bar */
@@ -20,39 +20,74 @@ const currentLocationIsInsideNavPath = (
   return false
 }
 
-interface TabsProps {
-  items: TabItem[]
+export enum TabDesign {
+  DEFAULT = 'DEFAULT',
+  UNDERLINE = 'UNDERLINE',
 }
 
-export const Tabs = ({ items }: TabsProps) => {
+interface TabsProps {
+  items: TabItem[]
+  design?: TabDesign
+  className?: string
+}
+
+export const Tabs = ({
+  items,
+  className,
+  design = TabDesign.DEFAULT,
+}: TabsProps) => {
   const { pathname, search } = useLocation()
 
   return (
-    <div className="grid grid-cols-12 gap-6">
-      <div className="col-span-12">
-        <nav className="col-span-12 flex flex-col-reverse lg:col-span-4 lg:block 2xl:col-span-4">
-          <Box className="grid grid-flow-col overflow-hidden rounded-lg p-[6px] text-sm">
-            {items.map((item) => (
-              <Link
-                key={item.title}
-                to={item.path}
-                className={twMerge(
-                  clsx(
-                    'col-span-1 flex cursor-pointer items-center justify-center p-5 text-sm font-medium text-gray-500',
-                    currentLocationIsInsideNavPath(
-                      `${pathname}${search}`,
-                      item.path
-                    ) &&
-                      'rounded-md bg-steelBlue-100 font-semibold tracking-wide text-gray-700'
-                  )
-                )}
-              >
-                {item.title}
-              </Link>
-            ))}
-          </Box>
-        </nav>
+    <nav className={twMerge(clsx('', className))}>
+      <div
+        className={twMerge(
+          clsx(
+            'relative inline-flex rounded-lg border border-steelBlue-200/50 bg-steelBlue-100/50 text-sm',
+            design === TabDesign.UNDERLINE &&
+              'grid grid-flow-col rounded-none border-0 border-b-2 bg-transparent'
+          )
+        )}
+      >
+        {items.map((item) => (
+          <Link
+            key={item.title}
+            to={item.path}
+            className={twMerge(
+              clsx(
+                'relative col-span-1 flex cursor-pointer items-center justify-center py-2 px-12 text-sm font-medium text-steelBlue-700',
+                design === TabDesign.UNDERLINE && 'text-lg font-bold',
+
+                item.disabled &&
+                  'pointer-events-none cursor-not-allowed opacity-40',
+
+                currentLocationIsInsideNavPath(
+                  `${pathname}${search}`,
+                  item.path
+                ) &&
+                  'rounded-lg bg-white px-16 font-bold tracking-wide text-steelBlue-700'
+              ),
+
+              currentLocationIsInsideNavPath(
+                `${pathname}${search}`,
+                item.path
+              ) &&
+                design === TabDesign.UNDERLINE &&
+                'rounded-none bg-transparent text-steelBlue-500'
+            )}
+          >
+            {item.title}
+
+            {currentLocationIsInsideNavPath(
+              `${pathname}${search}`,
+              item.path
+            ) &&
+              design === TabDesign.UNDERLINE && (
+                <div className="absolute -bottom-1 h-1 w-full bg-steelBlue-500" />
+              )}
+          </Link>
+        ))}
       </div>
-    </div>
+    </nav>
   )
 }

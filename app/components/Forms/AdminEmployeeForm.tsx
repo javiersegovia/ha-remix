@@ -22,6 +22,7 @@ import type { getJobPositions } from '~/services/job-position/job-position.serve
 import type { getBankAccountTypes } from '~/services/bank-account-type/bank-account-type.server'
 import type { getIdentityDocumentTypes } from '~/services/identity-document-type/identity-document-type.server'
 import type { getMemberships } from '~/services/membership/membership.server'
+import type { getUserRoles } from '~/services/user-role/user-role.server'
 
 import { useEffect } from 'react'
 import { EmployeeStatus } from '@prisma/client'
@@ -56,6 +57,7 @@ interface AdminEmployeeFormProps<T = EmployeeSchemaInput> {
   currencies: Awaited<ReturnType<typeof getCurrencies>>
   cryptoNetworks: Awaited<ReturnType<typeof getCryptoNetworks>>
   cryptocurrencies: Awaited<ReturnType<typeof getCryptocurrencies>>
+  userRoles: Awaited<ReturnType<typeof getUserRoles>>
   validator: Validator<T>
   defaultValues?: Pick<
     Employee,
@@ -91,7 +93,7 @@ interface AdminEmployeeFormProps<T = EmployeeSchemaInput> {
           identityDocument: Pick<IdentityDocument, 'documentTypeId' | 'value'>
         })
       | null
-    user: Pick<User, 'email' | 'firstName' | 'lastName'>
+    user: Pick<User, 'email' | 'firstName' | 'lastName' | 'roleId'>
   }
 }
 
@@ -111,6 +113,7 @@ export const AdminEmployeeForm = ({
   cryptoNetworks,
   currencies,
   cryptocurrencies,
+  userRoles,
   validator,
 }: AdminEmployeeFormProps) => {
   const {
@@ -172,6 +175,7 @@ export const AdminEmployeeForm = ({
       firstName: user?.firstName || '',
       email: user?.email || '',
       lastName: user?.lastName || '',
+      roleId: user?.roleId || '',
     },
     wallet: {
       address: wallet?.address,
@@ -316,6 +320,16 @@ export const AdminEmployeeForm = ({
               label="Membresía"
               placeholder="Membresía"
               options={memberships}
+            />
+          </FormGridItem>
+
+          <FormGridItem>
+            <Select
+              name="user.roleId"
+              label="Rol"
+              placeholder="Rol de usuario"
+              options={userRoles}
+              isClearable
             />
           </FormGridItem>
         </FormGridWrapper>

@@ -1,11 +1,34 @@
-import type { BenefitCategory } from '@prisma/client'
-import { badRequest } from 'remix-utils'
+import type { BenefitCategory, Company } from '@prisma/client'
+import { badRequest } from '~/utils/responses'
 
 import { prisma } from '~/db.server'
 import type { BenefitCategoryInputSchema } from './benefit-category.schema'
+import { connect } from '~/utils/relationships'
 
-export const getBenefitCategories = async () => {
+export const getBenefitCategoriesWithoutCompanies = async () => {
   return prisma.benefitCategory.findMany({
+    where: {
+      companyBenefitCategory: null,
+    },
+    select: {
+      id: true,
+      name: true,
+    },
+    orderBy: {
+      name: 'asc',
+    },
+  })
+}
+
+export const getBenefitCategoriesByCompanyId = async (
+  companyId: Company['id']
+) => {
+  return prisma.benefitCategory.findMany({
+    where: {
+      companyBenefitCategory: {
+        companyId,
+      },
+    },
     select: {
       id: true,
       name: true,
@@ -42,16 +65,24 @@ export const updateBenefitCategoryById = async (
   id: BenefitCategory['id'],
   data: BenefitCategoryInputSchema
 ) => {
+  const { hexColor, opacity, name } = data
   try {
     return prisma.benefitCategory.update({
       where: {
         id,
       },
-      data,
+      data: {
+        name,
+        hexColor: hexColor || null,
+        opacity: opacity || null,
+      },
     })
   } catch (e) {
     console.error(e)
-    throw badRequest('No se encontró el ID de la categoría de beneficio')
+    throw badRequest({
+      message: 'No se encontró el ID de la categoría de beneficio',
+      redirect: null,
+    })
   }
 }
 
@@ -66,6 +97,23 @@ export const deleteBenefitCategoryById = async (id: BenefitCategory['id']) => {
     return deletedBenefitCategory.id
   } catch (e) {
     console.error(e)
-    throw badRequest('No se pudo eliminar la categoría de beneficio')
+    throw badRequest({
+      message: 'No se pudo eliminar la categoría de beneficio',
+      redirect: null,
+    })
   }
+}
+
+export const createCompanyBenefitCategory = async (
+  data: BenefitCategoryInputSchema,
+  companyId: Company['id']
+) => {
+  return prisma.companyBenefitCategory.create({
+    data: {
+      benefitCategory: {
+        create: data,
+      },
+      company: connect(companyId),
+    },
+  })
 }

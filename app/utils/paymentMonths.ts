@@ -5,7 +5,7 @@ import { capitalizeFirstLetter } from './capitalizeFirstLetter'
 export const getLastPaymentMonths = () => {
   const currentDate = new Date()
 
-  return Array.from(new Array(3)).map((_, index) => {
+  return Array.from(new Array(12)).map((_, index) => {
     const date = sub(currentDate, {
       months: index,
     })

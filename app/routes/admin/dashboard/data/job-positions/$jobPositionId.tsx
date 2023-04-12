@@ -3,7 +3,7 @@ import type { ActionArgs, LoaderArgs } from '@remix-run/server-runtime'
 import { redirect, json } from '@remix-run/node'
 import { useLoaderData } from '@remix-run/react'
 import { validationError } from 'remix-validated-form'
-import { badRequest } from 'remix-utils'
+import { badRequest } from '~/utils/responses'
 
 import { Modal } from '~/components/Dialog/Modal'
 import { JobPositionForm } from '~/components/Forms/JobPositionForm'
@@ -22,13 +22,19 @@ export const loader = async ({ request, params }: LoaderArgs) => {
 
   const { jobPositionId } = params
   if (!jobPositionId || isNaN(Number(jobPositionId))) {
-    throw badRequest('No se encontró el ID del cargo de trabajo')
+    throw badRequest({
+      message: 'No se encontró el ID del cargo de trabajo',
+      redirect: '/admin/dashboard/data/job-positions',
+    })
   }
 
   const jobPosition = await getJobPositionById(Number(jobPositionId))
 
   if (!jobPosition) {
-    throw badRequest('No se encontró el cargo de trabajo')
+    throw badRequest({
+      message: 'No se encontró el cargo de trabajo',
+      redirect: '/admin/dashboard/data/job-positions',
+    })
   }
 
   return json({ jobPosition })
@@ -39,7 +45,10 @@ export const action = async ({ request, params }: ActionArgs) => {
 
   const { jobPositionId } = params
   if (!jobPositionId || isNaN(Number(jobPositionId))) {
-    throw badRequest('No se encontró el ID del cargo de trabajo')
+    throw badRequest({
+      message: 'No se encontró el ID del cargo de trabajo',
+      redirect: '/admin/dashboard/data/job-positions',
+    })
   }
 
   if (request.method === 'POST') {

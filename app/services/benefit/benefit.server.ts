@@ -1,14 +1,17 @@
-import type { Benefit, Prisma } from '@prisma/client'
+import type { Benefit, Company, Prisma } from '@prisma/client'
 import type { BenefitInputSchema } from './benefit.schema'
 
 import { prisma } from '~/db.server'
-import { badRequest, notFound } from 'remix-utils'
+import { badRequest, notFound } from '~/utils/responses'
 import { getS3ObjectUrl } from '../aws/s3.server'
 import { connect, connectOrDisconnect } from '~/utils/relationships'
 import { deleteImageByKey } from '../image/image.server'
 
 export const getBenefits = async () => {
   return prisma.benefit.findMany({
+    where: {
+      companyBenefit: null,
+    },
     select: {
       id: true,
       name: true,
@@ -70,15 +73,20 @@ export const getBenefitById = async (benefitId: Benefit['id']) => {
   })
 }
 
-export const createBenefit = async ({
-  name,
-  buttonText,
-  buttonHref,
-  slug,
-  mainImageKey,
-  benefitCategoryId,
-  benefitHighlight,
-}: BenefitInputSchema) => {
+export const createBenefit = async (
+  data: BenefitInputSchema,
+  companyId?: Company['id']
+) => {
+  const {
+    name,
+    buttonText,
+    buttonHref,
+    slug,
+    mainImageKey,
+    benefitCategoryId,
+    benefitHighlight,
+  } = data
+
   const createMainImage: Prisma.BenefitCreateInput['mainImage'] = mainImageKey
     ? {
         create: {
@@ -95,7 +103,10 @@ export const createBenefit = async ({
     const { title, description, imageKey, isActive } = benefitHighlight
 
     if (!imageKey) {
-      throw badRequest('Por favor, sube una imagen para el beneficio destacado')
+      throw badRequest({
+        message: 'Por favor, sube una imagen para el beneficio destacado',
+        redirect: null,
+      })
     }
 
     createBenefitHighlight = {
@@ -125,6 +136,13 @@ export const createBenefit = async ({
         benefitCategory: connect(benefitCategoryId),
         mainImage: createMainImage,
         benefitHighlight: createBenefitHighlight,
+        companyBenefit: companyId
+          ? {
+              create: {
+                companyId,
+              },
+            }
+          : undefined,
       },
       select: {
         id: true,
@@ -133,8 +151,9 @@ export const createBenefit = async ({
     })
   } catch (e) {
     console.error(e)
-    throw badRequest(null, {
-      statusText: 'Ocurrió un error inesperado al crear el beneficio',
+    throw badRequest({
+      message: 'Ocurrió un error inesperado al crear el beneficio',
+      redirect: null,
     })
   }
 }
@@ -144,7 +163,8 @@ export const createBenefit = async ({
 
 export const updateBenefitById = async (
   data: BenefitInputSchema,
-  benefitId: Benefit['id']
+  benefitId: Benefit['id'],
+  redirectTo: string = '/admin/dashboard/benefits'
 ) => {
   const benefitToUpdate = await prisma.benefit.findFirst({
     where: {
@@ -174,8 +194,9 @@ export const updateBenefitById = async (
   })
 
   if (!benefitToUpdate) {
-    throw notFound(null, {
-      statusText: 'No se pudo encontrar el beneficio a actualizar',
+    throw notFound({
+      message: 'No se pudo encontrar el beneficio a actualizar',
+      redirect: redirectTo,
     })
   }
 
@@ -244,8 +265,9 @@ export const updateBenefitById = async (
     // Hence, we should throw an error if we don't have an imageKey.
     // todo check this
     if (!benefitToUpdate.benefitHighlight && !imageKey) {
-      throw badRequest(null, {
-        statusText: 'Por favor, sube una imagen para el beneficio destacado',
+      throw badRequest({
+        message: 'Por favor, sube una imagen para el beneficio destacado',
+        redirect: null,
       })
     }
 
@@ -362,8 +384,65 @@ export const deleteBenefitById = async (benefitId: Benefit['id']) => {
     return deleted.id
   } catch (e) {
     console.error(e)
-    throw badRequest(null, {
-      statusText: 'Ocurrió un error inesperado al eliminar el beneficio',
+    throw badRequest({
+      message: 'Ocurrió un error inesperado al eliminar el beneficio',
+      redirect: null,
     })
   }
+}
+
+export const getCompanyBenefitsByCompanyId = async (
+  companyId: Company['id']
+) => {
+  return prisma.benefit.findMany({
+    where: {
+      companyBenefit: {
+        companyId,
+      },
+    },
+    select: {
+      id: true,
+      name: true,
+      benefitHighlight: {
+        select: {
+          isActive: true,
+        },
+      },
+    },
+    orderBy: {
+      name: 'asc',
+    },
+  })
+}
+
+export const getAvailableBenefitsByCompanyId = async (
+  companyId: Company['id']
+) => {
+  const enabledBenefits = await prisma.company.findUnique({
+    where: { id: companyId },
+    select: {
+      benefits: {
+        select: {
+          id: true,
+          name: true,
+        },
+      },
+    },
+  })
+
+  const companyBenefits = await prisma.benefit.findMany({
+    where: {
+      companyBenefit: {
+        companyId,
+      },
+    },
+    select: {
+      id: true,
+      name: true,
+    },
+  })
+
+  return [...(enabledBenefits?.benefits || []), ...companyBenefits].sort(
+    (a, b) => a.name.localeCompare(b.name)
+  )
 }

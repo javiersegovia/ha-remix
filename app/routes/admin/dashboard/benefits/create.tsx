@@ -15,14 +15,14 @@ import { createBenefit } from '~/services/benefit/benefit.server'
 import { BenefitForm } from '~/components/Forms/BenefitForm'
 import { Container } from '~/components/Layout/Container'
 import { Title } from '~/components/Typography/Title'
-import { getBenefitCategories } from '~/services/benefit-category/benefit-category.server'
+import { getBenefitCategoriesWithoutCompanies } from '~/services/benefit-category/benefit-category.server'
 import { uploadHandler } from '~/services/aws/s3.server'
 
-export const loader = async ({ request, params }: LoaderArgs) => {
+export const loader = async ({ request }: LoaderArgs) => {
   await requireAdminUserId(request)
 
   return json({
-    benefitCategories: await getBenefitCategories(),
+    benefitCategories: await getBenefitCategoriesWithoutCompanies(),
   })
 }
 

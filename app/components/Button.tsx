@@ -84,22 +84,23 @@ export const ButtonElement = ({
       disabled={disabled}
       className={twMerge(
         clsx(
-          'flex w-full transform items-center justify-center rounded-lg text-center text-base font-medium transition duration-100 active:scale-95',
+          'flex w-full transform items-center justify-center rounded-lg border border-transparent text-center text-base font-medium transition duration-100 active:scale-95',
 
           size === 'XS' && 'px-4 py-2',
           size === 'SM' && 'px-5 py-3',
-          size === 'MD' && 'px-6 py-4',
+          size === 'MD' && 'px-10 py-4',
 
           disabled && 'cursor-not-allowed opacity-40',
 
-          isPrimary && 'bg-electricYellow-500 text-steelBlue-800',
+          isPrimary && 'bg-electricYellow-500 text-steelBlue-900',
           isPrimary && !disabled && 'hover:bg-electricYellow-700',
 
           isDark && 'bg-gray-800 text-white',
           isDark && !disabled && 'hover:bg-gray-900',
 
-          isSecondary && 'bg-blue-100 text-cyan-600',
-          isSecondary && !disabled && 'hover:bg-blue-200',
+          isSecondary &&
+            'border border-steelBlue-700 bg-white text-steelBlue-700',
+          isSecondary && !disabled && 'hover:bg-white',
 
           isWarning && 'bg-red-100 text-red-600',
           isWarning && !disabled && 'hover:bg-red-200',

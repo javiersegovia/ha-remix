@@ -2,7 +2,7 @@ import type { ActionArgs, LoaderArgs } from '@remix-run/server-runtime'
 
 import { json, redirect } from '@remix-run/server-runtime'
 import { useLoaderData } from '@remix-run/react'
-import { badRequest } from 'remix-utils'
+import { badRequest } from '~/utils/responses'
 import { validationError } from 'remix-validated-form'
 
 import { Modal } from '~/components/Dialog/Modal'
@@ -20,17 +20,26 @@ export const loader = async ({ request, params }: LoaderArgs) => {
 
   const { benefitId, subproductId } = params
 
-  if (!benefitId || !subproductId || isNaN(Number(subproductId))) {
-    throw badRequest(null, {
-      statusText: 'No se ha encontrado el ID del beneficio o el subproducto',
+  if (!benefitId) {
+    throw badRequest({
+      message: 'No se ha encontrado el ID del beneficio',
+      redirect: `/admin/dashboard/benefits`,
+    })
+  }
+
+  if (!subproductId || isNaN(Number(subproductId))) {
+    throw badRequest({
+      message: 'No se ha encontrado el ID del subproducto',
+      redirect: `/admin/dashboard/benefits/${benefitId}/subproducts`,
     })
   }
 
   const subproduct = await getBenefitSubproductById(Number(subproductId))
 
   if (!subproduct) {
-    throw badRequest(null, {
-      statusText: 'No se ha encontrado el subproducto',
+    throw badRequest({
+      message: 'No se ha encontrado el subproducto',
+      redirect: '/admin/dashboard/benefits/subproducts',
     })
   }
 
@@ -45,9 +54,17 @@ export const action = async ({ request, params }: ActionArgs) => {
 
   const { benefitId, subproductId } = params
 
-  if (!benefitId || !subproductId) {
-    throw badRequest(null, {
-      statusText: 'No se ha encontrado el ID del beneficio o el subproducto',
+  if (!benefitId) {
+    throw badRequest({
+      message: 'No se ha encontrado el ID del beneficio',
+      redirect: `/admin/dashboard/benefits`,
+    })
+  }
+
+  if (!subproductId || isNaN(Number(subproductId))) {
+    throw badRequest({
+      message: 'No se ha encontrado el ID del subproducto',
+      redirect: `/admin/dashboard/benefits/${benefitId}/subproducts`,
     })
   }
 
@@ -67,8 +84,9 @@ export const action = async ({ request, params }: ActionArgs) => {
     return redirect(`/admin/dashboard/benefits/${benefitId}/subproducts`)
   }
 
-  throw badRequest(null, {
-    statusText: 'El método HTTP utilizado es inválido',
+  throw badRequest({
+    message: 'El método HTTP utilizado es inválido',
+    redirect: `/admin/dashboard/benefits/${benefitId}/subproducts`,
   })
 }
 

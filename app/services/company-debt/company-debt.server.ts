@@ -1,7 +1,7 @@
 import type { Company, Employee, PayrollAdvance, Prisma } from '@prisma/client'
 import type { CompanyDebtSchemaInput } from './company-debt.schema'
 
-import { badRequest } from 'remix-utils'
+import { badRequest } from '~/utils/responses'
 import { prisma } from '~/db.server'
 import { connect } from '~/utils/relationships'
 import { sanitizeDate } from '~/utils/formatDate'
@@ -180,7 +180,7 @@ export const updateCompanyDebt = async (
   })
 
   if (!companyDebt) {
-    throw badRequest('Novedad no encontrada')
+    throw badRequest({ message: 'Novedad no encontrada', redirect: null })
   }
 
   if (fiatDebt && fiatDebt.currentAmount > fiatDebt.totalAmount) {
@@ -233,6 +233,9 @@ export const updateCompanyDebt = async (
   } catch (e) {
     // TODO: Add logger
     console.error(e)
-    throw badRequest('Ha ocurrido un error inesperado al actualizar la novedad')
+    throw badRequest({
+      message: 'Ha ocurrido un error inesperado al actualizar la novedad',
+      redirect: null,
+    })
   }
 }

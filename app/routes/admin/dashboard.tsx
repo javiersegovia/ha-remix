@@ -21,7 +21,7 @@ export const loader = async ({ request }: LoaderArgs) => {
 
 export const meta: MetaFunction = () => {
   return {
-    title: '[Admin] Inicio | HoyAdelantas',
+    title: '[Admin] Inicio | HoyTrabajas Beneficios',
   }
 }
 

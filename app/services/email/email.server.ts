@@ -127,7 +127,7 @@ export const sendInvitation = async ({
     title: '¡Bienvenido al portal de beneficios de HoyTrabajas!',
     firstLine: `Hola ${firstName},`,
     secondLine: `Ahora puedes aprovechar nuestro plan de beneficios pensados para ti y tu familia. Accede a herramientas y descuentos que harán tu vida más fácil.`,
-    thirdLine: 'Solo haz click y úsalos totalmente grátis.',
+    thirdLine: 'Solo haz click y úsalos totalmente gratis.',
     button: 'Ingresar',
     buttonHref: `${CLIENT_URL}/verify-login?token=${token}`,
   }
