@@ -969,3 +969,10 @@ enum PermissionCode {
   // Deprecated 
   MANAGE_BENEFIT_CATEGORY
 }
+
+model SalaryRange {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  name      String   @unique
+}
