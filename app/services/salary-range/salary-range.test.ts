@@ -30,7 +30,7 @@ describe('getSalaryRangeById', () => {
 })
 
 describe('createSalaryRange', () => {
-  it('creates and returns a Bank', async () => {
+  it('creates and returns a SalaryRange', async () => {
     const expectedSalaryRange = SalaryRangeFactory.build()
 
     vi.spyOn(prisma.salaryRange, 'create').mockResolvedValueOnce(
@@ -46,17 +46,17 @@ describe('createSalaryRange', () => {
 })
 
 describe('updateSalaryRangeById', () => {
-  it('updates and returns a Bank', async () => {
-    const existingBank = SalaryRangeFactory.build()
-    const newBank = SalaryRangeFactory.build()
+  it('updates and returns a SalaryRange', async () => {
+    const existingSalaryRange = SalaryRangeFactory.build()
+    const newSalaryRange = SalaryRangeFactory.build()
 
-    vi.spyOn(prisma.salaryRange, 'update').mockResolvedValueOnce(newBank)
+    vi.spyOn(prisma.salaryRange, 'update').mockResolvedValueOnce(newSalaryRange)
 
-    const result = await updateSalaryRangeById(existingBank.id, {
-      name: newBank.name,
+    const result = await updateSalaryRangeById(existingSalaryRange.id, {
+      name: newSalaryRange.name,
     })
 
-    expect(result).toEqual(newBank)
+    expect(result).toEqual(newSalaryRange)
   })
 })
 
