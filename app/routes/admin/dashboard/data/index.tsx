@@ -35,6 +35,7 @@ export const loader = async ({ request }: LoaderArgs) => {
     bankAccountTypes,
     identityDocumentTypes,
     ageRanges,
+    salaryRanges,
   ] = await Promise.all([
     prisma.bank.count(),
     prisma.benefitCategory.count(),
@@ -49,6 +50,7 @@ export const loader = async ({ request }: LoaderArgs) => {
     prisma.bankAccountType.count(),
     prisma.identityDocumentType.count(),
     prisma.ageRange.count(),
+    prisma.salaryRange.count(),
   ])
 
   const rows: TableRowProps[] = [
@@ -120,6 +122,11 @@ export const loader = async ({ request }: LoaderArgs) => {
       rowId: 'age-ranges',
       items: ['Rangos de edad', ageRanges],
       href: '/admin/dashboard/data/age-ranges',
+    },
+    {
+      rowId: 'salary-ranges',
+      items: ['Rangos salariales', salaryRanges],
+      href: '/admin/dashboard/data/salary-ranges',
     },
   ]
 
