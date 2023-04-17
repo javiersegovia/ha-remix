@@ -44,10 +44,11 @@ type PremiumAdvancesNewRouteLoaderErrorData = {
 export const loader = async ({ request }: LoaderArgs) => {
   const employee = await requireEmployee(request)
 
-  const enabledBenefits = await getEmployeeEnabledBenefits(
-    employee?.membership?.benefits,
-    employee?.company.benefits
-  )
+  const enabledBenefits = await getEmployeeEnabledBenefits({
+    membershipBenefits: employee?.membership?.benefits,
+    companyBenefits: employee?.company.benefits,
+    employeeGroups: employee?.employeeGroups,
+  })
 
   const { errorMessage, canUsePremiumAdvances } =
     verifyIfEmployeeCanRequestPremiumAdvance({ employee, enabledBenefits })
@@ -96,10 +97,11 @@ export const CREATE_PREMIUM_ADVANCE_SUBACTION = 'create_premium_advance'
 export const action = async ({ request }: ActionArgs) => {
   const employee = await requireEmployee(request)
 
-  const enabledBenefits = await getEmployeeEnabledBenefits(
-    employee?.membership?.benefits,
-    employee?.company.benefits
-  )
+  const enabledBenefits = await getEmployeeEnabledBenefits({
+    membershipBenefits: employee?.membership?.benefits,
+    companyBenefits: employee?.company.benefits,
+    employeeGroups: employee?.employeeGroups,
+  })
 
   const { errorMessage, canUsePremiumAdvances } =
     verifyIfEmployeeCanRequestPremiumAdvance({ employee, enabledBenefits })

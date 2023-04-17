@@ -12,7 +12,6 @@ import type {
   Image,
 } from '@prisma/client'
 import type { Validator } from 'remix-validated-form'
-import { useControlField } from 'remix-validated-form'
 
 import { CompanyStatus } from '@prisma/client'
 import { ValidatedForm } from 'remix-validated-form'

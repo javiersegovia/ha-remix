@@ -43,10 +43,11 @@ import { ButtonColorVariants } from '~/components/Button'
 export const loader = async ({ request }: LoaderArgs) => {
   const employee = await requireEmployee(request)
 
-  const benefits = await getEmployeeEnabledBenefits(
-    employee.membership?.benefits,
-    employee.company.benefits
-  )
+  const benefits = await getEmployeeEnabledBenefits({
+    membershipBenefits: employee?.membership?.benefits,
+    companyBenefits: employee?.company.benefits,
+    employeeGroups: employee?.employeeGroups,
+  })
 
   const canUsePayrollAdvances = process.env.SLUG_PAYROLL_ADVANCE
     ? benefits.some((b) => b.slug === process.env.SLUG_PAYROLL_ADVANCE)

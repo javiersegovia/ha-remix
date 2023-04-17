@@ -36,18 +36,6 @@ const defaultNavPaths: INavPath[] = [
   },
 ]
 
-const historyNavPath: INavPath = {
-  icon: RiFileList2Line,
-  path: '/dashboard/history/payroll-advances',
-  title: 'Historial',
-}
-
-const companyManagementNavPath: INavPath = {
-  icon: MdPersonOutline,
-  title: 'Administrar',
-  subPaths: [],
-}
-
 const getEmployeeData = (userId: User['id']) => {
   return prisma.employee.findFirst({
     where: {
@@ -59,6 +47,15 @@ const getEmployeeData = (userId: User['id']) => {
       company: {
         select: {
           name: true,
+          benefits: {
+            select: {
+              id: true,
+            },
+          },
+        },
+      },
+      employeeGroups: {
+        select: {
           benefits: {
             select: {
               id: true,
@@ -83,10 +80,11 @@ export const loader = async ({ request }: LoaderArgs) => {
 
   const employeeData = await getEmployeeData(user.id)
 
-  const benefits = await getEmployeeEnabledBenefits(
-    employeeData?.membership?.benefits,
-    employeeData?.company.benefits
-  )
+  const benefits = await getEmployeeEnabledBenefits({
+    membershipBenefits: employeeData?.membership?.benefits,
+    companyBenefits: employeeData?.company.benefits,
+    employeeGroups: employeeData?.employeeGroups,
+  })
 
   const canUsePayrollAdvances = process.env.SLUG_PAYROLL_ADVANCE
     ? benefits.some((b) => b.slug === process.env.SLUG_PAYROLL_ADVANCE)
@@ -104,7 +102,19 @@ export const loader = async ({ request }: LoaderArgs) => {
     PermissionCode.MANAGE_EMPLOYEE_MAIN_INFORMATION
   )
 
-  const navPaths = [...defaultNavPaths]
+  const historyNavPath: INavPath = {
+    icon: RiFileList2Line,
+    path: '/dashboard/history/payroll-advances',
+    title: 'Historial',
+  }
+
+  const companyManagementNavPath: INavPath = {
+    icon: MdPersonOutline,
+    title: 'Administrar',
+    subPaths: [],
+  }
+
+  let navPaths = [...defaultNavPaths]
 
   if (canUsePayrollAdvances || hasPayrollAdvances) {
     navPaths.push(historyNavPath)

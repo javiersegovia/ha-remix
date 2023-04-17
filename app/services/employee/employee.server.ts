@@ -73,6 +73,11 @@ export const getEmployeeById = async (employeeId: Employee['id']) => {
         select: {
           id: true,
           name: true,
+          benefits: {
+            select: {
+              id: true,
+            },
+          },
         },
       },
       cryptocurrency: true,

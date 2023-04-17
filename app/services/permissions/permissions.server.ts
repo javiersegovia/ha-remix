@@ -3,12 +3,29 @@ import { badRequest } from '~/utils/responses'
 import { prisma } from '~/db.server'
 import { defaultPermissions } from './permissions.list'
 
-export const getEmployeeEnabledBenefits = async (
-  membershipBenefits?: Pick<Benefit, 'id'>[],
-  companyBenefits?: Pick<Benefit, 'id'>[]
-) => {
+interface GetEmployeeEnabledBenefitsArgs {
+  membershipBenefits: Pick<Benefit, 'id'>[] | undefined
+  companyBenefits: Pick<Benefit, 'id'>[] | undefined
+  employeeGroups:
+    | {
+        benefits: Pick<Benefit, 'id'>[]
+      }[]
+    | undefined
+}
+
+export const getEmployeeEnabledBenefits = async ({
+  membershipBenefits,
+  companyBenefits,
+  employeeGroups,
+}: GetEmployeeEnabledBenefitsArgs) => {
   const membershipBenefitsIds = membershipBenefits?.map((m) => m.id) || []
   const companyBenefitsIds = companyBenefits?.map((c) => c.id) || []
+
+  // const employeeGroupsIds = [
+  //   ...new Set(
+  //     employeeGroups?.map((eGroup) => eGroup.benefits.map((b) => b.id))?.flat()
+  //   ),
+  // ]
 
   const benefitsIds = membershipBenefitsIds.filter((id) =>
     companyBenefitsIds.includes(id)
