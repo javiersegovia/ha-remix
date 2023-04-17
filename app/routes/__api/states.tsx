@@ -9,7 +9,7 @@ export const loader = async ({ request }: LoaderArgs) => {
 
   return json({
     states:
-      countryId && countryId !== 'undefined' // This is needed just in case we send and empty key
+      countryId && countryId !== 'undefined' && countryId !== 'null' // This is needed just in case we send and empty key
         ? await getStatesByCountryId(parseFloat(countryId))
         : [],
   })

@@ -43,9 +43,10 @@ export const Tabs = ({
       <div
         className={twMerge(
           clsx(
-            'relative inline-flex rounded-lg border border-steelBlue-200/50 bg-steelBlue-100/50 text-sm',
+            'relative inline-flex w-full flex-col rounded-lg border border-steelBlue-200/50 bg-steelBlue-100/50 text-sm lg:w-auto lg:flex-row',
+
             design === TabDesign.UNDERLINE &&
-              'grid grid-flow-col rounded-none border-0 border-b-2 bg-transparent'
+              'grid rounded-none border-0 border-b-2 bg-transparent lg:grid-flow-col'
           )
         )}
       >
@@ -56,7 +57,9 @@ export const Tabs = ({
             className={twMerge(
               clsx(
                 'relative col-span-1 flex cursor-pointer items-center justify-center py-2 px-12 text-sm font-medium text-steelBlue-700',
-                design === TabDesign.UNDERLINE && 'text-lg font-bold',
+
+                design === TabDesign.UNDERLINE &&
+                  'text-center font-bold md:text-lg',
 
                 item.disabled &&
                   'pointer-events-none cursor-not-allowed opacity-40',
@@ -83,7 +86,7 @@ export const Tabs = ({
               item.path
             ) &&
               design === TabDesign.UNDERLINE && (
-                <div className="absolute -bottom-1 h-1 w-full bg-steelBlue-500" />
+                <div className="absolute -bottom-1 hidden h-1 w-full bg-steelBlue-500 lg:block" />
               )}
           </Link>
         ))}

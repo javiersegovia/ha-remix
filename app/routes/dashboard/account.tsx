@@ -36,6 +36,7 @@ import { formatMDYDate } from '~/utils/formatDate'
 import { updateEmployeeByAccountForm } from '~/services/employee/employee.server'
 import { getBankAccountTypes } from '~/services/bank-account-type/bank-account-type.server'
 import { getIdentityDocumentTypes } from '~/services/identity-document-type/identity-document-type.server'
+import { Container, ContainerSize } from '~/components/Layout/Container'
 
 export const loader = async ({ request }: LoaderArgs) => {
   const employee = await requireEmployee(request)
@@ -91,6 +92,7 @@ export const meta: MetaFunction = () => {
 }
 
 const formId = 'DashboardAccountForm' as const
+
 export default function DashboardAccountRoute() {
   const {
     employee,
@@ -187,7 +189,7 @@ export default function DashboardAccountRoute() {
   }
 
   return (
-    <section className="mx-auto w-full max-w-screen-lg px-2 py-10 sm:px-8">
+    <Container className="w-full py-10" size={ContainerSize.LG}>
       <ValidatedForm
         id={formId}
         method="put"
@@ -400,34 +402,9 @@ export default function DashboardAccountRoute() {
             </FormGridItem>
           </FormGridWrapper>
 
-          {/* <Title as="h2" className="pb-4 pt-3">
-            Billetera cripto
-          </Title>
-
-          <FormGridWrapper>
-            <FormGridItem>
-              <Input
-                name="wallet.address"
-                type="text"
-                label="Dirección de la billetera"
-                placeholder="Dirección de la billetera"
-              />
-            </FormGridItem>
-
-            <FormGridItem>
-              <Select
-                name="wallet.cryptoNetworkId"
-                label="Red"
-                placeholder="Red"
-                options={cryptoNetworks}
-                isClearable
-              />
-            </FormGridItem>
-          </FormGridWrapper> */}
-
           <FormActions title="Guardar" />
         </Box>
       </ValidatedForm>
-    </section>
+    </Container>
   )
 }

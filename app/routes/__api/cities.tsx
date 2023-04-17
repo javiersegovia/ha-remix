@@ -8,7 +8,7 @@ export const loader = async ({ request }: LoaderArgs) => {
 
   return json({
     cities:
-      stateId && stateId !== 'undefined'
+      stateId && stateId !== 'undefined' && stateId !== 'null'
         ? await getCitiesByStateId(parseFloat(stateId))
         : [],
   })

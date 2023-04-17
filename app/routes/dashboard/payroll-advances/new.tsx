@@ -6,6 +6,11 @@ import type {
 
 import { useEffect, useRef } from 'react'
 import {
+  CompanyStatus,
+  EmployeeStatus,
+  PayrollAdvancePaymentMethod,
+} from '@prisma/client'
+import {
   useControlField,
   ValidatedForm,
   validationError,
@@ -16,11 +21,6 @@ import { Title } from '~/components/Typography/Title'
 import { requireEmployee } from '~/session.server'
 import { PayrollAdvanceAvailableAmount } from '~/containers/dashboard/PayrollAdvanceAvailableAmount'
 import { Box } from '~/components/Layout/Box'
-import {
-  CompanyStatus,
-  EmployeeStatus,
-  PayrollAdvancePaymentMethod,
-} from '@prisma/client'
 import {
   CurrencyInput,
   CurrencySymbol,
@@ -57,6 +57,7 @@ export const loader = async ({ request }: LoaderArgs) => {
   }
 
   const employeeHasSignedTerms = await hasSignedTerms(employee.id)
+
   if (!employeeHasSignedTerms) {
     return redirect('/dashboard/verify-terms')
   }

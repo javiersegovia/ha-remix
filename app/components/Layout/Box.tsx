@@ -9,7 +9,7 @@ interface BoxProps extends PropsWithChildren {
 export const Box = ({ children, className, ...otherProps }: BoxProps) => {
   return (
     <div
-      className={twMerge('relative rounded-xl bg-white shadow-xl', className)}
+      className={twMerge('relative rounded-xl bg-white shadow-sm', className)}
       {...otherProps}
     >
       {children}

@@ -46,6 +46,17 @@ export const employeeSchemaClient = z.object({
     roleId: zfd.text(z.string().nullable().default(null)),
   }),
 
+  availablePoints: zfd.numeric(
+    z
+      .number()
+      .nonnegative({
+        message: 'El número debe ser positivo',
+      })
+      .int()
+      .optional()
+      .default(0)
+  ),
+
   phone: zfd.text(z.string().nullable().default(null)),
   address: zfd.text(z.string().nullable().default(null)),
   numberOfChildren: zfd.numeric(
@@ -199,7 +210,9 @@ export type CompanyDashboardEmployeeSchemaInput = z.infer<
   typeof companyDashboardEmployeeSchema
 >
 
-export const employeeAccountSectionSchema = employeeSchemaClient
+// ~~~~~~~~~~~~~~~ Employee Account Form Section ~~~~~~~~~~~~~~~~
+
+export const employeeAccountSchema = employeeSchemaClient
   .extend({
     benefitsIds: z.array(zfd.numeric(z.number())).nullish(),
     employeeGroupsIds: z.array(zfd.text(z.string())).nullish(),
@@ -207,20 +220,17 @@ export const employeeAccountSectionSchema = employeeSchemaClient
   .pick({
     user: true,
     status: true,
+    availablePoints: true,
     benefitsIds: true,
     employeeGroupsIds: true,
   })
 
-export const employeeAccountSectionValidator = withZod(
-  employeeAccountSectionSchema
-)
+export const employeeAccountValidator = withZod(employeeAccountSchema)
 
-export type EmployeeAccountSectionSchemaInput = z.infer<
-  typeof employeeAccountSectionSchema
->
+export type EmployeeAccountSchemaInput = z.infer<typeof employeeAccountSchema>
 
-export const employeeAccountSectionSchemaWithEmailVerification =
-  employeeAccountSectionSchema.refine(
+export const employeeAccountSchemaWithEmailVerification =
+  employeeAccountSchema.refine(
     async (data) => {
       const exist = await prisma.user.findUnique({
         where: {
@@ -233,5 +243,83 @@ export const employeeAccountSectionSchemaWithEmailVerification =
     { message: 'El correo electrónico ya está en uso', path: ['user.email'] }
   )
 
-export const employeeAccountSectionSchemaWithEmailVerificationValidator =
-  withZod(employeeAccountSectionSchemaWithEmailVerification)
+export const employeeAccountSchemaWithEmailVerificationValidator = withZod(
+  employeeAccountSchemaWithEmailVerification
+)
+
+// ~~~~~~~~~~~~~~~ Employee Extra Information Form Section ~~~~~~~~~~~~~~~~
+
+export const employeeExtraInformationSchema = employeeSchemaClient.pick({
+  jobDepartmentId: true,
+  jobPositionId: true,
+  genderId: true,
+  countryId: true,
+  stateId: true,
+  cityId: true,
+
+  birthDay: true,
+  documentIssueDate: true,
+
+  startedAt: true,
+  inactivatedAt: true,
+
+  address: true,
+  phone: true,
+  numberOfChildren: true,
+})
+
+export const employeeExtraInformationValidator = withZod(
+  employeeExtraInformationSchema
+)
+
+export type EmployeeExtraInformationSchemaInput = z.infer<
+  typeof employeeExtraInformationSchema
+>
+
+// ~~~~~~~~~~~~~~~ Employee Bank Account Form Section ~~~~~~~~~~~~~~~~
+
+export const employeeBankAccountSchema = z.object({
+  bankId: zfd.numeric(
+    z
+      .number({
+        required_error: 'Por favor, seleccione un banco',
+      })
+      .int()
+  ),
+  accountNumber: zfd.text(
+    z
+      .string({
+        required_error: 'Por favor, ingrese un número de cuenta',
+      })
+      .trim()
+  ),
+  accountTypeId: zfd.numeric(
+    z
+      .number({
+        required_error: 'Por favor, seleccione un tipo de cuenta',
+      })
+      .int()
+  ),
+  identityDocument: z.object({
+    documentTypeId: zfd.numeric(
+      z
+        .number({
+          required_error: 'Por favor, seleccione un tipo de documento',
+        })
+        .int()
+    ),
+    value: zfd.text(
+      z
+        .string({
+          required_error: 'Por favor, ingrese el número de documento',
+        })
+        .trim()
+    ),
+  }),
+})
+
+export const employeeBankAccountValidator = withZod(employeeBankAccountSchema)
+
+export type EmployeeBankAccountSchemaInput = z.infer<
+  typeof employeeBankAccountSchema
+>

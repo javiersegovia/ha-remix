@@ -42,10 +42,10 @@ export const loader = async ({ request, params }: LoaderArgs) => {
       redirect: `/admin/dashboard/companies/${companyId}/employees`,
     })
   }
-  const employeExists = prisma.employee.findUnique({
+  const employeeExists = prisma.employee.findUnique({
     where: { id: employeeId },
   })
-  if (!employeExists) {
+  if (!employeeExists) {
     throw badRequest({
       message: 'No pudimos encontrar el ID del empleado',
       redirect: `/admin/dashboard/companies/${companyId}/employees`,
@@ -73,7 +73,7 @@ export const loader = async ({ request, params }: LoaderArgs) => {
 export const meta: MetaFunction<typeof loader> = ({ data }) => {
   if (!data) {
     return {
-      title: '[Admin] Colaborador no encontrado | HoyAdelantas',
+      title: '[Admin] Colaborador no encontrado | HoyTrabajas Beneficios',
     }
   }
 

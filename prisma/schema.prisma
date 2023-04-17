@@ -177,6 +177,8 @@ model Employee {
   status EmployeeStatus @default(INACTIVE)
   roles  EmployeeRole[]
 
+  availablePoints Int @default(0)
+
   acceptedPrivacyPolicy  Boolean @default(false)
   acceptedTermsOfService Boolean @default(false)
 

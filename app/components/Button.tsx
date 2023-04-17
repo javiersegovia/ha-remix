@@ -99,8 +99,8 @@ export const ButtonElement = ({
           isDark && !disabled && 'hover:bg-gray-900',
 
           isSecondary &&
-            'border border-steelBlue-700 bg-white text-steelBlue-700',
-          isSecondary && !disabled && 'hover:bg-white',
+            'border border-steelBlue-700 bg-transparent text-steelBlue-700',
+          isSecondary && !disabled && 'hover:bg-transparent',
 
           isWarning && 'bg-red-100 text-red-600',
           isWarning && !disabled && 'hover:bg-red-200',

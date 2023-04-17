@@ -1,4 +1,9 @@
-import type { ActionArgs, LoaderArgs } from '@remix-run/server-runtime'
+import type { TabItem } from '~/components/Tabs/Tabs'
+import type {
+  ActionArgs,
+  LoaderArgs,
+  MetaFunction,
+} from '@remix-run/server-runtime'
 
 import { PermissionCode } from '@prisma/client'
 import { Link, useLoaderData } from '@remix-run/react'
@@ -11,15 +16,27 @@ import { SubmitButton } from '~/components/SubmitButton'
 
 import { getAvailableBenefitsByCompanyId } from '~/services/benefit/benefit.server'
 import {
-  employeeAccountSectionSchemaWithEmailVerificationValidator,
-  employeeAccountSectionValidator,
+  employeeAccountSchemaWithEmailVerificationValidator,
+  employeeAccountValidator,
 } from '~/services/employee/employee.schema'
-import { createEmployeeByCompanyAdminAccountSectionForm } from '~/services/employee/employee.server'
-import { requirePermissionByUserId } from '~/services/permissions/permissions.server'
+import { createEmployeeByCompanyAdminAccountForm } from '~/services/employee/employee.server'
+import {
+  hasPermissionByUserId,
+  requirePermissionByUserId,
+} from '~/services/permissions/permissions.server'
 import { getUserRoles } from '~/services/user-role/user-role.server'
 import { requireEmployee } from '~/session.server'
 import { getEmployeeGroupsByCompanyId } from '~/services/employee-group/employee-group.server'
 import { badRequest } from '~/utils/responses'
+import { Container, ContainerSize } from '~/components/Layout/Container'
+import { GoBack } from '~/components/Button/GoBack'
+import { TabDesign, Tabs } from '~/components/Tabs/Tabs'
+
+export const meta: MetaFunction = () => {
+  return {
+    title: 'Crear colaborador | HoyTrabajas Beneficios',
+  }
+}
 
 export const loader = async ({ request, params }: LoaderArgs) => {
   const currentEmployee = await requireEmployee(request)
@@ -29,21 +46,42 @@ export const loader = async ({ request, params }: LoaderArgs) => {
     PermissionCode.MANAGE_EMPLOYEE_MAIN_INFORMATION
   )
 
-  // const canManageFinancialInformation = await hasPermissionByUserId(
-  //   currentEmployee.userId,
-  //   PermissionCode.MANAGE_EMPLOYEE_FINANCIAL_INFORMATION
-  // )
-
   const [userRoles, benefits, employeeGroups] = await Promise.all([
     getUserRoles(),
     getAvailableBenefitsByCompanyId(currentEmployee.companyId),
     getEmployeeGroupsByCompanyId(currentEmployee.companyId),
   ])
 
+  const canManageFinancialInformation = await hasPermissionByUserId(
+    currentEmployee.userId,
+    PermissionCode.MANAGE_EMPLOYEE_FINANCIAL_INFORMATION
+  )
+
+  const tabPaths: TabItem[] = [
+    {
+      title: 'Cuenta de usuario',
+      path: `/dashboard/manage/employees/create/account`,
+    },
+    {
+      title: 'Información complementaria',
+      path: `/dashboard/manage/employees/create/account`,
+      disabled: true,
+    },
+  ]
+
+  if (canManageFinancialInformation) {
+    tabPaths.push({
+      title: 'Cuenta bancaria',
+      path: `/dashboard/manage/employees/create/account`,
+      disabled: true,
+    })
+  }
+
   return json({
     userRoles,
     benefits,
     employeeGroups,
+    tabPaths,
   })
 }
 
@@ -56,7 +94,7 @@ export const action = async ({ request, params }: ActionArgs) => {
   )
 
   const { data, submittedData, error } =
-    await employeeAccountSectionSchemaWithEmailVerificationValidator.validate(
+    await employeeAccountSchemaWithEmailVerificationValidator.validate(
       await request.formData()
     )
 
@@ -64,7 +102,7 @@ export const action = async ({ request, params }: ActionArgs) => {
     return validationError(error, submittedData)
   }
 
-  const createdEmployee = await createEmployeeByCompanyAdminAccountSectionForm(
+  const createdEmployee = await createEmployeeByCompanyAdminAccountForm(
     data,
     currentEmployee.companyId
   )
@@ -84,53 +122,49 @@ export const action = async ({ request, params }: ActionArgs) => {
 }
 
 const CreateEmployeeAccountRoute = () => {
-  const { benefits, userRoles, employeeGroups } = useLoaderData<typeof loader>()
+  const { benefits, userRoles, employeeGroups, tabPaths } =
+    useLoaderData<typeof loader>()
 
   return (
     <>
-      <div className="my-10" />
+      <Container className="w-full py-10" size={ContainerSize.LG}>
+        <GoBack
+          redirectTo="/dashboard/manage/employees"
+          description="Crear colaborador"
+        />
 
-      <EmployeeAccountForm
-        actions={
-          <div className="mt-6 flex items-center justify-end gap-4">
-            <Link to="/dashboard/manage/employees">
-              <ButtonElement
-                variant={ButtonColorVariants.SECONDARY}
-                className="sm:w-auto"
+        <Tabs items={tabPaths || []} design={TabDesign.UNDERLINE} />
+
+        <div className="my-10" />
+
+        <EmployeeAccountForm
+          actions={
+            <div className="mt-10 flex flex-col items-center justify-end gap-4 md:flex-row">
+              <Link
+                to="/dashboard/manage/employees"
+                className="w-full md:w-auto"
               >
-                Cancelar
-              </ButtonElement>
-            </Link>
+                <ButtonElement
+                  variant={ButtonColorVariants.SECONDARY}
+                  className="w-full md:w-auto"
+                >
+                  Cancelar
+                </ButtonElement>
+              </Link>
 
-            <SubmitButton className="w-full sm:w-auto">Continuar</SubmitButton>
-          </div>
-        }
-        benefits={benefits}
-        userRoles={userRoles}
-        employeeGroups={employeeGroups}
-        validator={employeeAccountSectionValidator}
-      />
+              <SubmitButton className="w-full md:w-auto">
+                Continuar
+              </SubmitButton>
+            </div>
+          }
+          benefits={benefits}
+          userRoles={userRoles}
+          employeeGroups={employeeGroups}
+          validator={employeeAccountValidator}
+        />
+      </Container>
     </>
   )
 }
 
 export default CreateEmployeeAccountRoute
-
-export const handle = {
-  tabPaths: [
-    {
-      title: 'Cuenta de usuario',
-      path: '/dashboard/manage/employees/create/account',
-    },
-    {
-      title: 'Información complementaria',
-      path: '/dashboard/manage/employees/create/extra-information',
-      disabled: true,
-    },
-    {
-      title: 'Cuenta bancaria',
-      path: '/dashboard/manage/employees/create/bank-account',
-      disabled: true,
-    },
-  ],
-}
