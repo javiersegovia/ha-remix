@@ -10,7 +10,9 @@ import type { WelcomeSchemaInput } from '~/schemas/welcome.schema'
 import type { EditAccountSchemaInput } from '~/schemas/edit-account.schema'
 import type {
   CompanyDashboardEmployeeSchemaInput,
-  EmployeeAccountSectionSchemaInput,
+  EmployeeAccountSchemaInput,
+  EmployeeBankAccountSchemaInput,
+  EmployeeExtraInformationSchemaInput,
   EmployeeSchemaInput,
 } from './employee.schema'
 
@@ -28,6 +30,7 @@ import {
   connect,
   connectMany,
   connectOrDisconnect,
+  setMany,
 } from '~/utils/relationships'
 import { generateExpirationDate, generateRandomToken } from '../auth.server'
 import { sendInvitation } from '../email/email.server'
@@ -58,6 +61,18 @@ export const getEmployeeById = async (employeeId: Employee['id']) => {
       membership: {
         include: {
           benefits: true,
+        },
+      },
+      benefits: {
+        select: {
+          id: true,
+          name: true,
+        },
+      },
+      employeeGroups: {
+        select: {
+          id: true,
+          name: true,
         },
       },
       cryptocurrency: true,
@@ -122,9 +137,29 @@ export const getEmployeesByCompanyId = async (
           name: true,
         },
       },
-      employeeGroups: {
+      benefits: {
+        select: {
+          _count: true,
+        },
+      },
+      city: {
         select: {
           name: true,
+        },
+      },
+      jobDepartment: {
+        select: {
+          name: true,
+        },
+      },
+      employeeGroups: {
+        select: {
+          id: true,
+          benefits: {
+            select: {
+              _count: true,
+            },
+          },
         },
       },
       user: {
@@ -318,153 +353,14 @@ export const createEmployee = async (
   }
 }
 
-export const createEmployeeByCompanyAdminForm = async (
-  data: CompanyDashboardEmployeeSchemaInput,
+export const createEmployeeByCompanyAdminAccountForm = async (
+  data: EmployeeAccountSchemaInput,
   companyId: Company['id']
 ) => {
   const {
     user,
     status = EmployeeStatus.INACTIVE,
-    bankAccount,
-
-    birthDay,
-    documentIssueDate,
-
-    genderId,
-    countryId,
-    jobDepartmentId,
-    jobPositionId,
-    stateId,
-    cityId,
-
-    address,
-    numberOfChildren,
-    phone,
-
-    startedAt,
-    inactivatedAt,
-  } = data
-
-  const userExists = await prisma.user.findFirst({
-    where: {
-      email: {
-        equals: user.email,
-        mode: 'insensitive',
-      },
-    },
-  })
-
-  if (userExists) {
-    return {
-      fieldErrors: { 'user.email': 'El correo ya está en uso' },
-      employee: null,
-    }
-  }
-
-  const createBankAccount: Prisma.EmployeeCreateInput['bankAccount'] =
-    bankAccount &&
-    bankAccount.bankId &&
-    bankAccount.accountNumber &&
-    bankAccount.accountTypeId &&
-    bankAccount.identityDocument?.documentTypeId &&
-    bankAccount.identityDocument?.value
-      ? {
-          create: {
-            accountNumber: bankAccount.accountNumber,
-            bank: connect(bankAccount.bankId),
-
-            accountType: connect(bankAccount.accountTypeId),
-
-            identityDocument: {
-              create: {
-                value: bankAccount.identityDocument.value,
-                documentType: connect(
-                  bankAccount.identityDocument.documentTypeId
-                ),
-              },
-            },
-          },
-        }
-      : undefined
-
-  try {
-    const {
-      loginExpiration,
-      loginToken,
-      firstName,
-      lastName,
-      email,
-      verifiedEmail,
-    } = await generateCreateUserInput(user)
-
-    const employee = await prisma.employee.create({
-      data: {
-        startedAt: sanitizeDate(startedAt),
-        inactivatedAt: sanitizeDate(inactivatedAt),
-        address,
-        phone,
-        numberOfChildren: numberOfChildren || undefined,
-
-        birthDay: sanitizeDate(birthDay),
-        documentIssueDate: sanitizeDate(documentIssueDate),
-
-        gender: connect(genderId),
-        country: connect(countryId),
-        state: connect(stateId),
-        city: connect(cityId),
-
-        user: {
-          create: {
-            loginExpiration,
-            loginToken,
-            firstName,
-            lastName,
-            email,
-            verifiedEmail,
-            role: connect(user.roleId),
-          },
-        },
-        status,
-        company: connect(companyId),
-        jobDepartment: connect(jobDepartmentId),
-        jobPosition: connect(jobPositionId),
-
-        currency: {
-          connectOrCreate: {
-            where: {
-              code: 'COP',
-            },
-            create: {
-              code: 'COP',
-              name: 'Peso Colombiano',
-            },
-          },
-        },
-        bankAccount: createBankAccount,
-      },
-    })
-
-    sendInvitation({
-      firstName: user.firstName,
-      destination: user.email,
-      token: loginToken,
-    })
-
-    return { employee }
-  } catch (err) {
-    // Todo LOGGER: Log error and save to a file
-    console.error(err)
-    return { error: err, employee: null }
-  }
-}
-
-export const createEmployeeByCompanyAdminAccountSectionForm = async (
-  data: EmployeeAccountSectionSchemaInput,
-  companyId: Company['id']
-) => {
-  const {
-    user,
-    status = EmployeeStatus.INACTIVE,
+    availablePoints,
     benefitsIds,
     employeeGroupsIds,
   } = data
@@ -493,6 +389,8 @@ export const createEmployeeByCompanyAdminAccountSectionForm = async (
           },
         },
         status,
+        availablePoints,
+
         company: connect(companyId),
 
         benefits: connectMany(benefitsIds),
@@ -554,6 +452,7 @@ export const updateEmployeeById = async (
     address,
     numberOfChildren,
     phone,
+    availablePoints,
 
     salaryFiat,
     salaryCrypto,
@@ -654,6 +553,8 @@ export const updateEmployeeById = async (
         documentIssueDate: sanitizeDate(documentIssueDate),
         address,
         phone,
+        availablePoints,
+
         status,
         numberOfChildren: numberOfChildren || 0,
         roles: roles || [],
@@ -697,6 +598,179 @@ export const updateEmployeeById = async (
     console.error(err)
     throw badRequest({
       message: 'Ha ocurrido un error inesperado',
+      redirect: null,
+    })
+  }
+}
+
+export const updateEmployeeByCompanyAdminAccountForm = async (
+  data: EmployeeAccountSchemaInput,
+  employeeId: Employee['id']
+) => {
+  const {
+    status = EmployeeStatus.INACTIVE,
+    availablePoints,
+    user,
+    benefitsIds,
+    employeeGroupsIds,
+  } = data
+
+  const existingEmployee = await requireEmployee({ where: { id: employeeId } })
+
+  const newInactivatedAt =
+    existingEmployee.status === EmployeeStatus.ACTIVE &&
+    status === EmployeeStatus.INACTIVE
+      ? new Date()
+      : undefined
+
+  try {
+    return await prisma.employee.update({
+      where: {
+        id: employeeId,
+      },
+      data: {
+        status,
+        availablePoints,
+        benefits: setMany(benefitsIds),
+        employeeGroups: setMany(employeeGroupsIds),
+        inactivatedAt: sanitizeDate(newInactivatedAt),
+
+        user: {
+          update: {
+            ...user,
+            password: user.password ? await hash(user.password, 10) : undefined,
+            roleId: user.roleId,
+          },
+        },
+      },
+      select: {
+        id: true,
+      },
+    })
+  } catch (err) {
+    // Todo LOGGER: Log error and save to a file
+    console.error(err)
+    throw badRequest({
+      message: 'Ha ocurrido un error inesperado',
+      redirect: null,
+    })
+  }
+}
+
+export const updateEmployeeByCompanyAdminExtraInformationForm = async (
+  data: EmployeeExtraInformationSchemaInput,
+  employeeId: Employee['id']
+) => {
+  const {
+    jobDepartmentId,
+    jobPositionId,
+    genderId,
+    countryId,
+    stateId,
+    cityId,
+    birthDay,
+    documentIssueDate,
+    startedAt,
+    inactivatedAt,
+    address,
+    phone,
+    numberOfChildren,
+  } = data
+
+  const existingEmployee = await requireEmployee({ where: { id: employeeId } })
+
+  try {
+    return await prisma.employee.update({
+      where: {
+        id: employeeId,
+      },
+      data: {
+        startedAt: sanitizeDate(startedAt),
+        inactivatedAt: sanitizeDate(inactivatedAt),
+        documentIssueDate: sanitizeDate(documentIssueDate),
+        birthDay: sanitizeDate(birthDay),
+
+        address,
+        phone,
+        numberOfChildren: numberOfChildren || 0,
+
+        gender: connectOrDisconnect(genderId, !!existingEmployee.genderId),
+        country: connectOrDisconnect(countryId, !!existingEmployee.countryId),
+        state: connectOrDisconnect(stateId, !!existingEmployee.stateId),
+        city: connectOrDisconnect(cityId, !!existingEmployee.cityId),
+
+        jobDepartment: connectOrDisconnect(
+          jobDepartmentId,
+          !!existingEmployee.jobDepartmentId
+        ),
+        jobPosition: connectOrDisconnect(
+          jobPositionId,
+          !!existingEmployee.jobPositionId
+        ),
+      },
+      select: {
+        id: true,
+      },
+    })
+  } catch (err) {
+    // Todo LOGGER: Log error and save to a file
+    console.error(err)
+    throw badRequest({
+      message: 'Ha ocurrido un error inesperado al actualizar el colaborador',
+      redirect: null,
+    })
+  }
+}
+
+export const updateEmployeeByCompanyAdminBankAccountForm = async (
+  data: EmployeeBankAccountSchemaInput,
+  employeeId: Employee['id']
+) => {
+  const { bankId, accountNumber, accountTypeId, identityDocument } = data
+
+  try {
+    return await prisma.employee.update({
+      where: {
+        id: employeeId,
+      },
+      data: {
+        bankAccount: {
+          upsert: {
+            create: {
+              accountNumber,
+              bank: connect(bankId),
+              accountType: connect(accountTypeId),
+              identityDocument: {
+                create: {
+                  value: identityDocument.value,
+                  documentType: connect(identityDocument.documentTypeId),
+                },
+              },
+            },
+            update: {
+              accountNumber,
+              bank: connect(bankId),
+              accountType: connect(accountTypeId),
+              identityDocument: {
+                update: {
+                  value: identityDocument.value,
+                  documentType: connect(identityDocument.documentTypeId),
+                },
+              },
+            },
+          },
+        },
+      },
+      select: {
+        id: true,
+      },
+    })
+  } catch (err) {
+    // Todo LOGGER: Log error and save to a file
+    console.error(err)
+    throw badRequest({
+      message:
+        'Ha ocurrido un error inesperado al actualizar la información bancaria',
       redirect: null,
     })
   }

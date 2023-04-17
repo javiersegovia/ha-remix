@@ -3,6 +3,7 @@ import { checkIfIdExistInList } from '~/utils/arrays'
 
 interface UseCleanProps<T extends string | number> {
   /** This value will be used to check if we should clean up the value in the form */
+  isReady?: boolean
   shouldClean?: boolean
   options?: Array<{ id: T }>
   value: T | undefined
@@ -18,18 +19,19 @@ interface UseCleanProps<T extends string | number> {
  * If the User selects a Country, then a State, and then changes the country, we have to remove the value of the selected state.
  *  */
 export const useCleanForm = <T extends string | number>({
+  isReady = false,
   shouldClean = false,
   options,
   value,
   setValue,
 }: UseCleanProps<T>) => {
   useLayoutEffect(() => {
+    if (!isReady || !value) return
+
     if (shouldClean || !options || options?.length === 0) {
       setValue(undefined)
       return
     }
-
-    if (!value) return // If we don't have stateIdValue selected, cleanup is not needed
 
     const idExist = checkIfIdExistInList({
       list: options,
@@ -40,5 +42,5 @@ export const useCleanForm = <T extends string | number>({
       setValue(undefined)
       return
     }
-  }, [shouldClean, options, value, setValue])
+  }, [shouldClean, options, value, setValue, isReady])
 }

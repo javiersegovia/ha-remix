@@ -118,6 +118,22 @@ export function selectStyles<isMulti extends boolean>(
       ...provided,
       paddingTop: 0,
       paddingBottom: 0,
+      borderRadius: '0.375rem',
+    }),
+    multiValue: (provided) => ({
+      ...provided,
+      paddingLeft: '8px',
+      paddingRight: '0px',
+      backgroundColor: '#C8E3FC',
+      borderRadius: '22px',
+    }),
+    multiValueRemove: (provided) => ({
+      ...provided,
+      borderTopRightRadius: '22px',
+      borderBottomRightRadius: '22px',
+      paddingRight: '8px',
+      paddingLeft: '4px',
+      marginLeft: '4px',
     }),
   }
 }

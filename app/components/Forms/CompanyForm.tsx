@@ -12,6 +12,7 @@ import type {
   Image,
 } from '@prisma/client'
 import type { Validator } from 'remix-validated-form'
+import { useControlField } from 'remix-validated-form'
 
 import { CompanyStatus } from '@prisma/client'
 import { ValidatedForm } from 'remix-validated-form'
@@ -65,10 +66,11 @@ interface CompanyFormProps<T = CompanySchemaInput> {
 export const CompanyForm = ({
   defaultValues,
   actions,
+  validator,
+
   companyCategories,
   countries,
   benefits,
-  validator,
 }: CompanyFormProps) => {
   const {
     address,

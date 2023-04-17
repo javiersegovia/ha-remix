@@ -28,6 +28,7 @@ interface SelectProps extends TSelectProps {
   placeholder?: string
   error?: string
   options: TReactSelectOption[] | null | undefined
+  defaultValue?: TReactSelectOption[] | undefined
   onSelectChange?: (newValue?: readonly TReactSelectOption[] | null) => void
 }
 
@@ -40,18 +41,27 @@ export const SelectMultiple = ({
   options,
   error,
   disabled,
+  defaultValue,
   onSelectChange,
 }: SelectProps) => {
   const isHydrated = useHydrated()
-  const { error: formError, defaultValue = [], validate } = useField(name)
+  const {
+    error: formError,
+    defaultValue: formDefaultValue = [],
+    validate,
+  } = useField(name)
   const [value, setValue] = useControlField<readonly TReactSelectOption[]>(name)
 
   const isSubmitting = useIsSubmitting()
   const fieldError: string | undefined = error || formError
   const styles = selectStyles<true>(!!fieldError)
 
+  // Determine the default value to display in the select based on the form default value and the prop default value
+  // This is needed because in some cases, the formDefaultValue is not present, while the prop defaultValue is.
   const formattedDefaultValues =
-    options?.filter((opt) => defaultValue.includes(getSelectValue(opt))) || []
+    (formDefaultValue?.length > 0
+      ? options?.filter((opt) => formDefaultValue.includes(getSelectValue(opt)))
+      : defaultValue) || []
 
   return (
     <Label htmlFor={name} description={label}>

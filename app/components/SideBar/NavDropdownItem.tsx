@@ -38,7 +38,7 @@ export const NavDropdownItem: React.FC<NavDropdownItemProps> = ({
       <button
         type="button"
         className={clsx(
-          'flex w-full cursor-pointer items-center rounded-2xl px-4 py-3  text-base font-semibold transition',
+          'flex w-full cursor-pointer items-center rounded-2xl py-3 px-6  text-base font-semibold transition',
           variant === 'PRIMARY' &&
             (insideCurrentPath
               ? `bg-steelBlue-300 text-steelBlue-700`

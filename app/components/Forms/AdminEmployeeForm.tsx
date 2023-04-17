@@ -68,6 +68,7 @@ interface AdminEmployeeFormProps<T = EmployeeSchemaInput> {
     | 'advanceAvailableAmount'
     | 'advanceCryptoAvailableAmount'
     | 'phone'
+    | 'availablePoints'
     | 'address'
     | 'numberOfChildren'
     | 'status'
@@ -124,6 +125,7 @@ export const AdminEmployeeForm = ({
     advanceAvailableAmount,
     advanceCryptoAvailableAmount,
     phone,
+    availablePoints,
     address,
     numberOfChildren,
     status,
@@ -155,6 +157,7 @@ export const AdminEmployeeForm = ({
     advanceCryptoAvailableAmount,
     startedAt,
     inactivatedAt,
+    availablePoints,
     phone,
     address,
     numberOfChildren,
@@ -330,6 +333,15 @@ export const AdminEmployeeForm = ({
               placeholder="Rol de usuario"
               options={userRoles}
               isClearable
+            />
+          </FormGridItem>
+
+          <FormGridItem>
+            <Input
+              name="availablePoints"
+              type="number"
+              label="Puntos disponibles"
+              placeholder="Puntos disponibles para redimir"
             />
           </FormGridItem>
         </FormGridWrapper>

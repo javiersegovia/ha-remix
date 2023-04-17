@@ -41,13 +41,19 @@ export function CompanyEmployeeList({ employees }: CompanyEmployeeListProps) {
                       </Link>
                     </td>
 
-                    <TableData isCentered>City</TableData>
+                    <TableData isCentered>{employee.city?.name}</TableData>
 
-                    <TableData isCentered>Área</TableData>
+                    <TableData isCentered>
+                      {employee.jobDepartment?.name}
+                    </TableData>
 
-                    <TableData isCentered>0</TableData>
+                    <TableData isCentered>
+                      {employee.employeeGroups?.length}
+                    </TableData>
 
-                    <TableData isCentered>5</TableData>
+                    <TableData isCentered>
+                      {employee.benefits?.length}
+                    </TableData>
 
                     <TableData isCentered>
                       <EmployeeStatusPill employeeStatus={employee.status} />

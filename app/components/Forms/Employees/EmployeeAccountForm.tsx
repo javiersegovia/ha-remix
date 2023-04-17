@@ -1,6 +1,7 @@
-import type { Employee, User } from '@prisma/client'
+import type { getEmployeeGroupsByCompanyId } from '~/services/employee-group/employee-group.server'
+import type { Benefit, Employee, EmployeeGroup, User } from '@prisma/client'
 import type { Validator } from 'remix-validated-form'
-import type { EmployeeAccountSectionSchemaInput } from '~/services/employee/employee.schema'
+import type { EmployeeAccountSchemaInput } from '~/services/employee/employee.schema'
 import type { getAvailableBenefitsByCompanyId } from '~/services/benefit/benefit.server'
 import type { EnumOption } from '~/schemas/helpers'
 
@@ -15,52 +16,60 @@ import { FormGridItem } from '~/components/FormFields/FormGridItem'
 import { Input } from '../../FormFields/Input'
 import { Select } from '~/components/FormFields/Select'
 import { SelectMultiple } from '~/components/FormFields/SelectMultiple'
-import type { getEmployeeGroupsByCompanyId } from '~/services/employee-group/employee-group.server'
 
 const employeeStatusList: EnumOption[] = [
   { name: 'Activo', value: EmployeeStatus.ACTIVE },
   { name: 'Inactivo', value: EmployeeStatus.INACTIVE },
 ]
 
-interface EmployeeFormProps<T = EmployeeAccountSectionSchemaInput> {
+interface EmployeeAccountFormProps<T = EmployeeAccountSchemaInput> {
   actions: JSX.Element
   userRoles: Awaited<ReturnType<typeof getUserRoles>>
   benefits: Awaited<ReturnType<typeof getAvailableBenefitsByCompanyId>>
   employeeGroups: Awaited<ReturnType<typeof getEmployeeGroupsByCompanyId>>
   validator: Validator<T>
-  defaultValues?: Pick<Employee, 'status'> & {
+  defaultValues?: Pick<Employee, 'status' | 'availablePoints'> & {
     user: Pick<User, 'email' | 'firstName' | 'lastName' | 'roleId'>
+  } & {
+    benefits: Pick<Benefit, 'id' | 'name'>[]
+    employeeGroups: Pick<EmployeeGroup, 'id' | 'name'>[]
   }
 }
 
 export const EmployeeAccountForm = ({
   defaultValues,
   actions,
+  validator,
+
   userRoles,
   employeeGroups,
   benefits,
-  validator,
-}: EmployeeFormProps) => {
-  const { status, user } = defaultValues || {}
-
-  const formDefaultValues = {
-    status: status || EmployeeStatus.INACTIVE,
-    user: {
-      firstName: user?.firstName || '',
-      email: user?.email || '',
-      lastName: user?.lastName || '',
-      roleId: user?.roleId || '',
-    },
-  }
-
-  const formId = 'EmployeeForm'
+}: EmployeeAccountFormProps) => {
+  const {
+    status,
+    availablePoints,
+    user,
+    benefits: currentBenefits,
+    employeeGroups: currentEmployeeGroups,
+  } = defaultValues || {}
 
   return (
     <ValidatedForm
-      id={formId}
+      id="EmployeeAccountForm"
       validator={validator}
       method="post"
-      defaultValues={formDefaultValues}
+      defaultValues={{
+        status: status || EmployeeStatus.INACTIVE,
+        availablePoints,
+        benefitsIds: currentBenefits?.map((benefit) => benefit.id),
+        employeeGroupsIds: currentEmployeeGroups?.map((group) => group.id),
+        user: {
+          firstName: user?.firstName || '',
+          email: user?.email || '',
+          lastName: user?.lastName || '',
+          roleId: user?.roleId || '',
+        },
+      }}
     >
       <Box className="p-5 shadow-sm">
         <FormGridWrapper>
@@ -113,12 +122,22 @@ export const EmployeeAccountForm = ({
             />
           </FormGridItem>
 
+          <FormGridItem>
+            <Input
+              name="availablePoints"
+              type="number"
+              label="Puntos disponibles"
+              placeholder="Puntos disponibles para redimir"
+            />
+          </FormGridItem>
+
           <FormGridItem isFullWidth>
             <SelectMultiple
               name="benefitsIds"
               label="Beneficios"
-              placeholder="Beneficios habilitados para este usuario, adicionales a los del grupo"
+              placeholder="Beneficios habilitados para este usuario"
               options={benefits}
+              defaultValue={currentBenefits}
             />
           </FormGridItem>
 
@@ -128,6 +147,7 @@ export const EmployeeAccountForm = ({
               label="Grupo de colaboradores"
               placeholder="Seleccione uno o más grupos de colaboradores"
               options={employeeGroups}
+              defaultValue={currentEmployeeGroups}
             />
           </FormGridItem>
         </FormGridWrapper>

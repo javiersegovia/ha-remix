@@ -3,8 +3,8 @@ import clsx from 'clsx'
 import { twMerge } from 'tailwind-merge'
 
 interface TableDataProps extends PropsWithChildren {
-  isCentered?: boolean
   className?: string
+  isCentered?: boolean
 }
 
 export const TableData = ({
@@ -14,10 +14,14 @@ export const TableData = ({
 }: TableDataProps) => (
   <td
     className={twMerge(
-      clsx('whitespace-nowrap px-6 py-4', isCentered && 'text-center'),
-      className
+      clsx(
+        'whitespace-nowrap px-6 py-4',
+        isCentered && 'text-center',
+        !children && 'text-gray-400',
+        className
+      )
     )}
   >
-    {children}
+    {children || '-'}
   </td>
 )

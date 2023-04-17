@@ -40,17 +40,7 @@ export const meta: MetaFunction = () => {
 export default function EmployeeGroupIndexRoute() {
   const { employeeGroups } = useLoaderData<typeof loader>()
 
-  const headings = [
-    'Nombre',
-    'Cargo',
-    'Área',
-    'País',
-    'Departamento',
-    'Ciudad',
-    'Fecha de nacimiento',
-    'Cantidad de hijos',
-    'Salario',
-  ]
+  const headings = ['Nombre', 'Beneficios']
 
   const rows: TableRowProps[] = employeeGroups?.map((eGroup) => ({
     rowId: eGroup.id,
@@ -59,14 +49,7 @@ export default function EmployeeGroupIndexRoute() {
       <span className="whitespace-pre-wrap" key={`${eGroup.id}_name`}>
         {eGroup.name}
       </span>,
-      '-',
-      '-',
-      '-',
-      '-',
-      '-',
-      '-',
-      '-',
-      '-',
+      eGroup.benefits?.length || '-',
     ],
   }))
 
