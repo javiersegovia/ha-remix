@@ -1,12 +1,13 @@
-import type { Benefit, Membership } from '@prisma/client'
+import type { Benefit, CompanyBenefit } from '@prisma/client'
 
 import { faker } from '@faker-js/faker'
 import { Factory } from 'fishery'
 import { prisma } from '~/db.server'
 import { connect } from '~/utils/relationships'
+import { CompanyFactory } from '../company/company.factory'
 
 type ExtendedBenefit = Benefit & {
-  membership?: Pick<Membership, 'id'>
+  companyBenefit: Pick<CompanyBenefit, 'id'> | null
 }
 
 export const BenefitFactory = Factory.define<ExtendedBenefit>(
@@ -18,7 +19,11 @@ export const BenefitFactory = Factory.define<ExtendedBenefit>(
         data: {
           ...benefitData,
 
-          membership: connect(associations?.membership?.id),
+          companyBenefit: connect(associations?.companyBenefit?.id),
+        },
+        include: {
+          companyBenefit: true,
+          membership: true,
         },
       })
     })
@@ -33,10 +38,37 @@ export const BenefitFactory = Factory.define<ExtendedBenefit>(
       buttonText: faker.datatype.string(),
       slug: faker.datatype.string(),
 
-      membership: associations?.membership,
+      companyBenefit: associations?.companyBenefit || null,
 
       benefitCategoryId: null,
       mainImageId: null,
+    }
+  }
+)
+
+export const CompanyBenefitFactory = Factory.define<CompanyBenefit>(
+  ({ onCreate, associations, sequence }) => {
+    onCreate((cBenefit) => {
+      const { companyId, benefitId } = cBenefit
+
+      return prisma.companyBenefit.create({
+        data: {
+          companyId,
+          benefitId,
+        },
+      })
+    })
+
+    const benefitId = associations?.benefitId || BenefitFactory.build().id
+    const companyId = associations?.companyId || CompanyFactory.build().id
+
+    return {
+      id: sequence,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+
+      companyId,
+      benefitId,
     }
   }
 )

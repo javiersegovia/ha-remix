@@ -45,9 +45,12 @@ export const loader = async ({ request }: LoaderArgs) => {
   const employee = await requireEmployee(request)
 
   const enabledBenefits = await getEmployeeEnabledBenefits({
+    employeeBenefits: employee?.benefits,
     membershipBenefits: employee?.membership?.benefits,
     companyBenefits: employee?.company.benefits,
-    employeeGroups: employee?.employeeGroups,
+    employeeGroupsBenefits: employee?.employeeGroups
+      ?.map((eGroup) => eGroup.benefits)
+      .flat(),
   })
 
   const { errorMessage, canUsePremiumAdvances } =
@@ -98,9 +101,12 @@ export const action = async ({ request }: ActionArgs) => {
   const employee = await requireEmployee(request)
 
   const enabledBenefits = await getEmployeeEnabledBenefits({
+    employeeBenefits: employee?.benefits,
     membershipBenefits: employee?.membership?.benefits,
     companyBenefits: employee?.company.benefits,
-    employeeGroups: employee?.employeeGroups,
+    employeeGroupsBenefits: employee?.employeeGroups
+      ?.map((eGroup) => eGroup.benefits)
+      .flat(),
   })
 
   const { errorMessage, canUsePremiumAdvances } =

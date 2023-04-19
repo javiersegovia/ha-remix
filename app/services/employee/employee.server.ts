@@ -67,6 +67,11 @@ export const getEmployeeById = async (employeeId: Employee['id']) => {
         select: {
           id: true,
           name: true,
+          companyBenefit: {
+            select: {
+              id: true,
+            },
+          },
         },
       },
       employeeGroups: {
@@ -76,6 +81,11 @@ export const getEmployeeById = async (employeeId: Employee['id']) => {
           benefits: {
             select: {
               id: true,
+              companyBenefit: {
+                select: {
+                  id: true,
+                },
+              },
             },
           },
         },
@@ -289,7 +299,11 @@ export const createEmployee = async (
       : undefined
 
   try {
-    const newUser = await generateCreateUserInput(user)
+    const {
+      loginToken,
+      loginExpiration,
+      email: formattedEmail,
+    } = await generateCreateUserInput(user)
 
     const employee = await prisma.employee.create({
       data: {
@@ -317,9 +331,12 @@ export const createEmployee = async (
 
         user: {
           create: {
-            ...newUser,
+            email: formattedEmail,
+            loginToken,
+            loginExpiration,
             password: user.password ? await hash(user.password, 10) : undefined,
             role: connect(user.roleId),
+            roleId: undefined,
           },
         },
         status,
@@ -347,7 +364,7 @@ export const createEmployee = async (
     sendInvitation({
       firstName: user.firstName,
       destination: user.email,
-      token: newUser.loginToken,
+      token: loginToken,
     })
 
     return { employee }
