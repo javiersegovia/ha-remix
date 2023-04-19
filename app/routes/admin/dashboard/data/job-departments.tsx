@@ -16,14 +16,12 @@ export const loader = async ({ request }: LoaderArgs) => {
 
   const jobDepartments = await getJobDepartments()
 
-  return json({
-    jobDepartments,
-  })
+  return json({ jobDepartments })
 }
 
 export const meta: MetaFunction = () => {
   return {
-    title: '[Admin] Áreas de Trabajo | HoyAdelantas',
+    title: '[Admin] Áreas de Trabajo | HoyTrabajas Beneficios',
   }
 }
 
