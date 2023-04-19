@@ -44,9 +44,12 @@ export const loader = async ({ request }: LoaderArgs) => {
   const employee = await requireEmployee(request)
 
   const benefits = await getEmployeeEnabledBenefits({
+    employeeBenefits: employee?.benefits,
     membershipBenefits: employee?.membership?.benefits,
     companyBenefits: employee?.company.benefits,
-    employeeGroups: employee?.employeeGroups,
+    employeeGroupsBenefits: employee?.employeeGroups
+      ?.map((eGroup) => eGroup.benefits)
+      .flat(),
   })
 
   const canUsePayrollAdvances = process.env.SLUG_PAYROLL_ADVANCE

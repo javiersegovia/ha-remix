@@ -54,11 +54,26 @@ const getEmployeeData = (userId: User['id']) => {
           },
         },
       },
+      benefits: {
+        select: {
+          id: true,
+          companyBenefit: {
+            select: {
+              id: true,
+            },
+          },
+        },
+      },
       employeeGroups: {
         select: {
           benefits: {
             select: {
               id: true,
+              companyBenefit: {
+                select: {
+                  id: true,
+                },
+              },
             },
           },
         },
@@ -81,9 +96,12 @@ export const loader = async ({ request }: LoaderArgs) => {
   const employeeData = await getEmployeeData(user.id)
 
   const benefits = await getEmployeeEnabledBenefits({
+    employeeBenefits: employeeData?.benefits,
     membershipBenefits: employeeData?.membership?.benefits,
     companyBenefits: employeeData?.company.benefits,
-    employeeGroups: employeeData?.employeeGroups,
+    employeeGroupsBenefits: employeeData?.employeeGroups
+      ?.map((eGroup) => eGroup.benefits)
+      .flat(),
   })
 
   const canUsePayrollAdvances = process.env.SLUG_PAYROLL_ADVANCE

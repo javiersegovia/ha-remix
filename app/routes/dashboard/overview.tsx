@@ -48,12 +48,27 @@ const getEmployeeData = (userId: string) => {
           },
         },
       },
+      benefits: {
+        select: {
+          id: true,
+          companyBenefit: {
+            select: {
+              id: true,
+            },
+          },
+        },
+      },
       employeeGroups: {
         select: {
           id: true,
           benefits: {
             select: {
               id: true,
+              companyBenefit: {
+                select: {
+                  id: true,
+                },
+              },
             },
           },
         },
@@ -76,9 +91,12 @@ export const loader = async ({ request }: LoaderArgs) => {
   if (!employeeData) throw await logout(request)
 
   const benefits = await getEmployeeEnabledBenefits({
+    employeeBenefits: employeeData?.benefits,
     membershipBenefits: employeeData?.membership?.benefits,
     companyBenefits: employeeData?.company.benefits,
-    employeeGroups: employeeData?.employeeGroups,
+    employeeGroupsBenefits: employeeData?.employeeGroups
+      ?.map((eGroup) => eGroup.benefits)
+      .flat(),
   })
 
   const benefitHighlights = benefits.reduce((acc, benefit) => {

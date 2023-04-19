@@ -18,16 +18,12 @@ describe('findOrCreateManyPermissions', () => {
     const result = await findOrCreateManyPermissions()
 
     expect(result.length).toEqual(defaultPermissions.length)
-    expect(result).toEqual(
-      expect.arrayContaining([
-        {
-          id: expect.any(Number),
-          code: expect.any(String),
-          name: expect.any(String),
-          description: expect.toBeOneOf([expect.any(String), undefined]),
-        },
-      ])
-    )
+    expect(result[0]).toEqual({
+      id: expect.any(Number),
+      code: expect.any(String),
+      name: expect.any(String),
+      description: expect.toBeOneOf([expect.any(String), null]),
+    })
   })
 })
 
