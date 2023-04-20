@@ -8,10 +8,11 @@ export const getSalaryRanges = () => {
   return prisma.salaryRange.findMany({
     select: {
       id: true,
-      name: true,
+      minValue: true,
+      maxValue: true,
     },
     orderBy: {
-      name: 'asc',
+      minValue: 'asc',
     },
   })
 }
@@ -23,15 +24,16 @@ export const getSalaryRangeById = async (id: SalaryRange['id']) => {
     },
     select: {
       id: true,
-      name: true,
+      minValue: true,
+      maxValue: true,
     },
   })
 }
 
 export const createSalaryRange = async (data: SalaryRangeInputSchema) => {
-  const { name } = data
+  const { minValue, maxValue } = data
   return prisma.salaryRange.create({
-    data: { name },
+    data: { minValue, maxValue },
   })
 }
 
@@ -39,13 +41,13 @@ export const updateSalaryRangeById = async (
   id: SalaryRange['id'],
   data: SalaryRangeInputSchema
 ) => {
-  const { name } = data
+  const { minValue, maxValue } = data
   try {
     return prisma.salaryRange.update({
       where: {
         id,
       },
-      data: { name },
+      data: { minValue, maxValue },
     })
   } catch (e) {
     console.error(e)

@@ -13,7 +13,7 @@ import { SubmitButton } from '../SubmitButton'
 
 interface SalaryRangeFormProps {
   buttonText: string
-  defaultValues?: Pick<SalaryRange, 'name'>
+  defaultValues?: Pick<SalaryRange, 'minValue' & 'maxValue'>
   showDeleteButton?: boolean
 }
 
@@ -34,10 +34,16 @@ export const SalaryRangeForm = ({
         <FormGridWrapper>
           <FormGridItem className="lg:col-span-12">
             <Input
-              name="name"
-              type="text"
-              label="Nombre"
-              placeholder="Ingrese el rango salarial"
+              name="minValue"
+              type="number"
+              label="Valor mínimo"
+              placeholder="Ingrese el valor mínimo para el rango salarial"
+            />
+            <Input
+              name="maxValue"
+              type="number"
+              label="Valor máximo"
+              placeholder="Ingrese el valor máximo para el rango salarial"
             />
           </FormGridItem>
           <FormGridItem className="lg:col-span-12">

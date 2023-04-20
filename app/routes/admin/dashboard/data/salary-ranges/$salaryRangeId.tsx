@@ -83,7 +83,10 @@ export default function SalaryRangeUpdateRoute() {
 
         <SalaryRangeForm
           buttonText="Guardar"
-          defaultValues={{ name: salaryRange.name }}
+          defaultValues={{
+            minValue: salaryRange.minValue,
+            maxValue: salaryRange.maxValue,
+          }}
           showDeleteButton
         />
       </RightPanel>

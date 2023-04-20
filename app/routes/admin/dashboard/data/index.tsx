@@ -109,6 +109,11 @@ export const loader = async ({ request }: LoaderArgs) => {
       isDisabled: true,
     },
     {
+      rowId: 'salary-ranges',
+      items: ['Rangos salariales', salaryRanges],
+      href: '/admin/dashboard/data/salary-ranges',
+    },
+    {
       rowId: 'bank-account-types',
       items: ['Tipos de cuenta bancaria', bankAccountTypes],
       href: '/admin/dashboard/data/bank-account-types',

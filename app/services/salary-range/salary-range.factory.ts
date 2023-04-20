@@ -7,7 +7,7 @@ import { prisma } from '~/db.server'
 export const SalaryRangeFactory = Factory.define<SalaryRange>(
   ({ onCreate, sequence }) => {
     onCreate((salaryRange) => {
-      const { id: _, ...salaryRangeData } = salaryRange
+      const { ...salaryRangeData } = salaryRange
 
       return prisma.salaryRange.create({
         data: {
@@ -20,8 +20,8 @@ export const SalaryRangeFactory = Factory.define<SalaryRange>(
       id: sequence,
       createdAt: new Date(),
       updatedAt: new Date(),
-
-      name: faker.datatype.uuid(),
+      minValue: faker.datatype.number(),
+      maxValue: faker.datatype.number(),
     }
   }
 )

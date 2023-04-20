@@ -14,10 +14,10 @@ import { requireAdminUserId } from '~/session.server'
 export const loader = async ({ request }: LoaderArgs) => {
   await requireAdminUserId(request)
 
-  const salaryRange = await getSalaryRanges()
+  const salaryRanges = await getSalaryRanges()
 
   return json({
-    salaryRange,
+    salaryRanges,
   })
 }
 
@@ -28,14 +28,14 @@ export const meta: MetaFunction = () => {
 }
 
 export default function SalaryRangesIndexRoute() {
-  const { salaryRange } = useLoaderData<typeof loader>()
+  const { salaryRanges } = useLoaderData<typeof loader>()
 
   const headings = ['Nombre']
 
-  const rows: TableRowProps[] = salaryRange?.map((salaryRange) => ({
-    rowId: salaryRange.id,
-    href: `/admin/dashboard/data/salary-ranges/${salaryRange.id}`,
-    items: [salaryRange.name],
+  const rows: TableRowProps[] = salaryRanges?.map((salaryRanges) => ({
+    rowId: salaryRanges.id,
+    href: `/admin/dashboard/data/salary-ranges/${salaryRanges.id}`,
+    items: [salaryRanges.name],
   }))
 
   return (
@@ -51,7 +51,7 @@ export default function SalaryRangesIndexRoute() {
           }
         />
 
-        {salaryRange?.length > 0 ? (
+        {salaryRanges?.length > 0 ? (
           <Table headings={headings} rows={rows} />
         ) : (
           <p>No se han encontrado rangos salariales.</p>
