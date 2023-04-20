@@ -38,7 +38,8 @@ describe('createSalaryRange', () => {
     )
 
     const result = await salaryRangeService.createSalaryRange({
-      name: expectedSalaryRange.name,
+      minValue: expectedSalaryRange.minValue,
+      maxValue: expectedSalaryRange.maxValue,
     })
 
     expect(result).toEqual(expectedSalaryRange)
@@ -53,7 +54,8 @@ describe('updateSalaryRangeById', () => {
     vi.spyOn(prisma.salaryRange, 'update').mockResolvedValueOnce(newSalaryRange)
 
     const result = await updateSalaryRangeById(existingSalaryRange.id, {
-      name: newSalaryRange.name,
+      minValue: newSalaryRange.minValue,
+      maxValue: newSalaryRange.maxValue,
     })
 
     expect(result).toEqual(newSalaryRange)

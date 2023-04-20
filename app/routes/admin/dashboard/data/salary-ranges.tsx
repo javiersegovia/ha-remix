@@ -4,12 +4,13 @@ import type { TableRowProps } from '~/components/Lists/Table'
 import { Outlet, useLoaderData } from '@remix-run/react'
 import { json } from '@remix-run/node'
 
-import { Button } from '~/components/Button'
+import { Button, ButtonIconVariants } from '~/components/Button'
 import { Container } from '~/components/Layout/Container'
 import { TitleWithActions } from '~/components/Layout/TitleWithActions'
 import { Table } from '~/components/Lists/Table'
 import { getSalaryRanges } from '~/services/salary-range/salary-range.server'
 import { requireAdminUserId } from '~/session.server'
+import { formatSalaryRange } from '~/utils/formatSalaryRange'
 
 export const loader = async ({ request }: LoaderArgs) => {
   await requireAdminUserId(request)
@@ -30,13 +31,15 @@ export const meta: MetaFunction = () => {
 export default function SalaryRangesIndexRoute() {
   const { salaryRanges } = useLoaderData<typeof loader>()
 
-  const headings = ['Nombre']
+  const headings = ['Rango']
 
-  const rows: TableRowProps[] = salaryRanges?.map((salaryRanges) => ({
-    rowId: salaryRanges.id,
-    href: `/admin/dashboard/data/salary-ranges/${salaryRanges.id}`,
-    items: [salaryRanges.name],
-  }))
+  const rows: TableRowProps[] = salaryRanges?.map(
+    ({ id, minValue, maxValue }) => ({
+      rowId: id,
+      href: `/admin/dashboard/data/salary-ranges/${id}`,
+      items: [formatSalaryRange(minValue, maxValue)],
+    })
+  )
 
   return (
     <>
@@ -45,7 +48,7 @@ export default function SalaryRangesIndexRoute() {
           className="mb-10"
           title="Rangos Salariales"
           actions={
-            <Button href="create" size="SM">
+            <Button href="create" size="SM" icon={ButtonIconVariants.CREATE}>
               Crear rango salarial
             </Button>
           }

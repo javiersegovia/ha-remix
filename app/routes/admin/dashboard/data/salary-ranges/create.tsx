@@ -29,7 +29,7 @@ export const action = async ({ request }: ActionArgs) => {
 
   await createSalaryRange(data)
 
-  return redirect('/admin/dashboard/data/salary-ranges')
+  return redirect(onCloseRedirectTo)
 }
 
 const onCloseRedirectTo = '/admin/dashboard/data/salary-ranges' as const

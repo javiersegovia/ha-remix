@@ -25,7 +25,7 @@ export const loader = async ({ request, params }: LoaderArgs) => {
   if (!salaryRangeId || isNaN(Number(salaryRangeId))) {
     throw badRequest({
       message: 'No se encontró el ID del rango salarial',
-      redirect: '/admin/dashboard/data/salary-ranges',
+      redirect: onCloseRedirectTo,
     })
   }
 
@@ -34,7 +34,7 @@ export const loader = async ({ request, params }: LoaderArgs) => {
   if (!salaryRange) {
     throw badRequest({
       message: 'No se encontró el rango salarial',
-      redirect: '/admin/dashboard/data/salary-ranges',
+      redirect: onCloseRedirectTo,
     })
   }
 
@@ -48,7 +48,7 @@ export const action = async ({ request, params }: ActionArgs) => {
   if (!salaryRangeId || isNaN(Number(salaryRangeId))) {
     throw badRequest({
       message: 'No se encontró el ID del rango salarial',
-      redirect: '/admin/dashboard/data/salary-ranges',
+      redirect: onCloseRedirectTo,
     })
   }
 
@@ -68,7 +68,7 @@ export const action = async ({ request, params }: ActionArgs) => {
     await deleteSalaryRangeById(Number(salaryRangeId))
   }
 
-  return redirect('/admin/dashboard/data/salary-ranges')
+  return redirect(onCloseRedirectTo)
 }
 
 const onCloseRedirectTo = '/admin/dashboard/data/salary-ranges' as const
@@ -84,6 +84,7 @@ export default function SalaryRangeUpdateRoute() {
         <SalaryRangeForm
           buttonText="Guardar"
           defaultValues={{
+            id: salaryRange.id,
             minValue: salaryRange.minValue,
             maxValue: salaryRange.maxValue,
           }}

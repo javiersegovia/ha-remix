@@ -13,7 +13,7 @@ import { SubmitButton } from '../SubmitButton'
 
 interface SalaryRangeFormProps {
   buttonText: string
-  defaultValues?: Pick<SalaryRange, 'minValue' & 'maxValue'>
+  defaultValues?: Pick<SalaryRange, 'id' | 'minValue' | 'maxValue'>
   showDeleteButton?: boolean
 }
 
@@ -22,6 +22,7 @@ export const SalaryRangeForm = ({
   defaultValues,
   showDeleteButton,
 }: SalaryRangeFormProps) => {
+  const { minValue, maxValue } = defaultValues || {}
   return (
     <>
       <ValidatedForm
@@ -29,7 +30,7 @@ export const SalaryRangeForm = ({
         validator={salaryRangeValidator}
         method="post"
         className="pt-10"
-        defaultValues={defaultValues}
+        defaultValues={{ minValue, maxValue }}
       >
         <FormGridWrapper>
           <FormGridItem className="lg:col-span-12">
