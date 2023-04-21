@@ -65,13 +65,13 @@ export default function DashboardWelcomeRoute() {
   } = useLoaderData<typeof loader>()
 
   return (
-    <section className="min-h-screen bg-steelBlue-900 py-20">
+    <section className="min-h-screen bg-steelBlue-700 py-20">
       <div className="container mx-auto px-0 sm:px-4">
         <img
           className="mx-auto block object-contain"
-          src="https://ht-benefits-assets.s3.amazonaws.com/logo_beneficios_blanco.png"
-          alt="Logo HoyTrabajas Beneficios"
-          width="256"
+          src="/images/logos/logo_umany_benefits_white_green.png"
+          alt="Logo Umany"
+          width="200"
         />
 
         <div className="mx-auto mb-6 mt-6 w-full rounded-none bg-white px-4 pb-6 pt-5 shadow-2xl sm:w-10/12 sm:rounded-lg sm:px-6 md:w-6/12 lg:w-5/12 xl:w-6/12 2xl:w-5/12">

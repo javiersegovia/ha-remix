@@ -1,29 +1,10 @@
-import type {
-  Benefit,
-  CompanyBenefit,
-  PermissionCode,
-  User,
-  UserRole,
-} from '@prisma/client'
+import type { Benefit, PermissionCode, User, UserRole } from '@prisma/client'
+import type { FilterEmployeeEnabledBenefitsArgs } from './permissions.shared'
+
 import { badRequest } from '~/utils/responses'
 import { prisma } from '~/db.server'
 import { defaultPermissions } from './permissions.list'
-
-interface GetEmployeeEnabledBenefitsArgs {
-  employeeBenefits:
-    | (Pick<Benefit, 'id'> & {
-        companyBenefit: Pick<CompanyBenefit, 'id'> | null
-      })[]
-    | undefined
-
-  membershipBenefits: Pick<Benefit, 'id'>[] | undefined
-  companyBenefits: Pick<Benefit, 'id'>[] | undefined
-  employeeGroupsBenefits:
-    | (Pick<Benefit, 'id'> & {
-        companyBenefit: Pick<CompanyBenefit, 'id'> | null
-      })[]
-    | undefined
-}
+import { filterEmployeeEnabledBenefits } from './permissions.shared'
 
 /** employeeBenefits refer to the benefits assigned directly to the employee.
  *  membershipBenefits refer to the benefits assigned to a membership.
@@ -31,35 +12,25 @@ interface GetEmployeeEnabledBenefitsArgs {
  *  employeeGroupsBenefits refer to the benefits that belong to the employee groups.
  */
 
+type GetEmployeeEnabledBenefitsArgs = Pick<
+  FilterEmployeeEnabledBenefitsArgs,
+  'employeeBenefits' | 'membershipBenefits' | 'employeeGroupsBenefits'
+> & {
+  companyBenefits: Pick<Benefit, 'id'>[] | undefined
+}
+
 export const getEmployeeEnabledBenefits = async ({
   employeeBenefits,
   membershipBenefits,
-  companyBenefits,
   employeeGroupsBenefits,
+  companyBenefits,
 }: GetEmployeeEnabledBenefitsArgs) => {
-  const membershipBenefitsIds = membershipBenefits?.map((m) => m.id) || []
-  const companyEnabledBenefitsIds = companyBenefits?.map((c) => c.id) || []
-
-  const unfilteredBenefits = [
-    ...(employeeBenefits || []),
-    ...(employeeGroupsBenefits || []),
-  ]
-
-  const employeeBenefitsIds: Benefit['id'][] = []
-  const employeeCompanyBenefitsIds: Benefit['id'][] = []
-  // employeeCompanyBenefitsIds refers to the benefits that were created by the company. Those benefits don't have any restriction.
-
-  for (const benefit of unfilteredBenefits) {
-    if (benefit.companyBenefit) {
-      employeeCompanyBenefitsIds.push(benefit.id)
-    } else {
-      employeeBenefitsIds.push(benefit.id)
-    }
-  }
-
-  const benefitsIds = [...membershipBenefitsIds, ...employeeBenefitsIds].filter(
-    (id) => companyEnabledBenefitsIds.includes(id)
-  )
+  const filteredBenefits = filterEmployeeEnabledBenefits({
+    employeeBenefits,
+    membershipBenefits,
+    employeeGroupsBenefits,
+    companyBenefitsIds: companyBenefits?.map((b) => b.id),
+  })
 
   return await prisma.benefit.findMany({
     orderBy: {
@@ -67,7 +38,7 @@ export const getEmployeeEnabledBenefits = async ({
     },
     where: {
       id: {
-        in: [...benefitsIds, ...employeeCompanyBenefitsIds],
+        in: filteredBenefits.map((b) => b.id),
       },
     },
     select: {

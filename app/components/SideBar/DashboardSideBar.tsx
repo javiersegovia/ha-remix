@@ -28,10 +28,10 @@ const LogoPoweredBy = ({
       )}
     >
       <img
-        src="https://ht-benefits-assets.s3.amazonaws.com/logo_beneficios_blanco.png"
+        src="/images/logos/logo_umany_benefits_white_green.png"
         alt="Logo HoyTrabajas Beneficios"
-        width="168"
-        height="29"
+        width="140"
+        className="objet-contain"
       />
       <p className="mt-2 hidden px-4 text-left text-xs md:block">
         2023-HoyTrabajas.com ® - Todos los derechos reservados.

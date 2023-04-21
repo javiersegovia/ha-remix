@@ -1,15 +1,21 @@
-import type { getEmployeesByCompanyId } from '~/services/employee/employee.server'
+import type { Benefit } from '@prisma/client'
+import type { getCompanyEmployeesByCompanyId } from '~/services/employee/employee.server'
 
 import { Link } from '@remix-run/react'
+import { filterEmployeeEnabledBenefits } from '~/services/permissions/permissions.shared'
 import { TableHeading } from './TableHeading'
 import { TableData } from './TableData'
 import { EmployeeStatusPill } from '../Pills/EmployeeStatusPill'
 
 interface CompanyEmployeeListProps {
-  employees: Awaited<ReturnType<typeof getEmployeesByCompanyId>>
+  employees: Awaited<ReturnType<typeof getCompanyEmployeesByCompanyId>>
+  companyBenefitsIds: Benefit['id'][] | undefined
 }
 
-export function CompanyEmployeeList({ employees }: CompanyEmployeeListProps) {
+export function CompanyEmployeeList({
+  employees,
+  companyBenefitsIds,
+}: CompanyEmployeeListProps) {
   return (
     <div className="flex flex-col">
       <div className="-my-2 overflow-x-auto xl:-mx-8">
@@ -52,7 +58,10 @@ export function CompanyEmployeeList({ employees }: CompanyEmployeeListProps) {
                     </TableData>
 
                     <TableData isCentered>
-                      {employee.benefits?.length}
+                      <BenefitLengthCount
+                        employee={employee}
+                        companyBenefitsIds={companyBenefitsIds}
+                      />
                     </TableData>
 
                     <TableData isCentered>
@@ -67,4 +76,27 @@ export function CompanyEmployeeList({ employees }: CompanyEmployeeListProps) {
       </div>
     </div>
   )
+}
+
+interface BenefitLengthCountProps {
+  companyBenefitsIds: CompanyEmployeeListProps['companyBenefitsIds']
+  employee: CompanyEmployeeListProps['employees'][number]
+}
+
+export const BenefitLengthCount = ({
+  companyBenefitsIds,
+  employee,
+}: BenefitLengthCountProps) => {
+  const benefits = filterEmployeeEnabledBenefits({
+    companyBenefitsIds,
+    employeeBenefits: employee.benefits,
+    membershipBenefits: employee.membership?.benefits,
+    employeeGroupsBenefits: employee.employeeGroups
+      ?.map((b) => b.benefits)
+      ?.flat(),
+  })
+
+  const size = new Set(benefits?.map((b) => b.id)).size
+
+  return <>{size || <span className="text-gray-400">-</span>}</>
 }

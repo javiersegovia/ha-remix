@@ -155,7 +155,7 @@ export const WelcomeForm = ({
       validator={welcomeValidator}
       defaultValues={formDefaultValues}
     >
-      <Title as="h4" className="pb-4 pt-3">
+      <Title as="h4" className="pb-4 pt-3 text-steelBlue-700">
         Información principal
       </Title>
 
@@ -261,7 +261,7 @@ export const WelcomeForm = ({
         )}
       </FormGridWrapper>
 
-      <Title as="h4" className="py-4">
+      <Title as="h4" className="py-4 text-steelBlue-700">
         Información adicional
       </Title>
 
