@@ -36,7 +36,7 @@ export const AgeRangeForm = ({
               name="minAge"
               type="number"
               label="Edad mínima"
-              placeholder="Ingresar el rango de tu edad"
+              placeholder="Ingresar el rango de la edad mínima"
             />
           </FormGridItem>
           <FormGridItem className="lg:col-span-12">
@@ -44,7 +44,7 @@ export const AgeRangeForm = ({
               name="maxAge"
               type="number"
               label="Edad máxima"
-              placeholder="Ingresar el rango de tu edad"
+              placeholder="Ingresar el rango de la edad máxima"
             />
           </FormGridItem>
           <FormGridItem className="lg:col-span-12">

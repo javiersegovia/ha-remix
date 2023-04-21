@@ -30,7 +30,7 @@ export const action = async ({ request }: ActionArgs) => {
 
   await createAgeRange(data)
 
-  return redirect('/admin/dashboard/data/age-ranges')
+  return redirect(onCloseRedirectTo)
 }
 
 const onCloseRedirectTo = '/admin/dashboard/data/age-ranges' as const

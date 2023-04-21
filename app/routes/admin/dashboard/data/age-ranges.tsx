@@ -7,7 +7,7 @@ import { getAgeRanges } from '~/services/age-range/age-range.server'
 import { requireAdminUserId } from '~/session.server'
 import { Container } from '~/components/Layout/Container'
 import { TitleWithActions } from '~/components/Layout/TitleWithActions'
-import { Button } from '~/components/Button'
+import { Button, ButtonIconVariants } from '~/components/Button'
 import { formatAgeRange } from '~/utils/formatAgeRange'
 
 export const loader = async ({ request }: LoaderArgs) => {
@@ -42,7 +42,7 @@ export default function AgeRangeIndexRoute() {
           className="mb-10"
           title="Rango de edad"
           actions={
-            <Button href="create" size="SM">
+            <Button href="create" size="SM" icon={ButtonIconVariants.CREATE}>
               Crear rango de edad
             </Button>
           }
