@@ -1,19 +1,19 @@
 import type { Benefit, CompanyBenefit } from '@prisma/client'
 
+type BenefitWithCompanyBenefit = Pick<Benefit, 'id'> & {
+  companyBenefit: Pick<CompanyBenefit, 'id'> | null
+}
+
 export interface FilterEmployeeEnabledBenefitsArgs {
   companyBenefitsIds: Benefit['id'][] | undefined
-  employeeBenefits:
-    | (Pick<Benefit, 'id'> & {
-        companyBenefit: Pick<CompanyBenefit, 'id'> | null
-      })[]
-    | undefined
+  employeeBenefits: BenefitWithCompanyBenefit[] | undefined
 
-  membershipBenefits: Pick<Benefit, 'id'>[] | undefined
-  employeeGroupsBenefits:
+  membershipBenefits:
     | (Pick<Benefit, 'id'> & {
-        companyBenefit: Pick<CompanyBenefit, 'id'> | null
+        companyBenefit?: Pick<CompanyBenefit, 'id'> | null
       })[]
     | undefined
+  employeeGroupsBenefits: BenefitWithCompanyBenefit[] | undefined
 }
 
 export const filterEmployeeEnabledBenefits = ({

@@ -1231,6 +1231,8 @@ export const uploadEmployees = async (
 
         FECHA_DE_INGRESO: startedAt,
         FECHA_DE_RETIRO: inactivatedAt,
+
+        PUNTOS_DISPONIBLES: availablePoints,
       } = parsed.data
 
       const formattedJobDepartmentName = capitalize(jobDepartmentName?.trim())
@@ -1432,6 +1434,9 @@ export const uploadEmployees = async (
                 ...newUser,
               },
             },
+            availablePoints: availablePoints
+              ? parseFloat(availablePoints)
+              : undefined,
             startedAt: startedAt ? sanitizeDate(new Date(startedAt)) : null,
             inactivatedAt: inactivatedAt
               ? sanitizeDate(new Date(inactivatedAt))
@@ -1477,6 +1482,10 @@ export const uploadEmployees = async (
                 ...newUser,
               },
             },
+            availablePoints: availablePoints
+              ? parseFloat(availablePoints)
+              : undefined,
+
             startedAt: startedAt ? sanitizeDate(new Date(startedAt)) : null,
             salaryFiat: parseFloat(salary),
             advanceAvailableAmount: parseFloat(availableAmount),
