@@ -2,6 +2,7 @@ import { useMemo } from 'react'
 import { useMatches } from '@remix-run/react'
 import type { User } from '@prisma/client'
 import type { getEmployeeById } from '~/services/employee/employee.server'
+import { createSalaryRange } from '~/services/salary-range/salary-range.server'
 
 const DEFAULT_REDIRECT = '/'
 
@@ -91,4 +92,10 @@ export function useEmployee(): Awaited<ReturnType<typeof getEmployeeById>> {
   }
 
   return data.employee
+}
+
+export function userSalaryRange(): Awaited<
+  ReturnType<typeof createSalaryRange>
+> {
+   
 }
