@@ -63,6 +63,7 @@ export const action = async ({ request, params }: ActionArgs) => {
         'FECHA_DE_INGRESO',
         'FECHA_DE_RETIRO',
         'CELULAR',
+        'PUNTOS_DISPONIBLES',
         'ERRORES',
       ]
 

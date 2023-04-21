@@ -91,6 +91,7 @@ export const uploadEmployeeSchema = z.object({
       .nullish()
   ),
   CELULAR: zfd.text(z.string().trim().nullish()),
+  PUNTOS_DISPONIBLES: zfd.text(z.string().trim().nullish()),
 })
 
 export const uploadEmployeeValidator = withZod(uploadEmployeeSchema)

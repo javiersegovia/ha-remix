@@ -119,23 +119,29 @@ describe('updateCompanyById', () => {
       Awaited<ReturnType<typeof companyService.updateCompanyById>>
     >({ company: { id: company.id } })
 
-    const createdCompany = await prisma.company.findUnique({
+    const updatedCompany = await prisma.company.findUnique({
       where: { id: company.id },
       include: {
         contactPerson: true,
         country: true,
         categories: true,
-        benefits: true,
+        benefits: {
+          include: {
+            membership: true,
+            companyBenefit: true,
+          },
+        },
       },
     })
 
-    expect(createdCompany?.categories).toHaveLength(0)
-    expect(createdCompany?.benefits).toEqual(
+    expect(updatedCompany?.categories).toHaveLength(0)
+
+    expect(updatedCompany?.benefits).toEqual(
       newBenefits.sort((a, b) => a.name.localeCompare(b.name))
     )
-    expect(createdCompany?.country).toEqual(country[1])
+    expect(updatedCompany?.country).toEqual(country[1])
 
-    expect(createdCompany?.contactPerson).toEqual<CompanyContactPerson>({
+    expect(updatedCompany?.contactPerson).toEqual<CompanyContactPerson>({
       ...contactPerson,
       id: expect.any(String),
       companyId: company.id,

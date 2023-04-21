@@ -22,6 +22,8 @@ describe('AdminDashboardDataIndexRoute Loader', () => {
     vi.spyOn(prisma.country, 'count').mockResolvedValue(5)
     vi.spyOn(prisma.bankAccountType, 'count').mockResolvedValue(2)
     vi.spyOn(prisma.identityDocumentType, 'count').mockResolvedValue(4)
+    vi.spyOn(prisma.salaryRange, 'count').mockResolvedValue(8)
+    vi.spyOn(prisma.ageRange, 'count').mockResolvedValue(9)
 
     const response: Response = await adminDashboardDataIndexLoader({
       request: new Request(`http://localhost:3000/admin/dashboard/data`),
@@ -87,6 +89,16 @@ describe('AdminDashboardDataIndexRoute Loader', () => {
           items: ['Países', 5],
           href: '/admin/dashboard/data/countries',
           isDisabled: true,
+        },
+        {
+          rowId: 'age-ranges',
+          items: ['Rangos de edad', 9],
+          href: '/admin/dashboard/data/age-ranges',
+        },
+        {
+          rowId: 'salary-ranges',
+          items: ['Rangos salariales', 8],
+          href: '/admin/dashboard/data/salary-ranges',
         },
         {
           rowId: 'bank-account-types',

@@ -139,6 +139,7 @@ export const EmployeeFactory = Factory.define<ExtendedEmployee>(
       advanceCryptoMaxAmount: faker.datatype.number(),
       advanceCryptoAvailableAmount: faker.datatype.number(),
 
+      availablePoints: faker.datatype.number(),
       numberOfChildren: faker.datatype.number(),
       phone: faker.phone.number(),
       address: faker.address.streetAddress(),
