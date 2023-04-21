@@ -14,7 +14,7 @@ const headings: TableProps['headings'] = ['Nombre', 'Resultados']
 
 export const meta: MetaFunction = () => {
   return {
-    title: '[Admin] Data | HoyAdelantas',
+    title: '[Admin] Data | HoyTrabajas Beneficios',
   }
 }
 
@@ -34,6 +34,7 @@ export const loader = async ({ request }: LoaderArgs) => {
     countries,
     bankAccountTypes,
     identityDocumentTypes,
+    ageRanges,
   ] = await Promise.all([
     prisma.bank.count(),
     prisma.benefitCategory.count(),
@@ -47,6 +48,7 @@ export const loader = async ({ request }: LoaderArgs) => {
     prisma.country.count(),
     prisma.bankAccountType.count(),
     prisma.identityDocumentType.count(),
+    prisma.ageRange.count(),
   ])
 
   const rows: TableRowProps[] = [
@@ -113,6 +115,11 @@ export const loader = async ({ request }: LoaderArgs) => {
       rowId: 'identity-document-types',
       items: ['Tipos de documento de identidad', identityDocumentTypes],
       href: '/admin/dashboard/data/identity-document-types',
+    },
+    {
+      rowId: 'age-ranges',
+      items: ['Rangos de edad', ageRanges],
+      href: '/admin/dashboard/data/age-ranges',
     },
   ]
 

@@ -262,9 +262,27 @@ model EmployeeGroup {
 
   company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
   companyId String
+  country   Country? @relation(fields: [countryId], references: [id], onDelete: Cascade)
+  countryId Int?
+  state     State?   @relation(fields: [stateId], references: [id], onDelete: SetNull)
+  stateId   Int?
+  gender          Gender?        @relation(fields: [genderId], references: [id], onDelete: SetNull)
+  genderId        Int?
 
   employees Employee[]
   benefits  Benefit[]
+  ageRanges AgeRange[]
+}
+
+model AgeRange {
+  id   Int    @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  minAge Int
+  maxAge Int?
+
+  employeeGroups EmployeeGroup[]
 }
 
 model Gender {
@@ -272,6 +290,7 @@ model Gender {
   name String @unique
 
   employees Employee[]
+  employeeGroups EmployeeGroup[]
 }
 
 model Country {
@@ -286,6 +305,7 @@ model Country {
   banks      Bank[]
   companies  Company[]
   states     State[]
+  employeeGroups EmployeeGroup[]
 }
 
 model State {
@@ -298,6 +318,7 @@ model State {
 
   cities    City[]
   employees Employee[]
+  employeeGroups EmployeeGroup[]
 }
 
 model City {
