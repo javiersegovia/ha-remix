@@ -77,7 +77,7 @@ const EmployeeDetailsRoute = () => {
         onEditRedirectTo={`/dashboard/manage/employees/${employee.id}/account`}
         onCloseRedirectTo={onCloseRedirectTo}
       >
-        <Title className="text-steelBlue-600">Detalles de colaborador</Title>
+        <Title className="text-steelBlue-500">Detalles de colaborador</Title>
 
         <div className="h-full overflow-y-auto overflow-x-hidden pr-4 text-sm">
           <Title as="h4" className="mb-4 text-steelBlue-600">
