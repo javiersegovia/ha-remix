@@ -32,6 +32,7 @@ export const getAgeRangeById = async (id: AgeRange['id']) => {
 
 export const createAgeRange = async (data: AgeRangeInputSchema) => {
   const { minAge, maxAge } = data
+
   return prisma.ageRange.create({
     data: { minAge, maxAge },
   })

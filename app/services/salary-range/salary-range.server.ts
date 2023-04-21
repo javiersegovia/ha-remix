@@ -32,6 +32,7 @@ export const getSalaryRangeById = async (id: SalaryRange['id']) => {
 
 export const createSalaryRange = async (data: SalaryRangeInputSchema) => {
   const { minValue, maxValue } = data
+
   return prisma.salaryRange.create({
     data: { minValue, maxValue },
   })
@@ -42,6 +43,7 @@ export const updateSalaryRangeById = async (
   data: SalaryRangeInputSchema
 ) => {
   const { minValue, maxValue } = data
+
   try {
     return prisma.salaryRange.update({
       where: {
