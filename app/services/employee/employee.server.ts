@@ -122,6 +122,7 @@ export const getEmployeeById = async (employeeId: Employee['id']) => {
   })
 }
 
+/** This function is used inside the SuperAdmin Dashboard */
 export const getEmployeesByCompanyId = async (
   companyId: string,
   options?: Pick<Prisma.EmployeeFindManyArgs, 'take' | 'skip' | 'cursor'>
@@ -173,6 +174,86 @@ export const getEmployeesByCompanyId = async (
           benefits: {
             select: {
               _count: true,
+            },
+          },
+        },
+      },
+      user: {
+        select: {
+          id: true,
+          firstName: true,
+          lastName: true,
+          email: true,
+        },
+      },
+    },
+  })
+}
+
+/** This function is used inside the Company Admin Dashboard */
+export const getCompanyEmployeesByCompanyId = async (
+  companyId: string,
+  options?: Pick<Prisma.EmployeeFindManyArgs, 'take' | 'skip' | 'cursor'>
+) => {
+  const { take, skip, cursor } = options || {}
+
+  return prisma.employee.findMany({
+    where: {
+      companyId: companyId,
+    },
+    take,
+    skip,
+    cursor,
+    orderBy: {
+      user: {
+        firstName: 'asc',
+      },
+    },
+    select: {
+      id: true,
+      status: true,
+      membership: {
+        select: {
+          id: true,
+          name: true,
+          benefits: {
+            select: {
+              id: true,
+            },
+          },
+        },
+      },
+      benefits: {
+        select: {
+          id: true,
+          companyBenefit: {
+            select: {
+              id: true,
+            },
+          },
+        },
+      },
+      city: {
+        select: {
+          name: true,
+        },
+      },
+      jobDepartment: {
+        select: {
+          name: true,
+        },
+      },
+      employeeGroups: {
+        select: {
+          id: true,
+          benefits: {
+            select: {
+              id: true,
+              companyBenefit: {
+                select: {
+                  id: true,
+                },
+              },
             },
           },
         },
@@ -300,6 +381,8 @@ export const createEmployee = async (
 
   try {
     const {
+      firstName,
+      lastName,
       loginToken,
       loginExpiration,
       email: formattedEmail,
@@ -332,6 +415,8 @@ export const createEmployee = async (
         user: {
           create: {
             email: formattedEmail,
+            firstName,
+            lastName,
             loginToken,
             loginExpiration,
             password: user.password ? await hash(user.password, 10) : undefined,

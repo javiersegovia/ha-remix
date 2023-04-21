@@ -36,11 +36,10 @@ export default function LoginRequestedRoute() {
     >
       <div className="container mx-auto px-0 py-20 sm:px-4">
         <img
-          className="mx-auto block"
-          src="https://ht-benefits-assets.s3.amazonaws.com/logo_beneficios_blanco.png"
-          alt="Logo HoyAdelantas"
-          width="256"
-          height="44.2"
+          className="mx-auto block object-contain"
+          src="/images/logos/logo_umany_benefits_white_blue.png"
+          alt="Logo Umany"
+          width="200"
         />
 
         <div className="mx-auto mb-6 mt-8 w-full rounded-none bg-white px-4 pb-6 pt-5 shadow-2xl sm:w-10/12 sm:rounded-lg sm:px-6 md:w-6/12 lg:w-5/12 xl:w-4/12 2xl:w-3/12">

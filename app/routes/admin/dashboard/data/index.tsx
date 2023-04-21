@@ -109,6 +109,11 @@ export const loader = async ({ request }: LoaderArgs) => {
       isDisabled: true,
     },
     {
+      rowId: 'age-ranges',
+      items: ['Rangos de edad', ageRanges],
+      href: '/admin/dashboard/data/age-ranges',
+    },
+    {
       rowId: 'salary-ranges',
       items: ['Rangos salariales', salaryRanges],
       href: '/admin/dashboard/data/salary-ranges',
@@ -122,16 +127,6 @@ export const loader = async ({ request }: LoaderArgs) => {
       rowId: 'identity-document-types',
       items: ['Tipos de documento de identidad', identityDocumentTypes],
       href: '/admin/dashboard/data/identity-document-types',
-    },
-    {
-      rowId: 'age-ranges',
-      items: ['Rangos de edad', ageRanges],
-      href: '/admin/dashboard/data/age-ranges',
-    },
-    {
-      rowId: 'salary-ranges',
-      items: ['Rangos salariales', salaryRanges],
-      href: '/admin/dashboard/data/salary-ranges',
     },
   ]
 

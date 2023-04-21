@@ -1,8 +1,10 @@
-import { Outlet, useLoaderData } from '@remix-run/react'
 import type { LoaderArgs, MetaFunction } from '@remix-run/server-runtime'
 import type { TableRowProps } from '~/components/Lists/Table'
-import { Table } from '~/components/Lists/Table'
+
+import { Outlet, useLoaderData } from '@remix-run/react'
 import { json } from '@remix-run/node'
+
+import { Table } from '~/components/Lists/Table'
 import { getAgeRanges } from '~/services/age-range/age-range.server'
 import { requireAdminUserId } from '~/session.server'
 import { Container } from '~/components/Layout/Container'

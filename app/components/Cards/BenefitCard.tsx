@@ -21,6 +21,9 @@ export const BenefitCard = ({
   benefitCategory,
 }: BenefitCardProps) => {
   const { hexColor, opacity } = benefitCategory || {}
+  const biggestWordInTheName = name
+    .split(' ')
+    .sort((a, b) => b.length - a.length)?.[0]
 
   return (
     <Box
@@ -42,7 +45,13 @@ export const BenefitCard = ({
       />
 
       <div className="z-10 flex h-full w-full flex-col text-center">
-        <Title as="h3" className="mt-auto mb-3 text-white">
+        <Title
+          as="h3"
+          className={clsx(
+            'mt-auto mb-3 break-words text-white',
+            biggestWordInTheName?.length >= 10 && 'text-lg'
+          )}
+        >
           {name}
         </Title>
 

@@ -1,9 +1,22 @@
-export const formatSalaryRange = (
-  minValue: number,
+import type { CurrencySymbol } from '~/components/FormFields/CurrencyInput'
+import { formatMoney } from './formatMoney'
+
+interface FormatSalaryRangeArgs {
+  minValue: number
   maxValue?: number | null
-) => {
+  currencySymbol?: CurrencySymbol
+}
+
+export const formatSalaryRange = ({
+  minValue,
+  maxValue,
+  currencySymbol,
+}: FormatSalaryRangeArgs) => {
   if (!maxValue) {
-    return `$${minValue} COP o más`
+    return `${formatMoney(minValue, currencySymbol)} o más`
   }
-  return `$${minValue} a $${maxValue} COP`
+  return `${formatMoney(minValue, currencySymbol)} a ${formatMoney(
+    maxValue,
+    currencySymbol
+  )}`
 }

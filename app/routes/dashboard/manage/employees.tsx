@@ -1,7 +1,9 @@
 import type { LoaderArgs, MetaFunction } from '@remix-run/server-runtime'
 
+import { PermissionCode } from '@prisma/client'
 import { json } from '@remix-run/node'
 import { Outlet, useLoaderData } from '@remix-run/react'
+
 import { Button } from '~/components/Button'
 import { Container } from '~/components/Layout/Container'
 import { requireEmployee } from '~/session.server'
@@ -12,10 +14,10 @@ import {
   hasPermissionByUserId,
   requirePermissionByUserId,
 } from '~/services/permissions/permissions.server'
-import { PermissionCode } from '@prisma/client'
 import { useToastError } from '~/hooks/useToastError'
-import { getEmployeesByCompanyId } from '~/services/employee/employee.server'
+import { getCompanyEmployeesByCompanyId } from '~/services/employee/employee.server'
 import { CompanyEmployeeList } from '~/components/Lists/CompanyEmployeeList'
+import { TableIsEmpty } from '~/components/Lists/TableIsEmpty'
 
 export const meta: MetaFunction = () => {
   return {
@@ -48,13 +50,15 @@ export const loader = async ({ request }: LoaderArgs) => {
   )
 
   return json({
-    employees: await getEmployeesByCompanyId(employee.companyId),
+    employees: await getCompanyEmployeesByCompanyId(employee.companyId),
+    companyBenefitsIds: employee.company.benefits?.map((b) => b.id),
     canManageEmployeeGroup,
   })
 }
 
 export default function DashboardEmployeesIndexRoute() {
-  const { employees, canManageEmployeeGroup } = useLoaderData<typeof loader>()
+  const { employees, canManageEmployeeGroup, companyBenefitsIds } =
+    useLoaderData<typeof loader>()
 
   return (
     <>
@@ -64,25 +68,27 @@ export default function DashboardEmployeesIndexRoute() {
         )}
 
         <>
-          <TitleWithActions
-            title="Colaboradores"
-            className="my-10"
-            actions={
-              <Button
-                href="/dashboard/manage/employees/create/account"
-                className="flex items-center px-4"
-                size="SM"
-                icon={ButtonIconVariants.CREATE}
-              >
-                Crear colaborador
-              </Button>
-            }
-          />
+          {true ? (
+            // {employees?.length > 0 ? (
+            <>
+              <TitleWithActions
+                title="Colaboradores"
+                className="my-10"
+                actions={<ManageEmployeeActions />}
+              />
 
-          {employees?.length > 0 ? (
-            <CompanyEmployeeList employees={employees} />
+              <CompanyEmployeeList
+                employees={employees}
+                companyBenefitsIds={companyBenefitsIds}
+              />
+            </>
           ) : (
-            <p>No se han encontrado colaboradores</p>
+            <TableIsEmpty
+              title="Aún no tienes ningún colaborador"
+              description="¿Qué esperas para añadir a tus colaboradores?"
+              actions={<ManageEmployeeActions />}
+              className="mt-10"
+            />
           )}
         </>
       </Container>
@@ -91,6 +97,17 @@ export default function DashboardEmployeesIndexRoute() {
     </>
   )
 }
+
+export const ManageEmployeeActions = () => (
+  <Button
+    href="/dashboard/manage/employees/create/account"
+    className="flex items-center px-4"
+    size="SM"
+    icon={ButtonIconVariants.CREATE}
+  >
+    Crear colaborador
+  </Button>
+)
 
 export const CatchBoundary = () => {
   useToastError()

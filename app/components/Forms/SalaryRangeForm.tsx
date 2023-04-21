@@ -4,9 +4,12 @@ import { Form } from '@remix-run/react'
 import { ValidatedForm } from 'remix-validated-form'
 
 import { salaryRangeValidator } from '~/services/salary-range/salary-range.schema'
-import { Input } from '~/components/FormFields/Input'
 import { FormGridWrapper } from '~/components/FormFields/FormGridWrapper'
 import { FormGridItem } from '~/components/FormFields/FormGridItem'
+import {
+  CurrencyInput,
+  CurrencySymbol,
+} from '~/components/FormFields/CurrencyInput'
 
 import { ButtonColorVariants } from '~/components/Button'
 import { SubmitButton } from '../SubmitButton'
@@ -33,21 +36,27 @@ export const SalaryRangeForm = ({
         defaultValues={{ minValue, maxValue }}
       >
         <FormGridWrapper>
-          <FormGridItem className="lg:col-span-12">
-            <Input
+          <FormGridItem isFullWidth>
+            <CurrencyInput
               name="minValue"
               type="number"
               label="Valor mínimo"
               placeholder="Ingrese el valor mínimo para el rango salarial"
+              symbol={CurrencySymbol.COP}
             />
-            <Input
+          </FormGridItem>
+
+          <FormGridItem isFullWidth>
+            <CurrencyInput
               name="maxValue"
               type="number"
               label="Valor máximo"
               placeholder="Ingrese el valor máximo para el rango salarial"
+              symbol={CurrencySymbol.COP}
             />
           </FormGridItem>
-          <FormGridItem className="lg:col-span-12">
+
+          <FormGridItem isFullWidth>
             <SubmitButton>{buttonText}</SubmitButton>
           </FormGridItem>
         </FormGridWrapper>

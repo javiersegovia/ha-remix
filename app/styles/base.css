@@ -2,6 +2,26 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer components {
+  .dashed-border:before {
+    content: '';
+    position: absolute;
+    border: 9px dashed;
+    top: -8px;
+    bottom: -8px;
+    left: -8px;
+    right: -8px;
+
+    @apply border-steelBlue-700;
+  }
+
+  .dashed-border {
+    overflow: hidden;
+    position: relative;
+    text-align: center;
+  }
+}
+
 body {
   @apply w-full max-w-full;
 }

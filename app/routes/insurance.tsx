@@ -201,7 +201,7 @@ const InsuranceRoute = () => {
       </section>
 
       <section className="footer bg-steelBlue-800">
-        <div className="footerbar items-center px-5 py-10 px-4 md:flex  lg:ml-16 ">
+        <div className="footerbar items-center py-10 px-4 md:flex  lg:ml-16 ">
           <img
             className="logo"
             src="/images/routes/insurance/Logo.png"

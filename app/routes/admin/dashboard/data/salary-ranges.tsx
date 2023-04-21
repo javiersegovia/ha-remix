@@ -11,6 +11,7 @@ import { Table } from '~/components/Lists/Table'
 import { getSalaryRanges } from '~/services/salary-range/salary-range.server'
 import { requireAdminUserId } from '~/session.server'
 import { formatSalaryRange } from '~/utils/formatSalaryRange'
+import { CurrencySymbol } from '~/components/FormFields/CurrencyInput'
 
 export const loader = async ({ request }: LoaderArgs) => {
   await requireAdminUserId(request)
@@ -37,7 +38,13 @@ export default function SalaryRangesIndexRoute() {
     ({ id, minValue, maxValue }) => ({
       rowId: id,
       href: `/admin/dashboard/data/salary-ranges/${id}`,
-      items: [formatSalaryRange(minValue, maxValue)],
+      items: [
+        formatSalaryRange({
+          minValue,
+          maxValue,
+          currencySymbol: CurrencySymbol.COP,
+        }),
+      ],
     })
   )
 
