@@ -16,13 +16,21 @@ import { Select } from '../FormFields/Select'
 import { Title } from '../Typography/Title'
 import { Toggle } from '../FormFields/Toggle'
 import { SubmitButton } from '../SubmitButton'
+import { Checkbox } from '../FormFields/Checkbox'
+import { RepeteableCheckbox } from '../FormFields/RepeteableCheckbox'
 
 interface BenefitFormProps {
   buttonText: string
   benefitCategories: Pick<BenefitCategory, 'id' | 'name'>[]
   defaultValues?: Pick<
     BenefitInputSchema,
-    'name' | 'buttonText' | 'buttonHref' | 'slug' | 'benefitCategoryId'
+    | 'name'
+    | 'buttonText'
+    | 'buttonHref'
+    | 'slug'
+    | 'benefitCategoryId'
+    | 'description'
+    | 'stepToStep'
   > & {
     mainImage?: Pick<Image, 'key' | 'url'> | null
     benefitHighlight:
@@ -50,6 +58,8 @@ export const BenefitForm = ({
     slug,
     mainImage,
     benefitCategoryId,
+    description,
+    stepToStep,
     benefitHighlight,
   } = defaultValues || {}
 
@@ -65,25 +75,13 @@ export const BenefitForm = ({
           buttonHref,
           slug,
           benefitCategoryId,
+          description,
+          stepToStep,
           benefitHighlight,
         }}
         method="post"
       >
-        <Title as="h4" className="mb-10">
-          Información principal
-        </Title>
-
         <FormGridWrapper>
-          <FormGridItem isFullWidth>
-            <ImageInput
-              name="mainImage"
-              alt="Imagen del beneficio"
-              currentImageUrl={mainImage?.url}
-              currentImageKey={mainImage?.key}
-              isCentered
-            />
-          </FormGridItem>
-
           <FormGridItem>
             <Input name="name" label="Nombre" type="text" />
           </FormGridItem>
@@ -114,61 +112,34 @@ export const BenefitForm = ({
             <Input name="slug" label="Slug (identificador)" type="text" />
           </FormGridItem>
         </FormGridWrapper>
-
-        <div className="my-10 h-[1px] w-full border-b border-dashed border-gray-300" />
-
-        <Title as="h4" className="my-10">
-          Información de beneficio destacado
-        </Title>
-
-        <FormGridWrapper>
-          <FormGridItem isFullWidth>
-            <ImageInput
-              name="benefitHighlight.image"
-              alt="Imagen del beneficio destacado"
-              currentImageUrl={benefitHighlight?.image?.url}
-              currentImageKey={benefitHighlight?.image?.key}
-              isCentered
-            />
-          </FormGridItem>
-
-          <FormGridItem>
-            <Input name="benefitHighlight.title" label="Título" type="text" />
-          </FormGridItem>
-
-          <FormGridItem className="items-center">
-            <Toggle
-              name="benefitHighlight.isActive"
-              label="Destacar beneficio"
-            />
-          </FormGridItem>
-
-          <FormGridItem isFullWidth>
-            <Input
-              name="benefitHighlight.description"
-              type="text"
-              label="Descripción"
-              isTextArea
-              placeholder="Descripción a destacar"
-            />
-          </FormGridItem>
-
-          <FormGridItem>
-            <Input
-              name="benefitHighlight.buttonText"
-              label="Texto del botón"
-              type="text"
-            />
-          </FormGridItem>
-
-          <FormGridItem>
-            <Input
-              name="benefitHighlight.buttonHref"
-              label="URL del botón"
-              type="text"
-            />
-          </FormGridItem>
-        </FormGridWrapper>
+        <FormGridItem isFullWidth>
+          <Input
+            name="description"
+            type="text"
+            label="Descripción"
+            isTextArea
+            placeholder="Ej: Este beneficio te permite acceder a descuentos de hasta el 15% en compras superiores a $50.000"
+            minLength={180}
+            maxLength={600}
+          />
+          <p className="mb-3 text-sm text-gray-400">
+            Min. 180 caracteres max. 600 caracteres
+          </p>
+        </FormGridItem>
+        <FormGridItem isFullWidth>
+          <Input
+            name="stepToStep"
+            type="text"
+            label="Paso a paso del uso de este beneficio"
+            isTextArea
+            placeholder="Ej: Este beneficio te permite acceder a descuentos de hasta el 15% en compras superiores a $50.000"
+            minLength={180}
+            maxLength={600}
+          />
+          <p className="text-sm text-gray-400">
+            Min. 180 caracteres max. 600 caracteres
+          </p>
+        </FormGridItem>
       </ValidatedForm>
 
       <div className="ml-auto flex gap-5">

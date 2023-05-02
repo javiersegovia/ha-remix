@@ -32,6 +32,9 @@ export const benefitSchema = z.object({
 
   benefitCategoryId: zfd.numeric(z.number().nullish()),
 
+  description: zfd.text(z.string().trim().nullish()),
+  stepToStep: zfd.text(z.string().trim().nullish()),
+
   benefitHighlight: preprocessNullableObject(
     z
       .object({

@@ -39,6 +39,8 @@ export const getBenefitById = async (benefitId: Benefit['id']) => {
       buttonHref: true,
       slug: true,
       benefitCategoryId: true,
+      description: true,
+      stepToStep: true,
       mainImage: {
         select: {
           id: true,
@@ -84,6 +86,8 @@ export const createBenefit = async (
     slug,
     mainImageKey,
     benefitCategoryId,
+    description,
+    stepToStep,
     benefitHighlight,
   } = data
 
@@ -134,6 +138,8 @@ export const createBenefit = async (
         buttonHref,
         slug,
         benefitCategory: connect(benefitCategoryId),
+        description,
+        stepToStep,
         mainImage: createMainImage,
         benefitHighlight: createBenefitHighlight,
         companyBenefit: companyId
