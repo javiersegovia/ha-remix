@@ -154,6 +154,8 @@ const CompanyBenefitDetailsIndexRoute = () => {
     buttonHref,
     slug,
     benefitCategoryId,
+    description,
+    stepToStep,
     benefitHighlight,
     mainImage,
   } = benefit
@@ -175,6 +177,8 @@ const CompanyBenefitDetailsIndexRoute = () => {
             buttonHref,
             slug,
             benefitCategoryId,
+            description,
+            stepToStep,
             mainImage,
             benefitHighlight,
           }}
