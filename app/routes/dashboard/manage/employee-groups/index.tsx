@@ -14,7 +14,7 @@ import { requirePermissionByUserId } from '~/services/permissions/permissions.se
 import { getEmployeeGroupsByCompanyId } from '~/services/employee-group/employee-group.server'
 import { ButtonIconVariants } from '~/components/Button'
 import { Tabs } from '~/components/Tabs/Tabs'
-import { employeeTabPaths } from './employees'
+import { employeeTabPaths } from '../employees'
 
 export const loader = async ({ request }: LoaderArgs) => {
   const employee = await requireEmployee(request)
@@ -40,7 +40,13 @@ export const meta: MetaFunction = () => {
 export default function EmployeeGroupIndexRoute() {
   const { employeeGroups } = useLoaderData<typeof loader>()
 
-  const headings = ['Nombre', 'Beneficios']
+  const headings = [
+    'Nombre del grupo',
+    'País',
+    'Ciudad',
+    'Colaboradores',
+    'Beneficios',
+  ]
 
   const rows: TableRowProps[] = employeeGroups?.map((eGroup) => ({
     rowId: eGroup.id,
@@ -49,7 +55,14 @@ export default function EmployeeGroupIndexRoute() {
       <span className="whitespace-pre-wrap" key={`${eGroup.id}_name`}>
         {eGroup.name}
       </span>,
-      eGroup.benefits?.length || '-',
+      <span className="whitespace-pre-wrap" key={`${eGroup.id}_country`}>
+        {eGroup.country?.name}
+      </span>,
+      '-',
+      '-',
+      <span className="whitespace-pre-wrap" key={`${eGroup.id}_benefits`}>
+        {eGroup.benefits.length}
+      </span>,
     ],
   }))
 
@@ -62,7 +75,11 @@ export default function EmployeeGroupIndexRoute() {
           className="mb-10"
           title="Grupos de Colaboradores"
           actions={
-            <Button href="create" size="SM" icon={ButtonIconVariants.CREATE}>
+            <Button
+              href="/dashboard/manage/employee-groups/create"
+              size="SM"
+              icon={ButtonIconVariants.CREATE}
+            >
               Crear grupo de colaboradores
             </Button>
           }

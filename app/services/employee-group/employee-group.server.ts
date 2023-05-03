@@ -23,6 +23,38 @@ export const getEmployeeGroupsByCompanyId = async (
           _count: true,
         },
       },
+      country: {
+        select: {
+          id: true,
+          name: true,
+        },
+      },
+      state: {
+        select: {
+          id: true,
+          name: true,
+        },
+      },
+      gender: {
+        select: {
+          id: true,
+          name: true,
+        },
+      },
+      ageRange: {
+        select: {
+          id: true,
+          minAge: true,
+          maxAge: true,
+        },
+      },
+      salaryRange: {
+        select: {
+          id: true,
+          minValue: true,
+          maxValue: true,
+        },
+      },
     },
   })
 }
@@ -41,6 +73,38 @@ export const getEmployeeGroupById = async (id: EmployeeGroup['id']) => {
           name: true,
         },
       },
+      country: {
+        select: {
+          id: true,
+          name: true,
+        },
+      },
+      state: {
+        select: {
+          id: true,
+          name: true,
+        },
+      },
+      gender: {
+        select: {
+          id: true,
+          name: true,
+        },
+      },
+      ageRange: {
+        select: {
+          id: true,
+          minAge: true,
+          maxAge: true,
+        },
+      },
+      salaryRange: {
+        select: {
+          id: true,
+          minValue: true,
+          maxValue: true,
+        },
+      },
     },
   })
 }
@@ -49,7 +113,15 @@ export const createEmployeeGroup = async (
   data: EmployeeGroupInputSchema,
   companyId: Company['id']
 ) => {
-  const { name, benefitsIds } = data
+  const {
+    name,
+    benefitsIds,
+    countryId,
+    stateId,
+    genderId,
+    ageRangeId,
+    salaryRangeId,
+  } = data
 
   try {
     return prisma.employeeGroup.create({
@@ -57,6 +129,11 @@ export const createEmployeeGroup = async (
         name,
         benefits: connectMany(benefitsIds),
         companyId,
+        countryId,
+        stateId,
+        genderId,
+        ageRangeId,
+        salaryRangeId,
       },
     })
   } catch (e) {
@@ -73,7 +150,15 @@ export const updateEmployeeGroupById = async (
   data: EmployeeGroupInputSchema,
   id: EmployeeGroup['id']
 ) => {
-  const { name, benefitsIds } = data
+  const {
+    name,
+    benefitsIds,
+    countryId,
+    stateId,
+    genderId,
+    ageRangeId,
+    salaryRangeId,
+  } = data
 
   try {
     return prisma.employeeGroup.update({
@@ -83,6 +168,11 @@ export const updateEmployeeGroupById = async (
       data: {
         name,
         benefits: setMany(benefitsIds),
+        countryId,
+        stateId,
+        genderId,
+        ageRangeId,
+        salaryRangeId,
       },
     })
   } catch (e) {
