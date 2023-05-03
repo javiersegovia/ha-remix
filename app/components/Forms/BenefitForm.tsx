@@ -13,6 +13,9 @@ import { Input } from '../FormFields/Input'
 import { Box } from '../Layout/Box'
 import { Select } from '../FormFields/Select'
 import { SubmitButton } from '../SubmitButton'
+import { Title } from '../Typography/Title'
+import { ImageInput } from '../FormFields/ImageInput'
+import { Toggle } from '../FormFields/Toggle'
 
 interface BenefitFormProps {
   buttonText: string
@@ -76,7 +79,21 @@ export const BenefitForm = ({
         }}
         method="post"
       >
+        <Title as="h4" className="mb-10">
+          Información principal
+        </Title>
+
         <FormGridWrapper>
+          <FormGridItem isFullWidth>
+            <ImageInput
+              name="mainImage"
+              alt="Imagen del beneficio"
+              currentImageUrl={mainImage?.url}
+              currentImageKey={mainImage?.key}
+              isCentered
+            />
+          </FormGridItem>
+
           <FormGridItem>
             <Input name="name" label="Nombre" type="text" />
           </FormGridItem>
@@ -106,27 +123,83 @@ export const BenefitForm = ({
           >
             <Input name="slug" label="Slug (identificador)" type="text" />
           </FormGridItem>
+
+          <FormGridItem isFullWidth>
+            <Input
+              name="description"
+              type="text"
+              label="Descripción"
+              isTextArea
+              placeholder="Ej: Este beneficio te permite acceder a descuentos de hasta el 15% en compras superiores a $50.000"
+              description="Min. 180 caracteres — Máx. 600 caracteres"
+            />
+          </FormGridItem>
+          <FormGridItem isFullWidth>
+            <Input
+              name="instructions"
+              type="text"
+              label="Paso a paso del uso de este beneficio"
+              isTextArea
+              placeholder="Ej: Este beneficio te permite acceder a descuentos de hasta el 15% en compras superiores a $50.000"
+              description="Min. 180 caracteres — Máx. 600 caracteres"
+            />
+          </FormGridItem>
         </FormGridWrapper>
-        <FormGridItem isFullWidth>
-          <Input
-            name="description"
-            type="text"
-            label="Descripción"
-            isTextArea
-            placeholder="Ej: Este beneficio te permite acceder a descuentos de hasta el 15% en compras superiores a $50.000"
-            description="Min. 180 caracteres max. 600 caracteres"
-          />
-        </FormGridItem>
-        <FormGridItem isFullWidth>
-          <Input
-            name="instructions"
-            type="text"
-            label="Paso a paso del uso de este beneficio"
-            isTextArea
-            placeholder="Ej: Este beneficio te permite acceder a descuentos de hasta el 15% en compras superiores a $50.000"
-            description="Min. 180 caracteres max. 600 caracteres"
-          />
-        </FormGridItem>
+
+        <div className="my-10 h-[1px] w-full border-b border-dashed border-gray-300" />
+
+        <Title as="h4" className="my-10">
+          Información de beneficio destacado
+        </Title>
+
+        <FormGridWrapper>
+          <FormGridItem isFullWidth>
+            <ImageInput
+              name="benefitHighlight.image"
+              alt="Imagen del beneficio destacado"
+              currentImageUrl={benefitHighlight?.image?.url}
+              currentImageKey={benefitHighlight?.image?.key}
+              isCentered
+            />
+          </FormGridItem>
+
+          <FormGridItem>
+            <Input name="benefitHighlight.title" label="Título" type="text" />
+          </FormGridItem>
+
+          <FormGridItem className="items-center">
+            <Toggle
+              name="benefitHighlight.isActive"
+              label="Destacar beneficio"
+            />
+          </FormGridItem>
+
+          <FormGridItem isFullWidth>
+            <Input
+              name="benefitHighlight.description"
+              type="text"
+              label="Descripción"
+              isTextArea
+              placeholder="Descripción a destacar"
+            />
+          </FormGridItem>
+
+          <FormGridItem>
+            <Input
+              name="benefitHighlight.buttonText"
+              label="Texto del botón"
+              type="text"
+            />
+          </FormGridItem>
+
+          <FormGridItem>
+            <Input
+              name="benefitHighlight.buttonHref"
+              label="URL del botón"
+              type="text"
+            />
+          </FormGridItem>
+        </FormGridWrapper>
       </ValidatedForm>
 
       <div className="ml-auto flex gap-5">
