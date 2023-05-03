@@ -15,6 +15,7 @@ import { getEmployeeGroupsByCompanyId } from '~/services/employee-group/employee
 import { ButtonIconVariants } from '~/components/Button'
 import { Tabs } from '~/components/Tabs/Tabs'
 import { employeeTabPaths } from '../employees'
+import { TableIsEmpty } from '~/components/Lists/TableIsEmpty'
 
 export const loader = async ({ request }: LoaderArgs) => {
   const employee = await requireEmployee(request)
@@ -111,7 +112,20 @@ export default function EmployeeGroupIndexRoute() {
         {employeeGroups?.length > 0 ? (
           <Table headings={headings} rows={rows} />
         ) : (
-          <p>No se han encontrado grupos de colaboradores</p>
+          <TableIsEmpty
+            title="Aún no tienes ningún grupo de colaboradores"
+            description="¿Qué esperas para añadir un colaboradores?"
+            actions={
+              <Button
+                href="/dashboard/manage/employee-groups/create"
+                size="SM"
+                icon={ButtonIconVariants.CREATE}
+              >
+                Crear grupo de colaboradores
+              </Button>
+            }
+            className="mt-10"
+          />
         )}
       </Container>
       <Outlet />
