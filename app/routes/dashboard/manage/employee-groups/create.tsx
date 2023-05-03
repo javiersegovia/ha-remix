@@ -23,7 +23,7 @@ import { getGenders } from '~/services/gender/gender.server'
 import { getCountries } from '~/services/country/country.server'
 import { getAgeRanges } from '~/services/age-range/age-range.server'
 import { getSalaryRanges } from '~/services/salary-range/salary-range.server'
-import { getStatesByCountryId } from '~/services/state/state.server'
+import { Container } from '~/components/Layout/Container'
 
 export const meta: MetaFunction = () => {
   return {
@@ -89,7 +89,7 @@ export default function CreateEmployeeGroupRoute() {
 
   return (
     <>
-      <div className="m-5">
+      <Container className="mx-auto w-full">
         <Title className="pt-5 pl-2">Crear grupo</Title>
         <EmployeeGroupForm
           actions={
@@ -112,7 +112,7 @@ export default function CreateEmployeeGroupRoute() {
           ageRanges={ageRanges}
           salaryRanges={salaryRanges}
         />
-      </div>
+      </Container>
     </>
   )
 }

@@ -29,30 +29,15 @@ export const getEmployeeGroupsByCompanyId = async (
           name: true,
         },
       },
-      state: {
+      city: {
         select: {
           id: true,
           name: true,
         },
       },
-      gender: {
+      employees: {
         select: {
-          id: true,
-          name: true,
-        },
-      },
-      ageRange: {
-        select: {
-          id: true,
-          minAge: true,
-          maxAge: true,
-        },
-      },
-      salaryRange: {
-        select: {
-          id: true,
-          minValue: true,
-          maxValue: true,
+          _count: true,
         },
       },
     },
@@ -80,6 +65,12 @@ export const getEmployeeGroupById = async (id: EmployeeGroup['id']) => {
         },
       },
       state: {
+        select: {
+          id: true,
+          name: true,
+        },
+      },
+      city: {
         select: {
           id: true,
           name: true,
@@ -118,6 +109,7 @@ export const createEmployeeGroup = async (
     benefitsIds,
     countryId,
     stateId,
+    cityId,
     genderId,
     ageRangeId,
     salaryRangeId,
@@ -131,6 +123,7 @@ export const createEmployeeGroup = async (
         companyId,
         countryId,
         stateId,
+        cityId,
         genderId,
         ageRangeId,
         salaryRangeId,
@@ -156,6 +149,7 @@ export const updateEmployeeGroupById = async (
     countryId,
     stateId,
     genderId,
+    cityId,
     ageRangeId,
     salaryRangeId,
   } = data
@@ -170,6 +164,7 @@ export const updateEmployeeGroupById = async (
         benefits: setMany(benefitsIds),
         countryId,
         stateId,
+        cityId,
         genderId,
         ageRangeId,
         salaryRangeId,

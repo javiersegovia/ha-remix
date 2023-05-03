@@ -27,6 +27,7 @@ import { getGenders } from '~/services/gender/gender.server'
 import { getAgeRanges } from '~/services/age-range/age-range.server'
 import { getSalaryRanges } from '~/services/salary-range/salary-range.server'
 import { prisma } from '~/db.server'
+import { Container } from '~/components/Layout/Container'
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => {
   if (!data) {
@@ -135,12 +136,15 @@ export default function EmployeeGroupUpdateRoute() {
 
   return (
     <>
-      <div className="m-5">
+      <Container className="mx-auto w-full">
         <Title className="pt-5 pl-2">Actualizar grupo de colaboradores</Title>
+
         <EmployeeGroupForm
           defaultValues={{
             name: employeeGroup.name,
             country: employeeGroup.country,
+            state: employeeGroup.state,
+            city: employeeGroup.city,
             gender: employeeGroup.gender,
             ageRange: employeeGroup.ageRange,
             salaryRange: employeeGroup.salaryRange,
@@ -166,7 +170,7 @@ export default function EmployeeGroupUpdateRoute() {
           ageRanges={ageRanges}
           salaryRanges={salaryRanges}
         />
-      </div>
+      </Container>
     </>
   )
 }

@@ -1,6 +1,7 @@
 import type {
   AgeRange,
   Benefit,
+  City,
   Country,
   EmployeeGroup,
   Gender,
@@ -24,21 +25,21 @@ import { SubmitButton } from '../SubmitButton'
 import { ButtonColorVariants } from '../Button'
 import { formatSalaryRange } from '~/utils/formatSalaryRange'
 import { useLocationSync } from '../../hooks/useLocationSync'
-import type { getCountries } from '~/services/country/country.server'
 
 interface EmployeeGroupFormProps {
   actions: JSX.Element
   benefits: Pick<Benefit, 'id' | 'name'>[]
   genders: Pick<Gender, 'id' | 'name'>[]
-  countries: Awaited<ReturnType<typeof getCountries>>
-  states: Pick<State, 'id' | 'name'>[]
+  countries: Pick<Country, 'id' | 'name'>[]
   ageRanges: Pick<AgeRange, 'id' | 'minAge' | 'maxAge'>[]
   salaryRanges: Pick<SalaryRange, 'id' | 'minValue' | 'maxValue'>[]
   showDeleteButton?: boolean
 
-  defaultValues?: Pick<EmployeeGroup, 'name' | 'countryId' | 'stateId'> & {
+  defaultValues?: Pick<EmployeeGroup, 'name'> & {
     benefits?: Pick<Benefit, 'id'>[]
     country?: Pick<Country, 'id'> | null
+    state?: Pick<State, 'id'> | null
+    city?: Pick<City, 'id'> | null
     gender?: Pick<Gender, 'id'> | null
     ageRange?: Pick<AgeRange, 'id'> | null
     salaryRange?: Pick<SalaryRange, 'id'> | null
@@ -61,18 +62,18 @@ export const EmployeeGroupForm = ({
     benefits: defaultBenefits,
     gender,
     country,
-    countryId,
-    stateId,
+    state,
+    city,
     ageRange,
     salaryRange,
   } = defaultValues || {}
 
   const formId = 'EmployeeGroupForm'
 
-  const { stateFetcher } = useLocationSync({
+  const { stateFetcher, cityFetcher } = useLocationSync({
     formId,
-    countryId,
-    stateId,
+    countryId: country?.id,
+    stateId: state?.id,
   })
 
   return (
@@ -86,6 +87,8 @@ export const EmployeeGroupForm = ({
           name,
           genderId: gender?.id,
           countryId: country?.id,
+          stateId: state?.id,
+          cityId: city?.id,
           ageRangeId: ageRange?.id,
           salaryRangeId: salaryRange?.id,
           benefitsIds: defaultBenefits?.map((benefit) => benefit.id),
@@ -109,7 +112,7 @@ export const EmployeeGroupForm = ({
               <Select
                 name="countryId"
                 label="País"
-                placeholder="País"
+                placeholder="Seleccionar país"
                 options={countries}
                 isClearable
                 onSelectChange={(id) => {
@@ -121,9 +124,22 @@ export const EmployeeGroupForm = ({
             <FormGridItem>
               <Select
                 name="stateId"
+                label="Estado"
+                placeholder="Seleccionar estado"
+                options={stateFetcher?.data?.states || []}
+                isClearable
+                onSelectChange={(id) => {
+                  cityFetcher.load(`/cities?stateId=${id}`)
+                }}
+              />
+            </FormGridItem>
+
+            <FormGridItem>
+              <Select
+                name="cityId"
                 label="Ciudad"
                 placeholder="Seleccionar ciudad"
-                options={stateFetcher?.data?.states || []}
+                options={cityFetcher?.data?.cities || []}
                 isClearable
               />
             </FormGridItem>
