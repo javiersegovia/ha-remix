@@ -76,7 +76,7 @@ export const Input: React.FC<TInput> = ({
         name={name}
       />
       {description && !fieldError ? (
-        <p className="my-2.5 text-sm text-gray-400">{description}</p>
+        <p className="my-2 text-sm text-gray-400">{description}</p>
       ) : (
         <ErrorMessage>{fieldError}</ErrorMessage>
       )}
