@@ -71,3 +71,19 @@ const companySchema = z.object({
 
 export const validator = withZod(companySchema)
 export type CompanySchemaInput = z.infer<typeof companySchema>
+
+export const companyManagementSchema = companySchema.pick({
+  logoImage: true,
+  logoImageKey: true,
+  name: true,
+  address: true,
+  description: true,
+  phone: true,
+  countryId: true,
+  categoriesIds: true,
+  contactPerson: true,
+})
+export const companyManagementValidator = withZod(companyManagementSchema)
+export type CompanyManagementSchemaInput = z.infer<
+  typeof companyManagementSchema
+>

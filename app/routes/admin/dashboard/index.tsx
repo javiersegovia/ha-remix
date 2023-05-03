@@ -61,7 +61,7 @@ export default function AdminDashboardIndexRoute() {
           <div className="w-full md:w-72">
             <ValidatedForm
               validator={validator}
-              id="CompanyFormId"
+              id="MonthRangeId"
               defaultValues={{
                 month: lastPaymentMonths[0]?.id,
               }}

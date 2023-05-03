@@ -13,7 +13,7 @@ import {
 import { validationError } from 'remix-validated-form'
 import { badRequest, notFound } from '~/utils/responses'
 
-import { CompanyForm } from '~/components/Forms/CompanyForm'
+import { AdminCompanyForm } from '~/components/Forms/AdminCompanyForm'
 import { FormActions } from '~/components/FormFields/FormActions'
 import { validator } from '~/services/company/company.schema'
 import { getCompanyCategories } from '~/services/company-category/company-category.server'
@@ -58,7 +58,7 @@ export const loader = async ({ request, params }: LoaderArgs) => {
 export const meta: MetaFunction<typeof loader> = ({ data }) => {
   if (!data) {
     return {
-      title: '[Admin] Compañía no encontrada | HoyAdelantas',
+      title: '[Admin] Compañía no encontrada | HoyTrabajas Beneficios',
     }
   }
 
@@ -118,7 +118,7 @@ export default function AdminDashboardCompanyDetailsRoute() {
     useLoaderData<typeof loader>()
 
   return (
-    <CompanyForm
+    <AdminCompanyForm
       defaultValues={company}
       benefits={benefits}
       countries={countries}
