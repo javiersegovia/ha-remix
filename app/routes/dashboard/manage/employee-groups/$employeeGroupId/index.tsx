@@ -195,8 +195,6 @@ const EmployeeGroupDetailsRoute = () => {
       ) : (
         <p>Este grupo no posee beneficios disponibles.</p>
       )}
-
-      <div className="h-full overflow-y-auto overflow-x-hidden pr-4 text-sm"></div>
     </Container>
   )
 }

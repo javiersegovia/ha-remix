@@ -48,23 +48,46 @@ export default function EmployeeGroupIndexRoute() {
     'Beneficios',
   ]
 
-  const rows: TableRowProps[] = employeeGroups?.map((eGroup) => ({
-    rowId: eGroup.id,
-    href: `${eGroup.id}`,
-    items: [
-      <span className="whitespace-pre-wrap" key={`${eGroup.id}_name`}>
-        {eGroup.name}
-      </span>,
-      <span className="whitespace-pre-wrap" key={`${eGroup.id}_country`}>
-        {eGroup.country?.name}
-      </span>,
-      '-',
-      '-',
-      <span className="whitespace-pre-wrap" key={`${eGroup.id}_benefits`}>
-        {eGroup.benefits.length}
-      </span>,
-    ],
-  }))
+  const rows: TableRowProps[] = employeeGroups?.map(
+    ({ id, name, country, city, employees, benefits }) => ({
+      rowId: id,
+      href: `${id}`,
+      items: [
+        <span className="whitespace-pre-wrap" key={`${id}_name`}>
+          {name}
+        </span>,
+
+        country ? (
+          <span className="whitespace-pre-wrap" key={`${id}_country`}>
+            {country?.name}
+          </span>
+        ) : (
+          '-'
+        ),
+        city ? (
+          <span className="whitespace-pre-wrap" key={`${id}_city`}>
+            {city?.name}
+          </span>
+        ) : (
+          '-'
+        ),
+        employees?.length > 0 ? (
+          <span className="whitespace-pre-wrap" key={`${id}_employee`}>
+            {employees?.length}
+          </span>
+        ) : (
+          '-'
+        ),
+        benefits.length > 0 ? (
+          <span className="whitespace-pre-wrap" key={`${id}_benefits`}>
+            {benefits.length}
+          </span>
+        ) : (
+          '-'
+        ),
+      ],
+    })
+  )
 
   return (
     <>

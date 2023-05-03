@@ -146,12 +146,12 @@ export const updateEmployeeGroupById = async (
   const {
     name,
     benefitsIds,
-    countryId,
-    stateId,
-    genderId,
-    cityId,
-    ageRangeId,
-    salaryRangeId,
+    countryId = null,
+    stateId = null,
+    genderId = null,
+    cityId = null,
+    ageRangeId = null,
+    salaryRangeId = null,
   } = data
 
   try {

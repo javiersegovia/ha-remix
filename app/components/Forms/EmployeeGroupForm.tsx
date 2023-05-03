@@ -43,7 +43,6 @@ interface EmployeeGroupFormProps {
     gender?: Pick<Gender, 'id'> | null
     ageRange?: Pick<AgeRange, 'id'> | null
     salaryRange?: Pick<SalaryRange, 'id'> | null
-    formatAgeRange?: Pick<AgeRange, 'id'> | null
   }
 }
 
