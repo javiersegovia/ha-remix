@@ -75,12 +75,11 @@ export const Input: React.FC<TInput> = ({
         })}
         name={name}
       />
-      {(description &&
-        (fieldError ? (
-          <ErrorMessage>{fieldError}</ErrorMessage>
-        ) : (
-          <p className="text-sm text-gray-400">{description}</p>
-        ))) || <ErrorMessage>{fieldError}</ErrorMessage>}
+      {description && !fieldError ? (
+        <p className="my-2.5 text-sm text-gray-400">{description}</p>
+      ) : (
+        <ErrorMessage>{fieldError}</ErrorMessage>
+      )}
     </Label>
   )
 }
