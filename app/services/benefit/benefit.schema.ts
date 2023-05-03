@@ -32,8 +32,22 @@ export const benefitSchema = z.object({
 
   benefitCategoryId: zfd.numeric(z.number().nullish()),
 
-  description: zfd.text(z.string().trim().nullish()),
-  stepToStep: zfd.text(z.string().trim().nullish()),
+  description: zfd.text(
+    z
+      .string()
+      .trim()
+      .min(180, { message: 'Mínimo 180 caracteres' })
+      .max(600, { message: 'Máximo 600 caracteres' })
+      .nullish()
+  ),
+  instructions: zfd.text(
+    z
+      .string()
+      .trim()
+      .min(180, { message: 'Mínimo 180 caracteres' })
+      .max(600, { message: 'Máximo 600 caracteres' })
+      .nullish()
+  ),
 
   benefitHighlight: preprocessNullableObject(
     z

@@ -40,7 +40,7 @@ export const getBenefitById = async (benefitId: Benefit['id']) => {
       slug: true,
       benefitCategoryId: true,
       description: true,
-      stepToStep: true,
+      instructions: true,
       mainImage: {
         select: {
           id: true,
@@ -87,7 +87,7 @@ export const createBenefit = async (
     mainImageKey,
     benefitCategoryId,
     description,
-    stepToStep,
+    instructions,
     benefitHighlight,
   } = data
 
@@ -139,7 +139,7 @@ export const createBenefit = async (
         slug,
         benefitCategory: connect(benefitCategoryId),
         description,
-        stepToStep,
+        instructions,
         mainImage: createMainImage,
         benefitHighlight: createBenefitHighlight,
         companyBenefit: companyId

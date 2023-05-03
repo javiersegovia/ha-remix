@@ -9,15 +9,10 @@ import { benefitValidator } from '~/services/benefit/benefit.schema'
 import { ButtonColorVariants } from '../Button'
 import { FormGridItem } from '../FormFields/FormGridItem'
 import { FormGridWrapper } from '../FormFields/FormGridWrapper'
-import { ImageInput } from '../FormFields/ImageInput'
 import { Input } from '../FormFields/Input'
 import { Box } from '../Layout/Box'
 import { Select } from '../FormFields/Select'
-import { Title } from '../Typography/Title'
-import { Toggle } from '../FormFields/Toggle'
 import { SubmitButton } from '../SubmitButton'
-import { Checkbox } from '../FormFields/Checkbox'
-import { RepeteableCheckbox } from '../FormFields/RepeteableCheckbox'
 
 interface BenefitFormProps {
   buttonText: string
@@ -30,7 +25,7 @@ interface BenefitFormProps {
     | 'slug'
     | 'benefitCategoryId'
     | 'description'
-    | 'stepToStep'
+    | 'instructions'
   > & {
     mainImage?: Pick<Image, 'key' | 'url'> | null
     benefitHighlight:
@@ -59,7 +54,7 @@ export const BenefitForm = ({
     mainImage,
     benefitCategoryId,
     description,
-    stepToStep,
+    instructions,
     benefitHighlight,
   } = defaultValues || {}
 
@@ -76,7 +71,7 @@ export const BenefitForm = ({
           slug,
           benefitCategoryId,
           description,
-          stepToStep,
+          instructions,
           benefitHighlight,
         }}
         method="post"
@@ -119,26 +114,18 @@ export const BenefitForm = ({
             label="Descripción"
             isTextArea
             placeholder="Ej: Este beneficio te permite acceder a descuentos de hasta el 15% en compras superiores a $50.000"
-            minLength={180}
-            maxLength={600}
+            description="Min. 180 caracteres max. 600 caracteres"
           />
-          <p className="mb-3 text-sm text-gray-400">
-            Min. 180 caracteres max. 600 caracteres
-          </p>
         </FormGridItem>
         <FormGridItem isFullWidth>
           <Input
-            name="stepToStep"
+            name="instructions"
             type="text"
             label="Paso a paso del uso de este beneficio"
             isTextArea
             placeholder="Ej: Este beneficio te permite acceder a descuentos de hasta el 15% en compras superiores a $50.000"
-            minLength={180}
-            maxLength={600}
+            description="Min. 180 caracteres max. 600 caracteres"
           />
-          <p className="text-sm text-gray-400">
-            Min. 180 caracteres max. 600 caracteres
-          </p>
         </FormGridItem>
       </ValidatedForm>
 

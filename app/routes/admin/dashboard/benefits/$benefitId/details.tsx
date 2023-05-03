@@ -131,7 +131,7 @@ const AdminDashboardBenefitDetailsIndexRoute = () => {
     slug,
     benefitCategoryId,
     description,
-    stepToStep,
+    instructions,
     benefitHighlight,
     mainImage,
   } = benefit
@@ -151,7 +151,7 @@ const AdminDashboardBenefitDetailsIndexRoute = () => {
           slug,
           benefitCategoryId,
           description,
-          stepToStep,
+          instructions,
           mainImage,
           benefitHighlight,
         }}

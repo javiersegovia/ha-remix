@@ -18,6 +18,7 @@ type TInputProps = {
   type: string
   required?: boolean
   label?: string
+  description?: string
   placeholder?: string
   error?: string
   disabled?: boolean
@@ -36,6 +37,7 @@ export const Input: React.FC<TInput> = ({
   type = 'text',
   label,
   error,
+  description,
   required = false,
   disabled,
   isTextArea = false,
@@ -73,7 +75,12 @@ export const Input: React.FC<TInput> = ({
         })}
         name={name}
       />
-      <ErrorMessage>{fieldError}</ErrorMessage>
+      {(description &&
+        (fieldError ? (
+          <ErrorMessage>{fieldError}</ErrorMessage>
+        ) : (
+          <p className="text-sm text-gray-400">{description}</p>
+        ))) || <ErrorMessage>{fieldError}</ErrorMessage>}
     </Label>
   )
 }
