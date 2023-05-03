@@ -20,6 +20,15 @@ export const formatMDYDate = (date: Date | number): DateMDYString => {
   }) as DateMDYString
 }
 
+export const parseISOLocal = (s: string) => {
+  const b = s.split(/\D/)
+  return new Date(+b[0], +b[1] - 1, +b[2], +b[3], +b[4], +b[5])
+}
+
+export const parseISOLocalNullable = (s: string | null) => {
+  return s ? parseISOLocal(s) : null
+}
+
 // parse a date in yyyy-mm-dd format
 export const parseDate = (date: Date | string) => {
   const stringDate = typeof date === 'object' ? date.toString() : date

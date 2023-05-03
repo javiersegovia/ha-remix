@@ -290,6 +290,7 @@ export const EmployeeForm = ({
               options={jobPositions}
             />
           </FormGridItem>
+
           <FormGridItem>
             <Select
               name="jobDepartmentId"
