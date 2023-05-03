@@ -3,35 +3,47 @@ import type {
   LoaderArgs,
   MetaFunction,
 } from '@remix-run/server-runtime'
-
-import { redirect } from '@remix-run/server-runtime'
-import { validationError } from 'remix-validated-form'
-import { json } from '@remix-run/node'
-import { PermissionCode } from '@prisma/client'
-
-import { Title } from '~/components/Typography/Title'
-import { requireEmployee } from '~/session.server'
-import { requirePermissionByUserId } from '~/services/permissions/permissions.server'
-import { getAvailableBenefitsByCompanyId } from '~/services/benefit/benefit.server'
-import { employeeGroupValidator } from '~/services/employee-group/employee-group.schema'
-import { createEmployeeGroup } from '~/services/employee-group/employee-group.server'
-import { EmployeeGroupForm } from '~/components/Forms/EmployeeGroupForm'
+import { json, redirect } from '@remix-run/node'
 import { Link, useLoaderData } from '@remix-run/react'
+import { badRequest } from '~/utils/responses'
+import { validationError } from 'remix-validated-form'
+
+import { requireEmployee } from '~/session.server'
+import { Title } from '~/components/Typography/Title'
+
+import { requirePermissionByUserId } from '~/services/permissions/permissions.server'
+import { PermissionCode } from '@prisma/client'
+import {
+  getEmployeeGroupById,
+  updateEmployeeGroupById,
+} from '~/services/employee-group/employee-group.server'
+import { employeeGroupValidator } from '~/services/employee-group/employee-group.schema'
+import { EmployeeGroupForm } from '~/components/Forms/EmployeeGroupForm'
+import { getAvailableBenefitsByCompanyId } from '~/services/benefit/benefit.server'
 import { ButtonColorVariants, ButtonElement } from '~/components/Button'
 import { SubmitButton } from '~/components/SubmitButton'
-import { getGenders } from '~/services/gender/gender.server'
 import { getCountries } from '~/services/country/country.server'
+import { getGenders } from '~/services/gender/gender.server'
 import { getAgeRanges } from '~/services/age-range/age-range.server'
 import { getSalaryRanges } from '~/services/salary-range/salary-range.server'
+import { prisma } from '~/db.server'
 import { Container } from '~/components/Layout/Container'
 
-export const meta: MetaFunction = () => {
+export const meta: MetaFunction<typeof loader> = ({ data }) => {
+  if (!data) {
+    return {
+      title: 'Grupo de colaborador no encontrado | HoyTrabajas Beneficios',
+    }
+  }
+
+  const { employeeGroup } = data
+
   return {
-    title: 'Crear grupo de colaboradores | HoyTrabajas Beneficios',
+    title: `${employeeGroup?.name} | HoyTrabajas Beneficios`,
   }
 }
 
-export const loader = async ({ request }: LoaderArgs) => {
+export const loader = async ({ request, params }: LoaderArgs) => {
   const employee = await requireEmployee(request)
 
   await requirePermissionByUserId(
@@ -39,17 +51,37 @@ export const loader = async ({ request }: LoaderArgs) => {
     PermissionCode.MANAGE_EMPLOYEE_GROUP
   )
 
-  const [benefits, countries, genders, ageRanges, salaryRanges] =
+  const { employeeGroupId } = params
+
+  const employeeGroupExists = prisma.employeeGroup.findUnique({
+    where: { id: employeeGroupId },
+  })
+
+  if (!employeeGroupExists || !employeeGroupId) {
+    throw badRequest({
+      message: 'No se encontró el ID del grupo de colaboradores',
+      redirect: onCloseRedirectTo,
+    })
+  }
+
+  const [employeeGroup, benefits, countries, genders, ageRanges, salaryRanges] =
     await Promise.all([
+      getEmployeeGroupById(employeeGroupId),
       getAvailableBenefitsByCompanyId(employee.companyId),
       getCountries(),
-
       getGenders(),
       getAgeRanges(),
       getSalaryRanges(),
     ])
+  if (!employeeGroup) {
+    throw badRequest({
+      message: 'No se encontró el grupo de colaboradores',
+      redirect: onCloseRedirectTo,
+    })
+  }
 
   return json({
+    employeeGroup,
     benefits,
     countries,
     genders,
@@ -58,13 +90,22 @@ export const loader = async ({ request }: LoaderArgs) => {
   })
 }
 
-export const action = async ({ request }: ActionArgs) => {
+export const action = async ({ request, params }: ActionArgs) => {
   const employee = await requireEmployee(request)
 
   await requirePermissionByUserId(
     employee.userId,
     PermissionCode.MANAGE_EMPLOYEE_GROUP
   )
+
+  const { employeeGroupId } = params
+
+  if (!employeeGroupId) {
+    throw badRequest({
+      message: 'No se encontró el ID del grupo de colaboradores',
+      redirect: onCloseRedirectTo,
+    })
+  }
 
   const formData = await request.formData()
 
@@ -76,22 +117,39 @@ export const action = async ({ request }: ActionArgs) => {
     return validationError(error, submittedData)
   }
 
-  await createEmployeeGroup(data, employee.companyId)
+  await updateEmployeeGroupById(data, employeeGroupId)
 
   return redirect(onCloseRedirectTo)
 }
 
 const onCloseRedirectTo = '/dashboard/manage/employee-groups' as const
 
-export default function CreateEmployeeGroupRoute() {
-  const { benefits, genders, countries, ageRanges, salaryRanges } =
-    useLoaderData<typeof loader>()
+export default function EmployeeGroupUpdateRoute() {
+  const {
+    employeeGroup,
+    genders,
+    countries,
+    ageRanges,
+    salaryRanges,
+    benefits,
+  } = useLoaderData<typeof loader>()
 
   return (
     <>
       <Container className="mx-auto w-full">
-        <Title className="pt-5 pl-2">Crear grupo</Title>
+        <Title className="pt-5 pl-2">Actualizar grupo de colaboradores</Title>
+
         <EmployeeGroupForm
+          defaultValues={{
+            name: employeeGroup.name,
+            country: employeeGroup.country,
+            state: employeeGroup.state,
+            city: employeeGroup.city,
+            gender: employeeGroup.gender,
+            ageRange: employeeGroup.ageRange,
+            salaryRange: employeeGroup.salaryRange,
+            benefits,
+          }}
           actions={
             <div className="mt-6 flex items-center justify-end gap-4">
               <Link to="/dashboard/manage/employee-groups">

@@ -13,6 +13,12 @@ export const employeeGroupSchema = z.object({
     }),
 
   benefitsIds: z.array(zfd.numeric(z.number())).nullish(),
+  countryId: zfd.numeric(z.number().int().nullish()),
+  stateId: zfd.numeric(z.number().int().nullish()),
+  cityId: zfd.numeric(z.number().int().nullish()),
+  genderId: zfd.numeric(z.number().int().nullish()),
+  ageRangeId: zfd.numeric(z.number().int().nullish()),
+  salaryRangeId: zfd.numeric(z.number().int().nullish()),
 })
 
 export const employeeGroupValidator = withZod(employeeGroupSchema)
