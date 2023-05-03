@@ -89,7 +89,8 @@ export const action = async ({ request, params }: ActionArgs) => {
 
 const EmployeeGroupDetailsRoute = () => {
   const { employeeGroup } = useLoaderData<typeof loader>()
-  const { country, gender, ageRange, salaryRange, benefits } = employeeGroup
+  const { country, state, city, gender, ageRange, salaryRange, benefits } =
+    employeeGroup
 
   return (
     <Container className="my-10 w-full">
@@ -119,44 +120,58 @@ const EmployeeGroupDetailsRoute = () => {
         </div>
       </section>
 
-      <Box className="items-center gap-6 p-5 md:inline-flex">
-        <p className="mb-4 font-medium text-steelBlue-500 md:mb-0">
-          Filtros del grupo:
-        </p>
+      {(country || gender || ageRange || salaryRange) && (
+        <Box className="items-center gap-6 p-5 md:inline-flex">
+          <p className="mb-4 font-medium text-steelBlue-500 md:mb-0">
+            Filtros del grupo:
+          </p>
 
-        <ul className="ml-3 grid list-disc pl-3 sm:grid-cols-2 md:ml-0">
-          {country && (
-            <li>
-              <span className="relative -left-2 font-medium">País:</span>{' '}
-              {country.name}
-            </li>
-          )}
+          <ul className="ml-3 grid list-disc pl-3 sm:grid-cols-2 md:ml-0">
+            {country && (
+              <li>
+                <span className="relative -left-2 font-medium">País:</span>{' '}
+                {country.name}
+              </li>
+            )}
 
-          {gender && (
-            <li>
-              <span className="relative -left-2 font-medium">Género:</span>{' '}
-              {gender.name}
-            </li>
-          )}
+            {state && (
+              <li>
+                <span className="relative -left-2 font-medium">Estado:</span>{' '}
+                {state.name}
+              </li>
+            )}
 
-          {ageRange && (
-            <li>
-              <span className="relative -left-2 font-medium">Edad:</span>{' '}
-              {formatAgeRange(ageRange.minAge, ageRange.maxAge)}
-            </li>
-          )}
+            {city && (
+              <li>
+                <span className="relative -left-2 font-medium">Ciudad:</span>{' '}
+                {city.name}
+              </li>
+            )}
 
-          {salaryRange && (
-            <li>
-              <span className="relative -left-2 font-medium">Salario:</span>{' '}
-              {formatSalaryRange({
-                minValue: salaryRange.minValue,
-                maxValue: salaryRange.maxValue,
-              })}
-            </li>
-          )}
-        </ul>
-      </Box>
+            {gender && (
+              <li>
+                <span className="relative -left-2 font-medium">Género:</span>{' '}
+                {gender.name}
+              </li>
+            )}
+            {ageRange && (
+              <li>
+                <span className="relative -left-2 font-medium">Edad:</span>{' '}
+                {formatAgeRange(ageRange.minAge, ageRange.maxAge)}
+              </li>
+            )}
+            {salaryRange && (
+              <li>
+                <span className="relative -left-2 font-medium">Salario:</span>{' '}
+                {formatSalaryRange({
+                  minValue: salaryRange.minValue,
+                  maxValue: salaryRange.maxValue,
+                })}
+              </li>
+            )}
+          </ul>
+        </Box>
+      )}
 
       <div />
 
@@ -166,7 +181,7 @@ const EmployeeGroupDetailsRoute = () => {
             Beneficios disponibles:
           </p>
 
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
             {benefits.map((benefit) => (
               <div
                 key={benefit.id}
