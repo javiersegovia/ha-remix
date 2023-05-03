@@ -23,14 +23,14 @@ import { getBenefitCategoriesWithoutCompanies } from '~/services/benefit-categor
 export const meta: MetaFunction<typeof loader> = ({ data }) => {
   if (!data) {
     return {
-      title: '[Admin] Beneficio no encontrado | HoyAdelantas',
+      title: '[Admin] Beneficio no encontrado | HoyTrabajas Beneficios',
     }
   }
 
   const { benefit } = data
 
   return {
-    title: `[Admin] ${benefit.name} | HoyAdelantas`,
+    title: `[Admin] ${benefit.name} | HoyTrabajas Beneficios`,
   }
 }
 
@@ -130,6 +130,8 @@ const AdminDashboardBenefitDetailsIndexRoute = () => {
     buttonHref,
     slug,
     benefitCategoryId,
+    description,
+    instructions,
     benefitHighlight,
     mainImage,
   } = benefit
@@ -148,6 +150,8 @@ const AdminDashboardBenefitDetailsIndexRoute = () => {
           buttonHref,
           slug,
           benefitCategoryId,
+          description,
+          instructions,
           mainImage,
           benefitHighlight,
         }}

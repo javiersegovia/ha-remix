@@ -260,14 +260,14 @@ model EmployeeGroup {
 
   name String
 
-  company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  company   Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
   companyId String
   country   Country? @relation(fields: [countryId], references: [id], onDelete: Cascade)
   countryId Int?
   state     State?   @relation(fields: [stateId], references: [id], onDelete: SetNull)
   stateId   Int?
-  gender          Gender?        @relation(fields: [genderId], references: [id], onDelete: SetNull)
-  genderId        Int?
+  gender    Gender?  @relation(fields: [genderId], references: [id], onDelete: SetNull)
+  genderId  Int?
 
   employees Employee[]
   benefits  Benefit[]
@@ -275,7 +275,7 @@ model EmployeeGroup {
 }
 
 model AgeRange {
-  id   Int    @id @default(autoincrement())
+  id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -289,7 +289,7 @@ model Gender {
   id   Int    @id @default(autoincrement())
   name String @unique
 
-  employees Employee[]
+  employees      Employee[]
   employeeGroups EmployeeGroup[]
 }
 
@@ -300,11 +300,11 @@ model Country {
   code2     String @unique
   phoneCode String
 
-  employees  Employee[]
-  currencies Currency[]
-  banks      Bank[]
-  companies  Company[]
-  states     State[]
+  employees      Employee[]
+  currencies     Currency[]
+  banks          Bank[]
+  companies      Company[]
+  states         State[]
   employeeGroups EmployeeGroup[]
 }
 
@@ -316,8 +316,8 @@ model State {
   country   Country @relation(fields: [countryId], references: [id], onDelete: Cascade)
   countryId Int
 
-  cities    City[]
-  employees Employee[]
+  cities         City[]
+  employees      Employee[]
   employeeGroups EmployeeGroup[]
 }
 
@@ -812,10 +812,12 @@ model Benefit {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  slug       String?
-  name       String
-  buttonText String?
-  buttonHref String?
+  slug         String?
+  name         String
+  buttonText   String?
+  buttonHref   String?
+  description  String?
+  instructions String?
 
   // @deprecated Use "mainImage" instead
   imageUrl String?

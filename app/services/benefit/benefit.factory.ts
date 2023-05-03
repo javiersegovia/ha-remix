@@ -41,6 +41,8 @@ export const BenefitFactory = Factory.define<ExtendedBenefit>(
       companyBenefit: associations?.companyBenefit || null,
 
       benefitCategoryId: null,
+      description: null,
+      instructions: null,
       mainImageId: null,
     }
   }
