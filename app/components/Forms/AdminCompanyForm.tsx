@@ -30,7 +30,7 @@ const companyStatusList: EnumOption[] = [
   { name: 'Inactiva', value: CompanyStatus.INACTIVE },
 ]
 
-interface CompanyFormProps<T = CompanySchemaInput> {
+interface AdminCompanyFormProps<T = CompanySchemaInput> {
   actions: JSX.Element
   companyCategories: Awaited<ReturnType<typeof getCompanyCategories>>
   countries: Awaited<ReturnType<typeof getCountries>>
@@ -62,7 +62,7 @@ interface CompanyFormProps<T = CompanySchemaInput> {
   }
 }
 
-export const CompanyForm = ({
+export const AdminCompanyForm = ({
   defaultValues,
   actions,
   validator,
@@ -70,7 +70,7 @@ export const CompanyForm = ({
   companyCategories,
   countries,
   benefits,
-}: CompanyFormProps) => {
+}: AdminCompanyFormProps) => {
   const {
     address,
     description,
@@ -97,7 +97,7 @@ export const CompanyForm = ({
   return (
     <>
       <ValidatedForm
-        id="CompanyForm"
+        id="AdminCompanyForm"
         validator={validator}
         method="post"
         encType="multipart/form-data"

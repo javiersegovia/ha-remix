@@ -1,7 +1,10 @@
 import type { Company, Prisma } from '@prisma/client'
 import { notFound } from '~/utils/responses'
 import { prisma } from '~/db.server'
-import type { CompanySchemaInput } from '~/services/company/company.schema'
+import type {
+  CompanyManagementSchemaInput,
+  CompanySchemaInput,
+} from '~/services/company/company.schema'
 import {
   connect,
   connectMany,
@@ -265,6 +268,105 @@ export const updateCompanyById = async (
         },
         premiumDispersion: premiumDispersion || null,
         premiumLastRequestDay: premiumLastRequestDay || null,
+      },
+      select: {
+        id: true,
+      },
+    })
+
+    return { company }
+  } catch (err) {
+    // Todo LOGGER: Log error and save to a file
+    console.error(err)
+    return { error: err }
+  }
+}
+
+export const updateCompanyByCompanyManagementForm = async (
+  companyId: Company['id'],
+  formData: CompanyManagementSchemaInput
+) => {
+  const {
+    countryId,
+    categoriesIds,
+    contactPerson,
+    logoImageKey,
+    ...companyData
+  } = formData
+
+  const existingCompany = await prisma.company.findUnique({
+    where: { id: companyId },
+    select: {
+      logoImage: { select: { key: true } },
+      contactPerson: { select: { id: true } },
+      countryId: true,
+    },
+  })
+
+  if (!existingCompany) {
+    throw notFound({
+      message: 'La compañía no ha sido encontrada',
+      redirect: '/dashboard/overview',
+    })
+  }
+
+  const { firstName, lastName, phone } = contactPerson || {}
+
+  const upsertContactPerson: Prisma.CompanyUpdateInput['contactPerson'] =
+    firstName && lastName && phone
+      ? {
+          upsert: {
+            create: {
+              firstName,
+              lastName,
+              phone,
+            },
+            update: {
+              firstName,
+              lastName,
+              phone,
+            },
+          },
+        }
+      : {
+          delete: !!existingCompany.contactPerson?.id,
+        }
+
+  if (
+    existingCompany.logoImage &&
+    logoImageKey !== existingCompany.logoImage.key
+  ) {
+    await deleteImageByKey(existingCompany.logoImage.key)
+  }
+
+  const isNewLogoImage = existingCompany.logoImage
+    ? existingCompany.logoImage.key !== logoImageKey
+    : Boolean(logoImageKey)
+
+  const createLogoImage =
+    isNewLogoImage && logoImageKey
+      ? {
+          create: {
+            key: logoImageKey,
+            url: getS3ObjectUrl(logoImageKey),
+          },
+        }
+      : undefined
+
+  try {
+    const company = await prisma.company.update({
+      where: {
+        id: companyId,
+      },
+      data: {
+        ...companyData,
+        country: connectOrDisconnect(countryId, !!existingCompany.countryId),
+
+        categories: setMany(categoriesIds),
+
+        contactPerson: upsertContactPerson,
+
+        logoImage: createLogoImage,
       },
       select: {
         id: true,

@@ -13,7 +13,7 @@ import { getBenefits } from '~/services/benefit/benefit.server'
 import { validator } from '~/services/company/company.schema'
 import { getCompanyCategories } from '~/services/company-category/company-category.server'
 
-import { CompanyForm } from '~/components/Forms/CompanyForm'
+import { AdminCompanyForm } from '~/components/Forms/AdminCompanyForm'
 import { FormActions } from '~/components/FormFields/FormActions'
 import { Title } from '~/components/Typography/Title'
 import { uploadHandler } from '~/services/aws/s3.server'
@@ -78,7 +78,7 @@ export default function AdminDashboardCompaniesCreateRoute() {
       <Title>Crear nueva compañía</Title>
 
       <div className="mt-5">
-        <CompanyForm
+        <AdminCompanyForm
           countries={countries}
           benefits={benefits}
           companyCategories={companyCategories}

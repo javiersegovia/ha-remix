@@ -115,6 +115,11 @@ export const loader = async ({ request }: LoaderArgs) => {
     PermissionCode.MANAGE_BENEFIT
   )
 
+  const canManageCompany = await hasPermissionByUserId(
+    user.id,
+    PermissionCode.MANAGE_COMPANY
+  )
+
   const canManageEmployeesMainInformation = await hasPermissionByUserId(
     user.id,
     PermissionCode.MANAGE_EMPLOYEE_MAIN_INFORMATION
@@ -138,6 +143,13 @@ export const loader = async ({ request }: LoaderArgs) => {
     navPaths.push(historyNavPath)
   }
 
+  if (canManageCompany) {
+    companyManagementNavPath.subPaths.push({
+      title: 'Perfil de empresa',
+      path: '/dashboard/manage/company',
+    })
+  }
+
   if (canManageBenefits) {
     companyManagementNavPath.subPaths.push({
       title: 'Beneficios',
@@ -152,7 +164,7 @@ export const loader = async ({ request }: LoaderArgs) => {
     })
   }
 
-  if (canManageBenefits || canManageEmployeesMainInformation) {
+  if (companyManagementNavPath.subPaths.length > 0) {
     navPaths.push(companyManagementNavPath)
   }
 
