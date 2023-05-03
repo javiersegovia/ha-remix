@@ -260,18 +260,21 @@ model EmployeeGroup {
 
   name String
 
-  company   Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
-  companyId String
-  country   Country? @relation(fields: [countryId], references: [id], onDelete: Cascade)
-  countryId Int?
-  state     State?   @relation(fields: [stateId], references: [id], onDelete: SetNull)
-  stateId   Int?
-  gender    Gender?  @relation(fields: [genderId], references: [id], onDelete: SetNull)
-  genderId  Int?
+  company       Company      @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  companyId     String
+  country       Country?     @relation(fields: [countryId], references: [id], onDelete: SetNull)
+  countryId     Int?
+  state         State?       @relation(fields: [stateId], references: [id], onDelete: SetNull)
+  stateId       Int?
+  gender        Gender?      @relation(fields: [genderId], references: [id], onDelete: SetNull)
+  genderId      Int?
+  ageRange      AgeRange?    @relation(fields: [ageRangeId], references: [id], onDelete: SetNull)
+  ageRangeId    Int?
+  salaryRange   SalaryRange? @relation(fields: [salaryRangeId], references: [id], onDelete: SetNull)
+  salaryRangeId Int?
 
   employees Employee[]
   benefits  Benefit[]
-  ageRanges AgeRange[]
 }
 
 model AgeRange {
@@ -978,4 +981,6 @@ model SalaryRange {
   updatedAt DateTime @updatedAt
   minValue  Int
   maxValue  Int?
+
+  employeeGroups EmployeeGroup[]
 }

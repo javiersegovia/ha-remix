@@ -1,0 +1,67 @@
+import type {
+  AgeRange,
+  Company,
+  Country,
+  EmployeeGroup,
+  Gender,
+  SalaryRange,
+  State,
+} from '@prisma/client'
+
+import { faker } from '@faker-js/faker'
+import { Factory } from 'fishery'
+import { prisma } from '~/db.server'
+import { connect } from '~/utils/relationships'
+
+type ExtendedEmployeeGroup = EmployeeGroup & {
+  company?: Company
+  country?: Country
+  state?: State
+  gender?: Gender
+  ageRange?: AgeRange
+  salaryRange?: SalaryRange
+}
+
+export const EmployeeGroupFactory = Factory.define<ExtendedEmployeeGroup>(
+  ({ onCreate, associations }) => {
+    const { company, country, state, gender, ageRange, salaryRange } =
+      associations
+
+    if (!company) {
+      throw new Error('Missing associations at EmployeeGroupFactory')
+    }
+
+    onCreate((employeeGroup) => {
+      const { id, createdAt, updatedAt, name } = employeeGroup
+      return prisma.employeeGroup.create({
+        data: {
+          id,
+          createdAt,
+          updatedAt,
+          name,
+          company: connect(company.id),
+          country: connect(country?.id),
+          state: connect(state?.id),
+          gender: connect(gender?.id),
+          ageRange: connect(ageRange?.id),
+          salaryRange: connect(salaryRange?.id),
+        },
+      })
+    })
+
+    return {
+      id: faker.datatype.uuid(),
+      createdAt: new Date(),
+      updatedAt: new Date(),
+
+      name: faker.datatype.string(),
+
+      companyId: company?.id,
+      countryId: country?.id || null,
+      stateId: state?.id || null,
+      genderId: gender?.id || null,
+      ageRangeId: ageRange?.id || null,
+      salaryRangeId: salaryRange?.id || null,
+    }
+  }
+)
