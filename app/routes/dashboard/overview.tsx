@@ -16,6 +16,8 @@ import { logout, requireUserId } from '~/session.server'
 import { Container } from '~/components/Layout/Container'
 import { Carousel } from '~/components/Carousels/Carousel'
 import { BenefitHighlightCard } from '~/components/Cards/BenefitHighlightCard'
+import { Button } from '~/components/Button'
+import { capitalizeFirstLetter } from '~/utils/capitalizeFirstLetter'
 
 export type DashboardIndexLoaderData = {
   gender: Pick<Gender, 'name'> | null
@@ -32,6 +34,15 @@ const getEmployeeData = (userId: string) => {
       },
     },
     select: {
+      availablePoints: true,
+
+      user: {
+        select: {
+          firstName: true,
+          lastName: true,
+        },
+      },
+
       company: {
         select: {
           name: true,
@@ -116,11 +127,20 @@ export const loader = async ({ request }: LoaderArgs) => {
     return acc
   }, [] as BCategory[])
 
+  const {
+    company,
+    availablePoints,
+    user: { firstName, lastName },
+  } = employeeData
+
   return json({
     benefits,
-    company: employeeData.company,
+    company: company,
     benefitHighlights,
     benefitCategories,
+    availablePoints: availablePoints,
+    firstName,
+    lastName,
   })
 }
 
@@ -133,8 +153,15 @@ type BCategory = Awaited<
 >[0]['benefitCategory']
 
 export default function DashboardIndexRoute() {
-  const { benefitHighlights, benefitCategories, benefits, company } =
-    useLoaderData<typeof loader>()
+  const {
+    benefitHighlights,
+    benefitCategories,
+    benefits,
+    company,
+    availablePoints,
+    firstName,
+    lastName,
+  } = useLoaderData<typeof loader>()
 
   const carouselBenefitHighlights = benefitHighlights.slice(0, 3)
 
@@ -153,7 +180,33 @@ export default function DashboardIndexRoute() {
         {benefitHighlights?.length > 0 && (
           <section className="overflow-hidden bg-steelBlue-100 pb-16 pt-10">
             <Container>
-              <div className="relative z-10 mx-auto w-full max-w-screen-xl px-2 sm:px-10">
+              <section className="mb-10 flex flex-col items-center justify-between md:flex-row">
+                <Title className="text-center text-steelBlue-600 md:text-left">
+                  Hola, {firstName && capitalizeFirstLetter(firstName)}{' '}
+                  {lastName && capitalizeFirstLetter(lastName)}
+                </Title>
+
+                <div className="flex flex-col gap-4 md:flex-row">
+                  <div className="mx-auto mt-4 md:m-0">
+                    <p className="inline md:block">Tienes</p>
+                    <p className=" ml-1 inline whitespace-nowrap font-bold text-steelBlue-800 md:ml-0 md:block">
+                      {availablePoints} puntos
+                    </p>
+                  </div>
+
+                  <Button
+                    href="https://puntos.umany.co/login"
+                    external
+                    targetBlank
+                    size="XS"
+                    className="mx-auto w-auto md:m-0"
+                  >
+                    Canjear
+                  </Button>
+                </div>
+              </section>
+
+              <div className="relative z-10 mx-auto w-full max-w-screen-xl">
                 <Title>
                   {benefitHighlights?.length > 1
                     ? 'Beneficios destacados del mes'
