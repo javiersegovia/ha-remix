@@ -31,6 +31,7 @@ import { getBankAccountTypes } from '~/services/bank-account-type/bank-account-t
 import { getIdentityDocumentTypes } from '~/services/identity-document-type/identity-document-type.server'
 import { prisma } from '~/db.server'
 import { getUserRoles } from '~/services/user-role/user-role.server'
+import { parseISOLocalNullable } from '~/utils/formatDate'
 
 export const loader = async ({ request, params }: LoaderArgs) => {
   await requireAdminUserId(request)
@@ -146,16 +147,13 @@ export default function AdminDashboardCompanyUpdateEmployeeRoute() {
           <AdminEmployeeForm
             defaultValues={{
               ...employee,
-              startedAt: employee.startedAt
-                ? new Date(employee.startedAt)
-                : null,
-              inactivatedAt: employee.inactivatedAt
-                ? new Date(employee.inactivatedAt)
-                : null,
-              birthDay: employee.birthDay ? new Date(employee.birthDay) : null,
-              documentIssueDate: employee.documentIssueDate
-                ? new Date(employee.documentIssueDate)
-                : null,
+
+              birthDay: parseISOLocalNullable(employee.birthDay),
+              documentIssueDate: parseISOLocalNullable(
+                employee.documentIssueDate
+              ),
+              startedAt: parseISOLocalNullable(employee.startedAt),
+              inactivatedAt: parseISOLocalNullable(employee.inactivatedAt),
             }}
             countries={countries}
             jobPositions={jobPositions}

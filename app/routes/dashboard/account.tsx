@@ -32,7 +32,7 @@ import { getCryptocurrencies } from '~/services/crypto-currency/crypto-currency.
 import { getCryptoNetworks } from '~/services/crypto-network/crypto-network.server'
 import { getGenders } from '~/services/gender/gender.server'
 import { requireEmployee } from '~/session.server'
-import { formatMDYDate } from '~/utils/formatDate'
+import { formatMDYDate, parseISOLocalNullable } from '~/utils/formatDate'
 import { updateEmployeeByAccountForm } from '~/services/employee/employee.server'
 import { getBankAccountTypes } from '~/services/bank-account-type/bank-account-type.server'
 import { getIdentityDocumentTypes } from '~/services/identity-document-type/identity-document-type.server'
@@ -182,10 +182,8 @@ export default function DashboardAccountRoute() {
       lastName: user?.lastName || '',
       email: user?.email || '',
     },
-    birthDay: employee.birthDay ? new Date(employee.birthDay) : null,
-    documentIssueDate: employee.documentIssueDate
-      ? new Date(employee.documentIssueDate)
-      : null,
+    birthDay: parseISOLocalNullable(employee.birthDay),
+    documentIssueDate: parseISOLocalNullable(employee.documentIssueDate),
   }
 
   return (

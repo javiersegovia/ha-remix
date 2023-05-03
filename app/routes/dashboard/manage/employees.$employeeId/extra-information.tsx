@@ -3,9 +3,13 @@ import type {
   LoaderArgs,
   MetaFunction,
 } from '@remix-run/server-runtime'
-import { redirect } from '@remix-run/server-runtime'
 
 import { PermissionCode } from '@prisma/client'
+import { redirect } from '@remix-run/server-runtime'
+import { Link, useLoaderData } from '@remix-run/react'
+import { validationError } from 'remix-validated-form'
+import { json } from '@remix-run/node'
+
 import { requirePermissionByUserId } from '~/services/permissions/permissions.server'
 import { requireEmployee } from '~/session.server'
 import { prisma } from '~/db.server'
@@ -18,13 +22,11 @@ import { getCountries } from '~/services/country/country.server'
 import { getJobPositions } from '~/services/job-position/job-position.server'
 import { getJobDepartments } from '~/services/job-department/job-department.server'
 import { getGenders } from '~/services/gender/gender.server'
-import { json } from '@remix-run/node'
-import { Link, useLoaderData } from '@remix-run/react'
 import { EmployeeExtraInformationForm } from '~/components/Forms/Employees/EmployeeExtraInformationForm'
 import { employeeExtraInformationValidator } from '~/services/employee/employee.schema'
 import { SubmitButton } from '~/components/SubmitButton'
 import { ButtonColorVariants, ButtonElement } from '~/components/Button'
-import { validationError } from 'remix-validated-form'
+import { parseISOLocalNullable } from '~/utils/formatDate'
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => {
   if (!data) {
@@ -161,17 +163,10 @@ const UpdateEmployeeExtraInformationRoute = () => {
           numberOfChildren,
           phone,
 
-          birthDay: birthDay ? new Date(Date.parse(birthDay)) : null,
-
-          documentIssueDate: documentIssueDate
-            ? new Date(Date.parse(documentIssueDate))
-            : null,
-
-          startedAt: startedAt ? new Date(Date.parse(startedAt)) : null,
-
-          inactivatedAt: inactivatedAt
-            ? new Date(Date.parse(inactivatedAt))
-            : null,
+          birthDay: parseISOLocalNullable(birthDay),
+          documentIssueDate: parseISOLocalNullable(documentIssueDate),
+          startedAt: parseISOLocalNullable(startedAt),
+          inactivatedAt: parseISOLocalNullable(inactivatedAt),
         }}
         actions={
           <div className="mt-10 flex flex-col items-center justify-end gap-4 md:flex-row">

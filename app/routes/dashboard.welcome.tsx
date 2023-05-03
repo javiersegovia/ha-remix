@@ -18,6 +18,7 @@ import { getBanks } from '~/services/bank/bank.server'
 import { welcomeValidator } from '~/schemas/welcome.schema'
 import { getBankAccountTypes } from '~/services/bank-account-type/bank-account-type.server'
 import { getIdentityDocumentTypes } from '~/services/identity-document-type/identity-document-type.server'
+import { parseISOLocalNullable } from '~/utils/formatDate'
 
 export const loader = async ({ request }: LoaderArgs) => {
   const employee = await requireEmployee(request)
@@ -99,12 +100,10 @@ export default function DashboardWelcomeRoute() {
               identityDocumentTypes={identityDocumentTypes}
               defaultValues={{
                 ...employee,
-                birthDay: employee.birthDay
-                  ? new Date(employee.birthDay)
-                  : null,
-                documentIssueDate: employee.documentIssueDate
-                  ? new Date(employee.documentIssueDate)
-                  : null,
+                birthDay: parseISOLocalNullable(employee.birthDay),
+                documentIssueDate: parseISOLocalNullable(
+                  employee.documentIssueDate
+                ),
               }}
             />
           </>
