@@ -1,5 +1,6 @@
 import type {
   AgeRange,
+  City,
   Company,
   Country,
   EmployeeGroup,
@@ -17,6 +18,7 @@ type ExtendedEmployeeGroup = EmployeeGroup & {
   company?: Company
   country?: Country
   state?: State
+  city?: City
   gender?: Gender
   ageRange?: AgeRange
   salaryRange?: SalaryRange
@@ -24,7 +26,7 @@ type ExtendedEmployeeGroup = EmployeeGroup & {
 
 export const EmployeeGroupFactory = Factory.define<ExtendedEmployeeGroup>(
   ({ onCreate, associations }) => {
-    const { company, country, state, gender, ageRange, salaryRange } =
+    const { company, country, state, city, gender, ageRange, salaryRange } =
       associations
 
     if (!company) {
@@ -42,6 +44,7 @@ export const EmployeeGroupFactory = Factory.define<ExtendedEmployeeGroup>(
           company: connect(company.id),
           country: connect(country?.id),
           state: connect(state?.id),
+          city: connect(city?.id),
           gender: connect(gender?.id),
           ageRange: connect(ageRange?.id),
           salaryRange: connect(salaryRange?.id),
@@ -59,6 +62,7 @@ export const EmployeeGroupFactory = Factory.define<ExtendedEmployeeGroup>(
       companyId: company?.id,
       countryId: country?.id || null,
       stateId: state?.id || null,
+      cityId: city?.id || null,
       genderId: gender?.id || null,
       ageRangeId: ageRange?.id || null,
       salaryRangeId: salaryRange?.id || null,
