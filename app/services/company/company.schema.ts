@@ -81,6 +81,7 @@ export const companyManagementSchema = companySchema.pick({
   phone: true,
   countryId: true,
   categoriesIds: true,
+  benefitsIds: true,
   contactPerson: true,
 })
 export const companyManagementValidator = withZod(companyManagementSchema)

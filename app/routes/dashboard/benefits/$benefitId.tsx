@@ -72,6 +72,7 @@ export default function BenefitDetailsRoute() {
     mainImage,
     name,
     benefitHighlight,
+    shortDescription,
     instructions,
   } = benefit
 
@@ -98,22 +99,25 @@ export default function BenefitDetailsRoute() {
         <div>
           <Title>{name}</Title>
           <div className="mt-10 flex gap-8">
-            <img
-              className="relative inline-block h-36 w-32 rounded-xl object-cover object-top"
-              src={mainImage?.url}
-              alt="Logo de empresa"
+            <div
+              className="relative inline-block h-36 w-32 rounded-xl bg-gray-300 bg-cover bg-top"
+              style={{
+                backgroundImage: mainImage?.url
+                  ? `url(${mainImage?.url})`
+                  : undefined,
+              }}
             />
 
-            {benefitHighlight?.isActive && (
-              <div>
+            <div>
+              {benefitHighlight?.isActive && (
                 <p className="mt-1 inline-flex items-center gap-2 rounded-3xl bg-indigo-200 px-2 py-1 text-sm font-semibold leading-5 text-indigo-600">
                   <FaStar className="mb-[2px] text-xs" />
                   <span>Destacado</span>
                 </p>
+              )}
 
-                <p className="mt-4">{benefitHighlight.title}</p>
-              </div>
-            )}
+              <p className="mt-4">{shortDescription}</p>
+            </div>
           </div>
         </div>
 

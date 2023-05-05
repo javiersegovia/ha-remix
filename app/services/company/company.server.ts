@@ -289,6 +289,7 @@ export const updateCompanyByCompanyManagementForm = async (
   const {
     countryId,
     categoriesIds,
+    benefitsIds: _,
     contactPerson,
     logoImageKey,
     ...companyData

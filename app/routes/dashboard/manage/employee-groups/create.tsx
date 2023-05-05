@@ -27,7 +27,7 @@ import { Container } from '~/components/Layout/Container'
 
 export const meta: MetaFunction = () => {
   return {
-    title: 'Crear grupo de colaboradores | HoyTrabajas Beneficios',
+    title: 'Crear grupo | HoyTrabajas Beneficios',
   }
 }
 
@@ -91,6 +91,7 @@ export default function CreateEmployeeGroupRoute() {
     <>
       <Container className="mx-auto w-full">
         <Title className="pt-5 pl-2">Crear grupo</Title>
+
         <EmployeeGroupForm
           actions={
             <div className="mt-6 flex items-center justify-end gap-4">

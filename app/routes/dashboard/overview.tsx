@@ -139,7 +139,7 @@ export const loader = async ({ request }: LoaderArgs) => {
 
   const {
     availablePoints,
-    user: { firstName, lastName },
+    user: { firstName },
   } = employee
 
   return json({
@@ -149,7 +149,6 @@ export const loader = async ({ request }: LoaderArgs) => {
     benefitCategories,
     availablePoints,
     firstName,
-    lastName,
   })
 }
 
@@ -169,7 +168,6 @@ export default function DashboardIndexRoute() {
     company,
     availablePoints,
     firstName,
-    lastName,
   } = useLoaderData<typeof loader>()
 
   const carouselBenefitHighlights = benefitHighlights.slice(0, 3)
@@ -191,12 +189,11 @@ export default function DashboardIndexRoute() {
             <Container>
               <section className="mb-10 flex flex-col items-center justify-between md:flex-row">
                 <Title className="text-center text-steelBlue-600 md:text-left">
-                  Hola, {firstName && capitalizeFirstLetter(firstName)}{' '}
-                  {lastName && capitalizeFirstLetter(lastName)}
+                  Hola, {firstName && capitalizeFirstLetter(firstName)}
                 </Title>
 
                 <div className="flex flex-col gap-4 md:flex-row">
-                  <div className="mx-auto mt-4 md:m-0">
+                  <div className="mx-auto mt-4 text-right md:m-0">
                     <p className="inline md:block">Tienes</p>
                     <p className=" ml-1 inline whitespace-nowrap font-bold text-steelBlue-800 md:ml-0 md:block">
                       {availablePoints} puntos
@@ -204,7 +201,7 @@ export default function DashboardIndexRoute() {
                   </div>
 
                   <Button
-                    href="https://puntos.umany.co/login"
+                    href="https://puntos.umany.co"
                     external
                     targetBlank
                     size="XS"

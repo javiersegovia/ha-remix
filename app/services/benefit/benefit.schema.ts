@@ -41,6 +41,15 @@ export const benefitSchema = z.object({
       .nullish()
   ),
 
+  shortDescription: zfd.text(
+    z
+      .string()
+      .trim()
+      .min(30, { message: 'Mínimo 30 caracteres' })
+      .max(100, { message: 'Máximo 100 caracteres' })
+      .nullish()
+  ),
+
   instructions: z
     .array(
       zfd.text(

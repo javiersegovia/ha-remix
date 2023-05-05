@@ -28,6 +28,7 @@ import { companyManagementValidator } from '~/services/company/company.schema'
 import { requireEmployee } from '~/session.server'
 import { notFound } from '~/utils/responses'
 import { uploadHandler } from '~/services/aws/s3.server'
+import { getBenefits } from '~/services/benefit/benefit.server'
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => {
   if (!data) {
@@ -51,7 +52,12 @@ export const loader = async ({ request, params }: LoaderArgs) => {
     PermissionCode.MANAGE_COMPANY
   )
 
-  const company = await getCompanyById(currentEmployee.companyId)
+  const [company, benefits, companyCategories, countries] = await Promise.all([
+    getCompanyById(currentEmployee.companyId),
+    getBenefits(),
+    getCompanyCategories(),
+    getCountries(),
+  ])
 
   if (!company) {
     throw notFound({
@@ -62,8 +68,9 @@ export const loader = async ({ request, params }: LoaderArgs) => {
 
   return json({
     company,
-    companyCategories: await getCompanyCategories(),
-    countries: await getCountries(),
+    benefits,
+    companyCategories,
+    countries,
   })
 }
 
@@ -108,7 +115,7 @@ export async function action({ request, params }: ActionArgs) {
 }
 
 export default function DashboardManageCompanyIndexRoute() {
-  const { company, countries, companyCategories } =
+  const { company, countries, benefits, companyCategories } =
     useLoaderData<typeof loader>()
 
   return (
@@ -116,6 +123,7 @@ export default function DashboardManageCompanyIndexRoute() {
       <CompanyForm
         defaultValues={company}
         countries={countries}
+        benefits={benefits}
         companyCategories={companyCategories}
         validator={companyManagementValidator}
         actions={
