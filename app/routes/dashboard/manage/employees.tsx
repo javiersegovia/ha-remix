@@ -39,9 +39,6 @@ export const employeeTabPaths = [
 export const loader = async ({ request }: LoaderArgs) => {
   const employee = await requireEmployee(request)
 
-  const url = new URL(request.url)
-  const page = url.searchParams.get('page')
-
   await requirePermissionByUserId(
     employee.userId,
     PermissionCode.MANAGE_EMPLOYEE_MAIN_INFORMATION
@@ -52,20 +49,10 @@ export const loader = async ({ request }: LoaderArgs) => {
     PermissionCode.MANAGE_EMPLOYEE_GROUP
   )
 
-  const currentPage = parseFloat(page || '1')
-  const numberOfResults = 25
-
-  const employees = await getCompanyEmployeesByCompanyId(employee.companyId, {
-    take: 25,
-    skip: (currentPage - 1 || 0) * numberOfResults,
-  })
-
-  console.log({ employees, currentPage, numberOfResults })
+  const employees = await getCompanyEmployeesByCompanyId(employee.companyId)
 
   return json({
     employees,
-    currentPage,
-    totalPages: employees.length / numberOfResults,
     companyBenefitsIds: employee.company.benefits?.map((b) => b.id),
     canManageEmployeeGroup,
   })
