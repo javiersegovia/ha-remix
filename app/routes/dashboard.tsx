@@ -95,14 +95,7 @@ export const loader = async ({ request }: LoaderArgs) => {
 
   const employeeData = await getEmployeeData(user.id)
 
-  const benefits = await getEmployeeEnabledBenefits({
-    employeeBenefits: employeeData?.benefits,
-    membershipBenefits: employeeData?.membership?.benefits,
-    companyBenefits: employeeData?.company.benefits,
-    employeeGroupsBenefits: employeeData?.employeeGroups
-      ?.map((eGroup) => eGroup.benefits)
-      .flat(),
-  })
+  const benefits = await getEmployeeEnabledBenefits(user.id)
 
   const canUsePayrollAdvances = process.env.SLUG_PAYROLL_ADVANCE
     ? benefits.some((b) => b.slug === process.env.SLUG_PAYROLL_ADVANCE)

@@ -823,7 +823,7 @@ model Benefit {
   buttonText   String?
   buttonHref   String?
   description  String?
-  instructions String?
+  instructions String[]
 
   // @deprecated Use "mainImage" instead
   imageUrl String?

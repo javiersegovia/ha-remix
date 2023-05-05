@@ -40,14 +40,19 @@ export const benefitSchema = z.object({
       .max(600, { message: 'Máximo 600 caracteres' })
       .nullish()
   ),
-  instructions: zfd.text(
-    z
-      .string()
-      .trim()
-      .min(180, { message: 'Mínimo 180 caracteres' })
-      .max(600, { message: 'Máximo 600 caracteres' })
-      .nullish()
-  ),
+
+  instructions: z
+    .array(
+      zfd.text(
+        z
+          .string()
+          .trim()
+          .min(180, { message: 'Mínimo 180 caracteres' })
+          .max(600, { message: 'Máximo 600 caracteres' })
+          .nullish()
+      )
+    )
+    .nullish(),
 
   benefitHighlight: preprocessNullableObject(
     z

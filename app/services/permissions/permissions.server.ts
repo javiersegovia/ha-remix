@@ -1,5 +1,4 @@
-import type { Benefit, PermissionCode, User, UserRole } from '@prisma/client'
-import type { FilterEmployeeEnabledBenefitsArgs } from './permissions.shared'
+import type { PermissionCode, User, UserRole } from '@prisma/client'
 
 import { badRequest } from '~/utils/responses'
 import { prisma } from '~/db.server'
@@ -12,24 +11,77 @@ import { filterEmployeeEnabledBenefits } from './permissions.shared'
  *  employeeGroupsBenefits refer to the benefits that belong to the employee groups.
  */
 
-type GetEmployeeEnabledBenefitsArgs = Pick<
-  FilterEmployeeEnabledBenefitsArgs,
-  'employeeBenefits' | 'membershipBenefits' | 'employeeGroupsBenefits'
-> & {
-  companyBenefits: Pick<Benefit, 'id'>[] | undefined
-}
+export const getEmployeeEnabledBenefits = async (userId: User['id']) => {
+  const employee = await prisma.employee.findFirst({
+    where: {
+      user: {
+        id: userId,
+      },
+    },
+    select: {
+      availablePoints: true,
 
-export const getEmployeeEnabledBenefits = async ({
-  employeeBenefits,
-  membershipBenefits,
-  employeeGroupsBenefits,
-  companyBenefits,
-}: GetEmployeeEnabledBenefitsArgs) => {
+      user: {
+        select: {
+          firstName: true,
+          lastName: true,
+        },
+      },
+
+      company: {
+        select: {
+          name: true,
+          description: true,
+          logoImage: {
+            select: {
+              url: true,
+            },
+          },
+          benefits: {
+            select: {
+              id: true,
+            },
+          },
+        },
+      },
+      benefits: {
+        select: {
+          id: true,
+          companyBenefit: {
+            select: {
+              id: true,
+            },
+          },
+        },
+      },
+      employeeGroups: {
+        select: {
+          id: true,
+          benefits: {
+            select: {
+              id: true,
+              companyBenefit: {
+                select: {
+                  id: true,
+                },
+              },
+            },
+          },
+        },
+      },
+      membership: {
+        select: { id: true, name: true, benefits: { select: { id: true } } },
+      },
+    },
+  })
+
   const filteredBenefits = filterEmployeeEnabledBenefits({
-    employeeBenefits,
-    membershipBenefits,
-    employeeGroupsBenefits,
-    companyBenefitsIds: companyBenefits?.map((b) => b.id),
+    employeeBenefits: employee?.benefits,
+    membershipBenefits: employee?.membership?.benefits,
+    companyBenefitsIds: employee?.company.benefits?.map((b) => b.id),
+    employeeGroupsBenefits: employee?.employeeGroups
+      ?.map((eGroup) => eGroup.benefits)
+      .flat(),
   })
 
   return await prisma.benefit.findMany({

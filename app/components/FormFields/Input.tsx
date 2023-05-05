@@ -3,6 +3,7 @@ import clsx from 'clsx'
 import { ErrorMessage } from './ErrorMessage'
 import { Label } from './Label'
 import { useField, useIsSubmitting } from 'remix-validated-form'
+import { twMerge } from 'tailwind-merge'
 
 export const inputBaseStyles =
   'placeholder:text-gray-400 block p-3 w-full text-sm leading-6 bg-white border shadow-sm rounded-lg border-gray-300 focus:outline-none focus:ring-2 focus:border-blue-400 focus:ring-blue-400'
@@ -13,7 +14,7 @@ export const inputErrorStyles =
 export const inputDisabledStyles =
   'text-gray-500 bg-gray-200 cursor-not-allowed focus:border-transparent focus:ring-0'
 
-type TInputProps = {
+export type TInputProps = {
   name: string
   type: string
   required?: boolean
@@ -23,6 +24,7 @@ type TInputProps = {
   error?: string
   disabled?: boolean
   isTextArea?: boolean
+  className?: string
   defaultValue?: string | number | string[] | number[] | null
   maskFn?: (value: string | number) => string
 }
@@ -42,6 +44,7 @@ export const Input: React.FC<TInput> = ({
   disabled,
   isTextArea = false,
   defaultValue,
+  className,
   ...otherProps
 }: TInputProps) => {
   const Tagname = isTextArea ? 'textarea' : 'input'
@@ -54,7 +57,7 @@ export const Input: React.FC<TInput> = ({
     <Label
       htmlFor={name}
       description={label}
-      className="block w-full"
+      className={twMerge(clsx('block w-full', className))}
       required={required}
     >
       <Tagname

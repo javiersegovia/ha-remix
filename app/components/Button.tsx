@@ -11,6 +11,7 @@ export type TButtonSizes = 'XS' | 'SM' | 'MD' | 'LG' | 'XL'
 export enum ButtonColorVariants {
   PRIMARY = 'PRIMARY',
   SECONDARY = 'SECONDARY',
+  ALTERNATIVE = 'ALTERNATIVE',
   SUCCESS = 'SUCCESS',
   DARK = 'DARK',
   WARNING = 'WARNING',
@@ -74,6 +75,7 @@ export const ButtonElement = ({
 }: ButtonProps) => {
   const isPrimary = variant === ButtonColorVariants.PRIMARY
   const isSecondary = variant === ButtonColorVariants.SECONDARY
+  const isAlternative = variant === ButtonColorVariants.ALTERNATIVE
   const isSuccess = variant === ButtonColorVariants.SUCCESS
   const isDark = variant === ButtonColorVariants.DARK
   const isWarning = variant === ButtonColorVariants.WARNING
@@ -101,6 +103,9 @@ export const ButtonElement = ({
           isSecondary &&
             'border border-steelBlue-700 bg-transparent text-steelBlue-700',
           isSecondary && !disabled && 'hover:bg-transparent',
+
+          isAlternative && 'bg-steelBlue-700 text-white',
+          isAlternative && !disabled && 'hover:bg-steelBlue-800',
 
           isWarning && 'bg-red-100 text-red-600',
           isWarning && !disabled && 'hover:bg-red-200',

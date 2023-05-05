@@ -16,6 +16,7 @@ import { SubmitButton } from '../SubmitButton'
 import { Title } from '../Typography/Title'
 import { ImageInput } from '../FormFields/ImageInput'
 import { Toggle } from '../FormFields/Toggle'
+import { MultiplicableInput } from '../FormFields/MultiplicableInput'
 
 interface BenefitFormProps {
   buttonText: string
@@ -134,14 +135,16 @@ export const BenefitForm = ({
               description="Min. 180 caracteres — Máx. 600 caracteres"
             />
           </FormGridItem>
+
           <FormGridItem isFullWidth>
-            <Input
+            <MultiplicableInput
               name="instructions"
-              type="text"
               label="Paso a paso del uso de este beneficio"
-              isTextArea
-              placeholder="Ej: Este beneficio te permite acceder a descuentos de hasta el 15% en compras superiores a $50.000"
-              description="Min. 180 caracteres — Máx. 600 caracteres"
+              inputProps={{
+                isTextArea: true,
+                placeholder: 'Cada campo de texto representa un paso nuevo',
+                description: 'Min. 180 caracteres — Máx. 600 caracteres',
+              }}
             />
           </FormGridItem>
         </FormGridWrapper>

@@ -12,12 +12,13 @@ import { prisma } from '~/db.server'
 import { Title } from '~/components/Typography/Title'
 import { BenefitCard } from '~/components/Cards/BenefitCard'
 import { getEmployeeEnabledBenefits } from '~/services/permissions/permissions.server'
-import { logout, requireUserId } from '~/session.server'
+import { requireEmployee } from '~/session.server'
 import { Container } from '~/components/Layout/Container'
 import { Carousel } from '~/components/Carousels/Carousel'
 import { BenefitHighlightCard } from '~/components/Cards/BenefitHighlightCard'
 import { Button } from '~/components/Button'
 import { capitalizeFirstLetter } from '~/utils/capitalizeFirstLetter'
+import { badRequest } from '~/utils/responses'
 
 export type DashboardIndexLoaderData = {
   gender: Pick<Gender, 'name'> | null
@@ -91,24 +92,33 @@ const getEmployeeData = (userId: string) => {
   })
 }
 
-// TODO Javier:
-// This file has some bad practices and code that could be refactored for a better performance and order overall.
-
 export const loader = async ({ request }: LoaderArgs) => {
-  const userId = await requireUserId(request)
-
-  const employeeData = await getEmployeeData(userId)
-
-  if (!employeeData) throw await logout(request)
-
-  const benefits = await getEmployeeEnabledBenefits({
-    employeeBenefits: employeeData?.benefits,
-    membershipBenefits: employeeData?.membership?.benefits,
-    companyBenefits: employeeData?.company.benefits,
-    employeeGroupsBenefits: employeeData?.employeeGroups
-      ?.map((eGroup) => eGroup.benefits)
-      .flat(),
+  const employee = await requireEmployee(request)
+  const company = await prisma.company.findFirst({
+    where: {
+      id: employee.companyId,
+    },
+    select: {
+      id: true,
+      description: true,
+      name: true,
+      logoImage: {
+        select: {
+          id: true,
+          url: true,
+        },
+      },
+    },
   })
+
+  if (!company) {
+    throw badRequest({
+      message: 'No pudimos encontrar la compañía',
+      redirect: `/dashboard/overview`,
+    })
+  }
+
+  const benefits = await getEmployeeEnabledBenefits(employee.userId)
 
   const benefitHighlights = benefits.reduce((acc, benefit) => {
     if (benefit.benefitHighlight && benefit.benefitHighlight.isActive) {
@@ -128,17 +138,16 @@ export const loader = async ({ request }: LoaderArgs) => {
   }, [] as BCategory[])
 
   const {
-    company,
     availablePoints,
     user: { firstName, lastName },
-  } = employeeData
+  } = employee
 
   return json({
     benefits,
-    company: company,
+    company,
     benefitHighlights,
     benefitCategories,
-    availablePoints: availablePoints,
+    availablePoints,
     firstName,
     lastName,
   })
@@ -309,6 +318,7 @@ export default function DashboardIndexRoute() {
                 benefitCategory,
               }) => (
                 <BenefitCard
+                  id={id}
                   key={id}
                   name={name}
                   buttonText={buttonText}

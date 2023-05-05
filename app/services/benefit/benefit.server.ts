@@ -139,7 +139,9 @@ export const createBenefit = async (
         slug,
         benefitCategory: connect(benefitCategoryId),
         description,
-        instructions,
+        instructions: {
+          set: instructions?.filter((i): i is string => Boolean(i)) || [],
+        },
         mainImage: createMainImage,
         benefitHighlight: createBenefitHighlight,
         companyBenefit: companyId
@@ -214,6 +216,8 @@ export const updateBenefitById = async (
     mainImageKey,
     benefitCategoryId,
     benefitHighlight,
+    description,
+    instructions,
   } = data
 
   const deletePromises: Promise<any>[] = []
@@ -323,10 +327,17 @@ export const updateBenefitById = async (
       buttonHref: buttonHref || null,
       slug: slug || null,
       mainImage: createMainImage,
+
+      description,
+      instructions: {
+        set: instructions?.filter((i): i is string => Boolean(i)) || [],
+      },
+
       benefitCategory: connectOrDisconnect(
         benefitCategoryId,
         Boolean(benefitToUpdate.benefitCategoryId)
       ),
+
       benefitHighlight: upsertBenefitHighlight,
     },
     select: {
