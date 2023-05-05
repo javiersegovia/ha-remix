@@ -104,7 +104,7 @@ export default function EmployeeGroupIndexRoute() {
               size="SM"
               icon={ButtonIconVariants.CREATE}
             >
-              Crear grupo de colaboradores
+              Crear grupo
             </Button>
           }
         />
@@ -121,7 +121,7 @@ export default function EmployeeGroupIndexRoute() {
                 size="SM"
                 icon={ButtonIconVariants.CREATE}
               >
-                Crear grupo de colaboradores
+                Crear grupo
               </Button>
             }
             className="mt-10"

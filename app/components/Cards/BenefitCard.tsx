@@ -1,22 +1,19 @@
 import type { Benefit, BenefitCategory, Image } from '@prisma/client'
 
 import clsx from 'clsx'
-
-import { isValidURL } from '~/utils/isValidURL'
-import { Button } from '../Button'
+import { Link } from '@remix-run/react'
 import { Box } from '../Layout/Box'
 import { Title } from '../Typography/Title'
 
 export interface BenefitCardProps
-  extends Pick<Benefit, 'name' | 'buttonText' | 'buttonHref'> {
+  extends Pick<Benefit, 'id' | 'name' | 'buttonText' | 'buttonHref'> {
   mainImage?: Pick<Image, 'url'> | null
   benefitCategory?: Pick<BenefitCategory, 'hexColor' | 'opacity'> | null
 }
 
 export const BenefitCard = ({
+  id,
   name,
-  buttonText,
-  buttonHref,
   mainImage,
   benefitCategory,
 }: BenefitCardProps) => {
@@ -26,61 +23,39 @@ export const BenefitCard = ({
     .sort((a, b) => b.length - a.length)?.[0]
 
   return (
-    <Box
-      className="relative flex h-[302px] w-full flex-1 flex-col justify-between space-y-5 overflow-hidden bg-cover p-5 shadow-xl"
-      style={{
-        backgroundImage: mainImage?.url ? `url(${mainImage?.url})` : undefined,
-      }}
-    >
-      <div
-        className={clsx(
-          'absolute top-0 bottom-0 left-0 right-0',
-          !hexColor && 'bg-gray-900',
-          !opacity && 'opacity-50'
-        )}
+    <Link to={`/dashboard/benefits/${id}/details`}>
+      <Box
+        className="relative flex h-[302px] w-full flex-1 flex-col justify-between space-y-5 overflow-hidden bg-cover p-5 shadow-xl"
         style={{
-          backgroundColor: hexColor || undefined,
-          opacity: opacity || undefined,
+          backgroundImage: mainImage?.url
+            ? `url(${mainImage?.url})`
+            : undefined,
         }}
-      />
-
-      <div className="z-10 flex h-full w-full flex-col text-center">
-        <Title
-          as="h3"
+      >
+        <div
           className={clsx(
-            'mt-auto mb-3 break-words text-white',
-            biggestWordInTheName?.length >= 10 && 'text-lg'
+            'absolute top-0 bottom-0 left-0 right-0',
+            !hexColor && 'bg-gray-900',
+            !opacity && 'opacity-50'
           )}
-        >
-          {name}
-        </Title>
+          style={{
+            backgroundColor: hexColor || undefined,
+            opacity: opacity || undefined,
+          }}
+        />
 
-        {/* If isValidURL returns true, then it means the URL must be an externa route */}
-        {buttonHref && isValidURL(buttonHref) ? (
-          <a
-            className="block"
-            href={buttonHref}
-            target="_blank"
-            rel="noreferrer noopener"
-          >
-            <Button type="button" size="XS">
-              {buttonText || 'Próximamente'}
-            </Button>
-          </a>
-        ) : (
-          <Button
-            href={buttonHref || undefined}
-            type="button"
-            disabled={!buttonHref}
+        <div className="z-10 flex h-full w-full flex-col text-center">
+          <Title
+            as="h3"
             className={clsx(
-              !buttonHref && 'bg-gray-300 text-gray-400 opacity-100'
+              'mt-auto mb-3 break-words text-white',
+              biggestWordInTheName?.length >= 10 && 'text-lg'
             )}
-            size="XS"
           >
-            {(buttonHref && buttonText) || 'Próximamente'}
-          </Button>
-        )}
-      </div>
-    </Box>
+            {name}
+          </Title>
+        </div>
+      </Box>
+    </Link>
   )
 }

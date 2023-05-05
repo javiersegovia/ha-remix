@@ -16,6 +16,7 @@ import { SubmitButton } from '../SubmitButton'
 import { Title } from '../Typography/Title'
 import { ImageInput } from '../FormFields/ImageInput'
 import { Toggle } from '../FormFields/Toggle'
+import { MultiplicableInput } from '../FormFields/MultiplicableInput'
 
 interface BenefitFormProps {
   buttonText: string
@@ -27,6 +28,7 @@ interface BenefitFormProps {
     | 'buttonHref'
     | 'slug'
     | 'benefitCategoryId'
+    | 'shortDescription'
     | 'description'
     | 'instructions'
   > & {
@@ -57,6 +59,7 @@ export const BenefitForm = ({
     mainImage,
     benefitCategoryId,
     description,
+    shortDescription,
     instructions,
     benefitHighlight,
   } = defaultValues || {}
@@ -74,6 +77,7 @@ export const BenefitForm = ({
           slug,
           benefitCategoryId,
           description,
+          shortDescription,
           instructions,
           benefitHighlight,
         }}
@@ -126,22 +130,35 @@ export const BenefitForm = ({
 
           <FormGridItem isFullWidth>
             <Input
+              name="shortDescription"
+              type="text"
+              label="Descripción corta"
+              placeholder="Ej: Beneficio OnDemand enfocado en el área de salud."
+              description="Min. 30 caracteres — Máx. 100 caracteres"
+            />
+          </FormGridItem>
+
+          <FormGridItem isFullWidth>
+            <Input
               name="description"
               type="text"
               label="Descripción"
               isTextArea
-              placeholder="Ej: Este beneficio te permite acceder a descuentos de hasta el 15% en compras superiores a $50.000"
+              placeholder="Ej: Con este beneficio puedes comunicarte con médicos generales, nutricionistas, psicólogos, yogis, entrenadores físicos y veterinarios desde cualquier lugar y en cualquier momento. Cuida de tu salud y la de tus seres queridos con facilidad."
               description="Min. 180 caracteres — Máx. 600 caracteres"
             />
           </FormGridItem>
+
           <FormGridItem isFullWidth>
-            <Input
+            <MultiplicableInput
               name="instructions"
-              type="text"
               label="Paso a paso del uso de este beneficio"
-              isTextArea
-              placeholder="Ej: Este beneficio te permite acceder a descuentos de hasta el 15% en compras superiores a $50.000"
-              description="Min. 180 caracteres — Máx. 600 caracteres"
+              inputProps={{
+                isTextArea: true,
+                placeholder: `Cada campo de texto representa un paso nuevo. \nEj: Ingresa a la plataforma virtual y selecciona el tipo de profesional con el que quieras consulta (médico general, nutricionista, psicólogo, yogui, enrenador físico o veterinario)
+                `,
+                description: 'Min. 180 caracteres — Máx. 600 caracteres',
+              }}
             />
           </FormGridItem>
         </FormGridWrapper>

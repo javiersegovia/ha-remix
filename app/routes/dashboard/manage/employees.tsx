@@ -49,8 +49,10 @@ export const loader = async ({ request }: LoaderArgs) => {
     PermissionCode.MANAGE_EMPLOYEE_GROUP
   )
 
+  const employees = await getCompanyEmployeesByCompanyId(employee.companyId)
+
   return json({
-    employees: await getCompanyEmployeesByCompanyId(employee.companyId),
+    employees,
     companyBenefitsIds: employee.company.benefits?.map((b) => b.id),
     canManageEmployeeGroup,
   })

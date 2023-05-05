@@ -9,10 +9,12 @@ import { prisma } from '~/db.server'
 import { MembershipFactory } from '~/services/membership/membership.factory'
 import { BenefitFactory } from '~/services/benefit/benefit.factory'
 import { connect } from '~/utils/relationships'
+import { requireEmployee } from '~/session.server'
 
 vi.mock('~/session.server', () => {
   return {
     requireUserId: () => MOCK_USER.id,
+    requireEmployee,
   }
 })
 
@@ -106,13 +108,16 @@ describe('LOADER /dashboard/overview', () => {
     expect(data).toEqual<DashboardOverviewLoaderResponse>({
       benefits: [],
       company: {
-        benefits: [],
+        id: employee.companyId,
         name: employee.company.name,
         description: null,
         logoImage: null,
       },
       benefitHighlights: [],
       benefitCategories: [],
+      availablePoints: 0,
+      firstName: employee.user.firstName,
+      lastName: employee.user.lastName,
     })
   })
 
@@ -170,13 +175,16 @@ describe('LOADER /dashboard/overview', () => {
         },
       ],
       company: {
+        id: company.id,
         name: company.name,
         description: company.description,
         logoImage: null,
-        benefits: expect.arrayContaining([{ id: expect.any(Number) }]),
       },
       benefitCategories: [],
       benefitHighlights: [],
+      availablePoints: 0,
+      firstName: employee.user.firstName,
+      lastName: employee.user.lastName,
     })
   })
 

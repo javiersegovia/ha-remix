@@ -103,7 +103,7 @@ export const EmployeeGroupForm = ({
                 name="name"
                 type="text"
                 label="Nombre del grupo"
-                placeholder="Ingrese un nombre"
+                placeholder="Ej: Talento humano y gestión"
               />
             </FormGridItem>
 

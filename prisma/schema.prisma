@@ -818,12 +818,13 @@ model Benefit {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  slug         String?
-  name         String
-  buttonText   String?
-  buttonHref   String?
-  description  String?
-  instructions String?
+  slug             String?
+  name             String
+  buttonText       String?
+  buttonHref       String?
+  description      String?
+  shortDescription String?
+  instructions     String[]
 
   // @deprecated Use "mainImage" instead
   imageUrl String?
