@@ -19,13 +19,13 @@ export default function BenefitDetailsInstructionsRoute() {
   return (
     <div className="mt-10 overflow-hidden">
       <ul className="space-y-8 whitespace-pre-wrap break-words text-justify">
-        {instructions?.map((i, index) => (
+        {instructions?.map((instruction, index) => (
           <li className="flex items-start gap-4" key={index}>
             <span className="text-3xl font-bold text-steelBlue-700">
               {index + 1}
             </span>
 
-            <p>{instructions}</p>
+            <p>{instruction}</p>
           </li>
         ))}
       </ul>
