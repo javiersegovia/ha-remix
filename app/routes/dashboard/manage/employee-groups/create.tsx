@@ -23,6 +23,7 @@ import { getGenders } from '~/services/gender/gender.server'
 import { getCountries } from '~/services/country/country.server'
 import { getAgeRanges } from '~/services/age-range/age-range.server'
 import { getSalaryRanges } from '~/services/salary-range/salary-range.server'
+import { getJobDepartments } from '~/services/job-department/job-department.server'
 import { Container } from '~/components/Layout/Container'
 
 export const meta: MetaFunction = () => {
@@ -39,20 +40,27 @@ export const loader = async ({ request }: LoaderArgs) => {
     PermissionCode.MANAGE_EMPLOYEE_GROUP
   )
 
-  const [benefits, countries, genders, ageRanges, salaryRanges] =
-    await Promise.all([
-      getAvailableBenefitsByCompanyId(employee.companyId),
-      getCountries(),
-
-      getGenders(),
-      getAgeRanges(),
-      getSalaryRanges(),
-    ])
+  const [
+    benefits,
+    countries,
+    genders,
+    jobDepartments,
+    ageRanges,
+    salaryRanges,
+  ] = await Promise.all([
+    getAvailableBenefitsByCompanyId(employee.companyId),
+    getCountries(),
+    getGenders(),
+    getJobDepartments(),
+    getAgeRanges(),
+    getSalaryRanges(),
+  ])
 
   return json({
     benefits,
     countries,
     genders,
+    jobDepartments,
     ageRanges,
     salaryRanges,
   })
@@ -84,8 +92,14 @@ export const action = async ({ request }: ActionArgs) => {
 const onCloseRedirectTo = '/dashboard/manage/employee-groups' as const
 
 export default function CreateEmployeeGroupRoute() {
-  const { benefits, genders, countries, ageRanges, salaryRanges } =
-    useLoaderData<typeof loader>()
+  const {
+    benefits,
+    genders,
+    jobDepartments,
+    countries,
+    ageRanges,
+    salaryRanges,
+  } = useLoaderData<typeof loader>()
 
   return (
     <>
@@ -109,6 +123,7 @@ export default function CreateEmployeeGroupRoute() {
           }
           benefits={benefits}
           genders={genders}
+          jobDepartments={jobDepartments}
           countries={countries}
           ageRanges={ageRanges}
           salaryRanges={salaryRanges}

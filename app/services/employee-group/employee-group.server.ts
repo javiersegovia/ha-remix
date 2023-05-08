@@ -23,6 +23,12 @@ export const getEmployeeGroupsByCompanyId = async (
           _count: true,
         },
       },
+      jobDepartment: {
+        select: {
+          id: true,
+          name: true,
+        },
+      },
       country: {
         select: {
           id: true,
@@ -82,6 +88,12 @@ export const getEmployeeGroupById = async (id: EmployeeGroup['id']) => {
           name: true,
         },
       },
+      jobDepartment: {
+        select: {
+          id: true,
+          name: true,
+        },
+      },
       ageRange: {
         select: {
           id: true,
@@ -111,6 +123,7 @@ export const createEmployeeGroup = async (
     stateId,
     cityId,
     genderId,
+    jobDepartmentId,
     ageRangeId,
     salaryRangeId,
   } = data
@@ -125,6 +138,7 @@ export const createEmployeeGroup = async (
         stateId,
         cityId,
         genderId,
+        jobDepartmentId,
         ageRangeId,
         salaryRangeId,
       },
@@ -149,6 +163,7 @@ export const updateEmployeeGroupById = async (
     countryId = null,
     stateId = null,
     genderId = null,
+    jobDepartmentId = null,
     cityId = null,
     ageRangeId = null,
     salaryRangeId = null,
@@ -166,6 +181,7 @@ export const updateEmployeeGroupById = async (
         stateId,
         cityId,
         genderId,
+        jobDepartmentId,
         ageRangeId,
         salaryRangeId,
       },

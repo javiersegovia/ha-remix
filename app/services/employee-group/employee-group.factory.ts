@@ -5,6 +5,7 @@ import type {
   Country,
   EmployeeGroup,
   Gender,
+  JobDepartment,
   SalaryRange,
   State,
 } from '@prisma/client'
@@ -20,14 +21,23 @@ type ExtendedEmployeeGroup = EmployeeGroup & {
   state?: State
   city?: City
   gender?: Gender
+  jobDepartment?: JobDepartment
   ageRange?: AgeRange
   salaryRange?: SalaryRange
 }
 
 export const EmployeeGroupFactory = Factory.define<ExtendedEmployeeGroup>(
   ({ onCreate, associations }) => {
-    const { company, country, state, city, gender, ageRange, salaryRange } =
-      associations
+    const {
+      company,
+      country,
+      state,
+      city,
+      gender,
+      jobDepartment,
+      ageRange,
+      salaryRange,
+    } = associations
 
     if (!company) {
       throw new Error('Missing associations at EmployeeGroupFactory')
@@ -46,6 +56,7 @@ export const EmployeeGroupFactory = Factory.define<ExtendedEmployeeGroup>(
           state: connect(state?.id),
           city: connect(city?.id),
           gender: connect(gender?.id),
+          jobDepartment: connect(jobDepartment?.id),
           ageRange: connect(ageRange?.id),
           salaryRange: connect(salaryRange?.id),
         },
@@ -64,6 +75,7 @@ export const EmployeeGroupFactory = Factory.define<ExtendedEmployeeGroup>(
       stateId: state?.id || null,
       cityId: city?.id || null,
       genderId: gender?.id || null,
+      jobDepartmentId: jobDepartment?.id || null,
       ageRangeId: ageRange?.id || null,
       salaryRangeId: salaryRange?.id || null,
     }
