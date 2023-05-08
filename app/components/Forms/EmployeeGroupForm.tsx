@@ -5,6 +5,7 @@ import type {
   Country,
   EmployeeGroup,
   Gender,
+  JobDepartment,
   SalaryRange,
   State,
 } from '@prisma/client'
@@ -30,6 +31,7 @@ interface EmployeeGroupFormProps {
   actions: JSX.Element
   benefits: Pick<Benefit, 'id' | 'name'>[]
   genders: Pick<Gender, 'id' | 'name'>[]
+  jobDepartments: Pick<JobDepartment, 'id' | 'name'>[]
   countries: Pick<Country, 'id' | 'name'>[]
   ageRanges: Pick<AgeRange, 'id' | 'minAge' | 'maxAge'>[]
   salaryRanges: Pick<SalaryRange, 'id' | 'minValue' | 'maxValue'>[]
@@ -37,6 +39,7 @@ interface EmployeeGroupFormProps {
 
   defaultValues?: Pick<EmployeeGroup, 'name'> & {
     benefits?: Pick<Benefit, 'id'>[]
+    jobDepartment?: Pick<JobDepartment, 'id'> | null
     country?: Pick<Country, 'id'> | null
     state?: Pick<State, 'id'> | null
     city?: Pick<City, 'id'> | null
@@ -51,6 +54,7 @@ export const EmployeeGroupForm = ({
   defaultValues,
   benefits,
   genders,
+  jobDepartments,
   countries,
   ageRanges,
   salaryRanges,
@@ -60,6 +64,7 @@ export const EmployeeGroupForm = ({
     name,
     benefits: defaultBenefits,
     gender,
+    jobDepartment,
     country,
     state,
     city,
@@ -85,6 +90,7 @@ export const EmployeeGroupForm = ({
         defaultValues={{
           name,
           genderId: gender?.id,
+          jobDepartmentId: jobDepartment?.id,
           countryId: country?.id,
           stateId: state?.id,
           cityId: city?.id,
@@ -142,7 +148,14 @@ export const EmployeeGroupForm = ({
                 isClearable
               />
             </FormGridItem>
-
+            <FormGridItem>
+              <Select
+                name="jobDepartmentId"
+                label="Área"
+                placeholder="Seleccionar área"
+                options={jobDepartments}
+              />
+            </FormGridItem>
             <FormGridItem>
               <Select
                 name="genderId"

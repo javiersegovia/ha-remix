@@ -260,20 +260,22 @@ model EmployeeGroup {
 
   name String
 
-  company       Company      @relation(fields: [companyId], references: [id], onDelete: Cascade)
-  companyId     String
-  country       Country?     @relation(fields: [countryId], references: [id], onDelete: SetNull)
-  countryId     Int?
-  state         State?       @relation(fields: [stateId], references: [id], onDelete: SetNull)
-  stateId       Int?
-  city          City?        @relation(fields: [cityId], references: [id], onDelete: SetNull)
-  cityId        Int?
-  gender        Gender?      @relation(fields: [genderId], references: [id], onDelete: SetNull)
-  genderId      Int?
-  ageRange      AgeRange?    @relation(fields: [ageRangeId], references: [id], onDelete: SetNull)
-  ageRangeId    Int?
-  salaryRange   SalaryRange? @relation(fields: [salaryRangeId], references: [id], onDelete: SetNull)
-  salaryRangeId Int?
+  company         Company        @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  companyId       String
+  jobDepartment   JobDepartment? @relation(fields: [jobDepartmentId], references: [id], onDelete: SetNull)
+  jobDepartmentId Int?
+  country         Country?       @relation(fields: [countryId], references: [id], onDelete: SetNull)
+  countryId       Int?
+  state           State?         @relation(fields: [stateId], references: [id], onDelete: SetNull)
+  stateId         Int?
+  city            City?          @relation(fields: [cityId], references: [id], onDelete: SetNull)
+  cityId          Int?
+  gender          Gender?        @relation(fields: [genderId], references: [id], onDelete: SetNull)
+  genderId        Int?
+  ageRange        AgeRange?      @relation(fields: [ageRangeId], references: [id], onDelete: SetNull)
+  ageRangeId      Int?
+  salaryRange     SalaryRange?   @relation(fields: [salaryRangeId], references: [id], onDelete: SetNull)
+  salaryRangeId   Int?
 
   employees Employee[]
   benefits  Benefit[]
@@ -344,7 +346,8 @@ model JobDepartment {
 
   name String @unique
 
-  employees Employee[]
+  employees      Employee[]
+  employeeGroups EmployeeGroup[]
 }
 
 model JobPosition {

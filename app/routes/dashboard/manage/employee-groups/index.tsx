@@ -43,6 +43,7 @@ export default function EmployeeGroupIndexRoute() {
 
   const headings = [
     'Nombre del grupo',
+    'Área',
     'País',
     'Ciudad',
     'Colaboradores',
@@ -50,13 +51,20 @@ export default function EmployeeGroupIndexRoute() {
   ]
 
   const rows: TableRowProps[] = employeeGroups?.map(
-    ({ id, name, country, city, employees, benefits }) => ({
+    ({ id, name, jobDepartment, country, city, employees, benefits }) => ({
       rowId: id,
       href: `${id}`,
       items: [
         <span className="whitespace-pre-wrap" key={`${id}_name`}>
           {name}
         </span>,
+        jobDepartment ? (
+          <span className="whitespace-pre-wrap" key={`${id}_jobDepartment`}>
+            {jobDepartment?.name}
+          </span>
+        ) : (
+          '-'
+        ),
 
         country ? (
           <span className="whitespace-pre-wrap" key={`${id}_country`}>

@@ -28,6 +28,7 @@ import { getAgeRanges } from '~/services/age-range/age-range.server'
 import { getSalaryRanges } from '~/services/salary-range/salary-range.server'
 import { prisma } from '~/db.server'
 import { Container } from '~/components/Layout/Container'
+import { getJobDepartments } from '~/services/job-department/job-department.server'
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => {
   if (!data) {
@@ -64,15 +65,23 @@ export const loader = async ({ request, params }: LoaderArgs) => {
     })
   }
 
-  const [employeeGroup, benefits, countries, genders, ageRanges, salaryRanges] =
-    await Promise.all([
-      getEmployeeGroupById(employeeGroupId),
-      getAvailableBenefitsByCompanyId(employee.companyId),
-      getCountries(),
-      getGenders(),
-      getAgeRanges(),
-      getSalaryRanges(),
-    ])
+  const [
+    employeeGroup,
+    benefits,
+    countries,
+    genders,
+    jobDepartments,
+    ageRanges,
+    salaryRanges,
+  ] = await Promise.all([
+    getEmployeeGroupById(employeeGroupId),
+    getAvailableBenefitsByCompanyId(employee.companyId),
+    getCountries(),
+    getGenders(),
+    getJobDepartments(),
+    getAgeRanges(),
+    getSalaryRanges(),
+  ])
   if (!employeeGroup) {
     throw badRequest({
       message: 'No se encontró el grupo de colaboradores',
@@ -85,6 +94,7 @@ export const loader = async ({ request, params }: LoaderArgs) => {
     benefits,
     countries,
     genders,
+    jobDepartments,
     ageRanges,
     salaryRanges,
   })
@@ -128,6 +138,7 @@ export default function EmployeeGroupUpdateRoute() {
   const {
     employeeGroup,
     genders,
+    jobDepartments,
     countries,
     ageRanges,
     salaryRanges,
@@ -146,9 +157,10 @@ export default function EmployeeGroupUpdateRoute() {
             state: employeeGroup.state,
             city: employeeGroup.city,
             gender: employeeGroup.gender,
+            jobDepartment: employeeGroup.jobDepartment,
             ageRange: employeeGroup.ageRange,
             salaryRange: employeeGroup.salaryRange,
-            benefits,
+            benefits: employeeGroup.benefits,
           }}
           actions={
             <div className="mt-6 flex items-center justify-end gap-4">
@@ -166,6 +178,7 @@ export default function EmployeeGroupUpdateRoute() {
           }
           benefits={benefits}
           genders={genders}
+          jobDepartments={jobDepartments}
           countries={countries}
           ageRanges={ageRanges}
           salaryRanges={salaryRanges}
