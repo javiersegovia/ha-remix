@@ -3,6 +3,7 @@ import clsx from 'clsx'
 import React from 'react'
 import { TableData } from './TableData'
 import { TableHeading } from './TableHeading'
+import { MdArrowBackIos, MdArrowForwardIos } from 'react-icons/md'
 
 export interface TableRowProps {
   rowId: string | number
@@ -14,9 +15,15 @@ export interface TableRowProps {
 export interface TableProps {
   headings: string[]
   rows: TableRowProps[]
+  pagination?: {
+    totalPages: number
+    currentPage: number
+  }
 }
 
-export const Table = ({ headings, rows }: TableProps) => {
+export const Table = ({ headings, rows, pagination }: TableProps) => {
+  console.log({ pagination })
+
   return (
     <div className="flex flex-col">
       <div className="-my-2 overflow-x-auto xl:-mx-8">
@@ -35,6 +42,7 @@ export const Table = ({ headings, rows }: TableProps) => {
                   ))}
                 </tr>
               </thead>
+
               <tbody className="divide-y divide-gray-200 bg-white">
                 {rows.map((row) => (
                   <tr
@@ -57,6 +65,39 @@ export const Table = ({ headings, rows }: TableProps) => {
           </div>
         </div>
       </div>
+
+      {pagination && pagination.totalPages > 1 && (
+        <div className="mt-5 flex w-full place-content-end items-center gap-3">
+          {pagination.currentPage >= 2 && (
+            <Link to={`?page=${pagination?.currentPage - 1}`}>
+              <MdArrowBackIos />
+            </Link>
+          )}
+
+          {Array.from(Array(pagination.totalPages)).map((_, index) => (
+            <>
+              {index + 1 === pagination?.currentPage ? (
+                <div className="flex h-8 w-8 items-center justify-center rounded bg-steelBlue-700 text-white">
+                  {index + 1}
+                </div>
+              ) : (
+                <Link
+                  className="flex h-8 w-8 items-center justify-center rounded border border-gray-400"
+                  to={`?page=${index + 1}`}
+                >
+                  {index + 1}
+                </Link>
+              )}
+            </>
+          ))}
+
+          {pagination.currentPage < pagination.totalPages && (
+            <Link to={`?page=${pagination?.currentPage + 1}`}>
+              <MdArrowForwardIos />
+            </Link>
+          )}
+        </div>
+      )}
     </div>
   )
 }
