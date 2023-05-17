@@ -190,6 +190,7 @@ describe('DATASTUDIO Employees Query', () => {
       "firstName",
       "lastName",
       "email",
+      "Employee"."phone",
       "Employee"."status",
       "Employee"."address",
       "numberOfChildren",
@@ -240,6 +241,7 @@ describe('DATASTUDIO Employees Query', () => {
         firstName: string
         lastName: string
         email: string
+        phone: string
         gender: string
         country: string
         state: string
@@ -264,6 +266,7 @@ describe('DATASTUDIO Employees Query', () => {
       firstName: expect.any(String),
       lastName: expect.any(String),
       email: expect.any(String),
+      phone: expect.any(String),
       advanceAvailableAmount: expect.any(Number),
       advanceMaxAmount: expect.any(Number),
       country: expect.any(String),
