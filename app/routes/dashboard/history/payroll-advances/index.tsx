@@ -21,7 +21,11 @@ export const loader = async ({ request }: LoaderArgs) => {
   const url = new URL(request.url)
   const page = url.searchParams.get('page')
   const currentPage = parseFloat(page || '1')
-  const payrollAdvanceCount = await prisma.payrollAdvance.count()
+  const payrollAdvanceCount = await prisma.payrollAdvance.count({
+    where: {
+      employeeId: employee.id,
+    },
+  })
   const { itemsPerPage } = constants
 
   const payrollAdvances = await getPayrollAdvances(

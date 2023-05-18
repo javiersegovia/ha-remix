@@ -1,13 +1,13 @@
 import type { LoaderArgs, MetaFunction } from '@remix-run/server-runtime'
+import type { TableRowProps } from '~/components/Lists/Table'
 
 import { useLoaderData } from '@remix-run/react'
 import { json } from '@remix-run/server-runtime'
 import { Title } from '~/components/Typography/Title'
-import { getEmployee, requireAdminUserId } from '~/session.server'
+import { requireAdminUserId } from '~/session.server'
 import { getPayrollAdvances } from '~/services/payroll-advance/payroll-advance.server'
 import { prisma } from '~/db.server'
 import { constants } from '~/config/constants'
-import type { TableRowProps } from '~/components/Lists/Table'
 import { Table } from '~/components/Lists/Table'
 import { formatMoney } from '~/utils/formatMoney'
 import { CurrencySymbol } from '~/components/FormFields/CurrencyInput'
@@ -16,7 +16,6 @@ import { AdvanceStatusPill } from '~/components/Pills/AdvanceStatusPill'
 
 export const loader = async ({ request }: LoaderArgs) => {
   await requireAdminUserId(request)
-  const employee = await getEmployee(request)
   const url = new URL(request.url)
   const page = url.searchParams.get('page')
   const currentPage = parseFloat(page || '1')
@@ -24,14 +23,10 @@ export const loader = async ({ request }: LoaderArgs) => {
   const { itemsPerPage } = constants
 
   return json({
-    payrollAdvances: await getPayrollAdvances(
-      {
-        where: {
-          employeeId: employee?.id,
-        },
-      },
-      { take: itemsPerPage, skip: (currentPage - 1) * itemsPerPage || 0 }
-    ),
+    payrollAdvances: await getPayrollAdvances(undefined, {
+      take: itemsPerPage,
+      skip: (currentPage - 1) * itemsPerPage || 0,
+    }),
     pagination: {
       currentPage,
       totalPages: Math.ceil(payrollAdvanceCount / itemsPerPage),

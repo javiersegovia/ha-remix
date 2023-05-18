@@ -49,7 +49,11 @@ export const loader = async ({ request }: LoaderArgs) => {
     PermissionCode.MANAGE_BENEFIT
   )
 
-  const benefitsCount = await prisma.companyBenefit.count()
+  const benefitsCount = await prisma.companyBenefit.count({
+    where: {
+      companyId: employee.companyId,
+    },
+  })
   const { itemsPerPage } = constants
 
   return json({

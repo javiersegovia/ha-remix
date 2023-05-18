@@ -1,4 +1,5 @@
 import type { LoaderArgs, MetaFunction } from '@remix-run/server-runtime'
+import type { TableRowProps } from '~/components/Lists/Table'
 
 import { PermissionCode } from '@prisma/client'
 import { json } from '@remix-run/node'
@@ -17,7 +18,6 @@ import {
 import { useToastError } from '~/hooks/useToastError'
 import { getCompanyEmployeesByCompanyId } from '~/services/employee/employee.server'
 import { TableIsEmpty } from '~/components/Lists/TableIsEmpty'
-import type { TableRowProps } from '~/components/Lists/Table'
 import { Table } from '~/components/Lists/Table'
 import { EmployeeStatusPill } from '~/components/Pills/EmployeeStatusPill'
 import { prisma } from '~/db.server'
@@ -57,7 +57,11 @@ export const loader = async ({ request }: LoaderArgs) => {
     PermissionCode.MANAGE_EMPLOYEE_GROUP
   )
 
-  const employeeCount = await prisma.employee.count()
+  const employeeCount = await prisma.employee.count({
+    where: {
+      companyId: employee.companyId,
+    },
+  })
   const { itemsPerPage } = constants
 
   return json({
@@ -145,33 +149,34 @@ export default function DashboardEmployeesIndexRoute() {
           <Tabs items={employeeTabPaths} className="mt-10 mb-8" />
         )}
 
-        <TitleWithActions
-          className="mb-10"
-          title="Colaboradores"
-          actions={
-            <Button
-              href="/dashboard/manage/employees/create/account"
-              size="SM"
-              icon={ButtonIconVariants.CREATE}
-            >
-              Crear colaborador
-            </Button>
-          }
-        />
-
         {employees?.length > 0 ? (
-          <Table headings={headings} rows={rows} pagination={pagination} />
+          <>
+            <TitleWithActions
+              className="mb-10"
+              title="Colaboradores"
+              actions={
+                <Button
+                  href="/dashboard/manage/employees/create/account"
+                  size="SM"
+                  icon={ButtonIconVariants.CREATE}
+                >
+                  Crear colaborador
+                </Button>
+              }
+            />
+            <Table headings={headings} rows={rows} pagination={pagination} />
+          </>
         ) : (
           <TableIsEmpty
-            title="Aún no tienes ningún grupo de colaboradores"
-            description="¿Qué esperas para añadir un colaboradores?"
+            title="Aún no tienes ningún colaborador"
+            description="¿Qué esperas para añadir el primero?"
             actions={
               <Button
                 href="/dashboard/manage/employees/create/account"
                 size="SM"
                 icon={ButtonIconVariants.CREATE}
               >
-                Crear grupo de colaboradores
+                Crear colaborador
               </Button>
             }
             className="mt-10"

@@ -1,9 +1,11 @@
 import type { LoaderArgs, MetaFunction } from '@remix-run/server-runtime'
+import type { TableRowProps } from '~/components/Lists/Table'
 
 import { useLoaderData } from '@remix-run/react'
 import { json } from '@remix-run/server-runtime'
+
 import { Title } from '~/components/Typography/Title'
-import { getEmployee, requireAdminUserId } from '~/session.server'
+import { requireAdminUserId } from '~/session.server'
 import { getPremiumAdvances } from '~/services/premium-advance/premium-advance.server'
 import { prisma } from '~/db.server'
 import { constants } from '~/config/constants'
@@ -11,29 +13,20 @@ import { formatMoney } from '~/utils/formatMoney'
 import { CurrencySymbol } from '~/components/FormFields/CurrencyInput'
 import { formatDate } from '~/utils/formatDate'
 import { AdvanceStatusPill } from '~/components/Pills/AdvanceStatusPill'
-import type { TableRowProps } from '~/components/Lists/Table'
 import { Table } from '~/components/Lists/Table'
 
 export const loader = async ({ request }: LoaderArgs) => {
   await requireAdminUserId(request)
-  const employee = await getEmployee(request)
   const url = new URL(request.url)
   const page = url.searchParams.get('page')
   const currentPage = parseFloat(page || '1')
   const premiumAdvanceCount = await prisma.premiumAdvance.count()
   const { itemsPerPage } = constants
 
-  const premiumAdvances = await getPremiumAdvances(
-    {
-      where: {
-        employeeId: employee?.id,
-      },
-    },
-    {
-      take: itemsPerPage,
-      skip: (currentPage - 1) * itemsPerPage || 0,
-    }
-  )
+  const premiumAdvances = await getPremiumAdvances(undefined, {
+    take: itemsPerPage,
+    skip: (currentPage - 1) * itemsPerPage || 0,
+  })
 
   return json({
     premiumAdvances,

@@ -20,7 +20,11 @@ export const loader = async ({ request }: LoaderArgs) => {
   const url = new URL(request.url)
   const page = url.searchParams.get('page')
   const currentPage = parseFloat(page || '1')
-  const premiumAdvanceCount = await prisma.premiumAdvance.count()
+  const premiumAdvanceCount = await prisma.premiumAdvance.count({
+    where: {
+      employeeId: employee.id,
+    },
+  })
   const { itemsPerPage } = constants
 
   const premiumAdvances = await getPremiumAdvances(

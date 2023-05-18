@@ -33,7 +33,11 @@ export const loader = async ({ request, params }: LoaderArgs) => {
     where: { id: companyId },
   })
 
-  const employeeCount = await prisma.employee.count()
+  const employeeCount = await prisma.employee.count({
+    where: {
+      companyId: company.id,
+    },
+  })
   const { itemsPerPage } = constants
 
   return json({
