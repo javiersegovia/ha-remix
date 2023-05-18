@@ -1,4 +1,5 @@
 import type { LoaderArgs, MetaFunction } from '@remix-run/server-runtime'
+import type { TableRowProps } from '~/components/Lists/Table'
 
 import { json } from '@remix-run/node'
 import { useLoaderData } from '@remix-run/react'
@@ -10,7 +11,6 @@ import { TitleWithActions } from '~/components/Layout/TitleWithActions'
 import { ButtonIconVariants } from '~/components/Button'
 import { constants } from '~/config/constants'
 import { prisma } from '~/db.server'
-import type { TableRowProps } from '~/components/Lists/Table'
 import { Table } from '~/components/Lists/Table'
 import { FaStar } from 'react-icons/fa'
 import { getBenefits } from '~/services/benefit/benefit.server'
@@ -27,9 +27,11 @@ export const loader = async ({ request }: LoaderArgs) => {
   const url = new URL(request.url)
   const page = url.searchParams.get('page')
   const currentPage = parseFloat(page || '1')
-  const benefitsCount = await prisma.benefit.count()
-  const cBenefitCount = await prisma.companyBenefit.count()
-  const dataCount = benefitsCount - cBenefitCount
+  const benefitsCount = await prisma.benefit.count({
+    where: {
+      companyBenefit: null,
+    },
+  })
   const { itemsPerPage } = constants
 
   return json({
@@ -39,7 +41,7 @@ export const loader = async ({ request }: LoaderArgs) => {
     }),
     pagination: {
       currentPage,
-      totalPages: Math.ceil(dataCount / itemsPerPage),
+      totalPages: Math.ceil(benefitsCount / itemsPerPage),
     },
   })
 }

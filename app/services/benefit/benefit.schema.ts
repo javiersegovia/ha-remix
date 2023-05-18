@@ -36,7 +36,7 @@ export const benefitSchema = z.object({
     z
       .string()
       .trim()
-      .min(180, { message: 'Mínimo 180 caracteres' })
+      .min(15, { message: 'Mínimo 15 caracteres' })
       .max(600, { message: 'Máximo 600 caracteres' })
       .nullish()
   ),
@@ -45,8 +45,8 @@ export const benefitSchema = z.object({
     z
       .string()
       .trim()
-      .min(30, { message: 'Mínimo 30 caracteres' })
-      .max(100, { message: 'Máximo 100 caracteres' })
+      .min(15, { message: 'Mínimo 15 caracteres' })
+      .max(600, { message: 'Máximo 100 caracteres' })
       .nullish()
   ),
 
@@ -56,8 +56,8 @@ export const benefitSchema = z.object({
         z
           .string()
           .trim()
-          .min(180, { message: 'Mínimo 180 caracteres' })
-          .max(600, { message: 'Máximo 600 caracteres' })
+          .min(15, { message: 'Mínimo 15 caracteres' })
+          .max(300, { message: 'Máximo 300 caracteres' })
           .nullish()
       )
     )

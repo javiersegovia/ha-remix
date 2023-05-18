@@ -1,4 +1,5 @@
 import type { LoaderArgs, MetaFunction } from '@remix-run/server-runtime'
+import type { TableRowProps } from '~/components/Lists/Table'
 
 import { useLoaderData } from '@remix-run/react'
 import { json } from '@remix-run/server-runtime'
@@ -8,7 +9,6 @@ import { requireCompany } from '~/services/company/company.server'
 import { requireAdminUserId } from '~/session.server'
 import { prisma } from '~/db.server'
 import { constants } from '~/config/constants'
-import type { TableRowProps } from '~/components/Lists/Table'
 import { Table } from '~/components/Lists/Table'
 import { format } from 'date-fns'
 import { es } from 'date-fns/locale'
@@ -34,7 +34,11 @@ export const loader = async ({ request, params }: LoaderArgs) => {
     },
   })
 
-  const debtCount = await prisma.companyDebt.count()
+  const debtCount = await prisma.companyDebt.count({
+    where: {
+      companyId: company.id,
+    },
+  })
   const { itemsPerPage } = constants
 
   return json({

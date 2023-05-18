@@ -3,11 +3,10 @@ import type { TableRowProps } from '~/components/Lists/Table'
 
 import { Link, Outlet, useLoaderData } from '@remix-run/react'
 import { json } from '@remix-run/server-runtime'
-
 import { es } from 'date-fns/locale'
 import { format } from 'date-fns'
-import { badRequest, notFound } from '~/utils/responses'
 
+import { badRequest, notFound } from '~/utils/responses'
 import { Title } from '~/components/Typography/Title'
 import { capitalizeFirstLetter } from '~/utils/capitalizeFirstLetter'
 import { requireAdminUserId } from '~/session.server'
@@ -28,8 +27,6 @@ export const loader = async ({ request, params }: LoaderArgs) => {
   const url = new URL(request.url)
   const page = url.searchParams.get('page')
   const currentPage = parseFloat(page || '1')
-  const dataCount = await prisma.payrollAdvance.count()
-  const { itemsPerPage } = constants
 
   if (!companyDebtId) {
     throw badRequest({
@@ -45,6 +42,20 @@ export const loader = async ({ request, params }: LoaderArgs) => {
       redirect: '/admin/dashboard/debts',
     })
   }
+
+  const dataCount = await prisma.payrollAdvance.count({
+    where: {
+      OR: [
+        {
+          companyFiatDebtId: companyDebt.fiatDebt?.id,
+        },
+        {
+          companyCryptoDebtId: companyDebt.cryptoDebt?.id,
+        },
+      ],
+    },
+  })
+  const { itemsPerPage } = constants
 
   const payrollAdvances = await prisma.payrollAdvance.findMany({
     where: {
