@@ -47,7 +47,11 @@ type TPaydaysArray = ({
   dayNumber: number
 } & TPaydayContent)[]
 
-export const getMonthlyOverview = async (dateString: string) => {
+export const getMonthlyOverview = async (
+  dateString: string,
+  options?: Pick<Prisma.PayrollAdvanceFindManyArgs, 'take' | 'skip'>
+) => {
+  const { take, skip } = options || {}
   const [month, year] = dateString.split('-').map((x) => parseInt(x, 10))
 
   // If we are in December (index 11), next month should be January (index 0)
@@ -75,6 +79,8 @@ export const getMonthlyOverview = async (dateString: string) => {
     orderBy: {
       createdAt: 'asc',
     },
+    take,
+    skip,
     select: {
       id: true,
       createdAt: true,
@@ -158,18 +164,24 @@ export const getMonthlyOverview = async (dateString: string) => {
     }
   })
 
-  return { overview, requestDays: result }
+  return { overview, requestDays: result, options }
 }
 
-export const getPayrollAdvances = async (args?: {
-  where?: Prisma.PayrollAdvanceFindManyArgs['where']
-}) => {
+export const getPayrollAdvances = async (
+  args?: {
+    where?: Prisma.PayrollAdvanceFindManyArgs['where']
+  },
+  options?: Pick<Prisma.PayrollAdvanceFindManyArgs, 'take' | 'skip'>
+) => {
+  const { take, skip } = options || {}
   const { where } = args || {}
   return prisma.payrollAdvance.findMany({
     where,
     orderBy: {
       createdAt: 'desc',
     },
+    take,
+    skip,
     select: {
       id: true,
       createdAt: true,
