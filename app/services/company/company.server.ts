@@ -14,7 +14,10 @@ import {
 import { getS3ObjectUrl } from '../aws/s3.server'
 import { deleteImageByKey } from '../image/image.server'
 
-export const getCompanies = async () => {
+export const getCompanies = async (
+  options?: Pick<Prisma.CompanyFindManyArgs, 'take' | 'skip' | 'cursor'>
+) => {
+  const { take, skip } = options || {}
   return prisma.company.findMany({
     select: {
       id: true,
@@ -26,6 +29,8 @@ export const getCompanies = async () => {
         },
       },
     },
+    take,
+    skip,
     orderBy: {
       employees: {
         _count: 'desc',
