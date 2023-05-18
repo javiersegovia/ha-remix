@@ -1,24 +1,35 @@
 import type { LoaderArgs, MetaFunction } from '@remix-run/server-runtime'
+import type { TableRowProps } from '~/components/Lists/Table'
 
 import { Link, Outlet, useLoaderData } from '@remix-run/react'
-import { badRequest, notFound } from '~/utils/responses'
+import { json } from '@remix-run/server-runtime'
+
 import { es } from 'date-fns/locale'
 import { format } from 'date-fns'
+import { badRequest, notFound } from '~/utils/responses'
 
 import { Title } from '~/components/Typography/Title'
 import { capitalizeFirstLetter } from '~/utils/capitalizeFirstLetter'
 import { requireAdminUserId } from '~/session.server'
-import { json } from '@remix-run/server-runtime'
 import { getCompanyDebtById } from '~/services/company-debt/company-debt.server'
 import { Box } from '~/components/Layout/Box'
-import { formatMoney } from '~/utils/formatMoney'
 import { CurrencySymbol } from '~/components/FormFields/CurrencyInput'
 import { Button } from '~/components/Button'
-import { PayrollAdvanceList } from '~/components/Lists/PayrollAdvanceList'
+import { Table } from '~/components/Lists/Table'
+import { constants } from '~/config/constants'
+import { formatDate } from '~/utils/formatDate'
+import { formatMoney } from '~/utils/formatMoney'
+import { prisma } from '~/db.server'
 
 export const loader = async ({ request, params }: LoaderArgs) => {
   await requireAdminUserId(request)
+
   const { companyDebtId } = params
+  const url = new URL(request.url)
+  const page = url.searchParams.get('page')
+  const currentPage = parseFloat(page || '1')
+  const dataCount = await prisma.payrollAdvance.count()
+  const { itemsPerPage } = constants
 
   if (!companyDebtId) {
     throw badRequest({
@@ -28,7 +39,6 @@ export const loader = async ({ request, params }: LoaderArgs) => {
   }
 
   const companyDebt = await getCompanyDebtById(companyDebtId)
-
   if (!companyDebt) {
     throw notFound({
       message: 'No se ha encontrado información sobre la novedad',
@@ -36,20 +46,57 @@ export const loader = async ({ request, params }: LoaderArgs) => {
     })
   }
 
-  const cryptoRelatedList = companyDebt.cryptoDebt?.payrollAdvances || []
-  const fiatRelatedList = companyDebt.fiatDebt?.payrollAdvances || []
-  const relatedPayrollAdvances = [...fiatRelatedList, ...cryptoRelatedList]
+  const payrollAdvances = await prisma.payrollAdvance.findMany({
+    where: {
+      OR: [
+        {
+          companyFiatDebtId: companyDebt.fiatDebt?.id,
+        },
+        {
+          companyCryptoDebtId: companyDebt.cryptoDebt?.id,
+        },
+      ],
+    },
+    take: itemsPerPage,
+    skip: (currentPage - 1) * itemsPerPage || 0,
+    select: {
+      id: true,
+      totalAmount: true,
+      requestedAmount: true,
+      createdAt: true,
+      employee: {
+        select: {
+          user: {
+            select: {
+              firstName: true,
+              lastName: true,
+              email: true,
+            },
+          },
+        },
+      },
+      company: {
+        select: {
+          name: true,
+        },
+      },
+    },
+  })
 
   return json({
     companyDebt,
-    relatedPayrollAdvances,
+    payrollAdvances,
+    pagination: {
+      currentPage,
+      totalPages: Math.ceil(dataCount / itemsPerPage),
+    },
   })
 }
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => {
   if (!data) {
     return {
-      title: 'Ha ocurrido un error | HoyAdelantas',
+      title: 'Ha ocurrido un error | HoyTrabajas Beneficios',
     }
   }
 
@@ -61,18 +108,61 @@ export const meta: MetaFunction<typeof loader> = ({ data }) => {
   )
 
   return {
-    title: `Novedades de ${monthName} | HoyAdelantas`,
+    title: `Novedades de ${monthName} | HoyTrabajas Beneficios`,
   }
 }
 
 export default function AdminCompanyDebtDetailsRoute() {
-  const { companyDebt, relatedPayrollAdvances } = useLoaderData<typeof loader>()
+  const { companyDebt, pagination, payrollAdvances } =
+    useLoaderData<typeof loader>()
 
+  const headings = [
+    'Asunto',
+    'Dinero solicitado',
+    'Total solicitado',
+    'Fecha de solicitud',
+  ]
   const date = new Date(Date.parse(companyDebt.createdAt))
   const monthName = capitalizeFirstLetter(
     format(date, 'LLLL, yyyy', { locale: es })
   )
 
+  const rows: TableRowProps[] = payrollAdvances.map(
+    ({ id, company, employee, totalAmount, requestedAmount, createdAt }) => ({
+      rowId: id,
+      href: `/admin/dashboard/payroll-advances/${id}`,
+      items: [
+        <>
+          {(employee?.user.firstName || employee?.user.lastName) && (
+            <div
+              className="text-sm font-medium text-cyan-600  hover:text-cyan-800 hover:underline"
+              key={`${id}_name`}
+            >
+              {`${employee.user.firstName} ${employee.user.lastName}`.trim()}
+            </div>
+          )}
+          <div className="text-sm font-normal text-gray-500">
+            {employee?.user.email}
+          </div>
+          <div className="text-sm font-medium text-gray-500">
+            {company?.name}
+          </div>
+        </>,
+
+        <div className="text-sm text-gray-900" key={`${id}_requestedAmount`}>
+          {formatMoney(requestedAmount, CurrencySymbol.COP)}
+        </div>,
+
+        <div className="text-sm text-gray-900" key={`${id}_totalAmount`}>
+          {formatMoney(totalAmount, CurrencySymbol.COP)}
+        </div>,
+
+        <div className="text-sm text-gray-900" key={`${id}_date`}>
+          {formatDate(new Date(Date.parse(createdAt)))}
+        </div>,
+      ],
+    })
+  )
   return (
     <>
       <div className="mx-auto mt-8 w-full max-w-screen-lg">
@@ -145,13 +235,7 @@ export default function AdminCompanyDebtDetailsRoute() {
 
           <Title className="mb-8 mt-4">Adelantos relacionados</Title>
 
-          <PayrollAdvanceList
-            isAdmin
-            payrollAdvances={relatedPayrollAdvances}
-            hideColumns={{
-              status: true,
-            }}
-          />
+          <Table headings={headings} rows={rows} pagination={pagination} />
         </div>
       </div>
 

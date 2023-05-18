@@ -10,44 +10,26 @@ import { sanitizeDate } from '~/utils/formatDate'
 export const getCompanyDebtById = async (companyDebtId: string) => {
   const companyDebt = await prisma.companyDebt.findUnique({
     where: { id: companyDebtId },
-    include: {
-      company: true,
+    select: {
+      createdAt: true,
+      companyId: true,
+      company: {
+        select: {
+          name: true,
+        },
+      },
       fiatDebt: {
-        include: {
-          payrollAdvances: {
-            select: {
-              id: true,
-              status: true,
-              requestedAmount: true,
-              totalAmount: true,
-              paymentMethod: true,
-              createdAt: true,
-              company: {
-                select: {
-                  name: true,
-                },
-              },
-              employee: {
-                select: {
-                  user: true,
-                },
-              },
-            },
-          },
+        select: {
+          id: true,
+          amount: true,
+          currentAmount: true,
         },
       },
       cryptoDebt: {
-        include: {
-          payrollAdvances: {
-            include: {
-              company: true,
-              employee: {
-                select: {
-                  user: true,
-                },
-              },
-            },
-          },
+        select: {
+          id: true,
+          amount: true,
+          currentAmount: true,
         },
       },
     },
@@ -56,11 +38,17 @@ export const getCompanyDebtById = async (companyDebtId: string) => {
   return companyDebt
 }
 
-export const getCompanyDebtsByCompanyId = (companyId: string) => {
+export const getCompanyDebtsByCompanyId = async (
+  companyId: string,
+  options?: Pick<Prisma.CompanyFindManyArgs, 'take' | 'skip' | 'cursor'>
+) => {
+  const { take, skip } = options || {}
   return prisma.companyDebt.findMany({
     where: {
       companyId,
     },
+    take,
+    skip,
     orderBy: {
       createdAt: 'desc',
     },
