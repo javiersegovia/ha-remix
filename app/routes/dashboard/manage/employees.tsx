@@ -78,7 +78,7 @@ export default function DashboardEmployeesIndexRoute() {
   const { employees, pagination } = useLoaderData<typeof loader>()
 
   const headings = [
-    'Nombre del grupo',
+    'Nombre',
     'Ciudad',
     'Área',
     'Grupos asignados',
@@ -105,7 +105,7 @@ export default function DashboardEmployeesIndexRoute() {
         ) : (
           '-'
         ),
-        city ? (
+        jobDepartment ? (
           <span className="whitespace-pre-wrap" key={`${id}_jobDepartment`}>
             {jobDepartment?.name}
           </span>
