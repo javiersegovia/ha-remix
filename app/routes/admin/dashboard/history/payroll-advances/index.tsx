@@ -3,28 +3,87 @@ import type { LoaderArgs, MetaFunction } from '@remix-run/server-runtime'
 import { useLoaderData } from '@remix-run/react'
 import { json } from '@remix-run/server-runtime'
 import { Title } from '~/components/Typography/Title'
-import { requireAdminUserId } from '~/session.server'
+import { getEmployee, requireAdminUserId } from '~/session.server'
 import { getPayrollAdvances } from '~/services/payroll-advance/payroll-advance.server'
-import { PayrollAdvanceList } from '~/components/Lists/PayrollAdvanceList'
+import { prisma } from '~/db.server'
+import { constants } from '~/config/constants'
+import type { TableRowProps } from '~/components/Lists/Table'
+import { Table } from '~/components/Lists/Table'
+import { formatMoney } from '~/utils/formatMoney'
+import { CurrencySymbol } from '~/components/FormFields/CurrencyInput'
+import { formatDate } from '~/utils/formatDate'
+import { AdvanceStatusPill } from '~/components/Pills/AdvanceStatusPill'
 
 export const loader = async ({ request }: LoaderArgs) => {
   await requireAdminUserId(request)
-
-  const payrollAdvances = await getPayrollAdvances()
+  const employee = await getEmployee(request)
+  const url = new URL(request.url)
+  const page = url.searchParams.get('page')
+  const currentPage = parseFloat(page || '1')
+  const payrollAdvanceCount = await prisma.payrollAdvance.count()
+  const { itemsPerPage } = constants
 
   return json({
-    payrollAdvances,
+    payrollAdvances: await getPayrollAdvances(
+      {
+        where: {
+          employeeId: employee?.id,
+        },
+      },
+      { take: itemsPerPage, skip: (currentPage - 1) * itemsPerPage || 0 }
+    ),
+    pagination: {
+      currentPage,
+      totalPages: Math.ceil(payrollAdvanceCount / itemsPerPage),
+    },
   })
 }
 
 export const meta: MetaFunction = () => {
   return {
-    title: 'Lista de adelantos de nómina | HoyAdelantas',
+    title: 'Lista de adelantos de nómina | HoyTrabajas Beneficios',
   }
 }
 
 export default function AdminPayrollAdvancesIndexRoute() {
-  const { payrollAdvances } = useLoaderData<typeof loader>()
+  const { payrollAdvances, pagination } = useLoaderData<typeof loader>()
+  const headings = [
+    'Asunto',
+    'Dinero solicitado',
+    'Total solicitado',
+    'Fecha de solicitud',
+    'Estado',
+  ]
+  const rows: TableRowProps[] = payrollAdvances?.map(
+    ({ id, employee, company, ...payrollAdvance }) => ({
+      rowId: id,
+      href: `/admin/dashboard/payroll-advances/${id}`,
+      items: [
+        <>
+          <span
+            className="hover:text-cyan-600whitespace-pre-wrap text-sm font-medium text-gray-900 "
+            key={`${id}_name`}
+          >
+            <div className="text-sm font-medium text-gray-900 hover:text-cyan-600 hover:underline">
+              {`Solicitud de ${employee?.user.firstName} ${employee?.user.lastName}`.trim()}
+            </div>
+          </span>
+        </>,
+        <div className="text-sm text-gray-900" key={`${id}_requestedAmount`}>
+          {formatMoney(payrollAdvance.requestedAmount, CurrencySymbol.COP)}
+        </div>,
+        <div className="text-sm text-gray-900" key={`${id}_totalAmount`}>
+          {formatMoney(payrollAdvance.totalAmount, CurrencySymbol.COP)}
+        </div>,
+        <div className="text-sm text-gray-900" key={`${id}_createdAt`}>
+          {formatDate(new Date(Date.parse(`${payrollAdvance.createdAt}`)))}
+        </div>,
+        <span key={`${id}_status`}>
+          <AdvanceStatusPill status={payrollAdvance.status} />
+        </span>,
+      ],
+    })
+  )
 
   return (
     <>
@@ -36,7 +95,7 @@ export default function AdminPayrollAdvancesIndexRoute() {
             </Title>
           </div>
 
-          <PayrollAdvanceList payrollAdvances={payrollAdvances} isAdmin />
+          <Table headings={headings} rows={rows} pagination={pagination} />
         </>
       ) : (
         <section className="m-auto pb-20 text-center">

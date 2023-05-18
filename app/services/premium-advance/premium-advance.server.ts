@@ -22,15 +22,21 @@ import type { getEmployeeById } from '../employee/employee.server'
 import type { CalculatePremiumAdvanceSchemaInput } from '~/schemas/calculate-premium-advance.schema'
 import type { ITaxItem } from '../payroll-advance/payroll-advance.interface'
 
-export const getPremiumAdvances = async (args?: {
-  where?: Prisma.PremiumAdvanceFindManyArgs['where']
-}) => {
+export const getPremiumAdvances = async (
+  args?: {
+    where?: Prisma.PremiumAdvanceFindManyArgs['where']
+  },
+  options?: Pick<Prisma.PremiumAdvanceFindManyArgs, 'take' | 'skip'>
+) => {
+  const { take, skip } = options || {}
   const { where } = args || {}
   return prisma.premiumAdvance.findMany({
     where,
     orderBy: {
       createdAt: 'desc',
     },
+    take,
+    skip,
     select: {
       id: true,
       createdAt: true,

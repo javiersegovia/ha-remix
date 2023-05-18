@@ -1,10 +1,13 @@
 import type { MembershipInputSchema } from './membership.schema'
 import { prisma } from '~/db.server'
 import { badRequest, notFound } from '~/utils/responses'
-import type { Membership } from '@prisma/client'
+import type { Membership, Prisma } from '@prisma/client'
 import { connectMany, setMany } from '~/utils/relationships'
 
-export const getMemberships = async () => {
+export const getMemberships = async (
+  options?: Pick<Prisma.MembershipFindManyArgs, 'take' | 'skip' | 'cursor'>
+) => {
+  const { take, skip } = options || {}
   return prisma.membership.findMany({
     select: {
       id: true,
@@ -16,6 +19,8 @@ export const getMemberships = async () => {
         },
       },
     },
+    take,
+    skip,
     orderBy: {
       name: 'asc',
     },

@@ -1,3 +1,4 @@
+import type { TableRowProps } from '~/components/Lists/Table'
 import type { LoaderArgs, MetaFunction } from '@remix-run/server-runtime'
 import { useFetcher, useLoaderData } from '@remix-run/react'
 
@@ -16,9 +17,10 @@ import { getMonthlyOverview } from '~/services/payroll-advance/payroll-advance.s
 import { formatMoney } from '~/utils/formatMoney'
 import { Box } from '~/components/Layout/Box'
 import { Select } from '~/components/FormFields/Select'
-import { PaymentDayList } from '~/components/Lists/PaymentDaysList'
 import { Container } from '~/components/Layout/Container'
 import { useEffect } from 'react'
+import { Table } from '~/components/Lists/Table'
+import { formatDate } from '~/utils/formatDate'
 
 const validator = withZod(z.object({ month: z.string() }))
 
@@ -32,16 +34,26 @@ export const loader = async ({ request }: LoaderArgs) => {
   await requireAdminUserId(request)
   const url = new URL(request.url)
   const month = url.searchParams.get('month')
+
   const lastPaymentMonths = getLastPaymentMonths()
   const data = await getMonthlyOverview(month || lastPaymentMonths[0].id)
 
-  return json({ ...data, lastPaymentMonths })
+  return json({
+    ...data,
+    lastPaymentMonths,
+  })
 }
 
 export default function AdminDashboardIndexRoute() {
   const loaderData = useLoaderData<typeof loader>()
   const fetcher = useFetcher<typeof loader>()
-
+  const headings = [
+    'Fecha',
+    'Cantidad de solicitudes',
+    'En revisión',
+    'Por desembolsar',
+    'Desembolsado',
+  ]
   const { overview, requestDays, lastPaymentMonths } =
     fetcher?.data || loaderData
 
@@ -52,6 +64,63 @@ export default function AdminDashboardIndexRoute() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fetcher])
 
+  const rows: TableRowProps[] = requestDays.map(
+    ({ dayNumber, quantity, REQUESTED, APPROVED, PAID }) => ({
+      rowId: dayNumber,
+      href: ``,
+      items: [
+        <>
+          <div className="font-medium" key={`${dayNumber}_date`}>
+            {formatDate(dayNumber)}
+          </div>
+        </>,
+        <p key={`${dayNumber}_quantity`}>{quantity}</p>,
+        <>
+          {REQUESTED && REQUESTED?.BANK_ACCOUNT > 0 && (
+            <div>
+              {formatMoney(REQUESTED?.BANK_ACCOUNT, CurrencySymbol.COP)}
+            </div>
+          )}
+
+          {REQUESTED && REQUESTED?.WALLET > 0 && (
+            <div>
+              {formatMoney(REQUESTED && REQUESTED?.WALLET, CurrencySymbol.BUSD)}
+            </div>
+          )}
+
+          {!REQUESTED?.BANK_ACCOUNT && !REQUESTED?.WALLET && (
+            <p className="font-medium text-green-600">-</p>
+          )}
+        </>,
+        <>
+          {APPROVED && APPROVED?.BANK_ACCOUNT > 0 && (
+            <div>{formatMoney(APPROVED?.BANK_ACCOUNT, CurrencySymbol.COP)}</div>
+          )}
+
+          {APPROVED && APPROVED?.WALLET > 0 && (
+            <div>{formatMoney(APPROVED.WALLET, CurrencySymbol.BUSD)}</div>
+          )}
+
+          {!APPROVED?.BANK_ACCOUNT && !APPROVED?.WALLET && (
+            <p className="font-medium text-green-600">-</p>
+          )}
+        </>,
+        <>
+          {PAID?.BANK_ACCOUNT && (
+            <div>{formatMoney(PAID?.BANK_ACCOUNT, CurrencySymbol.COP)}</div>
+          )}
+
+          {PAID?.WALLET && (
+            <div>{formatMoney(PAID?.WALLET, CurrencySymbol.BUSD)}</div>
+          )}
+
+          {!PAID?.BANK_ACCOUNT && !PAID?.WALLET && (
+            <p className="font-medium text-red-600">-</p>
+          )}
+        </>,
+      ],
+    })
+  )
   return (
     <>
       <Container>
@@ -163,7 +232,13 @@ export default function AdminDashboardIndexRoute() {
 
         <div className="pb-8" />
 
-        <PaymentDayList requestDays={requestDays} />
+        {requestDays?.length > 0 ? (
+          <Table headings={headings} rows={rows} />
+        ) : (
+          <p className="text-base">
+            No se han realizado solicitudes durante este mes.
+          </p>
+        )}
       </Container>
     </>
   )
