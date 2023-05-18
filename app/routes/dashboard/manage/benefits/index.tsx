@@ -85,7 +85,7 @@ export default function BenefitIndexRoute() {
             <span>Destacado</span>
           </p>
         ) : (
-          <p className="text-right text-gray-400">-</p>
+          <></>
         ),
       ],
     })

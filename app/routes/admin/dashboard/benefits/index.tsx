@@ -13,6 +13,7 @@ import { prisma } from '~/db.server'
 import type { TableRowProps } from '~/components/Lists/Table'
 import { Table } from '~/components/Lists/Table'
 import { FaStar } from 'react-icons/fa'
+import { getBenefits } from '~/services/benefit/benefit.server'
 
 export const meta: MetaFunction = () => {
   return {
@@ -31,22 +32,11 @@ export const loader = async ({ request }: LoaderArgs) => {
   const dataCount = benefitsCount - cBenefitCount
   const { itemsPerPage } = constants
 
-  const benefits = await prisma.benefit.findMany({
-    where: {
-      companyBenefit: null,
-    },
-    take: itemsPerPage,
-    skip: (currentPage - 1) * itemsPerPage || 0,
-    select: {
-      id: true,
-      name: true,
-      benefitHighlight: {
-        select: { isActive: true },
-      },
-    },
-  })
   return json({
-    benefits,
+    benefits: await getBenefits({
+      take: itemsPerPage,
+      skip: (currentPage - 1) * itemsPerPage || 0,
+    }),
     pagination: {
       currentPage,
       totalPages: Math.ceil(dataCount / itemsPerPage),
@@ -80,7 +70,7 @@ export default function BenefitIndexRoute() {
             </p>
           </div>
         ) : (
-          <p className="text-right text-gray-400">-</p>
+          <></>
         ),
       ],
     })
@@ -111,35 +101,3 @@ export default function BenefitIndexRoute() {
     </>
   )
 }
-// export default function BenefitIndexRoute() {
-//   const { benefits } = useLoaderData<typeof loader>()
-
-//   return (
-//     <>
-//       <Container>
-//         <>
-//           <TitleWithActions
-//             title="Beneficios"
-//             className="mb-10"
-//             actions={
-//               <Button
-//                 href="/admin/dashboard/benefits/create"
-//                 className="flex items-center px-4"
-//                 size="SM"
-//                 icon={ButtonIconVariants.CREATE}
-//               >
-//                 Crear beneficio
-//               </Button>
-//             }
-//           />
-
-//           {benefits?.length > 0 ? (
-//             <BenefitList benefits={benefits} />
-//           ) : (
-//             <p>No se han encontrado beneficios</p>
-//           )}
-//         </>
-//       </Container>
-//     </>
-//   )
-// }

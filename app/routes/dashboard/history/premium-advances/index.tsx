@@ -74,10 +74,7 @@ export default function PremiumAdvancesIndexRoute() {
       href: `/dashboard/premium-advances/${id}`,
       items: [
         <>
-          <span
-            className="hover:text-cyan-600whitespace-pre-wrap  text-gray-900 "
-            key={`${id}_name`}
-          >
+          <span className="whitespace-pre-wrap" key={`${id}_name`}>
             {(employee?.user.firstName || employee?.user.lastName) && (
               <div className="text-sm font-medium text-cyan-600 underline hover:text-cyan-800">
                 {`${employee?.user.firstName} ${employee?.user.lastName}`.trim()}

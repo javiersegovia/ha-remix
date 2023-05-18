@@ -96,7 +96,7 @@ export default function PayrollAdvancesIndexRoute() {
       ],
     })
   )
-  //refactor first span with conditional if isAdmin
+
   return (
     <>
       {payrollAdvances?.length > 0 ? (

@@ -75,7 +75,8 @@ export const loader = async ({ request }: LoaderArgs) => {
 }
 
 export default function DashboardEmployeesIndexRoute() {
-  const { employees, pagination } = useLoaderData<typeof loader>()
+  const { employees, pagination, canManageEmployeeGroup } =
+    useLoaderData<typeof loader>()
 
   const headings = [
     'Nombre',
@@ -140,7 +141,9 @@ export default function DashboardEmployeesIndexRoute() {
   return (
     <>
       <Container className="w-full pb-10">
-        <Tabs items={employeeTabPaths} className="mt-10 mb-8" />
+        {canManageEmployeeGroup && (
+          <Tabs items={employeeTabPaths} className="mt-10 mb-8" />
+        )}
 
         <TitleWithActions
           className="mb-10"
