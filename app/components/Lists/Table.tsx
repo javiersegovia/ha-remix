@@ -22,8 +22,6 @@ export interface TableProps {
 }
 
 export const Table = ({ headings, rows, pagination }: TableProps) => {
-  console.log({ pagination })
-
   return (
     <div className="flex flex-col">
       <div className="-my-2 overflow-x-auto xl:-mx-8">
@@ -117,7 +115,7 @@ export const TableRow = ({ rowId, href, items, isDisabled }: TableRowProps) => {
                 <Link
                   to={href}
                   className={clsx(
-                    'text-sm font-medium text-gray-900 underline hover:text-cyan-600',
+                    'text-sm font-medium text-gray-900 hover:text-cyan-600',
                     isDisabled && 'text-gray-400'
                   )}
                 >

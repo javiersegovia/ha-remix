@@ -7,11 +7,16 @@ import { getS3ObjectUrl } from '../aws/s3.server'
 import { connect, connectOrDisconnect } from '~/utils/relationships'
 import { deleteImageByKey } from '../image/image.server'
 
-export const getBenefits = async () => {
+export const getBenefits = async (
+  options?: Pick<Prisma.BenefitFindManyArgs, 'take' | 'skip' | 'cursor'>
+) => {
+  const { take, skip } = options || {}
   return prisma.benefit.findMany({
     where: {
       companyBenefit: null,
     },
+    take,
+    skip,
     select: {
       id: true,
       name: true,
@@ -413,14 +418,19 @@ export const deleteBenefitById = async (benefitId: Benefit['id']) => {
 }
 
 export const getCompanyBenefitsByCompanyId = async (
-  companyId: Company['id']
+  companyId: Company['id'],
+  options?: Pick<Prisma.EmployeeFindManyArgs, 'take' | 'skip' | 'cursor'>
 ) => {
+  const { take, skip } = options || {}
+
   return prisma.benefit.findMany({
     where: {
       companyBenefit: {
         companyId,
       },
     },
+    take,
+    skip,
     select: {
       id: true,
       name: true,
