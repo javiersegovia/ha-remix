@@ -1,5 +1,6 @@
 import type { MetaFunction, LoaderArgs } from '@remix-run/server-runtime'
 
+import { Link } from '@remix-run/react'
 import { json } from '@remix-run/server-runtime'
 import { useLoaderData } from '@remix-run/react'
 import {
@@ -142,22 +143,29 @@ export default function AdminDashboardCompanyEmployees() {
               <Button
                 className="flex w-full items-center whitespace-nowrap sm:w-auto"
                 href="create"
-                key="create-employee"
                 size="SM"
                 icon={ButtonIconVariants.CREATE}
               >
-                {/* <HiPlus className="mr-3" /> */}
                 Nuevo colaborador
               </Button>
 
+              <Link to="download" reloadDocument>
+                <Button
+                  className="flex w-full items-center whitespace-nowrap sm:w-auto"
+                  size="SM"
+                  variant={ButtonColorVariants.SECONDARY}
+                  icon={ButtonIconVariants.DOWNLOAD}
+                >
+                  Descargar colaboradores
+                </Button>
+              </Link>
+
               <Button
                 className="flex w-full items-center whitespace-nowrap sm:w-auto"
-                href="upload"
                 size="SM"
                 variant={ButtonColorVariants.SECONDARY}
                 icon={ButtonIconVariants.UPLOAD}
               >
-                {/* <MdOutlineUploadFile className="mr-3" /> */}
                 Cargar colaboradores
               </Button>
             </>

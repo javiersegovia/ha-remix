@@ -6,6 +6,7 @@ SELECT DISTINCT
   "firstName",
   "lastName",
   "email",
+  "Employee"."phone",
   "Employee"."status",
   "Employee"."address",
   "numberOfChildren",
