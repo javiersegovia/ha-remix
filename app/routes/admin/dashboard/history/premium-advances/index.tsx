@@ -76,23 +76,31 @@ export default function PremiumAdvancesIndexRoute() {
                 {`${employee?.user.firstName} ${employee?.user.lastName}`.trim()}
               </div>
             )}
-            <div className="font-normal text-gray-500 ">
+
+            <div className="font-normal text-gray-500">
               {employee?.user.email}
             </div>
-            <div className="text-sm font-medium text-gray-500 ">
+
+            <div className="text-sm font-medium text-gray-500">
               {company.name}
             </div>
           </span>
         </>,
+
         <div className="text-sm text-gray-900" key={`${id}_requestedAmount`}>
-          {formatMoney(`${requestedAmount}`, CurrencySymbol.COP)}
+          {requestedAmount
+            ? formatMoney(requestedAmount, CurrencySymbol.COP)
+            : '-'}
         </div>,
+
         <div className="text-sm text-gray-900" key={`${id}_totalAmount`}>
-          {formatMoney(`${totalAmount}`, CurrencySymbol.COP)}
+          {totalAmount ? formatMoney(totalAmount, CurrencySymbol.COP) : '-'}
         </div>,
+
         <div className="text-sm text-gray-900" key={`${id}_createdAt`}>
           {formatDate(new Date(Date.parse(`${createdAt}`)))}
         </div>,
+
         <span key={`${id}_status`}>
           <AdvanceStatusPill status={status} />
         </span>,

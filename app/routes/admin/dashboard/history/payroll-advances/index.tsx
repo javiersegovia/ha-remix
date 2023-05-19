@@ -64,15 +64,19 @@ export default function AdminPayrollAdvancesIndexRoute() {
             </div>
           </span>
         </>,
+
         <div className="text-sm text-gray-900" key={`${id}_requestedAmount`}>
           {formatMoney(payrollAdvance.requestedAmount, CurrencySymbol.COP)}
         </div>,
+
         <div className="text-sm text-gray-900" key={`${id}_totalAmount`}>
           {formatMoney(payrollAdvance.totalAmount, CurrencySymbol.COP)}
         </div>,
+
         <div className="text-sm text-gray-900" key={`${id}_createdAt`}>
           {formatDate(new Date(Date.parse(`${payrollAdvance.createdAt}`)))}
         </div>,
+
         <span key={`${id}_status`}>
           <AdvanceStatusPill status={payrollAdvance.status} />
         </span>,

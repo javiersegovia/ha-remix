@@ -150,4 +150,18 @@ We use [Prettier](https://prettier.io/) for auto-formatting in this project. It'
 
 ## Deployment
 
-**TO DO:** Add deployment instructions here
+- `ssh ubuntu@ec2-3-225-58-178.compute-1.amazonaws.com`
+
+- `cd /var/www/remix_app`
+
+- `git pull --rebase origin master`
+
+- `npm install`
+
+- `npm run generate:schema`
+
+- `npm run build`
+
+- `npm run migrate:deploy`
+
+- `pm2 restart remix`

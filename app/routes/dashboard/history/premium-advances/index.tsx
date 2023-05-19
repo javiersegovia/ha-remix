@@ -93,10 +93,12 @@ export default function PremiumAdvancesIndexRoute() {
           </span>
         </>,
         <div className="text-sm text-gray-900" key={`${id}_requestedAmount`}>
-          {formatMoney(`${requestedAmount}`, CurrencySymbol.COP)}
+          {requestedAmount
+            ? formatMoney(requestedAmount, CurrencySymbol.COP)
+            : '-'}
         </div>,
         <div className="text-sm text-gray-900" key={`${id}_totalAmount`}>
-          {formatMoney(`${totalAmount}`, CurrencySymbol.COP)}
+          {totalAmount ? formatMoney(totalAmount, CurrencySymbol.COP) : '-'}
         </div>,
         <div className="text-sm text-gray-900" key={`${id}_createdAt`}>
           {formatDate(new Date(Date.parse(`${createdAt}`)))}
