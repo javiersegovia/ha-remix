@@ -62,7 +62,6 @@ export default function AdminDashboardCompanyEmployees() {
                 size="SM"
                 icon={ButtonIconVariants.CREATE}
               >
-                {/* <HiPlus className="mr-3" /> */}
                 Nuevo colaborador
               </Button>
 
@@ -73,7 +72,6 @@ export default function AdminDashboardCompanyEmployees() {
                   variant={ButtonColorVariants.SECONDARY}
                   icon={ButtonIconVariants.DOWNLOAD}
                 >
-                  {/* <MdOutlineDownload className="mr-3" /> */}
                   Descargar colaboradores
                 </Button>
               </Link>
@@ -84,7 +82,6 @@ export default function AdminDashboardCompanyEmployees() {
                 variant={ButtonColorVariants.SECONDARY}
                 icon={ButtonIconVariants.UPLOAD}
               >
-                {/* <MdOutlineUploadFile className="mr-3" /> */}
                 Cargar colaboradores
               </Button>
             </>

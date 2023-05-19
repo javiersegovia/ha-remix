@@ -121,17 +121,15 @@ export const ButtonElement = ({
         <HiCheck className="text-2xl" />
       ) : (
         <>
-          {icon === ButtonIconVariants.UPLOAD ? (
+          {icon === ButtonIconVariants.UPLOAD && (
             <MdOutlineUploadFile className="mr-3" />
-          ) : (
-            (icon === ButtonIconVariants.CREATE && (
-              <HiPlus className="mr-3" />
-            )) ||
-            (icon === ButtonIconVariants.DOWNLOAD && (
-              <MdOutlineDownload className="mr-3" />
-            ))
           )}
 
+          {icon === ButtonIconVariants.CREATE && <HiPlus className="mr-3" />}
+
+          {icon === ButtonIconVariants.DOWNLOAD && (
+            <MdOutlineDownload className="mr-3" />
+          )}
           {children}
         </>
       )}
