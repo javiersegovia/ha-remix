@@ -55,14 +55,20 @@ export default function AdminPayrollAdvancesIndexRoute() {
       href: `/admin/dashboard/payroll-advances/${id}`,
       items: [
         <>
-          <span
-            className="hover:text-cyan-600whitespace-pre-wrap text-sm font-medium text-gray-900 "
-            key={`${id}_name`}
-          >
-            <div className="text-sm font-medium text-gray-900 hover:text-cyan-600 hover:underline">
-              {`Solicitud de ${employee?.user.firstName} ${employee?.user.lastName}`.trim()}
+          {(employee?.user.firstName || employee?.user.lastName) && (
+            <div
+              className="text-sm font-medium text-cyan-600  hover:text-cyan-800 hover:underline"
+              key={`${id}_name`}
+            >
+              {`${employee.user.firstName} ${employee.user.lastName}`.trim()}
             </div>
-          </span>
+          )}
+          <div className="text-sm font-normal text-gray-500">
+            {employee?.user.email}
+          </div>
+          <div className="text-sm font-medium text-gray-500">
+            {company?.name}
+          </div>
         </>,
 
         <div className="text-sm text-gray-900" key={`${id}_requestedAmount`}>
