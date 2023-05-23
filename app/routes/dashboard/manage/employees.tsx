@@ -94,7 +94,7 @@ export default function DashboardEmployeesIndexRoute() {
   const rows: TableRowProps[] = employees?.map(
     ({ id, user, city, jobDepartment, employeeGroups, benefits, status }) => ({
       rowId: id,
-      href: `${id}`,
+      href: `${id}/account`,
       items: [
         <>
           <span className="whitespace-pre-wrap" key={`${id}_name`}>
