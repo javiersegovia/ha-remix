@@ -19,6 +19,7 @@ export const Title = ({
         clsx(
           'block text-2xl font-bold text-steelBlue-800',
           Element === 'h1' && `font-semibold lg:text-3xl`,
+          Element === 'h3' && `font-semibold lg:text-xl`,
           (Element === 'h4' || Element === 'h5') && `text-lg`
         ),
         className

@@ -136,7 +136,6 @@ export default function EmployeeGroupIndexRoute() {
           />
         )}
       </Container>
-      <Outlet />
     </>
   )
 }

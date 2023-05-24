@@ -5,12 +5,14 @@ import { MdOutlineModeEditOutline } from 'react-icons/md'
 import { Box } from './Box'
 import clsx from 'clsx'
 import { twMerge } from 'tailwind-merge'
+import { Title } from '../Typography/Title'
 
 interface RightPanelProps {
   children: React.ReactNode
   onCloseRedirectTo: string
   onEditRedirectTo?: string
   className?: string
+  title?: string
 }
 
 export const RightPanel = ({
@@ -18,6 +20,7 @@ export const RightPanel = ({
   onCloseRedirectTo,
   onEditRedirectTo,
   className,
+  title,
 }: RightPanelProps) => {
   return (
     <div
@@ -29,11 +32,15 @@ export const RightPanel = ({
       )}
     >
       <Box className="mt-auto flex w-full flex-col space-y-5 rounded-none p-5 md:max-h-screen md:min-h-screen md:w-auto">
-        <div className="ml-auto flex items-center justify-end gap-4">
+        <div className="flex items-center justify-end gap-4">
+          {title && <Title className="text-steelBlue-600 font-bold" as="h3">{title}</Title>}
+
+          <div className="ml-auto" />
+
           {onEditRedirectTo && (
             <Link
               to={onEditRedirectTo}
-              className="ml-auto flex gap-3 rounded-full border border-steelBlue-200 bg-steelBlue-100 p-2 text-steelBlue-800"
+              className="flex gap-3 rounded-full border border-steelBlue-200 bg-steelBlue-100 p-2 text-steelBlue-800"
             >
               <MdOutlineModeEditOutline className="text-2xl" />
             </Link>

@@ -110,6 +110,7 @@ export default function DashboardEmployeesIndexRoute() {
         ) : (
           '-'
         ),
+
         jobDepartment ? (
           <span className="whitespace-pre-wrap" key={`${id}_jobDepartment`}>
             {jobDepartment?.name}
@@ -117,6 +118,7 @@ export default function DashboardEmployeesIndexRoute() {
         ) : (
           '-'
         ),
+
         employeeGroups?.length > 0 ? (
           <span className="whitespace-pre-wrap" key={`${id}_employeeGroups`}>
             {employeeGroups?.length}
@@ -124,6 +126,7 @@ export default function DashboardEmployeesIndexRoute() {
         ) : (
           '-'
         ),
+
         benefits.length > 0 ? (
           <span className="whitespace-pre-wrap" key={`${id}_benefits`}>
             {benefits.length}
@@ -131,6 +134,7 @@ export default function DashboardEmployeesIndexRoute() {
         ) : (
           '-'
         ),
+
         status ? (
           <span className="whitespace-pre-wrap" key={`${id}_status`}>
             <EmployeeStatusPill employeeStatus={status} />

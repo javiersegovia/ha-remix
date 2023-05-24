@@ -85,7 +85,7 @@ export const ButtonElement = ({
       disabled={disabled}
       className={twMerge(
         clsx(
-          'flex w-full transform items-center justify-center rounded-lg border border-transparent text-center text-base font-medium transition duration-100 active:scale-95',
+          'flex w-full transform items-center justify-center rounded-[2rem] border border-transparent text-center text-base font-medium transition duration-100 active:scale-95',
 
           size === 'XS' && 'px-4 py-2',
           size === 'SM' && 'px-5 py-3',

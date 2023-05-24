@@ -164,7 +164,7 @@ export default function EmployeeGroupUpdateRoute() {
           }}
           actions={
             <div className="mt-6 flex items-center justify-end gap-4">
-              <Link to="/dashboard/manage/employee-groups">
+              <Link to={`/dashboard/manage/employee-groups/${employeeGroup.id}`}>
                 <ButtonElement
                   variant={ButtonColorVariants.SECONDARY}
                   className="sm:w-auto"

@@ -4,6 +4,7 @@ import React from 'react'
 import { TableData } from './TableData'
 import { TableHeading } from './TableHeading'
 import { Pagination } from './Pagination'
+import { twMerge } from 'tailwind-merge'
 
 export interface TableRowProps {
   rowId: string | number
@@ -19,9 +20,18 @@ export interface TableProps {
     totalPages: number
     currentPage: number
   }
+  classNames?: {
+    heading?: string
+    row?: string
+  }
 }
 
-export const Table = ({ headings, rows, pagination }: TableProps) => {
+export const Table = ({
+  headings,
+  rows,
+  pagination,
+  classNames,
+}: TableProps) => {
   return (
     <div className="flex flex-col">
       <div className="-my-2 overflow-x-auto xl:-mx-8">
@@ -34,7 +44,9 @@ export const Table = ({ headings, rows, pagination }: TableProps) => {
                     <TableHeading
                       key={heading}
                       title={heading}
-                      className="text-base"
+                      className={twMerge(
+                        clsx('text-base', classNames?.heading)
+                      )}
                       isCentered={index !== 0}
                     />
                   ))}
@@ -45,10 +57,15 @@ export const Table = ({ headings, rows, pagination }: TableProps) => {
                 {rows.map((row) => (
                   <tr
                     key={row.rowId}
-                    className={clsx('hover:bg-gray-100', {
-                      'cursor-not-allowed bg-gray-200 hover:bg-gray-300':
-                        row.isDisabled,
-                    })}
+                    className={twMerge(
+                      clsx('hover:bg-gray-100', {
+                        'cursor-not-allowed bg-gray-200 hover:bg-gray-300':
+                          row.isDisabled,
+                      },
+                          classNames?.row
+                      
+                      )
+                    )}
                   >
                     <TableRow
                       rowId={row.rowId}
