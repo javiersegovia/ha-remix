@@ -57,14 +57,14 @@ export const loader = async ({ request, params }: LoaderArgs) => {
 export const meta: MetaFunction<typeof loader> = ({ data }) => {
   if (!data) {
     return {
-      title: '[Admin] Compañía no encontrada | HoyAdelantas',
+      title: '[Admin] Compañía no encontrada | HoyTrabajas Beneficios',
     }
   }
 
   const { companyName } = data
 
   return {
-    title: `[Admin] Colaboradores de ${companyName} | HoyAdelantas`,
+    title: `[Admin] Colaboradores de ${companyName} | HoyTrabajas Beneficios`,
   }
 }
 
@@ -156,7 +156,7 @@ export default function AdminDashboardCompanyEmployees() {
                   variant={ButtonColorVariants.SECONDARY}
                   icon={ButtonIconVariants.DOWNLOAD}
                 >
-                  Descargar colaboradores
+                  Descargar
                 </Button>
               </Link>
 
@@ -166,7 +166,7 @@ export default function AdminDashboardCompanyEmployees() {
                 variant={ButtonColorVariants.SECONDARY}
                 icon={ButtonIconVariants.UPLOAD}
               >
-                Cargar colaboradores
+                Cargar
               </Button>
             </>
           }
