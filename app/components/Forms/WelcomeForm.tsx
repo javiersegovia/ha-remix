@@ -9,8 +9,6 @@ import type { getIdentityDocumentTypes } from '~/services/identity-document-type
 import type { getCountries } from '~/services/country/country.server'
 import type { getGenders } from '~/services/gender/gender.server'
 import type { getBanks } from '~/services/bank/bank.server'
-import type { loader as stateLoader } from '~/routes/__api/states'
-import type { loader as cityLoader } from '~/routes/__api/cities'
 
 import { useControlField, ValidatedForm } from 'remix-validated-form'
 import { welcomeValidator } from '~/schemas/welcome.schema'
@@ -19,13 +17,11 @@ import { FormGridWrapper } from '../FormFields/FormGridWrapper'
 import { Input } from '../FormFields/Input'
 import { Select } from '../FormFields/Select'
 import { Title } from '../Typography/Title'
-import { useEffect } from 'react'
-import { useFetcher } from '@remix-run/react'
-import { useCleanForm } from '~/hooks/useCleanForm'
 import { DatePicker } from '../FormFields/DatePicker'
 import { formatMDYDate } from '~/utils/formatDate'
 import { Checkbox } from '../FormFields/Checkbox'
 import { SubmitButton } from '../SubmitButton'
+import { useLocationSync } from '~/hooks/useLocationSync'
 
 interface WelcomeFormProps {
   countries: Awaited<ReturnType<typeof getCountries>>
@@ -104,48 +100,10 @@ export const WelcomeForm = ({
     formId
   )
 
-  const [countryIdValue] = useControlField<number | undefined>(
-    'countryId',
-    formId
-  )
-
-  const [stateIdValue, setStateIdValue] = useControlField<number | undefined>(
-    'stateId',
-    formId
-  )
-  const [cityIdValue, setCityIdValue] = useControlField<number | undefined>(
-    'cityId',
-    formId
-  )
-
-  const stateFetcher = useFetcher<typeof stateLoader>()
-  const cityFetcher = useFetcher<typeof cityLoader>()
-
-  useEffect(() => {
-    if (stateFetcher.type !== 'init' || !countryId) return
-    stateFetcher.load(`/states?countryId=${countryId}`)
-  }, [stateFetcher, countryId, countryIdValue])
-
-  useEffect(() => {
-    if (cityFetcher.type !== 'init' || !stateId) return
-    cityFetcher.load(`/cities?stateId=${stateId}`)
-  }, [cityFetcher, stateId])
-
-  useCleanForm({
-    options: stateFetcher.data?.states,
-    value: stateIdValue,
-    setValue: setStateIdValue,
-  })
-
-  useCleanForm({
-    shouldClean:
-      !stateFetcher.data?.states ||
-      stateFetcher.data?.states?.length === 0 ||
-      !cityFetcher.data?.cities ||
-      cityFetcher.data?.cities.length === 0,
-    options: cityFetcher.data?.cities,
-    value: cityIdValue,
-    setValue: setCityIdValue,
+  const { stateFetcher, cityFetcher } = useLocationSync({
+    formId,
+    countryId,
+    stateId,
   })
 
   return (
@@ -274,11 +232,7 @@ export const WelcomeForm = ({
             options={countries}
             isClearable
             onSelectChange={(id) => {
-              if (id) {
-                stateFetcher.load(`/states?countryId=${id}`)
-              } else {
-                stateFetcher.load(`/states`)
-              }
+              stateFetcher.load(`/states?countryId=${id}`)
             }}
           />
         </FormGridItem>
@@ -291,11 +245,7 @@ export const WelcomeForm = ({
             options={stateFetcher?.data?.states || []}
             isClearable
             onSelectChange={(id) => {
-              if (id) {
-                cityFetcher.load(`/cities?stateId=${id}`)
-              } else {
-                cityFetcher.load(`/cities`)
-              }
+              cityFetcher.load(`/cities?stateId=${id}`)
             }}
           />
         </FormGridItem>

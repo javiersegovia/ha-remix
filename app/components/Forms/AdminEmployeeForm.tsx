@@ -7,8 +7,6 @@ import type {
   Wallet,
 } from '@prisma/client'
 import type { getBanks } from '~/services/bank/bank.server'
-import type { loader as cityLoader } from '~/routes/__api/cities'
-import type { loader as stateLoader } from '~/routes/__api/states'
 import type { Validator } from 'remix-validated-form'
 import type { EmployeeSchemaInput } from '~/services/employee/employee.schema'
 import type { EnumOption } from '~/schemas/helpers'
@@ -24,12 +22,9 @@ import type { getIdentityDocumentTypes } from '~/services/identity-document-type
 import type { getMemberships } from '~/services/membership/membership.server'
 import type { getUserRoles } from '~/services/user-role/user-role.server'
 
-import { useEffect } from 'react'
 import { EmployeeStatus } from '@prisma/client'
-import { useControlField, ValidatedForm } from 'remix-validated-form'
-import { useFetcher } from '@remix-run/react'
+import { ValidatedForm } from 'remix-validated-form'
 import { formatMDYDate } from '~/utils/formatDate'
-import { useCleanForm } from '~/hooks/useCleanForm'
 import { Box } from '../Layout/Box'
 import { FormGridItem } from '../FormFields/FormGridItem'
 import { FormGridWrapper } from '../FormFields/FormGridWrapper'
@@ -38,6 +33,7 @@ import { Input } from '../FormFields/Input'
 import { Select } from '../FormFields/Select'
 import { DatePicker } from '../FormFields/DatePicker'
 import { CurrencyInput, CurrencySymbol } from '../FormFields/CurrencyInput'
+import { useLocationSync } from '~/hooks/useLocationSync'
 
 const employeeStatusList: EnumOption[] = [
   { name: 'Activo', value: EmployeeStatus.ACTIVE },
@@ -97,8 +93,6 @@ interface AdminEmployeeFormProps<T = EmployeeSchemaInput> {
     user: Pick<User, 'email' | 'firstName' | 'lastName' | 'roleId'>
   }
 }
-
-// Todo: add comments to this file explaining what we are doing with the hooks
 
 export const AdminEmployeeForm = ({
   defaultValues,
@@ -197,48 +191,10 @@ export const AdminEmployeeForm = ({
 
   const formId = 'EmployeeForm'
 
-  const [countryIdValue] = useControlField<number | undefined>(
-    'countryId',
-    formId
-  )
-
-  const [stateIdValue, setStateIdValue] = useControlField<number | undefined>(
-    'stateId',
-    formId
-  )
-  const [cityIdValue, setCityIdValue] = useControlField<number | undefined>(
-    'cityId',
-    formId
-  )
-
-  const stateFetcher = useFetcher<typeof stateLoader>()
-  const cityFetcher = useFetcher<typeof cityLoader>()
-
-  useEffect(() => {
-    if (stateFetcher.type !== 'init' || !countryId) return
-    stateFetcher.load(`/states?countryId=${countryId}`)
-  }, [stateFetcher, countryId, countryIdValue])
-
-  useEffect(() => {
-    if (cityFetcher.type !== 'init' || !stateId) return
-    cityFetcher.load(`/cities?stateId=${stateId}`)
-  }, [cityFetcher, stateId])
-
-  useCleanForm({
-    options: stateFetcher.data?.states,
-    value: stateIdValue,
-    setValue: setStateIdValue,
-  })
-
-  useCleanForm({
-    shouldClean:
-      !stateFetcher.data?.states ||
-      stateFetcher.data?.states?.length === 0 ||
-      !cityFetcher.data?.cities ||
-      cityFetcher.data?.cities.length === 0,
-    options: cityFetcher.data?.cities,
-    value: cityIdValue,
-    setValue: setCityIdValue,
+  const { stateFetcher, cityFetcher } = useLocationSync({
+    formId,
+    countryId,
+    stateId,
   })
 
   return (
@@ -376,11 +332,7 @@ export const AdminEmployeeForm = ({
               options={countries}
               isClearable
               onSelectChange={(id) => {
-                if (id) {
-                  stateFetcher.load(`/states?countryId=${id}`)
-                } else {
-                  stateFetcher.load(`/states`)
-                }
+                stateFetcher.load(`/states?countryId=${id}`)
               }}
             />
           </FormGridItem>
@@ -393,11 +345,7 @@ export const AdminEmployeeForm = ({
               options={stateFetcher?.data?.states || []}
               isClearable
               onSelectChange={(id) => {
-                if (id) {
-                  cityFetcher.load(`/cities?stateId=${id}`)
-                } else {
-                  cityFetcher.load(`/cities`)
-                }
+                cityFetcher.load(`/cities?stateId=${id}`)
               }}
             />
           </FormGridItem>

@@ -3,17 +3,10 @@ import type {
   LoaderArgs,
   MetaFunction,
 } from '@remix-run/server-runtime'
-import type { loader as cityLoader } from '../__api/cities'
-import type { loader as stateLoader } from '../__api/states'
 
 import { json, redirect } from '@remix-run/server-runtime'
-import { Link, useFetcher, useLoaderData } from '@remix-run/react'
-import { useEffect } from 'react'
-import {
-  useControlField,
-  ValidatedForm,
-  validationError,
-} from 'remix-validated-form'
+import { Link, useLoaderData } from '@remix-run/react'
+import { ValidatedForm, validationError } from 'remix-validated-form'
 
 import { DatePicker } from '~/components/FormFields/DatePicker'
 import { FormActions } from '~/components/FormFields/FormActions'
@@ -24,7 +17,6 @@ import { Label } from '~/components/FormFields/Label'
 import { Select } from '~/components/FormFields/Select'
 import { Box } from '~/components/Layout/Box'
 import { Title } from '~/components/Typography/Title'
-import { useCleanForm } from '~/hooks/useCleanForm'
 import { editAccountValidator } from '~/schemas/edit-account.schema'
 import { getBanks } from '~/services/bank/bank.server'
 import { getCountries } from '~/services/country/country.server'
@@ -37,6 +29,7 @@ import { updateEmployeeByAccountForm } from '~/services/employee/employee.server
 import { getBankAccountTypes } from '~/services/bank-account-type/bank-account-type.server'
 import { getIdentityDocumentTypes } from '~/services/identity-document-type/identity-document-type.server'
 import { Container, ContainerSize } from '~/components/Layout/Container'
+import { useLocationSync } from '~/hooks/useLocationSync'
 
 export const loader = async ({ request }: LoaderArgs) => {
   const employee = await requireEmployee(request)
@@ -116,50 +109,6 @@ export default function DashboardAccountRoute() {
     numberOfChildren,
   } = employee
 
-  const [countryIdValue] = useControlField<number | undefined>(
-    'countryId',
-    formId
-  )
-
-  const [stateIdValue, setStateIdValue] = useControlField<number | undefined>(
-    'stateId',
-    formId
-  )
-  const [cityIdValue, setCityIdValue] = useControlField<number | undefined>(
-    'cityId',
-    formId
-  )
-
-  const stateFetcher = useFetcher<typeof stateLoader>()
-  const cityFetcher = useFetcher<typeof cityLoader>()
-
-  useEffect(() => {
-    if (stateFetcher.type !== 'init' || !countryId) return
-    stateFetcher.load(`/states?countryId=${countryId}`)
-  }, [stateFetcher, countryId, countryIdValue])
-
-  useEffect(() => {
-    if (cityFetcher.type !== 'init' || !stateId) return
-    cityFetcher.load(`/cities?stateId=${stateId}`)
-  }, [cityFetcher, stateId])
-
-  useCleanForm({
-    options: stateFetcher.data?.states,
-    value: stateIdValue,
-    setValue: setStateIdValue,
-  })
-
-  useCleanForm({
-    shouldClean:
-      !stateFetcher.data?.states ||
-      stateFetcher.data?.states?.length === 0 ||
-      !cityFetcher.data?.cities ||
-      cityFetcher.data?.cities.length === 0,
-    options: cityFetcher.data?.cities,
-    value: cityIdValue,
-    setValue: setCityIdValue,
-  })
-
   const formDefaultValues = {
     ...employee,
     numberOfChildren: numberOfChildren || 0,
@@ -185,6 +134,12 @@ export default function DashboardAccountRoute() {
     birthDay: parseISOLocalNullable(employee.birthDay),
     documentIssueDate: parseISOLocalNullable(employee.documentIssueDate),
   }
+
+  const { stateFetcher, cityFetcher } = useLocationSync({
+    formId,
+    countryId,
+    stateId,
+  })
 
   return (
     <Container className="w-full py-10" size={ContainerSize.LG}>
@@ -252,11 +207,7 @@ export default function DashboardAccountRoute() {
                 options={countries}
                 isClearable
                 onSelectChange={(id) => {
-                  if (id) {
-                    stateFetcher.load(`/states?countryId=${id}`)
-                  } else {
-                    stateFetcher.load(`/states`)
-                  }
+                  stateFetcher.load(`/states?countryId=${id}`)
                 }}
               />
             </FormGridItem>
@@ -269,11 +220,7 @@ export default function DashboardAccountRoute() {
                 options={stateFetcher?.data?.states || []}
                 isClearable
                 onSelectChange={(id) => {
-                  if (id) {
-                    cityFetcher.load(`/cities?stateId=${id}`)
-                  } else {
-                    cityFetcher.load(`/cities`)
-                  }
+                  cityFetcher.load(`/cities?stateId=${id}`)
                 }}
               />
             </FormGridItem>

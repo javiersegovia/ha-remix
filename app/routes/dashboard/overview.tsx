@@ -184,35 +184,35 @@ export default function DashboardIndexRoute() {
   return (
     <>
       <div className="relative w-full flex-1 bg-white">
-        {benefitHighlights?.length > 0 && (
-          <section className="overflow-hidden bg-steelBlue-100 pb-16 pt-10">
-            <Container>
-              <section className="mb-10 flex flex-col items-center justify-between md:flex-row">
-                <Title className="text-center text-steelBlue-600 md:text-left">
-                  Hola, {firstName && capitalizeFirstLetter(firstName)}
-                </Title>
+        <section className="overflow-hidden bg-steelBlue-100 pb-16 pt-10">
+          <Container>
+            <section className="flex flex-col items-center justify-between md:flex-row">
+              <Title className="text-center text-steelBlue-600 md:text-left">
+                Hola, {firstName && capitalizeFirstLetter(firstName)}
+              </Title>
 
-                <div className="flex flex-col gap-4 md:flex-row">
-                  <div className="mx-auto mt-4 text-right md:m-0">
-                    <p className="inline md:block">Tienes</p>
-                    <p className=" ml-1 inline whitespace-nowrap font-bold text-steelBlue-800 md:ml-0 md:block">
-                      {availablePoints} puntos
-                    </p>
-                  </div>
-
-                  <Button
-                    href="https://puntos.umany.co"
-                    external
-                    targetBlank
-                    size="XS"
-                    className="mx-auto w-auto md:m-0"
-                  >
-                    Canjear
-                  </Button>
+              <div className="flex flex-col gap-4 md:flex-row">
+                <div className="mx-auto mt-4 text-right md:m-0">
+                  <p className="inline md:block">Tienes</p>
+                  <p className=" ml-1 inline whitespace-nowrap font-bold text-steelBlue-800 md:ml-0 md:block">
+                    {availablePoints} puntos
+                  </p>
                 </div>
-              </section>
 
-              <div className="relative z-10 mx-auto w-full max-w-screen-xl">
+                <Button
+                  href="https://puntos.umany.co"
+                  external
+                  targetBlank
+                  size="XS"
+                  className="mx-auto w-auto md:m-0"
+                >
+                  Canjear
+                </Button>
+              </div>
+            </section>
+
+            {benefitHighlights?.length > 0 && (
+              <div className="relative z-10 mx-auto mt-10 w-full max-w-screen-xl">
                 <Title>
                   {benefitHighlights?.length > 1
                     ? 'Beneficios destacados del mes'
@@ -228,9 +228,9 @@ export default function DashboardIndexRoute() {
                   ))}
                 </Carousel>
               </div>
-            </Container>
-          </section>
-        )}
+            )}
+          </Container>
+        </section>
 
         <section className="bg-white py-10 lg:px-10">
           <section className="mx-auto grid grid-cols-[minmax(170px,_300px)] items-center justify-center gap-4 sm:grid-cols-[repeat(auto-fit,minmax(170px,_200px))] md:gap-5 lg:grid-cols-[repeat(auto-fit,minmax(170px,_1fr))] lg:items-stretch xl:grid-cols-[repeat(5,minmax(170px,200px))]">
