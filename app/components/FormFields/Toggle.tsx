@@ -9,7 +9,6 @@ interface ToggleProps {
 export const Toggle = ({ name, label }: ToggleProps) => {
   const { getInputProps } = useField(name)
   const isSubmitting = useIsSubmitting()
-
   return (
     <div className="flex h-full w-full items-center">
       <label className="relative inline-flex cursor-pointer items-center">

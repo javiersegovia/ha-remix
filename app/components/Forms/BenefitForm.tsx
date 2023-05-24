@@ -3,7 +3,11 @@ import type { BenefitInputSchema } from '~/services/benefit/benefit.schema'
 
 import clsx from 'clsx'
 import { Form } from '@remix-run/react'
-import { ValidatedForm } from 'remix-validated-form'
+import {
+  ValidatedForm,
+  useControlField,
+  useFormContext,
+} from 'remix-validated-form'
 import { benefitValidator } from '~/services/benefit/benefit.schema'
 
 import { ButtonColorVariants } from '../Button'
@@ -64,10 +68,20 @@ export const BenefitForm = ({
     benefitHighlight,
   } = defaultValues || {}
 
+  const formId = 'BenefitForm'
+
+  const [benefitHighlightIsActive] = useControlField('benefitHighlight', formId)
+
+  const x = useFormContext(formId)
+  const formData = x.getValues()
+  const b = formData.get('benefitHighlight')
+
+  console.log({ b, benefitHighlightIsActive })
+
   return (
     <Box className="mt-auto flex w-full flex-col  space-y-5 rounded-xl p-5 md:w-auto">
       <ValidatedForm
-        id="BenefitForm"
+        id={formId}
         encType="multipart/form-data"
         validator={benefitValidator}
         defaultValues={{
@@ -168,6 +182,14 @@ export const BenefitForm = ({
           Información de beneficio destacado
         </Title>
 
+        <FormGridItem className="items-center">
+          <Toggle
+            name="benefitHighlight.isActive"
+            label="Es un beneficio destacado"
+          />
+        </FormGridItem>
+
+        {/* {benefitHighlight?.isActive && ( */}
         <FormGridWrapper>
           <FormGridItem isFullWidth>
             <ImageInput
@@ -181,13 +203,6 @@ export const BenefitForm = ({
 
           <FormGridItem>
             <Input name="benefitHighlight.title" label="Título" type="text" />
-          </FormGridItem>
-
-          <FormGridItem className="items-center">
-            <Toggle
-              name="benefitHighlight.isActive"
-              label="Destacar beneficio"
-            />
           </FormGridItem>
 
           <FormGridItem isFullWidth>
@@ -216,6 +231,7 @@ export const BenefitForm = ({
             />
           </FormGridItem>
         </FormGridWrapper>
+        {/* //  */}
       </ValidatedForm>
 
       <div className="ml-auto flex gap-5">
