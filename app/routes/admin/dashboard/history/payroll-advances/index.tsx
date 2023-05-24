@@ -22,15 +22,17 @@ export const loader = async ({ request }: LoaderArgs) => {
   const payrollAdvanceCount = await prisma.payrollAdvance.count()
   const { itemsPerPage } = constants
 
+  // , {
+  //   take: itemsPerPage,
+  //   skip: (currentPage - 1) * itemsPerPage || 0,
+  // }
+
   return json({
-    payrollAdvances: await getPayrollAdvances(undefined, {
-      take: itemsPerPage,
-      skip: (currentPage - 1) * itemsPerPage || 0,
-    }),
-    pagination: {
-      currentPage,
-      totalPages: Math.ceil(payrollAdvanceCount / itemsPerPage),
-    },
+    payrollAdvances: await getPayrollAdvances(undefined),
+    // pagination: {
+    //   currentPage,
+    //   totalPages: Math.ceil(payrollAdvanceCount / itemsPerPage),
+    // },
   })
 }
 
@@ -41,7 +43,7 @@ export const meta: MetaFunction = () => {
 }
 
 export default function AdminPayrollAdvancesIndexRoute() {
-  const { payrollAdvances, pagination } = useLoaderData<typeof loader>()
+  const { payrollAdvances } = useLoaderData<typeof loader>()
   const headings = [
     'Asunto',
     'Dinero solicitado',
@@ -94,7 +96,7 @@ export default function AdminPayrollAdvancesIndexRoute() {
             </Title>
           </div>
 
-          <Table headings={headings} rows={rows} pagination={pagination} />
+          <Table headings={headings} rows={rows} />
         </>
       ) : (
         <section className="m-auto pb-20 text-center">
