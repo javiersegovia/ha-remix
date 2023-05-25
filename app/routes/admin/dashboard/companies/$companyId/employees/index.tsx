@@ -163,6 +163,7 @@ export default function AdminDashboardCompanyEmployees() {
               <Button
                 className="flex w-full items-center whitespace-nowrap sm:w-auto"
                 size="SM"
+                href="upload"
                 variant={ButtonColorVariants.SECONDARY}
                 icon={ButtonIconVariants.UPLOAD}
               >
