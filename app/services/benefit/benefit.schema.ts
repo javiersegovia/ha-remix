@@ -63,6 +63,8 @@ export const benefitSchema = z.object({
     )
     .nullish(),
 
+  isHighlighted: zfd.checkbox({ trueValue: 'true' }).optional(),
+
   benefitHighlight: preprocessNullableObject(
     z
       .object({
@@ -108,7 +110,7 @@ export const benefitSchema = z.object({
             .trim()
         ),
 
-        isActive: zfd.checkbox({ trueValue: 'true' }),
+        // isActive: zfd.checkbox({ trueValue: 'true' }),
       })
       .superRefine((data, ctx) => {
         if (!data.image && !data.imageKey) {

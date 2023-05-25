@@ -828,6 +828,7 @@ model Benefit {
   description      String?
   shortDescription String?
   instructions     String[]
+  isHighlighted    Boolean  @default(false)
 
   // @deprecated Use "mainImage" instead
   imageUrl String?
@@ -925,7 +926,9 @@ model BenefitHighlight {
   description String
   buttonText  String
   buttonHref  String
-  isActive    Boolean @default(false)
+
+  // @deprecated Use "Benefit.isHighlighted" instead
+  isActive Boolean?
 
   image   Image?  @relation(fields: [imageId], references: [id], onDelete: SetNull)
   imageId String?

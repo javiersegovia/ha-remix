@@ -140,15 +140,6 @@ export default function AdminDashboardCompanyEmployees() {
           className="my-10"
           actions={
             <>
-              <Button
-                className="flex w-full items-center whitespace-nowrap sm:w-auto"
-                href="create"
-                size="SM"
-                icon={ButtonIconVariants.CREATE}
-              >
-                Nuevo colaborador
-              </Button>
-
               <Link to="download" reloadDocument>
                 <Button
                   className="flex w-full items-center whitespace-nowrap sm:w-auto"
@@ -156,7 +147,7 @@ export default function AdminDashboardCompanyEmployees() {
                   variant={ButtonColorVariants.SECONDARY}
                   icon={ButtonIconVariants.DOWNLOAD}
                 >
-                  Descargar colaboradores
+                  Descargar
                 </Button>
               </Link>
 
@@ -166,7 +157,16 @@ export default function AdminDashboardCompanyEmployees() {
                 variant={ButtonColorVariants.SECONDARY}
                 icon={ButtonIconVariants.UPLOAD}
               >
-                Cargar colaboradores
+                Cargar
+              </Button>
+
+              <Button
+                className="flex w-full items-center whitespace-nowrap sm:w-auto"
+                href="create"
+                size="SM"
+                icon={ButtonIconVariants.CREATE}
+              >
+                Crear
               </Button>
             </>
           }
