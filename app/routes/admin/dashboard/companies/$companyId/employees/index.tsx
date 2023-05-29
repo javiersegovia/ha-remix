@@ -40,16 +40,16 @@ export const loader = async ({ request, params }: LoaderArgs) => {
     },
   })
   const { itemsPerPage } = constants
-
+  // {
+  //   take: itemsPerPage,
+  //   skip: (currentPage - 1) * itemsPerPage || 0,
+  // }
   return json({
-    employees: await getEmployeesByCompanyId(company.id, {
-      take: itemsPerPage,
-      skip: (currentPage - 1) * itemsPerPage || 0,
-    }),
-    pagination: {
-      currentPage,
-      totalPages: Math.ceil(employeeCount / itemsPerPage),
-    },
+    employees: await getEmployeesByCompanyId(company.id),
+    // pagination: {
+    //   currentPage,
+    //   totalPages: Math.ceil(employeeCount / itemsPerPage),
+    // },
     companyName: company.name,
   })
 }
@@ -57,19 +57,19 @@ export const loader = async ({ request, params }: LoaderArgs) => {
 export const meta: MetaFunction<typeof loader> = ({ data }) => {
   if (!data) {
     return {
-      title: '[Admin] Compañía no encontrada | HoyAdelantas',
+      title: '[Admin] Compañía no encontrada | HoyTrabajas Beneficios',
     }
   }
 
   const { companyName } = data
 
   return {
-    title: `[Admin] Colaboradores de ${companyName} | HoyAdelantas`,
+    title: `[Admin] Colaboradores de ${companyName} | HoyTrabajas Beneficios`,
   }
 }
 
 export default function AdminDashboardCompanyEmployees() {
-  const { employees, pagination } = useLoaderData<typeof loader>()
+  const { employees } = useLoaderData<typeof loader>()
 
   const headings = [
     'Nombre completo',
@@ -174,7 +174,7 @@ export default function AdminDashboardCompanyEmployees() {
         />
 
         {employees?.length > 0 ? (
-          <Table headings={headings} rows={rows} pagination={pagination} />
+          <Table headings={headings} rows={rows} />
         ) : (
           <p className="text-lg">La lista de colaboradores está vacía.</p>
         )}

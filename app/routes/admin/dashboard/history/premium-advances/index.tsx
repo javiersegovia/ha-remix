@@ -22,18 +22,18 @@ export const loader = async ({ request }: LoaderArgs) => {
   const currentPage = parseFloat(page || '1')
   const premiumAdvanceCount = await prisma.premiumAdvance.count()
   const { itemsPerPage } = constants
-
-  const premiumAdvances = await getPremiumAdvances(undefined, {
-    take: itemsPerPage,
-    skip: (currentPage - 1) * itemsPerPage || 0,
-  })
+  // {
+  //   take: itemsPerPage,
+  //   skip: (currentPage - 1) * itemsPerPage || 0,
+  // }
+  const premiumAdvances = await getPremiumAdvances(undefined)
 
   return json({
     premiumAdvances,
-    pagination: {
-      currentPage,
-      totalPages: Math.ceil(premiumAdvanceCount / itemsPerPage),
-    },
+    // pagination: {
+    //   currentPage,
+    //   totalPages: Math.ceil(premiumAdvanceCount / itemsPerPage),
+    // },
   })
 }
 
@@ -44,7 +44,7 @@ export const meta: MetaFunction = () => {
 }
 
 export default function PremiumAdvancesIndexRoute() {
-  const { premiumAdvances, pagination } = useLoaderData<typeof loader>()
+  const { premiumAdvances } = useLoaderData<typeof loader>()
   const headings = [
     'Colaborador',
     'Dinero solicitado',
@@ -117,7 +117,7 @@ export default function PremiumAdvancesIndexRoute() {
             </Title>
           </div>
 
-          <Table headings={headings} rows={rows} pagination={pagination} />
+          <Table headings={headings} rows={rows} />
         </>
       ) : (
         <section className="m-auto pt-20 pb-20 text-center">
