@@ -95,7 +95,7 @@ export default function BenefitDetailsRoute() {
     <Container className="mx-auto my-10 w-full">
       <GoBack redirectTo="/dashboard/overview" />
 
-      <section className="mb-16 flex w-full justify-between">
+      <section className="mb-16 flex w-full flex-col sm:justify-between sm:flex-row">
         <div>
           <Title>{name}</Title>
           <div className="mt-10 flex gap-8">
@@ -124,7 +124,7 @@ export default function BenefitDetailsRoute() {
         {/* If isValidURL returns true, then it means the URL must be an externa route */}
         {buttonHref && isValidURL(buttonHref) ? (
           <a
-            className="block"
+            className="block mt-4 sm:mt-0 w-full sm:w-auto"
             href={buttonHref}
             target="_blank"
             rel="noreferrer noopener"
@@ -141,7 +141,7 @@ export default function BenefitDetailsRoute() {
               disabled={!buttonHref}
               size="MD"
               className={clsx(
-                'w-auto',
+                'sm:w-auto w-full',
                 !buttonHref && 'bg-gray-300 text-gray-400 opacity-100'
               )}
             >
