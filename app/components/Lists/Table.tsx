@@ -36,7 +36,7 @@ export const Table = ({
     <div className="flex flex-col">
       <div className="-my-2 overflow-x-auto xl:-mx-8">
         <div className="inline-block min-w-full py-2 align-middle xl:px-8">
-          <div className="overflow-hidden border-b border-gray-200 shadow sm:rounded-3xl">
+          <div className="overflow-hidden border-b border-gray-200 shadow sm:rounded-[20px]">
             <table className="min-w-full divide-y divide-gray-200">
               <thead>
                 <tr>

@@ -1,5 +1,7 @@
-const colors = require('tailwindcss/colors')
-const defaultTheme = require('tailwindcss/defaultTheme')
+import type { Config } from "tailwindcss";
+
+import colors from 'tailwindcss/colors';
+import defaultTheme from 'tailwindcss/defaultTheme';
 
 const screens = {
   ...defaultTheme.screens,
@@ -7,8 +9,8 @@ const screens = {
   '4xl': '2200px',
 }
 
-/** @type {import('tailwindcss').Config} */
-module.exports = {
+
+export default {
   content: ['./app/**/*.{ts,tsx,jsx,js}'],
   theme: {
     screens,
@@ -73,4 +75,4 @@ module.exports = {
     },
   },
   plugins: [require('@tailwindcss/typography')],
-}
+} satisfies Config;

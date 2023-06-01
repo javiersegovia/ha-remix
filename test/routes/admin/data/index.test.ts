@@ -1,6 +1,6 @@
 import { vi } from 'vitest'
 import { prisma } from '~/db.server'
-import { loader as adminDashboardDataIndexLoader } from '~/routes/admin/dashboard/data'
+import { loader as adminDashboardDataIndexLoader } from '~/routes/admin.dashboard.data._index'
 
 vi.mock('~/session.server', () => {
   return {

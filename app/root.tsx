@@ -49,10 +49,10 @@ export const links: LinksFunction = () => {
       crossOrigin: 'anonymous',
     },
     { rel: 'shortcut icon', href: '/favicon.png' },
-    { rel: 'stylesheet', href: baseStyles },
     { rel: 'stylesheet', href: nProgressStyles },
     { rel: 'stylesheet', href: reactSlickStylesheetUrl },
     { rel: 'stylesheet', href: reactSlickThemeStylesheetUrl },
+    { rel: 'stylesheet', href: baseStyles },
     {
       rel: 'stylesheet',
       href: 'https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700&display=swap',

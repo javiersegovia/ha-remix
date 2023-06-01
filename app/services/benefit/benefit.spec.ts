@@ -46,6 +46,7 @@ describe('getBenefitById', () => {
       buttonText,
       slug,
       description: null,
+      shortDescription: null,
       instructions: [],
       mainImage: null,
       benefitHighlight: null,

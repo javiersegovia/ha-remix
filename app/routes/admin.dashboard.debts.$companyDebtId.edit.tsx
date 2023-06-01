@@ -1,5 +1,5 @@
 import type { ActionArgs } from '@remix-run/server-runtime'
-import type { loader as companyDebtLoader } from './admin/dashboard/debts/$companyDebtId'
+import type { loader as companyDebtLoader } from './admin.dashboard.debts.$companyDebtId'
 import type { ExtractRemixResponse } from '~/utils/type-helpers'
 
 import { redirect } from '@remix-run/server-runtime'

@@ -219,7 +219,7 @@ export default function DashboardIndexRoute() {
                     : 'Beneficio destacado del mes'}
                 </Title>
 
-                <Carousel className="mt-5 rounded-lg">
+                <Carousel className="mt-5">
                   {carouselBenefitHighlights.map((benefitHighlight) => (
                     <BenefitHighlightCard
                       key={benefitHighlight!.id}

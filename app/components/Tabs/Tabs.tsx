@@ -43,7 +43,7 @@ export const Tabs = ({
       <div
         className={twMerge(
           clsx(
-            'relative inline-flex w-full flex-col rounded-lg border border-steelBlue-200/50 bg-steelBlue-100/50 text-sm lg:w-auto lg:flex-row',
+            'relative inline-flex w-full flex-col rounded-[2rem] border border-steelBlue-200/50 bg-steelBlue-100/50 text-sm lg:w-auto lg:flex-row',
 
             design === TabDesign.UNDERLINE &&
               'grid rounded-none border-0 border-b-2 bg-transparent lg:grid-flow-col'
@@ -68,7 +68,7 @@ export const Tabs = ({
                   `${pathname}${search}`,
                   item.path
                 ) &&
-                  'rounded-lg bg-white px-16 font-bold tracking-wide text-steelBlue-700'
+                  'rounded-[2rem] bg-white px-16 font-bold tracking-wide text-steelBlue-700'
               ),
 
               currentLocationIsInsideNavPath(

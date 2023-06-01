@@ -4,7 +4,7 @@ import { vi } from 'vitest'
 import { truncateDB } from 'test/helpers/truncateDB'
 import { createMockEmployee, MOCK_USER } from 'test/setup-test-env'
 
-import { loader as dashboardOverviewLoader } from '~/routes/dashboard/overview'
+import { loader as dashboardOverviewLoader } from '~/routes/dashboard.overview'
 import { prisma } from '~/db.server'
 import { MembershipFactory } from '~/services/membership/membership.factory'
 import { BenefitFactory } from '~/services/benefit/benefit.factory'
@@ -117,7 +117,6 @@ describe('LOADER /dashboard/overview', () => {
       benefitCategories: [],
       availablePoints: 0,
       firstName: employee.user.firstName,
-      lastName: employee.user.lastName,
     })
   })
 
@@ -184,7 +183,6 @@ describe('LOADER /dashboard/overview', () => {
       benefitHighlights: [],
       availablePoints: 0,
       firstName: employee.user.firstName,
-      lastName: employee.user.lastName,
     })
   })
 
