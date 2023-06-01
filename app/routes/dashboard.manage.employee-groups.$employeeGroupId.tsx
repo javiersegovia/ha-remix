@@ -104,14 +104,14 @@ const EmployeeGroupDetailsRoute = () => {
         <section className="mb-7 flex flex-col sm:flex-row items-center justify-between">
           <Title className="text-steelBlue-800">{employeeGroup.name}</Title>
           <div className="flex mt-4 sm:mt-0 justify-center sm:justify-start flex-wrap sm:flex-nowrap items-center gap-4">
-            <Button
+            {/* <Button
               href="add"
               className=""
               icon={ButtonIconVariants.CREATE}
               size="XS"
             >
               Añadir colaboradores
-            </Button>
+            </Button> */}
 
             <Link
               to="update"
