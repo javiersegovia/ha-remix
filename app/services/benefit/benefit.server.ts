@@ -47,6 +47,7 @@ export const getBenefitById = async (benefitId: Benefit['id']) => {
       description: true,
       shortDescription: true,
       instructions: true,
+      isHighlighted: true,
       mainImage: {
         select: {
           id: true,
@@ -95,6 +96,7 @@ export const createBenefit = async (
     shortDescription,
     description,
     instructions,
+    isHighlighted,
     benefitHighlight,
   } = data
 
@@ -111,7 +113,7 @@ export const createBenefit = async (
     undefined
 
   if (benefitHighlight) {
-    const { title, description, imageKey, isActive } = benefitHighlight
+    const { title, description, imageKey } = benefitHighlight
 
     if (!imageKey) {
       throw badRequest({
@@ -124,7 +126,6 @@ export const createBenefit = async (
       create: {
         title,
         description,
-        isActive,
         buttonHref: benefitHighlight.buttonHref,
         buttonText: benefitHighlight.buttonText,
         image: {
@@ -150,6 +151,7 @@ export const createBenefit = async (
         instructions: {
           set: instructions?.filter((i): i is string => Boolean(i)) || [],
         },
+        isHighlighted,
         mainImage: createMainImage,
         benefitHighlight: createBenefitHighlight,
         companyBenefit: companyId
@@ -278,7 +280,7 @@ export const updateBenefitById = async (
   }
 
   if (benefitHighlight) {
-    const { title, description, imageKey, isActive } = benefitHighlight
+    const { title, description, imageKey } = benefitHighlight
 
     // If we DON'T have an existing BenefitHighlight, we should create it.
     // Hence, we should throw an error if we don't have an imageKey.
@@ -295,7 +297,6 @@ export const updateBenefitById = async (
           create: {
             title,
             description,
-            isActive,
             buttonHref: benefitHighlight.buttonHref,
             buttonText: benefitHighlight.buttonText,
             image: {
@@ -310,7 +311,6 @@ export const updateBenefitById = async (
           update: {
             title,
             description,
-            isActive,
             buttonHref: benefitHighlight.buttonHref,
             buttonText: benefitHighlight.buttonText,
             image:

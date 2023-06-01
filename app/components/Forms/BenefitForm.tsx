@@ -3,7 +3,11 @@ import type { BenefitInputSchema } from '~/services/benefit/benefit.schema'
 
 import clsx from 'clsx'
 import { Form } from '@remix-run/react'
-import { ValidatedForm, useControlField } from 'remix-validated-form'
+import {
+  ValidatedForm,
+  useControlField,
+  useFormContext,
+} from 'remix-validated-form'
 import { benefitValidator } from '~/services/benefit/benefit.schema'
 
 import { ButtonColorVariants } from '../Button'
@@ -72,6 +76,14 @@ export const BenefitForm = ({
     'isHighlighted',
     formId
   )
+  const [bH] = useControlField<boolean>('benefitHighlight', formId)
+
+  const { getValues, fieldErrors, defaultValues: x2 } = useFormContext(formId)
+
+  const formData = getValues()
+  const bH2 = formData.get('benefitHighlight')
+
+  console.log({ bH, bH2, fieldErrors, x2 })
 
   return (
     <Box className="mt-auto flex w-full flex-col  space-y-5 rounded-xl p-5 md:w-auto">
@@ -80,6 +92,9 @@ export const BenefitForm = ({
         encType="multipart/form-data"
         validator={benefitValidator}
         method="post"
+        onSubmit={async (d) => {
+          console.log({ d })
+        }}
         defaultValues={{
           name,
           buttonText,
