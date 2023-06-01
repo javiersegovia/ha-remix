@@ -10,6 +10,9 @@ export const getIdentityDocumentTypes = () => {
       id: true,
       name: true,
     },
+    orderBy: {
+      name: 'asc',
+    },
   })
 }
 

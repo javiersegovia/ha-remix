@@ -1,11 +1,11 @@
 import type { SerializeFrom } from '@remix-run/server-runtime'
-import type { loader as benefitIdLoader } from '../$benefitId'
+import type { loader as benefitIdLoader } from './dashboard.benefits.$benefitId'
 
 import { useMatchesData } from '~/utils/utils'
 
 export default function BenefitDetailsDescriptionRoute() {
   const data = useMatchesData(
-    'routes/dashboard/benefits/$benefitId'
+    'routes/dashboard.benefits.$benefitId'
   ) as SerializeFrom<typeof benefitIdLoader>
 
   if (!data || !data.benefit) {

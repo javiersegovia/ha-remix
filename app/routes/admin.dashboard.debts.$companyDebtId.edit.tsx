@@ -1,5 +1,5 @@
 import type { ActionArgs } from '@remix-run/server-runtime'
-import type { loader as companyDebtLoader } from '../$companyDebtId'
+import type { loader as companyDebtLoader } from './admin/dashboard/debts/$companyDebtId'
 import type { ExtractRemixResponse } from '~/utils/type-helpers'
 
 import { redirect } from '@remix-run/server-runtime'
@@ -55,7 +55,7 @@ export const action = async ({ request, params }: ActionArgs) => {
 
 export default function UpdateDebtModalRoute() {
   const routeData = useMatchesData(
-    'routes/admin/dashboard/debts/$companyDebtId'
+    'routes/admin.dashboard.debts.$companyDebtId'
   )
   const { companyDebt } =
     (routeData as ExtractRemixResponse<typeof companyDebtLoader>) || {}

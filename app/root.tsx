@@ -33,7 +33,7 @@ import reactSlickStylesheetUrl from 'slick-carousel/slick/slick.css'
 import reactSlickThemeStylesheetUrl from 'slick-carousel/slick/slick-theme.css'
 
 import { getUser } from './session.server'
-import tailwindStylesheetUrl from './styles/tailwind.css'
+import baseStyles from './styles/base.css'
 import ErrorContainer from './containers/ErrorContainer'
 
 export const links: LinksFunction = () => {
@@ -49,10 +49,10 @@ export const links: LinksFunction = () => {
       crossOrigin: 'anonymous',
     },
     { rel: 'shortcut icon', href: '/favicon.png' },
+    { rel: 'stylesheet', href: baseStyles },
     { rel: 'stylesheet', href: nProgressStyles },
     { rel: 'stylesheet', href: reactSlickStylesheetUrl },
     { rel: 'stylesheet', href: reactSlickThemeStylesheetUrl },
-    { rel: 'stylesheet', href: tailwindStylesheetUrl },
     {
       rel: 'stylesheet',
       href: 'https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700&display=swap',

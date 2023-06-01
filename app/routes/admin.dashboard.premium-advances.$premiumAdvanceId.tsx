@@ -28,7 +28,7 @@ export const loader = async ({ request, params }: LoaderArgs) => {
   if (!premiumAdvanceId) {
     throw notFound({
       message: 'No se ha encontrado el ID del adelanto de prima',
-      redirect: '/admin/dashboard/premium-advances',
+      redirect: '/admin/dashboard/history/premium-advances',
     })
   }
 
@@ -37,7 +37,7 @@ export const loader = async ({ request, params }: LoaderArgs) => {
   if (!premiumAdvance) {
     throw notFound({
       message: 'No se ha encontrado información sobre el adelanto de prima',
-      redirect: '/admin/dashboard/premium-advances',
+      redirect: '/admin/dashboard/history/premium-advances',
     })
   }
 

@@ -14,7 +14,7 @@ import { requirePermissionByUserId } from '~/services/permissions/permissions.se
 import { getEmployeeGroupsByCompanyId } from '~/services/employee-group/employee-group.server'
 import { ButtonIconVariants } from '~/components/Button'
 import { Tabs } from '~/components/Tabs/Tabs'
-import { employeeTabPaths } from '../employees'
+import { employeeTabPaths } from './dashboard.manage.employees'
 import { TableIsEmpty } from '~/components/Lists/TableIsEmpty'
 
 export const loader = async ({ request }: LoaderArgs) => {
@@ -103,26 +103,27 @@ export default function EmployeeGroupIndexRoute() {
       <Container className="w-full pb-10">
         <Tabs items={employeeTabPaths} className="mt-10 mb-8" />
 
-        <TitleWithActions
-          className="mb-10"
-          title="Grupos de Colaboradores"
-          actions={
-            <Button
-              href="/dashboard/manage/employee-groups/create"
-              size="SM"
-              icon={ButtonIconVariants.CREATE}
-            >
-              Crear grupo
-            </Button>
-          }
-        />
-
         {employeeGroups?.length > 0 ? (
-          <Table headings={headings} rows={rows} />
+          <>
+            <TitleWithActions
+              className="mb-10"
+              title="Grupos de Colaboradores"
+              actions={
+                <Button
+                  href="/dashboard/manage/employee-groups/create"
+                  size="SM"
+                  icon={ButtonIconVariants.CREATE}
+                >
+                  Crear grupo
+                </Button>
+              }
+            />
+            <Table headings={headings} rows={rows} />
+          </>
         ) : (
           <TableIsEmpty
             title="Aún no tienes ningún grupo de colaboradores"
-            description="¿Qué esperas para añadir un colaboradores?"
+            description="¿Qué esperas para añadir un grupo?"
             actions={
               <Button
                 href="/dashboard/manage/employee-groups/create"

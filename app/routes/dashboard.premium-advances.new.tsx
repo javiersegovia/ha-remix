@@ -21,7 +21,7 @@ import {
 } from '~/services/premium-advance/premium-advance.server'
 import { ErrorText } from '~/components/Error/ErrorText'
 import { Button, ButtonColorVariants } from '~/components/Button'
-import { formatMoney } from '../../../utils/formatMoney'
+import { formatMoney } from '../utils/formatMoney'
 import { getEmployeeEnabledBenefits } from '~/services/permissions/permissions.server'
 import { getRequestReasons } from '~/services/payroll-advance/payroll-advance.server'
 import { AdvanceTotalCost } from '~/containers/dashboard/Advances/AdvanceTotalCost'

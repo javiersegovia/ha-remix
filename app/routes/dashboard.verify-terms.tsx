@@ -2,7 +2,6 @@ import type { LoaderArgs } from '@remix-run/server-runtime'
 
 import { useLoaderData } from '@remix-run/react'
 import { redirect } from '@remix-run/server-runtime'
-import React from 'react'
 import { Button } from '~/components/Button'
 import { Box } from '~/components/Layout/Box'
 import {

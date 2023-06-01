@@ -19,6 +19,7 @@ import { constants } from '~/config/constants'
 import { formatDate } from '~/utils/formatDate'
 import { formatMoney } from '~/utils/formatMoney'
 import { prisma } from '~/db.server'
+import { $path } from 'remix-routes'
 
 export const loader = async ({ request, params }: LoaderArgs) => {
   await requireAdminUserId(request)
@@ -141,7 +142,9 @@ export default function AdminCompanyDebtDetailsRoute() {
   const rows: TableRowProps[] = payrollAdvances.map(
     ({ id, company, employee, totalAmount, requestedAmount, createdAt }) => ({
       rowId: id,
-      href: `/admin/dashboard/payroll-advances/${id}`,
+      href: $path('/admin/dashboard/payroll-advances/:payrollAdvanceId', {
+        payrollAdvanceId: id,
+      }),
       items: [
         <>
           {(employee?.user.firstName || employee?.user.lastName) && (
@@ -180,7 +183,9 @@ export default function AdminCompanyDebtDetailsRoute() {
         <div className="pb-10">
           <Title>Novedades de {monthName}</Title>
           <Link
-            to={`/admin/dashboard/companies/${companyDebt.companyId}`}
+            to={$path('/admin/dashboard/companies/:companyId', {
+              companyId: companyDebt.companyId,
+            })}
             className="cursor-pointer font-medium text-gray-900 underline"
           >
             {companyDebt.company.name}

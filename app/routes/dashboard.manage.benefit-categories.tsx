@@ -12,9 +12,10 @@ import { Table } from '~/components/Lists/Table'
 import { Tabs } from '~/components/Tabs/Tabs'
 import { useToastError } from '~/hooks/useToastError'
 import { requireEmployee } from '~/session.server'
-import { manageBenefitPaths } from './benefits'
+import { manageBenefitPaths } from './dashboard.manage.benefits._index'
 import { getBenefitCategoriesByCompanyId } from '~/services/benefit-category/benefit-category.server'
 import { requirePermissionByUserId } from '~/services/permissions/permissions.server'
+import { TableIsEmpty } from '~/components/Lists/TableIsEmpty'
 
 export const loader = async ({ request }: LoaderArgs) => {
   const employee = await requireEmployee(request)
@@ -55,20 +56,38 @@ export default function BenefitCategoriesIndexRoute() {
       <Container className="w-full">
         <Tabs items={manageBenefitPaths} className="mt-10 mb-8" />
 
-        <TitleWithActions
-          className="mb-10"
-          title="Categorías de beneficios"
-          actions={
-            <Button href="create" size="SM" icon={ButtonIconVariants.CREATE}>
-              Crear categoría de beneficio
-            </Button>
-          }
-        />
-
         {benefitCategories?.length > 0 ? (
-          <Table headings={headings} rows={rows} />
+          <>
+            <TitleWithActions
+              className="mb-10"
+              title="Categorías de beneficios"
+              actions={
+                <Button
+                  href="create"
+                  size="SM"
+                  icon={ButtonIconVariants.CREATE}
+                >
+                  Crear categoría de beneficio
+                </Button>
+              }
+            />
+            <Table headings={headings} rows={rows} />
+          </>
         ) : (
-          <p>No se han encontrado categorías de beneficios</p>
+          <TableIsEmpty
+            title="Aún no tienes ninguna categoría"
+            description="¿Qué esperas para añadir la primera?"
+            actions={
+              <Button
+                href="/dashboard/manage/benefit-categories/create"
+                size="SM"
+                icon={ButtonIconVariants.CREATE}
+              >
+                Crear categoría de beneficio
+              </Button>
+            }
+            className="mt-10"
+          />
         )}
       </Container>
 

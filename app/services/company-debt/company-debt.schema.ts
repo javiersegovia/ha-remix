@@ -5,14 +5,14 @@ import { zfd } from 'zod-form-data'
 const companyDebtSchema = z.object({
   fiatDebt: z
     .object({
-      totalAmount: zfd.numeric(z.number()),
-      currentAmount: zfd.numeric(z.number()),
+      totalAmount: zfd.numeric(z.number().default(0)),
+      currentAmount: zfd.numeric(z.number().default(0)),
     })
     .nullish(),
   cryptoDebt: z
     .object({
-      totalAmount: zfd.numeric(z.number()),
-      currentAmount: zfd.numeric(z.number()),
+      totalAmount: zfd.numeric(z.number().default(0)),
+      currentAmount: zfd.numeric(z.number().default(0)),
     })
     .nullish(),
 })

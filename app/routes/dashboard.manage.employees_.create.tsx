@@ -60,11 +60,11 @@ export const loader = async ({ request, params }: LoaderArgs) => {
   const tabPaths: TabItem[] = [
     {
       title: 'Cuenta de usuario',
-      path: `/dashboard/manage/employees/create/account`,
+      path: `/dashboard/manage/employees/create`,
     },
     {
       title: 'Información complementaria',
-      path: `/dashboard/manage/employees/create/account`,
+      path: `/dashboard/manage/employees/create`,
       disabled: true,
     },
   ]
@@ -72,7 +72,7 @@ export const loader = async ({ request, params }: LoaderArgs) => {
   if (canManageFinancialInformation) {
     tabPaths.push({
       title: 'Cuenta bancaria',
-      path: `/dashboard/manage/employees/create/account`,
+      path: `/dashboard/manage/employees/create`,
       disabled: true,
     })
   }
