@@ -11,7 +11,7 @@ export function selectStyles<isMulti extends boolean>(
     }),
     control: (_, state) => ({
       display: 'flex',
-      borderRadius: '8px',
+      borderRadius: '2rem',
       paddingTop: '0.5rem',
       paddingBottom: '0.5rem',
       paddingLeft: '0.75rem',

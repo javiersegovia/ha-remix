@@ -4,7 +4,7 @@ import type { ITaxItem } from '~/services/payroll-advance/payroll-advance.interf
 import { Box } from '~/components/Layout/Box'
 import { SubmitButton } from '~/components/SubmitButton'
 import { CurrencySymbol } from '~/components/FormFields/CurrencyInput'
-import { CREATE_PREMIUM_ADVANCE_SUBACTION } from '~/routes/dashboard/premium-advances/new'
+import { CREATE_PREMIUM_ADVANCE_SUBACTION } from '~/routes/dashboard.premium-advances.new'
 import { formatMoney } from '~/utils/formatMoney'
 import { AdvanceSummaryItem } from './AdvanceSummaryItem'
 import { ValidatedForm } from 'remix-validated-form'

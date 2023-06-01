@@ -42,6 +42,7 @@ export const BenefitFactory = Factory.define<ExtendedBenefit>(
 
       benefitCategoryId: null,
       description: null,
+      shortDescription: null,
       instructions: [],
       mainImageId: null,
     }

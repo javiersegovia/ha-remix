@@ -1,5 +1,5 @@
 import { truncateDB } from '../../helpers/truncateDB'
-import { loader as cityLoader } from '~/routes/__api/cities'
+import { loader as cityLoader } from '~/routes/_api.cities'
 import { prisma } from '~/db.server'
 
 beforeEach(async () => {

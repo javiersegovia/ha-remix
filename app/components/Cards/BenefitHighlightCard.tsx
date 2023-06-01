@@ -18,7 +18,7 @@ export const BenefitHighlightCard = ({
   benefitHighlight,
 }: BenefitHighlightCardProps) => {
   return (
-<Box className="grid h-full grid-cols-5 items-stretch gap-2 overflow-hidden rounded-lg xl:flex-row">
+<Box className="grid h-full grid-cols-5 items-stretch gap-2 overflow-hidden rounded-3xl xl:flex-row">
   {/* Imagen */}
   <img
     src={benefitHighlight.image?.url}
@@ -40,7 +40,7 @@ export const BenefitHighlightCard = ({
       <Button
         href={benefitHighlight.buttonHref}
         external={isValidURL(benefitHighlight.buttonHref)}
-        className="w-full"
+        className="w-auto"
       >
         {benefitHighlight.buttonText}
       </Button>

@@ -6,7 +6,7 @@ import { Select } from '../FormFields/Select'
 import { Input } from '../FormFields/Input'
 import { SubmitButton } from '../SubmitButton'
 import { calculatePremiumAdvanceValidator } from '~/schemas/calculate-premium-advance.schema'
-import { CALCULATE_SUBACTION } from '~/routes/dashboard/premium-advances/new'
+import { CALCULATE_SUBACTION } from '~/routes/dashboard.premium-advances.new'
 import { ButtonColorVariants } from '../Button'
 
 interface RequestPremiumAdvanceFormProps {

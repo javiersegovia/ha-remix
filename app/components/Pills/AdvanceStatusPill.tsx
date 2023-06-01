@@ -23,7 +23,7 @@ export const AdvanceStatusPill = ({ status }: AdvanceStatusPillProps) => {
   return (
     <span
       className={clsx(
-        'inline-flex min-w-[6rem] justify-center rounded-md px-4 py-1 text-xs font-semibold leading-5',
+        'inline-flex min-w-[6rem] justify-center rounded-3xl px-4 py-1 text-xs font-semibold leading-5',
         status === PayrollAdvanceStatus.REQUESTED &&
           'bg-yellow-100 text-yellow-700',
 

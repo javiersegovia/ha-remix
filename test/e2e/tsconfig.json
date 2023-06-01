@@ -1,8 +1,0 @@
-{
-  "extends": "../../cypress/tsconfig.json",
-  "include": ["**/*.ts", "../../cypress/**/*.ts"],
-  "exclude": [
-    "../../node_modules/@types/jest",
-    "../../node_modules/@testing-library/jest-dom"
-  ]
-}

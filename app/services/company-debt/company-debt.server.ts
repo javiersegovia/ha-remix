@@ -11,6 +11,7 @@ export const getCompanyDebtById = async (companyDebtId: string) => {
   const companyDebt = await prisma.companyDebt.findUnique({
     where: { id: companyDebtId },
     select: {
+      id: true,
       createdAt: true,
       companyId: true,
       company: {

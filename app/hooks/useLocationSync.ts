@@ -1,6 +1,6 @@
 import type { Country, State } from '@prisma/client'
-import type { loader as cityLoader } from '~/routes/__api/cities'
-import type { loader as stateLoader } from '~/routes/__api/states'
+import type { loader as cityLoader } from '~/routes/_api.cities'
+import type { loader as stateLoader } from '~/routes/_api.states'
 
 import { useFetcher } from '@remix-run/react'
 import { useEffect } from 'react'

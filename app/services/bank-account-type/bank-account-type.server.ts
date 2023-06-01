@@ -10,6 +10,9 @@ export const getBankAccountTypes = () => {
       id: true,
       name: true,
     },
+    orderBy: {
+      name: 'asc',
+    },
   })
 }
 

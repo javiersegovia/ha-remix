@@ -27,7 +27,7 @@ export function getEnumOptionValue<
   return options.find((option) => option.value === value)
 }
 
-export const zDate = (zodDate: ZodDate | ZodNullable<ZodOptional<ZodDate>>) => {
+export const zDate = (zodDate: ZodDate | ZodOptional<ZodNullable<ZodDate>>) => {
   return zfd.text(
     z.preprocess((value) => {
       if (typeof value === 'string') return new Date(value)

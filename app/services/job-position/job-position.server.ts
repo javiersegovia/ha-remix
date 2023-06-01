@@ -10,6 +10,7 @@ export const getJobPositions = async () => {
       id: true,
       name: true,
     },
+    orderBy: { name: 'asc' },
   })
 }
 

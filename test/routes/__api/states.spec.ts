@@ -1,5 +1,5 @@
 import { truncateDB } from '../../helpers/truncateDB'
-import { loader as stateLoader } from '~/routes/__api/states'
+import { loader as stateLoader } from '~/routes/_api.states'
 import { prisma } from '~/db.server'
 
 beforeEach(async () => {
