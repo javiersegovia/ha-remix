@@ -71,7 +71,7 @@ export default function BenefitDetailsRoute() {
     buttonText,
     mainImage,
     name,
-    benefitHighlight,
+    isHighlighted,
     shortDescription,
     instructions,
   } = benefit
@@ -109,7 +109,7 @@ export default function BenefitDetailsRoute() {
             />
 
             <div>
-              {benefitHighlight?.isActive && (
+              {isHighlighted && (
                 <p className="mt-1 inline-flex items-center gap-2 rounded-3xl bg-indigo-200 px-2 py-1 text-sm font-semibold leading-5 text-indigo-600">
                   <FaStar className="mb-[2px] text-xs" />
                   <span>Destacado</span>

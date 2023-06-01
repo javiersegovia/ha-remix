@@ -41,7 +41,7 @@ interface BenefitFormProps {
     benefitHighlight:
       | (Pick<
           BenefitHighlight,
-          'title' | 'buttonHref' | 'buttonText' | 'description' | 'isActive'
+          'title' | 'buttonHref' | 'buttonText' | 'description'
         > & {
           image?: Pick<Image, 'key' | 'url'> | null
         })
@@ -67,7 +67,7 @@ export const BenefitForm = ({
     shortDescription,
     instructions,
     benefitHighlight,
-    isHighlighted = true,
+    isHighlighted,
   } = defaultValues || {}
 
   const formId = 'BenefitForm'
@@ -76,14 +76,6 @@ export const BenefitForm = ({
     'isHighlighted',
     formId
   )
-  const [bH] = useControlField<boolean>('benefitHighlight', formId)
-
-  const { getValues, fieldErrors, defaultValues: x2 } = useFormContext(formId)
-
-  const formData = getValues()
-  const bH2 = formData.get('benefitHighlight')
-
-  console.log({ bH, bH2, fieldErrors, x2 })
 
   return (
     <Box className="mt-auto flex w-full flex-col  space-y-5 rounded-xl p-5 md:w-auto">

@@ -52,7 +52,7 @@ export default function BenefitIndexRoute() {
   const headings = ['Nombre', '']
 
   const rows: TableRowProps[] = benefits?.map(
-    ({ id, name, benefitHighlight }) => ({
+    ({ id, name, isHighlighted }) => ({
       rowId: id,
       href: `${id}/details`,
       items: [
@@ -64,7 +64,7 @@ export default function BenefitIndexRoute() {
             {name}
           </span>
         </>,
-        benefitHighlight?.isActive ? (
+        isHighlighted ? (
           <div className="text-right">
             <p className="flex-end inline-flex items-center gap-2 rounded-md bg-indigo-200 px-2 py-1 text-right text-sm font-semibold leading-5 text-indigo-600">
               <FaStar className="mb-[2px] text-xs" />

@@ -134,6 +134,7 @@ const AdminDashboardBenefitDetailsIndexRoute = () => {
     shortDescription,
     instructions,
     benefitHighlight,
+    isHighlighted,
     mainImage,
   } = benefit
 
@@ -150,6 +151,7 @@ const AdminDashboardBenefitDetailsIndexRoute = () => {
           buttonText,
           buttonHref,
           slug,
+          isHighlighted,
           benefitCategoryId,
           description,
           shortDescription,

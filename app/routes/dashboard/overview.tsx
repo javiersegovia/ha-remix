@@ -121,7 +121,7 @@ export const loader = async ({ request }: LoaderArgs) => {
   const benefits = await getEmployeeEnabledBenefits(employee.userId)
 
   const benefitHighlights = benefits.reduce((acc, benefit) => {
-    if (benefit.benefitHighlight && benefit.benefitHighlight.isActive) {
+    if (benefit.benefitHighlight && benefit.isHighlighted) {
       acc.push(benefit.benefitHighlight)
     }
     return acc
@@ -273,7 +273,7 @@ export default function DashboardIndexRoute() {
                 <button
                   className={twMerge(
                     clsx(
-                      'rounded-full bg-blue-100 py-1 px-4',
+                      'rounded-full bg-blue-100 px-4 py-1',
                       !selectedBenefitCategoryId &&
                         'bg-steelBlue-700 text-white'
                     )
@@ -289,7 +289,7 @@ export default function DashboardIndexRoute() {
                     key={benefitCategory?.id}
                     className={twMerge(
                       clsx(
-                        'rounded-full bg-blue-100 py-1 px-4',
+                        'rounded-full bg-blue-100 px-4 py-1',
                         benefitCategory?.id === selectedBenefitCategoryId &&
                           'bg-steelBlue-700 text-white'
                       )

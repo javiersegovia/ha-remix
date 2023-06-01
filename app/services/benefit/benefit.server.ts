@@ -20,11 +20,7 @@ export const getBenefits = async (
     select: {
       id: true,
       name: true,
-      benefitHighlight: {
-        select: {
-          isActive: true,
-        },
-      },
+      isHighlighted: true,
     },
     orderBy: {
       name: 'asc',
@@ -224,6 +220,7 @@ export const updateBenefitById = async (
     buttonHref,
     slug,
     mainImageKey,
+    isHighlighted,
     benefitCategoryId,
     benefitHighlight,
     description,
@@ -337,6 +334,7 @@ export const updateBenefitById = async (
       slug: slug || null,
       mainImage: createMainImage,
       shortDescription,
+      isHighlighted,
       description,
       instructions: {
         set: instructions?.filter((i): i is string => Boolean(i)) || [],
@@ -434,11 +432,7 @@ export const getCompanyBenefitsByCompanyId = async (
     select: {
       id: true,
       name: true,
-      benefitHighlight: {
-        select: {
-          isActive: true,
-        },
-      },
+      isHighlighted: true,
     },
     orderBy: {
       name: 'asc',
