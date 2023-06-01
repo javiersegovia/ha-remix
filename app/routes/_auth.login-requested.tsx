@@ -13,7 +13,7 @@ export async function loader({ request }: LoaderArgs) {
 
 export const meta: MetaFunction = () => {
   return {
-    title: 'Enlace enviado | HoyAdelantas',
+    title: 'Enlace enviado | HoyTrabajas Beneficios',
   }
 }
 

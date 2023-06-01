@@ -10,6 +10,7 @@ import { Input } from '~/components/FormFields/Input'
 import { Title } from '~/components/Typography/Title'
 import { SubmitButton } from '~/components/SubmitButton'
 import { Button, ButtonColorVariants } from '~/components/Button'
+import { $path } from 'remix-routes'
 
 export async function loader({ request }: LoaderArgs) {
   const userId = await getUserIdFromSession(request)
@@ -32,7 +33,7 @@ export async function action({ request }: ActionArgs) {
 
 export const meta: MetaFunction = () => {
   return {
-    title: 'Inicio de sesión | HoyAdelantas',
+    title: 'Inicio de sesión | HoyTrabajas Beneficios',
   }
 }
 
@@ -77,7 +78,7 @@ export default function LoginEmailRoute() {
             <div className="pt-3">
               <Button
                 type="button"
-                href="/login"
+                href={$path('/login')}
                 variant={ButtonColorVariants.SECONDARY}
                 className="text-sm"
               >
@@ -86,9 +87,10 @@ export default function LoginEmailRoute() {
             </div>
           </ValidatedForm>
         </div>
+
         <div className="pb-4 text-center">
           <Link
-            to="/request-password"
+            to={$path('/request-password')}
             className="text-sm font-semibold text-white"
           >
             Recuperar contraseña

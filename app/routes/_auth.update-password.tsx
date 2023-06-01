@@ -6,6 +6,7 @@ import type {
 
 import { redirect } from '@remix-run/server-runtime'
 import { withZod } from '@remix-validated-form/with-zod'
+import { $path } from 'remix-routes'
 import { ValidatedForm, validationError } from 'remix-validated-form'
 import { FormGridItem } from '~/components/FormFields/FormGridItem'
 import { Input } from '~/components/FormFields/Input'
@@ -32,7 +33,7 @@ export const action = async ({ request }: ActionArgs) => {
   }
 
   await updatePassword(userId, data.password)
-  return redirect('/dashboard')
+  return redirect($path('/dashboard'))
 }
 
 export const loader = async ({ request }: LoaderArgs) => {
@@ -42,7 +43,7 @@ export const loader = async ({ request }: LoaderArgs) => {
 
 export const meta: MetaFunction = () => {
   return {
-    title: 'Modificar contraseña | HoyAdelantas',
+    title: 'Modificar contraseña | HoyTrabajas Beneficios',
   }
 }
 

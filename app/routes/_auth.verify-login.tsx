@@ -1,4 +1,5 @@
 import type { LoaderArgs } from '@remix-run/server-runtime'
+import { $path } from 'remix-routes'
 import { Button, ButtonColorVariants } from '~/components/Button'
 import { Title } from '~/components/Typography/Title'
 import { verifyLoginLink } from '~/services/auth.server'
@@ -13,17 +14,17 @@ export async function loader({ request }: LoaderArgs) {
     return null
   }
 
-  let redirectPath = '/dashboard/overview'
+  let redirectPath = $path('/dashboard/overview')
 
   try {
     const { user, hasPassword, hasAcceptedTerms } = await verifyLoginLink(token)
 
     if (updatePassword) {
-      redirectPath = '/update-password'
+      redirectPath = $path('/update-password')
     }
 
     if (!hasPassword || !hasAcceptedTerms) {
-      redirectPath = '/dashboard/welcome'
+      redirectPath = $path('/dashboard/welcome')
     }
 
     return await createUserSession({
