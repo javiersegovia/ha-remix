@@ -121,7 +121,7 @@ export const loader = async ({ request }: LoaderArgs) => {
   const benefits = await getEmployeeEnabledBenefits(employee.userId)
 
   const benefitHighlights = benefits.reduce((acc, benefit) => {
-    if (benefit.benefitHighlight && benefit.benefitHighlight.isActive) {
+    if (benefit.benefitHighlight && benefit.isHighlighted) {
       acc.push(benefit.benefitHighlight)
     }
     return acc
@@ -184,42 +184,42 @@ export default function DashboardIndexRoute() {
   return (
     <>
       <div className="relative w-full flex-1 bg-white">
-        <section className="overflow-hidden bg-steelBlue-100 pb-16 pt-10">
-          <Container>
-            <section className="flex flex-col items-center justify-between md:flex-row">
-              <Title className="text-center text-steelBlue-600 md:text-left">
-                Hola, {firstName && capitalizeFirstLetter(firstName)}
-              </Title>
+        {benefitHighlights?.length > 0 && (
+          <section className="bg-steelBlue-100 overflow-hidden pb-16 pt-10">
+            <Container>
+              <section className="mb-10 flex flex-col items-center justify-between md:flex-row">
+                <Title className="text-steelBlue-600 text-center md:text-left">
+                  Hola, {firstName && capitalizeFirstLetter(firstName)}
+                </Title>
 
-              <div className="flex flex-col gap-4 md:flex-row">
-                <div className="mx-auto mt-4 text-right md:m-0">
-                  <p className="inline md:block">Tienes</p>
-                  <p className=" ml-1 inline whitespace-nowrap font-bold text-steelBlue-800 md:ml-0 md:block">
-                    {availablePoints} puntos
-                  </p>
+                <div className="flex flex-col gap-4 md:flex-row">
+                  <div className="mx-auto mt-4 text-right md:m-0">
+                    <p className="inline md:block">Tienes</p>
+                    <p className=" text-steelBlue-800 ml-1 inline whitespace-nowrap font-bold md:ml-0 md:block">
+                      {availablePoints} puntos
+                    </p>
+                  </div>
+
+                  <Button
+                    href="https://puntos.umany.co"
+                    external
+                    targetBlank
+                    size="XS"
+                    className="mx-auto w-auto md:m-0"
+                  >
+                    Canjear
+                  </Button>
                 </div>
+              </section>
 
-                <Button
-                  href="https://puntos.umany.co"
-                  external
-                  targetBlank
-                  size="XS"
-                  className="mx-auto w-auto md:m-0"
-                >
-                  Canjear
-                </Button>
-              </div>
-            </section>
-
-            {benefitHighlights?.length > 0 && (
-              <div className="relative z-10 mx-auto mt-10 w-full max-w-screen-xl">
+              <div className="relative z-10 mx-auto w-full max-w-screen-xl">
                 <Title>
                   {benefitHighlights?.length > 1
                     ? 'Beneficios destacados del mes'
                     : 'Beneficio destacado del mes'}
                 </Title>
 
-                <Carousel className="mt-5">
+                <Carousel className="mt-5 rounded-lg">
                   {carouselBenefitHighlights.map((benefitHighlight) => (
                     <BenefitHighlightCard
                       key={benefitHighlight!.id}
@@ -228,9 +228,9 @@ export default function DashboardIndexRoute() {
                   ))}
                 </Carousel>
               </div>
-            )}
-          </Container>
-        </section>
+            </Container>
+          </section>
+        )}
 
         <section className="bg-white py-10 lg:px-10">
           <section className="mx-auto grid grid-cols-[minmax(170px,_300px)] items-center justify-center gap-4 sm:grid-cols-[repeat(auto-fit,minmax(170px,_200px))] md:gap-5 lg:grid-cols-[repeat(auto-fit,minmax(170px,_1fr))] lg:items-stretch xl:grid-cols-[repeat(5,minmax(170px,200px))]">
@@ -240,7 +240,7 @@ export default function DashboardIndexRoute() {
                   as="h3"
                   className={twMerge(
                     clsx(
-                      'text-center text-steelBlue-600 lg:text-left',
+                      'text-steelBlue-600 text-center lg:text-left',
                       !company.description && 'lg:text-center'
                     )
                   )}
@@ -273,7 +273,7 @@ export default function DashboardIndexRoute() {
                 <button
                   className={twMerge(
                     clsx(
-                      'rounded-full bg-blue-100 py-1 px-4',
+                      'rounded-full bg-blue-100 px-4 py-1',
                       !selectedBenefitCategoryId &&
                         'bg-steelBlue-700 text-white'
                     )
@@ -289,7 +289,7 @@ export default function DashboardIndexRoute() {
                     key={benefitCategory?.id}
                     className={twMerge(
                       clsx(
-                        'rounded-full bg-blue-100 py-1 px-4',
+                        'rounded-full bg-blue-100 px-4 py-1',
                         benefitCategory?.id === selectedBenefitCategoryId &&
                           'bg-steelBlue-700 text-white'
                       )

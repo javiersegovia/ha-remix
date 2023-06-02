@@ -99,6 +99,7 @@ export const getEmployeeEnabledBenefits = async (userId: User['id']) => {
       buttonHref: true,
       buttonText: true,
       name: true,
+      isHighlighted: true,
       mainImage: {
         select: {
           id: true,
@@ -112,7 +113,6 @@ export const getEmployeeEnabledBenefits = async (userId: User['id']) => {
           buttonText: true,
           description: true,
           title: true,
-          isActive: true,
           image: {
             select: {
               id: true,

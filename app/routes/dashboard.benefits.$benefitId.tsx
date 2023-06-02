@@ -71,7 +71,7 @@ export default function BenefitDetailsRoute() {
     buttonText,
     mainImage,
     name,
-    benefitHighlight,
+    isHighlighted,
     shortDescription,
     instructions,
   } = benefit
@@ -95,7 +95,7 @@ export default function BenefitDetailsRoute() {
     <Container className="mx-auto my-10 w-full">
       <GoBack redirectTo="/dashboard/overview" />
 
-      <section className="mb-16 flex w-full flex-col sm:justify-between sm:flex-row">
+      <section className="mb-16 flex w-full justify-between">
         <div>
           <Title>{name}</Title>
           <div className="mt-10 flex gap-8">
@@ -109,7 +109,7 @@ export default function BenefitDetailsRoute() {
             />
 
             <div>
-              {benefitHighlight?.isActive && (
+              {isHighlighted && (
                 <p className="mt-1 inline-flex items-center gap-2 rounded-3xl bg-indigo-200 px-2 py-1 text-sm font-semibold leading-5 text-indigo-600">
                   <FaStar className="mb-[2px] text-xs" />
                   <span>Destacado</span>
@@ -124,7 +124,7 @@ export default function BenefitDetailsRoute() {
         {/* If isValidURL returns true, then it means the URL must be an externa route */}
         {buttonHref && isValidURL(buttonHref) ? (
           <a
-            className="block mt-4 sm:mt-0 w-full sm:w-auto"
+            className="block"
             href={buttonHref}
             target="_blank"
             rel="noreferrer noopener"
@@ -141,7 +141,7 @@ export default function BenefitDetailsRoute() {
               disabled={!buttonHref}
               size="MD"
               className={clsx(
-                'sm:w-auto w-full',
+                'w-auto',
                 !buttonHref && 'bg-gray-300 text-gray-400 opacity-100'
               )}
             >

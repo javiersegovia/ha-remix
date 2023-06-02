@@ -74,16 +74,16 @@ export default function BenefitIndexRoute() {
   const headings = ['Nombre', '']
 
   const rows: TableRowProps[] = benefits?.map(
-    ({ id, name, benefitHighlight }) => ({
+    ({ id, name, isHighlighted }) => ({
       rowId: id,
-      href: `${id}`,
+      href: `${id}/details`,
       items: [
         <>
           <span className="whitespace-pre-wrap" key={`${id}_name`}>
             {`${name}`}
           </span>
         </>,
-        benefitHighlight?.isActive ? (
+        isHighlighted ? (
           <p className="inline-flex items-center gap-2 rounded-md bg-indigo-200 px-2 py-1 text-sm font-semibold leading-5 text-indigo-600">
             <FaStar className="mb-[2px] text-xs" />
             <span>Destacado</span>
@@ -98,7 +98,7 @@ export default function BenefitIndexRoute() {
   return (
     <>
       <Container className="w-full pb-10">
-        <Tabs items={manageBenefitPaths} className="mt-10 mb-8" />
+        <Tabs items={manageBenefitPaths} className="mb-8 mt-10" />
 
         {benefits?.length > 0 ? (
           <>

@@ -37,6 +37,7 @@ export const BenefitFactory = Factory.define<ExtendedBenefit>(
       buttonHref: faker.internet.url(),
       buttonText: faker.datatype.string(),
       slug: faker.datatype.string(),
+      isHighlighted: faker.datatype.boolean(),
 
       companyBenefit: associations?.companyBenefit || null,
 

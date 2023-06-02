@@ -3,7 +3,11 @@ import type { BenefitInputSchema } from '~/services/benefit/benefit.schema'
 
 import clsx from 'clsx'
 import { Form } from '@remix-run/react'
-import { ValidatedForm } from 'remix-validated-form'
+import {
+  ValidatedForm,
+  useControlField,
+  useFormContext,
+} from 'remix-validated-form'
 import { benefitValidator } from '~/services/benefit/benefit.schema'
 
 import { ButtonColorVariants } from '../Button'
@@ -32,11 +36,12 @@ interface BenefitFormProps {
     | 'description'
     | 'instructions'
   > & {
+    isHighlighted?: boolean
     mainImage?: Pick<Image, 'key' | 'url'> | null
     benefitHighlight:
       | (Pick<
           BenefitHighlight,
-          'title' | 'buttonHref' | 'buttonText' | 'description' | 'isActive'
+          'title' | 'buttonHref' | 'buttonText' | 'description'
         > & {
           image?: Pick<Image, 'key' | 'url'> | null
         })
@@ -62,14 +67,23 @@ export const BenefitForm = ({
     shortDescription,
     instructions,
     benefitHighlight,
+    isHighlighted,
   } = defaultValues || {}
+
+  const formId = 'BenefitForm'
+
+  const [benefitIsHighlighted] = useControlField<boolean>(
+    'isHighlighted',
+    formId
+  )
 
   return (
     <Box className="mt-auto flex w-full flex-col  space-y-5 rounded-xl p-5 md:w-auto">
       <ValidatedForm
-        id="BenefitForm"
+        id={formId}
         encType="multipart/form-data"
         validator={benefitValidator}
+        method="post"
         defaultValues={{
           name,
           buttonText,
@@ -80,8 +94,8 @@ export const BenefitForm = ({
           shortDescription,
           instructions,
           benefitHighlight,
+          isHighlighted,
         }}
-        method="post"
       >
         <Title as="h4" className="mb-10">
           Información principal
@@ -168,54 +182,53 @@ export const BenefitForm = ({
           Información de beneficio destacado
         </Title>
 
-        <FormGridWrapper>
-          <FormGridItem isFullWidth>
-            <ImageInput
-              name="benefitHighlight.image"
-              alt="Imagen del beneficio destacado"
-              currentImageUrl={benefitHighlight?.image?.url}
-              currentImageKey={benefitHighlight?.image?.key}
-              isCentered
-            />
-          </FormGridItem>
+        <FormGridItem className="items-center">
+          <Toggle name="isHighlighted" label="Es un beneficio destacado" />
+        </FormGridItem>
 
-          <FormGridItem>
-            <Input name="benefitHighlight.title" label="Título" type="text" />
-          </FormGridItem>
+        {benefitIsHighlighted && (
+          <FormGridWrapper>
+            <FormGridItem isFullWidth>
+              <ImageInput
+                name="benefitHighlight.image"
+                alt="Imagen del beneficio destacado"
+                currentImageUrl={benefitHighlight?.image?.url}
+                currentImageKey={benefitHighlight?.image?.key}
+                isCentered
+              />
+            </FormGridItem>
 
-          <FormGridItem className="items-center">
-            <Toggle
-              name="benefitHighlight.isActive"
-              label="Destacar beneficio"
-            />
-          </FormGridItem>
+            <FormGridItem>
+              <Input name="benefitHighlight.title" label="Título" type="text" />
+            </FormGridItem>
 
-          <FormGridItem isFullWidth>
-            <Input
-              name="benefitHighlight.description"
-              type="text"
-              label="Descripción"
-              isTextArea
-              placeholder="Descripción a destacar"
-            />
-          </FormGridItem>
+            <FormGridItem isFullWidth>
+              <Input
+                name="benefitHighlight.description"
+                type="text"
+                label="Descripción"
+                isTextArea
+                placeholder="Descripción a destacar"
+              />
+            </FormGridItem>
 
-          <FormGridItem>
-            <Input
-              name="benefitHighlight.buttonText"
-              label="Texto del botón"
-              type="text"
-            />
-          </FormGridItem>
+            <FormGridItem>
+              <Input
+                name="benefitHighlight.buttonText"
+                label="Texto del botón"
+                type="text"
+              />
+            </FormGridItem>
 
-          <FormGridItem>
-            <Input
-              name="benefitHighlight.buttonHref"
-              label="URL del botón"
-              type="text"
-            />
-          </FormGridItem>
-        </FormGridWrapper>
+            <FormGridItem>
+              <Input
+                name="benefitHighlight.buttonHref"
+                label="URL del botón"
+                type="text"
+              />
+            </FormGridItem>
+          </FormGridWrapper>
+        )}
       </ValidatedForm>
 
       <div className="ml-auto flex gap-5">
