@@ -1,4 +1,5 @@
 import type { ActionArgs, LoaderArgs, MetaFunction } from '@remix-run/node'
+import type { EmployeeDataItem } from './table-columns'
 
 import { Form, Link, Outlet } from '@remix-run/react'
 import { redirect, json } from '@remix-run/node'
@@ -23,14 +24,14 @@ import { calculateAge } from '~/utils/formatDate'
 import { formatMoney } from '~/utils/formatMoney'
 import { CurrencySymbol } from '~/components/FormFields/CurrencyInput'
 
-import { EmployeesTable } from './EmployeesTable'
-import type { EmployeeDataItem } from './table-columns'
 import { columns } from './table-columns'
 import { employeeTableSchema } from '~/services/employee/employee.schema'
 import { TableIsEmpty } from '~/components/Lists/TableIsEmpty'
 import { $path } from 'remix-routes'
 import { Box } from '~/components/Layout/Box'
 import { HiOutlineUser } from 'react-icons/hi'
+import { DataTable } from '~/components/Table/DataTable'
+import { TableActions } from './table-actions'
 
 const onCloseRedirectTo = '/dashboard/manage/employee-groups' as const
 
@@ -258,11 +259,14 @@ const EmployeeGroupDetailsRoute = () => {
         )}
 
         {employeesData.length > 0 ? (
-          <EmployeesTable
-            columns={columns}
-            data={employeesData}
-            className="mt-4"
-          />
+          <Form method="DELETE">
+            <DataTable
+              columns={columns}
+              data={employeesData}
+              className="mt-4"
+              tableActions={TableActions}
+            />
+          </Form>
         ) : (
           <TableIsEmpty
             title="Aún no tienes ningún colaborador asociado a este grupo"

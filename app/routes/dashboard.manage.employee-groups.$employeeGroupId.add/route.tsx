@@ -1,9 +1,11 @@
 import type { Prisma } from '@prisma/client'
+import type { ActionArgs, LoaderArgs } from '@remix-run/server-runtime'
 
 import { PermissionCode } from '@prisma/client'
 import { Form, useLoaderData } from '@remix-run/react'
-import type { ActionArgs, LoaderArgs } from '@remix-run/server-runtime'
 import { json, redirect } from '@remix-run/server-runtime'
+import { $path } from 'remix-routes'
+
 import { Modal } from '~/components/Dialog/Modal'
 import { RightPanel } from '~/components/Layout/RightPanel'
 import { FilterSummary } from '~/containers/dashboard/EmployeeGroup/FilterSummary'
@@ -14,13 +16,12 @@ import {
 import { requirePermissionByUserId } from '~/services/permissions/permissions.server'
 import { requireEmployee } from '~/session.server'
 import { badRequest } from '~/utils/responses'
-import { AddEmployeesTable } from './AddEmployeesTable'
 import { columns } from './table-columns'
 import { prisma } from '~/db.server'
 import { getMinDateFromAge } from '~/utils/formatDate'
 import { Button, ButtonColorVariants } from '~/components/Button'
-import { $path } from 'remix-routes'
 import { employeeTableSchema } from '~/services/employee/employee.schema'
+import { DataTable } from '~/components/Table/DataTable'
 
 export const loader = async ({ request, params }: LoaderArgs) => {
   const employee = await requireEmployee(request)
@@ -235,7 +236,7 @@ export default function CreateEmployeeGroupRoute() {
                   )}
                 </p>
                 <div className="overflow-y-auto">
-                  <AddEmployeesTable columns={columns} data={employees} />
+                  <DataTable columns={columns} data={employees} />
                 </div>
               </>
             ) : (

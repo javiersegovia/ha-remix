@@ -1,7 +1,14 @@
-import type { ColumnDef } from '@tanstack/react-table'
+import type {
+  ColumnDef,
+  SortingState,
+  Table as TTable,
+} from '@tanstack/react-table'
+import React, { useEffect } from 'react'
+
 import {
   flexRender,
   getCoreRowModel,
+  getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table'
 
@@ -20,21 +27,36 @@ interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
   data: TData[]
   className?: string
+  tableActions?: React.ComponentType<{ table: TTable<TData> }>
 }
 
-export function AddEmployeesTable<TData, TValue>({
+export function DataTable<TData, TValue>({
   columns,
   data,
   className,
+  tableActions: TableActions,
 }: DataTableProps<TData, TValue>) {
+  const [sorting, setSorting] = React.useState<SortingState>([])
+
   const table = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
+    onSortingChange: setSorting,
+    getSortedRowModel: getSortedRowModel(),
+    state: {
+      sorting,
+    },
   })
+
+  useEffect(() => {
+    table.resetRowSelection()
+  }, [table, data])
 
   return (
     <div>
+      {TableActions && <TableActions table={table} />}
+
       <div
         className={twMerge(clsx('rounded-3xl border bg-white p-3', className))}
       >
@@ -85,7 +107,7 @@ export function AddEmployeesTable<TData, TValue>({
                   colSpan={columns.length}
                   className="h-24 text-center"
                 >
-                  No results.
+                  Sin resultados.
                 </TableCell>
               </TableRow>
             )}
