@@ -323,3 +323,7 @@ export const employeeBankAccountValidator = withZod(employeeBankAccountSchema)
 export type EmployeeBankAccountSchemaInput = z.infer<
   typeof employeeBankAccountSchema
 >
+
+// This schemas are used inside "employee tables", and they only collect the employeesIds
+export const employeeTableSchema = z.array(z.string())
+export type EmployeeTableInput = z.infer<typeof employeeTableSchema>

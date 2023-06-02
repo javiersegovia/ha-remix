@@ -56,7 +56,7 @@ export const Tabs = ({
             to={item.path}
             className={twMerge(
               clsx(
-                'relative col-span-1 flex cursor-pointer items-center justify-center py-2 px-12 text-sm font-medium text-steelBlue-700',
+                'relative col-span-1 flex cursor-pointer items-center justify-center px-12 py-2 text-sm font-medium text-steelBlue-700',
 
                 design === TabDesign.UNDERLINE &&
                   'text-center font-bold md:text-lg',

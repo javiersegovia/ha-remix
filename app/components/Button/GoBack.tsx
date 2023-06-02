@@ -1,19 +1,29 @@
-import { Link } from '@remix-run/react'
+import { Link, useNavigate } from '@remix-run/react'
 import { AiOutlineArrowLeft } from 'react-icons/ai'
 
 interface GoBackProps {
-  redirectTo: string
+  redirectTo?: string
   description?: string
 }
 
-export const GoBack = ({ redirectTo, description }: GoBackProps) => {
-  return (
+export const GoBack = ({ description, redirectTo }: GoBackProps) => {
+  const navigate = useNavigate()
+
+  return redirectTo ? (
     <Link
       to={redirectTo}
-      className="ml-auto mb-10 flex gap-3 text-lg font-bold text-steelBlue-500"
+      className="mb-10 ml-auto flex gap-3 text-lg font-bold text-steelBlue-500"
     >
       <AiOutlineArrowLeft className="text-2xl" />
       <span className="tracking-widest">{description || 'Regresar'}</span>
     </Link>
+  ) : (
+    <button
+      onClick={() => navigate(-1)}
+      className="mb-10 ml-auto flex gap-3 text-lg font-bold text-steelBlue-500"
+    >
+      <AiOutlineArrowLeft className="text-2xl" />
+      <span className="tracking-widest">{description || 'Regresar'}</span>
+    </button>
   )
 }

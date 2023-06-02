@@ -17,7 +17,7 @@ export default function DashboardEducationRoute() {
   return (
     <div className="relative z-10 w-full flex-1 py-10">
       <img
-        className="absolute top-0 left-0 -z-10 opacity-[15%]"
+        className="absolute left-0 top-0 -z-10 opacity-[15%]"
         src="/images/block_dashboard_overview_yellow.png"
         alt="Bloque Amarillo"
       />

@@ -29,6 +29,7 @@ import { getSalaryRanges } from '~/services/salary-range/salary-range.server'
 import { prisma } from '~/db.server'
 import { Container } from '~/components/Layout/Container'
 import { getJobDepartments } from '~/services/job-department/job-department.server'
+import { $path } from 'remix-routes'
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => {
   if (!data) {
@@ -129,7 +130,11 @@ export const action = async ({ request, params }: ActionArgs) => {
 
   await updateEmployeeGroupById(data, employeeGroupId)
 
-  return redirect(onCloseRedirectTo)
+  return redirect(
+    $path('/dashboard/manage/employee-groups/:employeeGroupId', {
+      employeeGroupId,
+    })
+  )
 }
 
 const onCloseRedirectTo = '/dashboard/manage/employee-groups' as const
@@ -148,7 +153,7 @@ export default function EmployeeGroupUpdateRoute() {
   return (
     <>
       <Container className="mx-auto w-full">
-        <Title className="pt-5 pl-2">Actualizar grupo de colaboradores</Title>
+        <Title className="pl-2 pt-5">Actualizar grupo de colaboradores</Title>
 
         <EmployeeGroupForm
           defaultValues={{
@@ -164,7 +169,9 @@ export default function EmployeeGroupUpdateRoute() {
           }}
           actions={
             <div className="mt-6 flex items-center justify-end gap-4">
-              <Link to={`/dashboard/manage/employee-groups/${employeeGroup.id}`}>
+              <Link
+                to={`/dashboard/manage/employee-groups/${employeeGroup.id}`}
+              >
                 <ButtonElement
                   variant={ButtonColorVariants.SECONDARY}
                   className="sm:w-auto"

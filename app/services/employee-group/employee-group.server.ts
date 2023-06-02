@@ -1,5 +1,6 @@
 import type { Company, EmployeeGroup } from '@prisma/client'
 import type { EmployeeGroupInputSchema } from './employee-group.schema'
+import type { EmployeeTableInput } from '../employee/employee.schema'
 
 import { prisma } from '~/db.server'
 import { connectMany, setMany } from '~/utils/relationships'
@@ -58,6 +59,36 @@ export const getEmployeeGroupById = async (id: EmployeeGroup['id']) => {
     select: {
       id: true,
       name: true,
+      employees: {
+        select: {
+          id: true,
+          status: true,
+          salaryFiat: true,
+          birthDay: true,
+          gender: {
+            select: {
+              name: true,
+            },
+          },
+          jobDepartment: {
+            select: {
+              name: true,
+            },
+          },
+          user: {
+            select: {
+              email: true,
+              firstName: true,
+              lastName: true,
+            },
+          },
+        },
+        orderBy: {
+          user: {
+            firstName: 'asc',
+          },
+        },
+      },
       benefits: {
         select: {
           id: true,
@@ -207,6 +238,56 @@ export const deleteEmployeeGroupById = async (id: EmployeeGroup['id']) => {
     console.error(e)
     throw badRequest({
       message: 'Ha ocurrido un error al eliminar el grupo de colaboradores',
+      redirect: null,
+    })
+  }
+}
+
+export const addEmployeesToEmployeeGroup = async (
+  employeesIds: EmployeeTableInput,
+  employeeGroupId: EmployeeGroup['id']
+) => {
+  try {
+    return prisma.employeeGroup.update({
+      where: {
+        id: employeeGroupId,
+      },
+      data: {
+        employees: {
+          connect: employeesIds.map((id) => ({ id })),
+        },
+      },
+    })
+  } catch (e) {
+    console.error(e)
+    throw badRequest({
+      message:
+        'Ha ocurrido un error al intentar agregar colaboradores al grupo',
+      redirect: null,
+    })
+  }
+}
+
+export const removeEmployeesFromEmployeeGroup = async (
+  employeesIds: EmployeeTableInput,
+  employeeGroupId: EmployeeGroup['id']
+) => {
+  try {
+    return prisma.employeeGroup.update({
+      where: {
+        id: employeeGroupId,
+      },
+      data: {
+        employees: {
+          disconnect: employeesIds.map((id) => ({ id })),
+        },
+      },
+    })
+  } catch (e) {
+    console.error(e)
+    throw badRequest({
+      message:
+        'Ha ocurrido un error al intentar remover colaboradores del grupo',
       redirect: null,
     })
   }

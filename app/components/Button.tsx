@@ -4,7 +4,11 @@ import { HiCheck, HiPlus } from 'react-icons/hi'
 import { Spinner } from '~/components/Spinner'
 import { twMerge } from 'tailwind-merge'
 import clsx from 'clsx'
-import { MdOutlineUploadFile, MdOutlineDownload } from 'react-icons/md'
+import {
+  MdOutlineUploadFile,
+  MdOutlineDownload,
+  MdOutlineDelete,
+} from 'react-icons/md'
 
 export type TButtonSizes = 'XS' | 'SM' | 'MD' | 'LG' | 'XL'
 
@@ -21,6 +25,12 @@ export enum ButtonIconVariants {
   UPLOAD = 'UPLOAD',
   CREATE = 'CREATE',
   DOWNLOAD = 'DOWNLOAD',
+  DELETE = 'DELETE',
+}
+
+export enum ButtonDesignVariants {
+  BUTTON = 'BUTTON',
+  FAB = 'FAB',
 }
 
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
@@ -32,6 +42,7 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   size?: TButtonSizes
   variant?: ButtonColorVariants
   icon?: ButtonIconVariants
+  design?: ButtonDesignVariants
 }
 
 export const Button = ({
@@ -66,6 +77,7 @@ export const ButtonElement = ({
   type = 'button',
   size = 'MD',
   variant = ButtonColorVariants.PRIMARY,
+  design = ButtonDesignVariants.BUTTON,
   disabled = false,
   isLoading = false,
   showCheckOnSuccess = false,
@@ -94,6 +106,9 @@ export const ButtonElement = ({
           size === 'MD' && 'px-10 py-4',
 
           disabled && 'cursor-not-allowed opacity-40',
+
+          design === 'FAB' &&
+            'flex h-10 w-10 items-center justify-center gap-3 rounded-full p-2 text-2xl',
 
           isPrimary && 'bg-electricYellow-500 text-steelBlue-900',
           isPrimary && !disabled && 'hover:bg-electricYellow-700',
@@ -126,16 +141,18 @@ export const ButtonElement = ({
         <HiCheck className="text-2xl" />
       ) : (
         <>
-          {icon === ButtonIconVariants.UPLOAD && (
-            <MdOutlineUploadFile className="mr-3" />
-          )}
-
-          {icon === ButtonIconVariants.CREATE && <HiPlus className="mr-3" />}
-
-          {icon === ButtonIconVariants.DOWNLOAD && (
-            <MdOutlineDownload className="mr-3" />
-          )}
           {children}
+
+          <span
+            className={clsx(
+              design === ButtonDesignVariants.BUTTON && icon && 'ml-3 text-xl'
+            )}
+          >
+            {icon === ButtonIconVariants.UPLOAD && <MdOutlineUploadFile />}
+            {icon === ButtonIconVariants.CREATE && <HiPlus />}
+            {icon === ButtonIconVariants.DOWNLOAD && <MdOutlineDownload />}
+            {icon === ButtonIconVariants.DELETE && <MdOutlineDelete />}
+          </span>
         </>
       )}
     </button>

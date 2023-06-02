@@ -22,6 +22,8 @@ import { Table } from '~/components/Lists/Table'
 import { EmployeeStatusPill } from '~/components/Pills/EmployeeStatusPill'
 import { prisma } from '~/db.server'
 import { constants } from '~/config/constants'
+import { filterEmployeeEnabledBenefits } from '../services/permissions/permissions.shared'
+import { badRequest } from '~/utils/responses'
 
 export const meta: MetaFunction = () => {
   return {
@@ -64,11 +66,46 @@ export const loader = async ({ request }: LoaderArgs) => {
   })
   const { itemsPerPage } = constants
 
+  const company = await prisma.company.findUnique({
+    where: {
+      id: employee.companyId,
+    },
+    select: {
+      benefits: {
+        select: {
+          id: true,
+        },
+      },
+    },
+  })
+
+  if (!company) {
+    throw badRequest({
+      message: 'No pudimos encontrar el ID de la compañía',
+      redirect: `/dashboard/overview`,
+    })
+  }
+
+  const employees = await getCompanyEmployeesByCompanyId(employee.companyId, {
+    take: itemsPerPage,
+    skip: (currentPage - 1) * itemsPerPage || 0,
+  })
+
+  const employeesWithEnabledBenefitsPromise = employees.map((e) => {
+    const filteredBenefits = filterEmployeeEnabledBenefits({
+      employeeBenefits: e?.benefits,
+      membershipBenefits: e?.membership?.benefits,
+      companyBenefitsIds: company.benefits?.map((b) => b.id),
+      employeeGroupsBenefits: e?.employeeGroups
+        ?.map((eGroup) => eGroup.benefits)
+        .flat(),
+    })
+
+    return { ...e, enabledBenefits: filteredBenefits.size }
+  })
+
   return json({
-    employees: await getCompanyEmployeesByCompanyId(employee.companyId, {
-      take: itemsPerPage,
-      skip: (currentPage - 1) * itemsPerPage || 0,
-    }),
+    employees: await Promise.all(employeesWithEnabledBenefitsPromise),
     pagination: {
       currentPage,
       totalPages: Math.ceil(employeeCount / itemsPerPage),
@@ -92,7 +129,15 @@ export default function DashboardEmployeesIndexRoute() {
   ]
 
   const rows: TableRowProps[] = employees?.map(
-    ({ id, user, city, jobDepartment, employeeGroups, benefits, status }) => ({
+    ({
+      id,
+      user,
+      city,
+      jobDepartment,
+      employeeGroups,
+      enabledBenefits,
+      status,
+    }) => ({
       rowId: id,
       href: `${id}/details`,
       items: [
@@ -127,9 +172,9 @@ export default function DashboardEmployeesIndexRoute() {
           '-'
         ),
 
-        benefits.length > 0 ? (
+        enabledBenefits > 0 ? (
           <span className="whitespace-pre-wrap" key={`${id}_benefits`}>
-            {benefits.length}
+            {enabledBenefits}
           </span>
         ) : (
           '-'
@@ -150,7 +195,7 @@ export default function DashboardEmployeesIndexRoute() {
     <>
       <Container className="w-full pb-10">
         {canManageEmployeeGroup && (
-          <Tabs items={employeeTabPaths} className="mt-10 mb-8" />
+          <Tabs items={employeeTabPaths} className="mb-8 mt-10" />
         )}
 
         {employees?.length > 0 ? (

@@ -11,13 +11,10 @@ interface CheckboxProps {
   label?: string | ReactNode
 }
 
-const checkboxInputStyle = clsx(
+export const checkboxInputStyle = clsx(
   'accent-steelBlue-600 mr-2 w-4 h-4 bg-white bg-contain bg-center duration-200',
   'bg-no-repeat border checked:border-blue-600 border-gray-200 rounded-sm focus:outline-none cursor-pointer transition'
 )
-
-// const labelInputStyle =
-//   'text-steelBlue-600 inline-block w-auto text-sm font-medium'
 
 export const Checkbox = ({ name, label }: CheckboxProps) => {
   const { validate } = useField(name)

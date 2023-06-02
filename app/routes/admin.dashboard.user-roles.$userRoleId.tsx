@@ -132,7 +132,7 @@ export default function UserRoleUpdateRoute() {
     <Container className="xl:max-w-2xl">
       <Link
         to="/admin/dashboard/user-roles"
-        className="ml-auto mb-10 flex gap-3 font-medium text-cyan-600"
+        className="mb-10 ml-auto flex gap-3 font-medium text-cyan-600"
       >
         <AiOutlineArrowLeft className="text-2xl" />
         <span className="tracking-widest">Regresar</span>

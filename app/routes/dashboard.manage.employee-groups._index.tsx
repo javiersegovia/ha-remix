@@ -3,7 +3,7 @@ import type { TableRowProps } from '~/components/Lists/Table'
 
 import { PermissionCode } from '@prisma/client'
 import { json } from '@remix-run/node'
-import { Outlet, useLoaderData } from '@remix-run/react'
+import { useLoaderData } from '@remix-run/react'
 
 import { Table } from '~/components/Lists/Table'
 import { requireEmployee } from '~/session.server'
@@ -58,6 +58,7 @@ export default function EmployeeGroupIndexRoute() {
         <span className="whitespace-pre-wrap" key={`${id}_name`}>
           {name}
         </span>,
+
         jobDepartment ? (
           <span className="whitespace-pre-wrap" key={`${id}_jobDepartment`}>
             {jobDepartment?.name}
@@ -101,7 +102,7 @@ export default function EmployeeGroupIndexRoute() {
   return (
     <>
       <Container className="w-full pb-10">
-        <Tabs items={employeeTabPaths} className="mt-10 mb-8" />
+        <Tabs items={employeeTabPaths} className="mb-8 mt-10" />
 
         {employeeGroups?.length > 0 ? (
           <>

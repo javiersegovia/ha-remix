@@ -21,7 +21,7 @@ export const TableIsEmpty = ({
     <Box
       className={twMerge(
         clsx(
-          'dashed-border flex flex-col items-center rounded-[32px] py-10 px-5 md:p-10',
+          'dashed-border flex flex-col items-center rounded-[32px] px-5 py-10 md:p-10',
           className
         )
       )}

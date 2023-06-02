@@ -76,7 +76,7 @@ export default function BenefitIndexRoute() {
   const rows: TableRowProps[] = benefits?.map(
     ({ id, name, isHighlighted }) => ({
       rowId: id,
-      href: `${id}/details`,
+      href: `${id}`,
       items: [
         <>
           <span className="whitespace-pre-wrap" key={`${id}_name`}>

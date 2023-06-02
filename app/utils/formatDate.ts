@@ -1,6 +1,6 @@
+import type { DateMDYString } from '~/components/FormFields/DatePicker'
 import { formatRelative, format } from 'date-fns'
 import { es } from 'date-fns/locale'
-import type { DateMDYString } from '~/components/FormFields/DatePicker'
 
 export const formatRelativeDate = (date: Date) => {
   return formatRelative(date, new Date(), {
@@ -55,3 +55,21 @@ export function sanitizeDate(date?: Date | null) {
 }
 
 export const ISO_DATE_REGEX = /\d{4}-[01]\d-[0-3]\d/
+
+export function calculateAge(dateString: string | Date) {
+  const today = new Date()
+  const birthDate = new Date(dateString)
+  let age = today.getFullYear() - birthDate.getFullYear()
+  const m = today.getMonth() - birthDate.getMonth()
+  if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+    age--
+  }
+  return age
+}
+
+export function getMinDateFromAge(age: number) {
+  const currentDate = new Date()
+  const minDate = new Date()
+  minDate.setFullYear(currentDate.getFullYear() - age)
+  return minDate
+}

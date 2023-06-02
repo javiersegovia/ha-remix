@@ -100,7 +100,7 @@ export const EmployeeGroupForm = ({
         }}
       >
         <Box className="p-5 shadow-sm">
-          <Title className="pb-5 pt-2 pl-2 text-xl">
+          <Title className="pb-5 pl-2 pt-2 text-xl">
             Grupo de colaboradores
           </Title>
           <FormGridWrapper>
@@ -154,6 +154,7 @@ export const EmployeeGroupForm = ({
                 label="Área"
                 placeholder="Seleccionar área"
                 options={jobDepartments}
+                isClearable
               />
             </FormGridItem>
             <FormGridItem>
@@ -162,6 +163,7 @@ export const EmployeeGroupForm = ({
                 label="Género"
                 placeholder="Seleccionar género"
                 options={genders}
+                isClearable
               />
             </FormGridItem>
             <FormGridItem>
@@ -173,6 +175,7 @@ export const EmployeeGroupForm = ({
                   id,
                   name: formatAgeRange(minAge, maxAge),
                 }))}
+                isClearable
               />
             </FormGridItem>
 
@@ -185,6 +188,7 @@ export const EmployeeGroupForm = ({
                   id,
                   name: formatSalaryRange({ minValue, maxValue }),
                 }))}
+                isClearable
               />
             </FormGridItem>
 

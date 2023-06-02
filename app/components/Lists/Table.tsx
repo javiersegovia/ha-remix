@@ -37,16 +37,14 @@ export const Table = ({
       <div className="-my-2 overflow-x-auto xl:-mx-8">
         <div className="inline-block min-w-full py-2 align-middle xl:px-8">
           <div className="overflow-hidden border-b border-gray-200 shadow sm:rounded-[20px]">
-            <table className="min-w-full divide-y divide-gray-200">
+            <table className="min-w-full divide-y divide-gray-200 text-sm">
               <thead>
                 <tr>
                   {headings.map((heading, index) => (
                     <TableHeading
                       key={heading}
                       title={heading}
-                      className={twMerge(
-                        clsx('text-base', classNames?.heading)
-                      )}
+                      className={classNames?.heading}
                       isCentered={index !== 0}
                     />
                   ))}
@@ -58,12 +56,13 @@ export const Table = ({
                   <tr
                     key={row.rowId}
                     className={twMerge(
-                      clsx('hover:bg-gray-100', {
-                        'cursor-not-allowed bg-gray-200 hover:bg-gray-300':
-                          row.isDisabled,
-                      },
-                          classNames?.row
-                      
+                      clsx(
+                        'hover:bg-gray-100',
+                        {
+                          'cursor-not-allowed bg-gray-200 hover:bg-gray-300':
+                            row.isDisabled,
+                        },
+                        classNames?.row
                       )
                     )}
                   >
@@ -99,6 +98,7 @@ export const TableRow = ({ rowId, href, items, isDisabled }: TableRowProps) => {
           <TableData key={`${rowId}_${index}`} isCentered={index !== 0}>
             <div
               className={clsx(
+                'text-sm',
                 isDisabled && 'pointer-events-none text-gray-400'
               )}
             >
@@ -106,7 +106,7 @@ export const TableRow = ({ rowId, href, items, isDisabled }: TableRowProps) => {
                 <Link
                   to={href}
                   className={clsx(
-                    'text-sm font-medium text-gray-900 hover:text-cyan-600',
+                    'font-medium text-gray-900 hover:text-cyan-600',
                     isDisabled && 'text-gray-400'
                   )}
                 >

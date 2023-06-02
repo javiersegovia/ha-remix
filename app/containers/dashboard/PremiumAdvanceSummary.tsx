@@ -111,7 +111,7 @@ export const PremiumAdvanceSummary = ({
             value={formatMoney(value, CurrencySymbol.COP)}
           />
           {isAdmin && description && (
-            <span className="mt-[2px] mb-2 ml-2 block text-xs text-gray-600">
+            <span className="mb-2 ml-2 mt-[2px] block text-xs text-gray-600">
               {description}
             </span>
           )}

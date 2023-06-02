@@ -34,7 +34,7 @@ export const BenefitCard = ({
       >
         <div
           className={clsx(
-            'absolute top-0 bottom-0 left-0 right-0',
+            'absolute bottom-0 left-0 right-0 top-0',
             !hexColor && 'bg-gray-900',
             !opacity && 'opacity-50'
           )}
@@ -48,7 +48,7 @@ export const BenefitCard = ({
           <Title
             as="h3"
             className={clsx(
-              'mt-auto mb-3 break-words text-white',
+              'mb-3 mt-auto break-words text-white',
               biggestWordInTheName?.length >= 10 && 'text-lg'
             )}
           >

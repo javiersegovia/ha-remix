@@ -182,7 +182,7 @@ export default function App() {
               {({ message }) => (
                 <div
                   className={clsx(
-                    'flex justify-between rounded-md border py-2 px-6 text-sm font-medium text-black shadow-md',
+                    'flex justify-between rounded-md border px-6 py-2 text-sm font-medium text-black shadow-md',
                     t.type === 'success' && 'border-green-400 bg-green-100',
                     t.type === 'error' && 'border-red-400  bg-red-50'
                   )}
