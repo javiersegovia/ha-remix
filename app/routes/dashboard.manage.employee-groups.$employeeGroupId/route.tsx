@@ -237,7 +237,7 @@ const EmployeeGroupDetailsRoute = () => {
             </div>
           </div>
         ) : (
-          <p>Este grupo no posee beneficios disponibles.</p>
+          <p className="mt-10">Este grupo no posee beneficios disponibles.</p>
         )}
 
         {employeesData.length > 0 ? (
