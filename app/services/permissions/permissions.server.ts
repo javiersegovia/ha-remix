@@ -75,7 +75,7 @@ export const getEmployeeEnabledBenefits = async (userId: User['id']) => {
     },
   })
 
-  const filteredBenefits = filterEmployeeEnabledBenefits({
+  const filteredBenefitsIds = filterEmployeeEnabledBenefits({
     employeeBenefits: employee?.benefits,
     membershipBenefits: employee?.membership?.benefits,
     companyBenefitsIds: employee?.company.benefits?.map((b) => b.id),
@@ -90,7 +90,7 @@ export const getEmployeeEnabledBenefits = async (userId: User['id']) => {
     },
     where: {
       id: {
-        in: filteredBenefits.map((b) => b.id),
+        in: [...filteredBenefitsIds],
       },
     },
     select: {

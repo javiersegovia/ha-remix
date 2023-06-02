@@ -46,5 +46,5 @@ export const filterEmployeeEnabledBenefits = ({
     []
   )
 
-  return benefits
+  return new Set([...benefits.map((b) => b.id)])
 }

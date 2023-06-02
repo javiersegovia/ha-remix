@@ -3,11 +3,7 @@ import type { BenefitInputSchema } from '~/services/benefit/benefit.schema'
 
 import clsx from 'clsx'
 import { Form } from '@remix-run/react'
-import {
-  ValidatedForm,
-  useControlField,
-  useFormContext,
-} from 'remix-validated-form'
+import { ValidatedForm, useControlField } from 'remix-validated-form'
 import { benefitValidator } from '~/services/benefit/benefit.schema'
 
 import { ButtonColorVariants } from '../Button'
