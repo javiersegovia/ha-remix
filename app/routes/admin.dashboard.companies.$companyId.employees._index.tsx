@@ -13,8 +13,8 @@ import { getEmployeesByCompanyId } from '~/services/employee/employee.server'
 import { requireAdminUserId } from '~/session.server'
 
 import { TitleWithActions } from '~/components/Layout/TitleWithActions'
-import { constants } from '~/config/constants'
-import { prisma } from '~/db.server'
+// import { constants } from '~/config/constants'
+// import { prisma } from '~/db.server'
 import type { TableRowProps } from '~/components/Lists/Table'
 import { Table } from '~/components/Lists/Table'
 import { formatMoney } from '~/utils/formatMoney'
@@ -24,9 +24,9 @@ import { EmployeeStatusPill } from '~/components/Pills/EmployeeStatusPill'
 export const loader = async ({ request, params }: LoaderArgs) => {
   await requireAdminUserId(request)
 
-  const url = new URL(request.url)
-  const page = url.searchParams.get('page')
-  const currentPage = parseFloat(page || '1')
+  // const url = new URL(request.url)
+  // const page = url.searchParams.get('page')
+  // const currentPage = parseFloat(page || '1')
 
   const { companyId } = params
 
@@ -34,12 +34,12 @@ export const loader = async ({ request, params }: LoaderArgs) => {
     where: { id: companyId },
   })
 
-  const employeeCount = await prisma.employee.count({
-    where: {
-      companyId: company.id,
-    },
-  })
-  const { itemsPerPage } = constants
+  // const employeeCount = await prisma.employee.count({
+  //   where: {
+  //     companyId: company.id,
+  //   },
+  // })
+  // const { itemsPerPage } = constants
   // {
   //   take: itemsPerPage,
   //   skip: (currentPage - 1) * itemsPerPage || 0,

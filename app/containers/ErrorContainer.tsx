@@ -42,7 +42,7 @@ export default function ErrorContainer({
                 Mientras tanto, esto es lo que puedes hacer:
               </p>
               <ul className="list-disc">
-                <li className="mt-6 ml-4">
+                <li className="ml-4 mt-6">
                   Refrescar la página (a veces esto ayuda).
                 </li>
                 <li className="ml-4">Intentar de nuevo en 30 minutos.</li>

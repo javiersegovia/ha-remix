@@ -390,8 +390,8 @@ export const createEmployee = async (
 
     const employee = await prisma.employee.create({
       data: {
-        startedAt: sanitizeDate(startedAt),
-        inactivatedAt: sanitizeDate(inactivatedAt),
+        startedAt: sanitizeDate(startedAt) || null,
+        inactivatedAt: sanitizeDate(inactivatedAt) || null,
         salaryFiat,
         salaryCrypto,
         advanceAvailableAmount,
@@ -403,8 +403,8 @@ export const createEmployee = async (
         numberOfChildren: numberOfChildren || 0,
         roles: roles || undefined,
 
-        birthDay: sanitizeDate(birthDay),
-        documentIssueDate: sanitizeDate(documentIssueDate),
+        birthDay: sanitizeDate(birthDay) || null,
+        documentIssueDate: sanitizeDate(documentIssueDate) || null,
 
         gender: connect(genderId),
         country: connect(countryId),
@@ -648,16 +648,16 @@ export const updateEmployeeById = async (
         id: employeeId,
       },
       data: {
-        startedAt: sanitizeDate(startedAt),
-        inactivatedAt: sanitizeDate(newInactivatedAt),
+        startedAt: sanitizeDate(startedAt) || null,
+        inactivatedAt: sanitizeDate(newInactivatedAt) || null,
         salaryFiat,
         salaryCrypto,
         advanceAvailableAmount,
         advanceCryptoAvailableAmount,
         advanceCryptoMaxAmount,
         advanceMaxAmount,
-        birthDay: sanitizeDate(birthDay),
-        documentIssueDate: sanitizeDate(documentIssueDate),
+        birthDay: sanitizeDate(birthDay) || null,
+        documentIssueDate: sanitizeDate(documentIssueDate) || null,
         address,
         phone,
         availablePoints,
@@ -792,10 +792,10 @@ export const updateEmployeeByCompanyAdminExtraInformationForm = async (
         id: employeeId,
       },
       data: {
-        startedAt: sanitizeDate(startedAt),
-        inactivatedAt: sanitizeDate(inactivatedAt),
-        documentIssueDate: sanitizeDate(documentIssueDate),
-        birthDay: sanitizeDate(birthDay),
+        startedAt: sanitizeDate(startedAt) || null,
+        inactivatedAt: sanitizeDate(inactivatedAt) || null,
+        documentIssueDate: sanitizeDate(documentIssueDate) || null,
+        birthDay: sanitizeDate(birthDay) || null,
 
         address,
         phone,
@@ -962,11 +962,11 @@ export const updateEmployeeByCompanyAdminForm = async (
         id: employeeId,
       },
       data: {
-        startedAt: sanitizeDate(startedAt),
-        inactivatedAt: sanitizeDate(newInactivatedAt),
+        startedAt: sanitizeDate(startedAt) || null,
+        inactivatedAt: sanitizeDate(newInactivatedAt) || null,
 
-        birthDay: sanitizeDate(birthDay),
-        documentIssueDate: sanitizeDate(documentIssueDate),
+        birthDay: sanitizeDate(birthDay) || null,
+        documentIssueDate: sanitizeDate(documentIssueDate) || null,
         address,
         phone,
         status,
@@ -1034,8 +1034,8 @@ export const updateEmployeeByWelcomeForm = async (
         id: employeeId,
       },
       data: {
-        birthDay: sanitizeDate(birthDay),
-        documentIssueDate: sanitizeDate(documentIssueDate),
+        birthDay: sanitizeDate(birthDay) || null,
+        documentIssueDate: sanitizeDate(documentIssueDate) || null,
         address,
         phone,
         numberOfChildren: numberOfChildren || 0,
@@ -1112,8 +1112,8 @@ export const updateEmployeeByAccountForm = async (
         id: employeeId,
       },
       data: {
-        birthDay: sanitizeDate(birthDay),
-        documentIssueDate: sanitizeDate(documentIssueDate),
+        birthDay: sanitizeDate(birthDay) || null,
+        documentIssueDate: sanitizeDate(documentIssueDate) || null,
         address,
         phone,
         numberOfChildren: numberOfChildren || 0,

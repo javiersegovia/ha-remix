@@ -23,7 +23,7 @@ const InsuranceRoute = () => {
       </nav>
 
       <header className="w-full bg-purple-600">
-        <div className="hero-section container mx-auto flex w-full items-center justify-between px-4 py-7 xl:py-36 xl:px-28">
+        <div className="hero-section container mx-auto flex w-full items-center justify-between px-4 py-7 xl:px-28 xl:py-36">
           <div className="space-y-4 lg:space-y-5 2xl:space-y-10">
             <h2 className="text-[32px] font-bold text-white xl:text-5xl">
               Beneficios
@@ -175,7 +175,7 @@ const InsuranceRoute = () => {
             />
           </div>
 
-          <div className="mt-20 mb-11 grid items-center pb-11 sm:grid-cols-2">
+          <div className="mb-11 mt-20 grid items-center pb-11 sm:grid-cols-2">
             <div>
               <img
                 src="/images/routes/insurance/ManPurpleBackground.png"
@@ -201,7 +201,7 @@ const InsuranceRoute = () => {
       </section>
 
       <section className="footer bg-steelBlue-800">
-        <div className="footerbar items-center py-10 px-4 md:flex  lg:ml-16 ">
+        <div className="footerbar items-center px-4 py-10 md:flex  lg:ml-16 ">
           <img
             className="logo"
             src="/images/routes/insurance/Logo.png"
@@ -212,7 +212,7 @@ const InsuranceRoute = () => {
               Síguenos
             </p>
 
-            <div className="mt-4 ml-[7px] flex items-center gap-2 text-2xl text-white md:ml-0">
+            <div className="ml-[7px] mt-4 flex items-center gap-2 text-2xl text-white md:ml-0">
               <a
                 href="https://www.instagram.com/hoytrabajas/"
                 target="_blank"

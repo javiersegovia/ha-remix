@@ -7,8 +7,8 @@ import { json } from '@remix-run/server-runtime'
 import { Title } from '~/components/Typography/Title'
 import { requireAdminUserId } from '~/session.server'
 import { getPremiumAdvances } from '~/services/premium-advance/premium-advance.server'
-import { prisma } from '~/db.server'
-import { constants } from '~/config/constants'
+// import { prisma } from '~/db.server'
+// import { constants } from '~/config/constants'
 import { formatMoney } from '~/utils/formatMoney'
 import { CurrencySymbol } from '~/components/FormFields/CurrencyInput'
 import { formatDate } from '~/utils/formatDate'
@@ -17,11 +17,11 @@ import { Table } from '~/components/Lists/Table'
 
 export const loader = async ({ request }: LoaderArgs) => {
   await requireAdminUserId(request)
-  const url = new URL(request.url)
-  const page = url.searchParams.get('page')
-  const currentPage = parseFloat(page || '1')
-  const premiumAdvanceCount = await prisma.premiumAdvance.count()
-  const { itemsPerPage } = constants
+  // const url = new URL(request.url)
+  // const page = url.searchParams.get('page')
+  // const currentPage = parseFloat(page || '1')
+  // const premiumAdvanceCount = await prisma.premiumAdvance.count()
+  // const { itemsPerPage } = constants
   // {
   //   take: itemsPerPage,
   //   skip: (currentPage - 1) * itemsPerPage || 0,
@@ -120,7 +120,7 @@ export default function PremiumAdvancesIndexRoute() {
           <Table headings={headings} rows={rows} />
         </>
       ) : (
-        <section className="m-auto pt-20 pb-20 text-center">
+        <section className="m-auto pb-20 pt-20 text-center">
           <Title as="h1">No hay solicitudes</Title>
         </section>
       )}

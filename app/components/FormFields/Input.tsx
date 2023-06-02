@@ -29,7 +29,7 @@ export type TInputProps = {
   maskFn?: (value: string | number) => string
 }
 
-type TInput =
+export type TInput =
   | (Omit<InputHTMLAttributes<HTMLInputElement>, 'defaultValue'> & TInputProps)
   | (Omit<TextareaHTMLAttributes<HTMLTextAreaElement>, 'defaultValue'> &
       TInputProps)

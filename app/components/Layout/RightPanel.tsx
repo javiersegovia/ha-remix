@@ -33,7 +33,11 @@ export const RightPanel = ({
     >
       <Box className="mt-auto flex w-full flex-col space-y-5 rounded-none p-5 md:max-h-screen md:min-h-screen md:w-auto">
         <div className="flex items-center justify-end gap-4">
-          {title && <Title className="text-steelBlue-600 font-bold" as="h3">{title}</Title>}
+          {title && (
+            <Title className="font-bold text-steelBlue-600" as="h3">
+              {title}
+            </Title>
+          )}
 
           <div className="ml-auto" />
 

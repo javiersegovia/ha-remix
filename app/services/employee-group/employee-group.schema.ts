@@ -24,5 +24,3 @@ export const employeeGroupSchema = z.object({
 
 export const employeeGroupValidator = withZod(employeeGroupSchema)
 export type EmployeeGroupInputSchema = z.infer<typeof employeeGroupSchema>
-
-// intento de hook

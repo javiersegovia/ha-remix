@@ -16,7 +16,7 @@ export const TableHeading = ({
     scope="col"
     className={twMerge(
       clsx(
-        'bg-steelBlue-700 px-6 py-3 text-left text-base font-bold tracking-wider text-white',
+        'bg-white px-6 py-3 text-left text-base font-semibold tracking-wider text-black',
         isCentered && 'text-center'
       ),
       className

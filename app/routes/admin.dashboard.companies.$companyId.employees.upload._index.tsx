@@ -37,7 +37,7 @@ export default function AdminDashboardEmployeesUploadRoute() {
           type="file"
           name="csvFile"
           accept=".csv"
-          className="my-3 mx-auto block text-center"
+          className="mx-auto my-3 block text-center"
           disabled={inProcess}
         />
         <Button

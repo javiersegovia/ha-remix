@@ -6,8 +6,8 @@ import { json } from '@remix-run/server-runtime'
 import { Title } from '~/components/Typography/Title'
 import { requireAdminUserId } from '~/session.server'
 import { getPayrollAdvances } from '~/services/payroll-advance/payroll-advance.server'
-import { prisma } from '~/db.server'
-import { constants } from '~/config/constants'
+// import { prisma } from '~/db.server'
+// import { constants } from '~/config/constants'
 import { Table } from '~/components/Lists/Table'
 import { formatMoney } from '~/utils/formatMoney'
 import { CurrencySymbol } from '~/components/FormFields/CurrencyInput'
@@ -16,11 +16,11 @@ import { AdvanceStatusPill } from '~/components/Pills/AdvanceStatusPill'
 
 export const loader = async ({ request }: LoaderArgs) => {
   await requireAdminUserId(request)
-  const url = new URL(request.url)
-  const page = url.searchParams.get('page')
-  const currentPage = parseFloat(page || '1')
-  const payrollAdvanceCount = await prisma.payrollAdvance.count()
-  const { itemsPerPage } = constants
+  // const url = new URL(request.url)
+  // const page = url.searchParams.get('page')
+  // const currentPage = parseFloat(page || '1')
+  // const payrollAdvanceCount = await prisma.payrollAdvance.count()
+  // const { itemsPerPage } = constants
 
   // , {
   //   take: itemsPerPage,

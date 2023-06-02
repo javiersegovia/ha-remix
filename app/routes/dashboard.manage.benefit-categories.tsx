@@ -54,7 +54,7 @@ export default function BenefitCategoriesIndexRoute() {
   return (
     <>
       <Container className="w-full">
-        <Tabs items={manageBenefitPaths} className="mt-10 mb-8" />
+        <Tabs items={manageBenefitPaths} className="mb-8 mt-10" />
 
         {benefitCategories?.length > 0 ? (
           <>

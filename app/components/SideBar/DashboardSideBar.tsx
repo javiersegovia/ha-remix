@@ -122,7 +122,7 @@ export const DashboardSideBar = ({
           <button
             type="button"
             onClick={() => setShowMobileMenu(false)}
-            className="mt-4 mb-6 ml-auto flex items-center pr-2 text-3xl text-white md:hidden"
+            className="mb-6 ml-auto mt-4 flex items-center pr-2 text-3xl text-white md:hidden"
           >
             <span className="sr-only">Close Menu</span>
             <RiCloseFill />

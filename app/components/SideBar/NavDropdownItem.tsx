@@ -38,7 +38,7 @@ export const NavDropdownItem: React.FC<NavDropdownItemProps> = ({
       <button
         type="button"
         className={clsx(
-          'flex w-full cursor-pointer items-center rounded-[2rem] py-3 px-6 text-base font-semibold transition',
+          'flex w-full cursor-pointer items-center rounded-[2rem] px-6 py-3 text-base font-semibold transition',
           variant === 'PRIMARY' &&
             (insideCurrentPath
               ? `bg-steelBlue-300 text-steelBlue-700`
@@ -73,7 +73,7 @@ export const NavDropdownItem: React.FC<NavDropdownItemProps> = ({
         leaveFrom="opacity-100 translate-y-0"
         leaveTo="opacity-0 translate-y-1"
       >
-        <div className="mt-2 mb-1">
+        <div className="mb-1 mt-2">
           {subPaths.map(({ path, title }) => (
             <Link
               key={title + path}

@@ -150,7 +150,7 @@ export default function DashboardEmployeesIndexRoute() {
     <>
       <Container className="w-full pb-10">
         {canManageEmployeeGroup && (
-          <Tabs items={employeeTabPaths} className="mt-10 mb-8" />
+          <Tabs items={employeeTabPaths} className="mb-8 mt-10" />
         )}
 
         {employees?.length > 0 ? (

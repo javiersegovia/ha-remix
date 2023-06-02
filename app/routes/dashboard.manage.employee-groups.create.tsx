@@ -104,7 +104,7 @@ export default function CreateEmployeeGroupRoute() {
   return (
     <>
       <Container className="mx-auto w-full">
-        <Title className="pt-5 pl-2">Crear grupo</Title>
+        <Title className="pl-2 pt-5">Crear grupo</Title>
 
         <EmployeeGroupForm
           actions={
