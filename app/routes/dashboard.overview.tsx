@@ -327,7 +327,14 @@ export default function DashboardIndexRoute() {
             )}
           </section>
         </section>
+     
       </div>
+      <div className="fixed bottom-10 right-10 z-50 w-20 h-20">
+        <span className='mr-8'>¡Contáctanos!</span>
+    <a href="https://api.whatsapp.com/send?phone=573228157785&text=Hola, quiero más información" target="_blank">
+     <img src="/images/icon/icon_whatsapp.svg" className="w-20 h-20" alt='¡Contáctanos ahora mismo en WhatsApp!'/>
+    </a>
+  </div>
 
       <Outlet />
     </>
