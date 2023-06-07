@@ -21,9 +21,9 @@ import { TableIsEmpty } from '~/components/Lists/TableIsEmpty'
 import { Table } from '~/components/Lists/Table'
 import { EmployeeStatusPill } from '~/components/Pills/EmployeeStatusPill'
 import { prisma } from '~/db.server'
-import { constants } from '~/config/constants'
 import { filterEmployeeEnabledBenefits } from '../services/permissions/permissions.shared'
 import { badRequest } from '~/utils/responses'
+import { getPaginationOptions } from '~/utils/getPaginationOptions'
 
 export const meta: MetaFunction = () => {
   return {
@@ -45,10 +45,6 @@ export const employeeTabPaths = [
 export const loader = async ({ request }: LoaderArgs) => {
   const employee = await requireEmployee(request)
 
-  const url = new URL(request.url)
-  const page = url.searchParams.get('page')
-  const currentPage = parseFloat(page || '1')
-
   await requirePermissionByUserId(
     employee.userId,
     PermissionCode.MANAGE_EMPLOYEE_MAIN_INFORMATION
@@ -58,13 +54,6 @@ export const loader = async ({ request }: LoaderArgs) => {
     employee.userId,
     PermissionCode.MANAGE_EMPLOYEE_GROUP
   )
-
-  const employeeCount = await prisma.employee.count({
-    where: {
-      companyId: employee.companyId,
-    },
-  })
-  const { itemsPerPage } = constants
 
   const company = await prisma.company.findUnique({
     where: {
@@ -86,9 +75,20 @@ export const loader = async ({ request }: LoaderArgs) => {
     })
   }
 
+  const employeeCount = await prisma.employee.count({
+    where: {
+      companyId: employee.companyId,
+    },
+  })
+
+  const { take, skip, pagination } = getPaginationOptions({
+    request,
+    itemsCount: employeeCount,
+  })
+
   const employees = await getCompanyEmployeesByCompanyId(employee.companyId, {
-    take: itemsPerPage,
-    skip: (currentPage - 1) * itemsPerPage || 0,
+    take,
+    skip,
   })
 
   const employeesWithEnabledBenefitsPromise = employees.map((e) => {
@@ -106,10 +106,7 @@ export const loader = async ({ request }: LoaderArgs) => {
 
   return json({
     employees: await Promise.all(employeesWithEnabledBenefitsPromise),
-    pagination: {
-      currentPage,
-      totalPages: Math.ceil(employeeCount / itemsPerPage),
-    },
+    pagination,
     companyBenefitsIds: employee.company.benefits?.map((b) => b.id),
     canManageEmployeeGroup,
   })

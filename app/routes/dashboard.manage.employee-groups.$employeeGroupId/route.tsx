@@ -1,12 +1,11 @@
 import type { ActionArgs, LoaderArgs, MetaFunction } from '@remix-run/node'
 import type { EmployeeDataItem } from './table-columns'
-import type { Prisma } from '@prisma/client'
 
-import { Form, Link, Outlet } from '@remix-run/react'
+import { Form, Link, Outlet, useLoaderData } from '@remix-run/react'
 import { redirect, json } from '@remix-run/node'
-import { useLoaderData } from '@remix-run/react'
 import { PermissionCode } from '@prisma/client'
 import { $path } from 'remix-routes'
+import { getSearchParams } from 'remix-params-helper'
 import { MdOutlineModeEditOutline, MdOutlineDelete } from 'react-icons/md'
 
 import { Container } from '~/components/Layout/Container'
@@ -22,7 +21,7 @@ import {
 import { GoBack } from '~/components/Button/GoBack'
 import { Button, ButtonIconVariants } from '~/components/Button'
 import { FilterSummary } from '~/containers/dashboard/EmployeeGroup/FilterSummary'
-import { calculateAge, getMinDateFromAge } from '~/utils/formatDate'
+import { calculateAge } from '~/utils/formatDate'
 import { formatMoney } from '~/utils/formatMoney'
 import { CurrencySymbol } from '~/components/FormFields/CurrencyInput'
 import { columns } from './table-columns'
@@ -34,12 +33,11 @@ import { DataTable } from '~/components/Table/DataTable'
 import { TableActions, deleteFormId } from './table-actions'
 import { getJobDepartments } from '~/services/job-department/job-department.server'
 import { getAgeRanges } from '~/services/age-range/age-range.server'
-import {
-  getSalaryRangeById,
-  getSalaryRanges,
-} from '~/services/salary-range/salary-range.server'
+import { getSalaryRanges } from '~/services/salary-range/salary-range.server'
 import { prisma } from '~/db.server'
-import { getAgeRangeById } from '~/services/age-range/age-range.server'
+import { searchSchema } from './search-schema'
+import { buildEmployeeFilters } from '~/services/employee/employee.server'
+import { getPaginationOptions } from '~/utils/getPaginationOptions'
 
 const onCloseRedirectTo = '/dashboard/manage/employee-groups' as const
 
@@ -78,97 +76,45 @@ export const loader = async ({ request, params }: LoaderArgs) => {
     })
   }
 
-  const url = new URL(request.url)
-  const keywords = url.searchParams.get('keywords')
-  const jobDepartmentId = url.searchParams.get('jobDepartmentId')
-  const ageRangeId = url.searchParams.get('ageRangeId')
-  const salaryRangeId = url.searchParams.get('salaryRangeId')
+  const searchResult = getSearchParams(request, searchSchema)
 
-  const employeeFilters: Prisma.Enumerable<Prisma.EmployeeWhereInput> = [
-    {
-      companyId: employee.companyId,
+  if (!searchResult.success) {
+    throw badRequest({
+      message: 'Se ha recibido un formato de búsqueda incorrecto',
+      redirect: null,
+    })
+  }
+
+  const { keywords, jobDepartmentId, ageRangeId, salaryRangeId } =
+    searchResult.data
+
+  const employeeFilters = await buildEmployeeFilters({
+    keywords,
+    jobDepartmentId,
+    ageRangeId,
+    salaryRangeId,
+    employeeGroupId,
+    companyId: employee.companyId,
+  })
+
+  const employeeCount = await prisma.employee.count({
+    where: {
+      AND: employeeFilters,
     },
-    {
-      employeeGroups: {
-        some: {
-          id: employeeGroupId,
-        },
-      },
-    },
-  ]
+  })
 
-  if (keywords) {
-    employeeFilters.push({
-      OR: [
-        {
-          user: {
-            firstName: {
-              contains: keywords,
-              mode: 'insensitive',
-            },
-          },
-        },
-        {
-          user: {
-            lastName: {
-              contains: keywords,
-              mode: 'insensitive',
-            },
-          },
-        },
-      ],
-    })
-  }
-
-  if (jobDepartmentId) {
-    employeeFilters.push({
-      jobDepartmentId: parseFloat(jobDepartmentId),
-    })
-  }
-
-  if (ageRangeId) {
-    const ageRange = await getAgeRangeById(parseFloat(ageRangeId))
-
-    if (!ageRange) {
-      throw badRequest({
-        message: 'No se encontró el ID del rango de edad',
-        redirect: onCloseRedirectTo,
-      })
-    }
-
-    employeeFilters.push({
-      birthDay: {
-        lte: getMinDateFromAge(ageRange?.minAge),
-        gte: ageRange?.maxAge
-          ? getMinDateFromAge(ageRange?.maxAge + 1)
-          : undefined,
-      },
-    })
-  }
-
-  if (salaryRangeId) {
-    const salaryRange = await getSalaryRangeById(parseFloat(salaryRangeId))
-
-    if (!salaryRange) {
-      throw badRequest({
-        message: 'No se encontró el ID del rango salarial',
-        redirect: onCloseRedirectTo,
-      })
-    }
-
-    employeeFilters.push({
-      salaryFiat: {
-        lte: salaryRange.maxValue ? salaryRange.maxValue : undefined,
-        gte: salaryRange.minValue,
-      },
-    })
-  }
+  const { take, skip, pagination } = getPaginationOptions({
+    request,
+    itemsCount: employeeCount,
+  })
 
   const getEmployees = () =>
     prisma.employee.findMany({
       where: {
         AND: employeeFilters,
       },
+      take,
+      skip,
       select: {
         id: true,
         status: true,
@@ -236,6 +182,7 @@ export const loader = async ({ request, params }: LoaderArgs) => {
     jobDepartments,
     salaryRanges,
     ageRanges,
+    pagination,
   })
 }
 
@@ -289,6 +236,7 @@ const EmployeeGroupDetailsRoute = () => {
     jobDepartments,
     salaryRanges,
     ageRanges,
+    pagination,
   } = useLoaderData<typeof loader>()
 
   const {
@@ -302,8 +250,6 @@ const EmployeeGroupDetailsRoute = () => {
     jobDepartment,
   } = employeeGroup
 
-  console.log('x', employeeGroup._count.employees)
-
   return (
     <>
       <Container className="my-10 w-full">
@@ -311,7 +257,7 @@ const EmployeeGroupDetailsRoute = () => {
           redirectTo="/dashboard/manage/employee-groups"
           description="Regresar"
         />
-        <section className="mb-7 flex flex-col items-center justify-between sm:flex-row">
+        <section className="flex flex-col items-center justify-between sm:flex-row">
           <Title className="text-steelBlue-800">{employeeGroup.name}</Title>
 
           <div className="mt-4 flex flex-wrap items-center justify-center gap-4 sm:mt-0 sm:flex-nowrap sm:justify-start">
@@ -374,21 +320,22 @@ const EmployeeGroupDetailsRoute = () => {
           </div>
 
           {(country || gender || ageRange || salaryRange || jobDepartment) && (
-            <FilterSummary
-              className=""
-              country={country}
-              state={state}
-              city={city}
-              gender={gender}
-              ageRange={ageRange}
-              salaryRange={salaryRange}
-              jobDepartment={jobDepartment}
-              options={{ hasColumns: true }}
-            />
+            <div className="mt-7">
+              <FilterSummary
+                country={country}
+                state={state}
+                city={city}
+                gender={gender}
+                ageRange={ageRange}
+                salaryRange={salaryRange}
+                jobDepartment={jobDepartment}
+                options={{ hasColumns: true }}
+              />
+            </div>
           )}
-
-          <div />
         </div>
+
+        <div />
 
         {benefits?.length > 0 ? (
           <div className="mt-4 items-center gap-6 p-5 md:inline-flex">
@@ -416,6 +363,7 @@ const EmployeeGroupDetailsRoute = () => {
               columns={columns}
               data={employeesData}
               className="mt-4"
+              pagination={pagination}
               tableActions={(table) => (
                 <TableActions
                   table={table}

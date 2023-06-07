@@ -4,6 +4,7 @@ import type {
   Table as TTable,
 } from '@tanstack/react-table'
 import React, { useEffect } from 'react'
+import type { PaginationProps } from '../Lists/Pagination'
 
 import {
   flexRender,
@@ -11,7 +12,11 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table'
+import clsx from 'clsx'
+import { twMerge } from 'tailwind-merge'
+import { useNavigation } from '@remix-run/react'
 
+import { Pagination } from '../Lists/Pagination'
 import {
   Table,
   TableBody,
@@ -20,15 +25,13 @@ import {
   TableHeader,
   TableRow,
 } from '~/components/UI/Table'
-import clsx from 'clsx'
-import { twMerge } from 'tailwind-merge'
-import { useNavigation } from '@remix-run/react'
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
   data: TData[]
   className?: string
   tableActions?: (table: TTable<TData>) => JSX.Element
+  pagination?: PaginationProps
 }
 
 export function DataTable<TData, TValue>({
@@ -36,6 +39,7 @@ export function DataTable<TData, TValue>({
   data,
   className,
   tableActions,
+  pagination,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([])
 
@@ -117,6 +121,15 @@ export function DataTable<TData, TValue>({
             )}
           </TableBody>
         </Table>
+
+        {pagination && (
+          <div className="pb-5 pt-2">
+            <Pagination
+              currentPage={pagination.currentPage}
+              totalPages={pagination.totalPages}
+            />
+          </div>
+        )}
       </div>
     </div>
   )

@@ -3,8 +3,6 @@ import fs from 'fs'
 import path from 'path'
 import bcrypt from 'bcryptjs'
 
-const prisma = new PrismaClient()
-
 interface CountryJSON {
   name: string
   code: string
@@ -126,7 +124,11 @@ const jobPositions = [
 
 const genders = ['Masculino', 'Femenino', 'Otro']
 
+let prisma: PrismaClient
+
 async function main() {
+  prisma = new PrismaClient()
+
   console.info('Seeding...')
 
   const rawFile = fs.readFileSync(

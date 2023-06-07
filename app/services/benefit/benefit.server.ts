@@ -150,7 +150,7 @@ export const createBenefit = async (
         instructions: {
           set: instructions?.filter((i): i is string => Boolean(i)) || [],
         },
-        isHighlighted,
+        isHighlighted: Boolean(isHighlighted),
         mainImage: createMainImage,
         benefitHighlight: createBenefitHighlight,
         companyBenefit: companyId
@@ -339,7 +339,7 @@ export const updateBenefitById = async (
       cost: cost || null,
       mainImage: createMainImage,
       shortDescription,
-      isHighlighted,
+      isHighlighted: Boolean(isHighlighted),
       description,
       instructions: {
         set: instructions?.filter((i): i is string => Boolean(i)) || [],

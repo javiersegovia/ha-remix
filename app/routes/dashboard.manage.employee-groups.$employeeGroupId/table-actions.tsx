@@ -3,6 +3,7 @@ import type { getJobDepartments } from '~/services/job-department/job-department
 import type { getSalaryRanges } from '~/services/salary-range/salary-range.server'
 import type { getAgeRanges } from '~/services/age-range/age-range.server'
 
+import { ValidatedForm } from 'remix-validated-form'
 import { FormSubactions } from './route'
 import {
   Button,
@@ -13,10 +14,8 @@ import { Input } from '~/components/FormFields/Input'
 import { Select } from '~/components/FormFields/Select'
 import { formatAgeRange } from '~/utils/formatAgeRange'
 import { formatSalaryRange } from '~/utils/formatSalaryRange'
-import { ValidatedForm } from 'remix-validated-form'
-import { withZod } from '@remix-validated-form/with-zod'
-import { z } from 'zod'
-import { zfd } from 'zod-form-data'
+import { searchValidator } from './search-schema'
+import { Title } from '~/components/Typography/Title'
 
 interface TableActionsProps<TData extends unknown> {
   table: Table<TData>
@@ -27,15 +26,6 @@ interface TableActionsProps<TData extends unknown> {
 
 export const deleteFormId = 'DeleteForm' as const
 
-const searchSchema = z.object({
-  keywords: z.string().trim().nullish(),
-  jobDepartmentId: zfd.numeric(z.number().int().nullish()),
-  ageRangeId: zfd.numeric(z.number().int().nullish()),
-  salaryRangeId: zfd.numeric(z.number().int().nullish()),
-})
-
-const searchValidator = withZod(searchSchema)
-
 export const TableActions = <TData extends unknown>({
   table,
   jobDepartments,
@@ -45,7 +35,9 @@ export const TableActions = <TData extends unknown>({
   return (
     <>
       <ValidatedForm validator={searchValidator} method="get">
-        <div className="flex items-center gap-x-3 pt-4">
+        <Title as="h4">Filtros de búsqueda</Title>
+
+        <div className="flex flex-wrap items-center gap-x-3 pt-4 lg:flex-nowrap">
           <Input
             type="text"
             label="Nombre o correo"
@@ -71,6 +63,7 @@ export const TableActions = <TData extends unknown>({
               name: formatAgeRange(minAge, maxAge),
             }))}
           />
+
           <Select
             name="salaryRangeId"
             label="Rango salarial"
@@ -88,7 +81,7 @@ export const TableActions = <TData extends unknown>({
             variant={ButtonColorVariants.PRIMARY}
             icon={ButtonIconVariants.SEARCH}
             size="SM"
-            className="w-auto"
+            className="mb-5 w-full lg:mb-0 lg:w-auto"
           >
             Filtrar
           </Button>
@@ -103,7 +96,7 @@ export const TableActions = <TData extends unknown>({
               variant={ButtonColorVariants.SECONDARY}
               icon={ButtonIconVariants.DELETE}
               size="SM"
-              className="w-auto"
+              className="mb-5 w-full lg:mb-0 lg:w-auto"
             >
               Remover
             </Button>

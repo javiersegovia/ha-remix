@@ -1,8 +1,9 @@
 import { PrismaClient, PayrollAdvanceStatus } from '@prisma/client'
 
-const prisma = new PrismaClient()
+let prisma: PrismaClient
 
 const load = async () => {
+  prisma = new PrismaClient()
   let count = 0
 
   try {

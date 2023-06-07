@@ -124,7 +124,7 @@ export const benefitSchema = z.object({
     )
     .nullish(),
 
-  isHighlighted: zfd.checkbox({ trueValue: 'true' }),
+  isHighlighted: zfd.checkbox({ trueValue: 'true' }).nullish(),
 
   benefitHighlight: benefitHighlightSchema.nullish(),
 })

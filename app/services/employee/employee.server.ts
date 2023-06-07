@@ -1,8 +1,12 @@
 import type {
+  AgeRange,
   Bank,
   BankAccount,
   Company,
   Employee,
+  EmployeeGroup,
+  JobDepartment,
+  SalaryRange,
   Wallet,
 } from '@prisma/client'
 import type { UploadEmployeeSchemaInput } from '~/schemas/upload-employees.schema'
@@ -34,9 +38,11 @@ import {
 } from '~/utils/relationships'
 import { generateExpirationDate, generateRandomToken } from '../auth.server'
 import { sendInvitation } from '../email/email.server'
-import { sanitizeDate } from '~/utils/formatDate'
+import { getMinDateFromAge, sanitizeDate } from '~/utils/formatDate'
 import { uploadEmployeeSchema } from '~/schemas/upload-employees.schema'
 import { capitalize } from '~/utils/strings'
+import { getAgeRangeById } from '../age-range/age-range.server'
+import { getSalaryRangeById } from '../salary-range/salary-range.server'
 
 const INVITATION_EXPIRES_IN = '20d' as const
 
@@ -1671,6 +1677,119 @@ export const getEmployeePaymentOptions = ({
   }
 
   return paymentOptions
+}
+
+interface BuildEmployeeFiltersArgs {
+  keywords?: string
+  jobDepartmentId?: JobDepartment['id']
+  ageRangeId?: AgeRange['id']
+  salaryRangeId?: SalaryRange['id']
+  employeeGroupId?: EmployeeGroup['id']
+  companyId: Company['id']
+}
+
+export const buildEmployeeFilters = async ({
+  keywords,
+  jobDepartmentId,
+  ageRangeId,
+  salaryRangeId,
+  employeeGroupId,
+  companyId,
+}: BuildEmployeeFiltersArgs): Promise<
+  Prisma.Enumerable<Prisma.EmployeeWhereInput>
+> => {
+  const filters: Prisma.Enumerable<Prisma.EmployeeWhereInput> = [
+    {
+      companyId,
+    },
+  ]
+
+  if (employeeGroupId) {
+    filters.push({
+      employeeGroups: {
+        some: {
+          id: employeeGroupId,
+        },
+      },
+    })
+  }
+
+  if (keywords) {
+    filters.push({
+      OR: [
+        {
+          user: {
+            firstName: {
+              contains: keywords,
+              mode: 'insensitive',
+            },
+          },
+        },
+        {
+          user: {
+            lastName: {
+              contains: keywords,
+              mode: 'insensitive',
+            },
+          },
+        },
+        {
+          user: {
+            email: {
+              contains: keywords,
+              mode: 'insensitive',
+            },
+          },
+        },
+      ],
+    })
+  }
+
+  if (jobDepartmentId) {
+    filters.push({
+      jobDepartmentId,
+    })
+  }
+
+  if (ageRangeId) {
+    const ageRange = await getAgeRangeById(ageRangeId)
+
+    if (!ageRange) {
+      throw badRequest({
+        message: 'No se encontró el ID del rango de edad',
+        redirect: null,
+      })
+    }
+
+    filters.push({
+      birthDay: {
+        lte: getMinDateFromAge(ageRange?.minAge),
+        gte: ageRange?.maxAge
+          ? getMinDateFromAge(ageRange?.maxAge + 1)
+          : undefined,
+      },
+    })
+  }
+
+  if (salaryRangeId) {
+    const salaryRange = await getSalaryRangeById(salaryRangeId)
+
+    if (!salaryRange) {
+      throw badRequest({
+        message: 'No se encontró el ID del rango salarial',
+        redirect: null,
+      })
+    }
+
+    filters.push({
+      salaryFiat: {
+        lte: salaryRange.maxValue ? salaryRange.maxValue : undefined,
+        gte: salaryRange.minValue,
+      },
+    })
+  }
+
+  return filters
 }
 
 const generateCreateUserInput = async (user: Prisma.UserCreateInput) => {
