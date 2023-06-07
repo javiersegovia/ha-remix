@@ -29,6 +29,8 @@ import { columns } from './table-columns'
 import { employeeTableSchema } from '~/services/employee/employee.schema'
 import { TableIsEmpty } from '~/components/Lists/TableIsEmpty'
 import { $path } from 'remix-routes'
+import { Box } from '~/components/Layout/Box'
+import { HiOutlineUser } from 'react-icons/hi'
 
 const onCloseRedirectTo = '/dashboard/manage/employee-groups' as const
 
@@ -205,20 +207,35 @@ const EmployeeGroupDetailsRoute = () => {
           </div>
         </section>
 
-        {(country || gender || ageRange || salaryRange || jobDepartment) && (
-          <FilterSummary
-            country={country}
-            state={state}
-            city={city}
-            gender={gender}
-            ageRange={ageRange}
-            salaryRange={salaryRange}
-            jobDepartment={jobDepartment}
-            options={{ hasColumns: true }}
-          />
-        )}
+        <div className="flex">
+          <div className="inline-flex flex-grow-[0.1] items-stretch">
+            <Box className="flex w-max flex-col items-center justify-center border border-steelBlue-100 p-1 text-steelBlue-800 sm:p-3">
+              <span className="text-2xl">
+                <HiOutlineUser className="inline-flex rounded-full bg-electricYellow-700 ring-8 ring-electricYellow-700"></HiOutlineUser>
+                <div className="ml-5 inline-flex align-bottom text-4xl/7 font-bold">
+                  {employeesData.length}
+                </div>
+              </span>
+              <p className="pt-5">Colaboradores </p>
+            </Box>
+          </div>
 
-        <div />
+          {(country || gender || ageRange || salaryRange || jobDepartment) && (
+            <FilterSummary
+              className=""
+              country={country}
+              state={state}
+              city={city}
+              gender={gender}
+              ageRange={ageRange}
+              salaryRange={salaryRange}
+              jobDepartment={jobDepartment}
+              options={{ hasColumns: true }}
+            />
+          )}
+
+          <div />
+        </div>
 
         {benefits?.length > 0 ? (
           <div className="mt-10 items-center gap-6 p-5 md:inline-flex">

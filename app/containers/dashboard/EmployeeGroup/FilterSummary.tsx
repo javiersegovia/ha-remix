@@ -55,7 +55,7 @@ export const FilterSummary = ({
       <ul
         className={twMerge(
           clsx(
-            'ml-3 grid list-none auto-cols-auto gap-x-5 gap-y-3 pl-3 md:ml-0',
+            'grid list-none auto-cols-auto gap-x-5 gap-y-3 sm:ml-3 sm:pl-3 md:ml-0',
             options?.hasColumns && 'sm:grid-cols-2'
           )
         )}
