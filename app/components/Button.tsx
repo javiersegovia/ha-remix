@@ -8,7 +8,6 @@ import {
   MdOutlineUploadFile,
   MdOutlineDownload,
   MdOutlineDelete,
-  MdWhatsapp
 } from 'react-icons/md'
 
 export type TButtonSizes = 'XS' | 'SM' | 'MD' | 'LG' | 'XL'
@@ -27,7 +26,6 @@ export enum ButtonIconVariants {
   CREATE = 'CREATE',
   DOWNLOAD = 'DOWNLOAD',
   DELETE = 'DELETE',
-  WHATSAPP = 'WHATSAPP'
 }
 
 export enum ButtonDesignVariants {
@@ -131,7 +129,6 @@ export const ButtonElement = ({
           isSuccess && 'bg-green-400 text-white',
           isSuccess && !disabled && 'hover:bg-green-600',
           isSuccess && disabled && 'opacity-100',
-          
 
           className
         )
@@ -146,18 +143,18 @@ export const ButtonElement = ({
         <>
           {children}
 
-          <span
-            className={clsx(
-              design === ButtonDesignVariants.BUTTON && icon && 'ml-3 text-xl',
-              icon === ButtonIconVariants.WHATSAPP && 'text-white text-3xl'
-            )}
-          >
-            {icon === ButtonIconVariants.UPLOAD && <MdOutlineUploadFile />}
-            {icon === ButtonIconVariants.CREATE && <HiPlus />}
-            {icon === ButtonIconVariants.DOWNLOAD && <MdOutlineDownload />}
-            {icon === ButtonIconVariants.DELETE && <MdOutlineDelete />}
-            {icon === ButtonIconVariants.WHATSAPP && <MdWhatsapp/>}
-          </span>
+          {icon && (
+            <span
+              className={clsx(
+                design === ButtonDesignVariants.BUTTON && 'ml-3 text-xl'
+              )}
+            >
+              {icon === ButtonIconVariants.UPLOAD && <MdOutlineUploadFile />}
+              {icon === ButtonIconVariants.CREATE && <HiPlus />}
+              {icon === ButtonIconVariants.DOWNLOAD && <MdOutlineDownload />}
+              {icon === ButtonIconVariants.DELETE && <MdOutlineDelete />}
+            </span>
+          )}
         </>
       )}
     </button>

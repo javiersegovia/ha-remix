@@ -3,9 +3,9 @@ import type { LoaderArgs } from '@remix-run/server-runtime'
 
 import { Outlet, useLoaderData } from '@remix-run/react'
 import { json } from '@remix-run/server-runtime'
-
 import { useState } from 'react'
 import { twMerge } from 'tailwind-merge'
+import { MdWhatsapp } from 'react-icons/md'
 import clsx from 'clsx'
 
 import { prisma } from '~/db.server'
@@ -16,7 +16,7 @@ import { requireEmployee } from '~/session.server'
 import { Container } from '~/components/Layout/Container'
 import { Carousel } from '~/components/Carousels/Carousel'
 import { BenefitHighlightCard } from '~/components/Cards/BenefitHighlightCard'
-import { Button } from '~/components/Button'
+import { Button, ButtonDesignVariants } from '~/components/Button'
 import { capitalizeFirstLetter } from '~/utils/capitalizeFirstLetter'
 import { badRequest } from '~/utils/responses'
 
@@ -327,21 +327,19 @@ export default function DashboardIndexRoute() {
             )}
           </section>
         </section>
-     
       </div>
+
       <Button
-      href="https://api.whatsapp.com/send?phone=573228157785&text=Hola, quiero más información" target="_blank"
-      icon='WHATSAPP'
-      design='FAB'
-      className="fixed bottom-10 right-10 z-50 w-20 h-20 bg-green-500 hover:bg-blue-950"
+        href="https://api.whatsapp.com/send?phone=573228157785&text=Hola, quiero más información"
+        targetBlank
+        external
+        design={ButtonDesignVariants.FAB}
+        className="fixed bottom-5 right-5 z-50 h-12 w-12 bg-green-500 p-0 hover:bg-green-600"
       >
+        <span>
+          <MdWhatsapp className="text-3xl text-white" />
+        </span>
       </Button>
-    {/*   <div className="fixed bottom-10 right-10 z-50 w-20 h-20">
-        <span className='mr-8'>¡Contáctanos!</span>
-    <a href="https://api.whatsapp.com/send?phone=573228157785&text=Hola, quiero más información" target="_blank">
-     <img src="/images/icon/icon_whatsapp.svg" className="w-20 h-20" alt='¡Contáctanos ahora mismo en WhatsApp!'/>
-    </a>
-  </div> */}
 
       <Outlet />
     </>
