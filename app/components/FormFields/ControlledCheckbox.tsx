@@ -7,6 +7,7 @@ interface ControlledCheckboxProps {
   checked: boolean
   onChange: (newValue: boolean) => void
   value?: string
+  formId?: string
 }
 
 export const ControlledCheckbox = ({
@@ -15,6 +16,7 @@ export const ControlledCheckbox = ({
   value,
   checked,
   onChange,
+  formId,
 }: ControlledCheckboxProps) => {
   return (
     <div className="flex gap-2">
@@ -27,6 +29,7 @@ export const ControlledCheckbox = ({
           checked={checked || false}
           onChange={(e) => onChange(e.target.checked)}
           className={checkboxInputStyle}
+          form={formId}
         />
       </div>
 

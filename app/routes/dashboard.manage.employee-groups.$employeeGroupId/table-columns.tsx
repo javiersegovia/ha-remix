@@ -5,6 +5,7 @@ import { $path } from 'remix-routes'
 import { EmployeeStatusPill } from '~/components/Pills/EmployeeStatusPill'
 import { TableSortableButton } from '~/components/UI/Table'
 import { ControlledCheckbox } from '~/components/FormFields/ControlledCheckbox'
+import { deleteFormId } from './table-actions'
 
 export type EmployeeDataItem = {
   id: Employee['id']
@@ -26,6 +27,7 @@ export const columns: ColumnDef<EmployeeDataItem>[] = [
         checked={table.getIsAllPageRowsSelected()}
         onChange={(value) => table.toggleAllPageRowsSelected(!!value)}
         aria-label="Seleccionar todos"
+        formId={deleteFormId}
       />
     ),
     cell: ({ row }) => (
@@ -35,6 +37,7 @@ export const columns: ColumnDef<EmployeeDataItem>[] = [
         checked={row.getIsSelected()}
         onChange={(value) => row.toggleSelected(!!value)}
         aria-label="Seleccionar fila"
+        formId={deleteFormId}
       />
     ),
     enableSorting: false,

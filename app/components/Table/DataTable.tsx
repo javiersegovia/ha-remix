@@ -22,19 +22,20 @@ import {
 } from '~/components/UI/Table'
 import clsx from 'clsx'
 import { twMerge } from 'tailwind-merge'
+import { useNavigation } from '@remix-run/react'
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
   data: TData[]
   className?: string
-  tableActions?: React.ComponentType<{ table: TTable<TData> }>
+  tableActions?: (table: TTable<TData>) => JSX.Element
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
   className,
-  tableActions: TableActions,
+  tableActions,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([])
 
@@ -49,17 +50,19 @@ export function DataTable<TData, TValue>({
     },
   })
 
+  const navigation = useNavigation()
+
   useEffect(() => {
-    table.resetRowSelection()
-  }, [table, data])
+    if (navigation.state !== 'idle') {
+      table.resetRowSelection()
+    }
+  }, [navigation.state, table])
 
   return (
-    <div>
-      {TableActions && <TableActions table={table} />}
+    <div className={className}>
+      {tableActions?.(table)}
 
-      <div
-        className={twMerge(clsx('rounded-3xl border bg-white p-3', className))}
-      >
+      <div className={twMerge(clsx('rounded-3xl border bg-white p-3'))}>
         <Table>
           <TableHeader className="overflow-hidden">
             {table.getHeaderGroups().map((headerGroup) => (
@@ -79,6 +82,7 @@ export function DataTable<TData, TValue>({
               </TableRow>
             ))}
           </TableHeader>
+
           <TableBody>
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row, idx) => (

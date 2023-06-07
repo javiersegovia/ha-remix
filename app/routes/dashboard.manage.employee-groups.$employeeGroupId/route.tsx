@@ -1,10 +1,12 @@
 import type { ActionArgs, LoaderArgs, MetaFunction } from '@remix-run/node'
 import type { EmployeeDataItem } from './table-columns'
+import type { Prisma } from '@prisma/client'
 
 import { Form, Link, Outlet } from '@remix-run/react'
 import { redirect, json } from '@remix-run/node'
 import { useLoaderData } from '@remix-run/react'
 import { PermissionCode } from '@prisma/client'
+import { $path } from 'remix-routes'
 import { MdOutlineModeEditOutline, MdOutlineDelete } from 'react-icons/md'
 
 import { Container } from '~/components/Layout/Container'
@@ -20,18 +22,24 @@ import {
 import { GoBack } from '~/components/Button/GoBack'
 import { Button, ButtonIconVariants } from '~/components/Button'
 import { FilterSummary } from '~/containers/dashboard/EmployeeGroup/FilterSummary'
-import { calculateAge } from '~/utils/formatDate'
+import { calculateAge, getMinDateFromAge } from '~/utils/formatDate'
 import { formatMoney } from '~/utils/formatMoney'
 import { CurrencySymbol } from '~/components/FormFields/CurrencyInput'
-
 import { columns } from './table-columns'
 import { employeeTableSchema } from '~/services/employee/employee.schema'
 import { TableIsEmpty } from '~/components/Lists/TableIsEmpty'
-import { $path } from 'remix-routes'
 import { Box } from '~/components/Layout/Box'
 import { HiOutlineUser } from 'react-icons/hi'
 import { DataTable } from '~/components/Table/DataTable'
-import { TableActions } from './table-actions'
+import { TableActions, deleteFormId } from './table-actions'
+import { getJobDepartments } from '~/services/job-department/job-department.server'
+import { getAgeRanges } from '~/services/age-range/age-range.server'
+import {
+  getSalaryRangeById,
+  getSalaryRanges,
+} from '~/services/salary-range/salary-range.server'
+import { prisma } from '~/db.server'
+import { getAgeRangeById } from '~/services/age-range/age-range.server'
 
 const onCloseRedirectTo = '/dashboard/manage/employee-groups' as const
 
@@ -70,7 +78,135 @@ export const loader = async ({ request, params }: LoaderArgs) => {
     })
   }
 
-  const employeeGroup = await getEmployeeGroupById(employeeGroupId)
+  const url = new URL(request.url)
+  const keywords = url.searchParams.get('keywords')
+  const jobDepartmentId = url.searchParams.get('jobDepartmentId')
+  const ageRangeId = url.searchParams.get('ageRangeId')
+  const salaryRangeId = url.searchParams.get('salaryRangeId')
+
+  const employeeFilters: Prisma.Enumerable<Prisma.EmployeeWhereInput> = [
+    {
+      companyId: employee.companyId,
+    },
+    {
+      employeeGroups: {
+        some: {
+          id: employeeGroupId,
+        },
+      },
+    },
+  ]
+
+  if (keywords) {
+    employeeFilters.push({
+      OR: [
+        {
+          user: {
+            firstName: {
+              contains: keywords,
+              mode: 'insensitive',
+            },
+          },
+        },
+        {
+          user: {
+            lastName: {
+              contains: keywords,
+              mode: 'insensitive',
+            },
+          },
+        },
+      ],
+    })
+  }
+
+  if (jobDepartmentId) {
+    employeeFilters.push({
+      jobDepartmentId: parseFloat(jobDepartmentId),
+    })
+  }
+
+  if (ageRangeId) {
+    const ageRange = await getAgeRangeById(parseFloat(ageRangeId))
+
+    if (!ageRange) {
+      throw badRequest({
+        message: 'No se encontró el ID del rango de edad',
+        redirect: onCloseRedirectTo,
+      })
+    }
+
+    employeeFilters.push({
+      birthDay: {
+        lte: getMinDateFromAge(ageRange?.minAge),
+        gte: ageRange?.maxAge
+          ? getMinDateFromAge(ageRange?.maxAge + 1)
+          : undefined,
+      },
+    })
+  }
+
+  if (salaryRangeId) {
+    const salaryRange = await getSalaryRangeById(parseFloat(salaryRangeId))
+
+    if (!salaryRange) {
+      throw badRequest({
+        message: 'No se encontró el ID del rango salarial',
+        redirect: onCloseRedirectTo,
+      })
+    }
+
+    employeeFilters.push({
+      salaryFiat: {
+        lte: salaryRange.maxValue ? salaryRange.maxValue : undefined,
+        gte: salaryRange.minValue,
+      },
+    })
+  }
+
+  const getEmployees = () =>
+    prisma.employee.findMany({
+      where: {
+        AND: employeeFilters,
+      },
+      select: {
+        id: true,
+        status: true,
+        salaryFiat: true,
+        birthDay: true,
+        gender: {
+          select: {
+            name: true,
+          },
+        },
+        jobDepartment: {
+          select: {
+            name: true,
+          },
+        },
+        user: {
+          select: {
+            email: true,
+            firstName: true,
+            lastName: true,
+          },
+        },
+      },
+      orderBy: {
+        user: {
+          firstName: 'asc',
+        },
+      },
+    })
+
+  const [employees, employeeGroup, jobDepartments, salaryRanges, ageRanges] =
+    await Promise.all([
+      getEmployees(),
+      getEmployeeGroupById(employeeGroupId),
+      getJobDepartments(),
+      getSalaryRanges(),
+      getAgeRanges(),
+    ])
 
   if (!employeeGroup) {
     throw badRequest({
@@ -79,7 +215,7 @@ export const loader = async ({ request, params }: LoaderArgs) => {
     })
   }
 
-  const employeesData: EmployeeDataItem[] = employeeGroup.employees.map((e) => {
+  const employeesData: EmployeeDataItem[] = employees?.map((e) => {
     return {
       id: e.id,
       email: e.user.email,
@@ -94,7 +230,13 @@ export const loader = async ({ request, params }: LoaderArgs) => {
     }
   })
 
-  return json({ employeeGroup, employeesData })
+  return json({
+    employeeGroup,
+    employeesData,
+    jobDepartments,
+    salaryRanges,
+    ageRanges,
+  })
 }
 
 export const action = async ({ request, params }: ActionArgs) => {
@@ -141,7 +283,14 @@ export const action = async ({ request, params }: ActionArgs) => {
 }
 
 const EmployeeGroupDetailsRoute = () => {
-  const { employeeGroup, employeesData } = useLoaderData<typeof loader>()
+  const {
+    employeeGroup,
+    employeesData,
+    jobDepartments,
+    salaryRanges,
+    ageRanges,
+  } = useLoaderData<typeof loader>()
+
   const {
     country,
     state,
@@ -153,6 +302,8 @@ const EmployeeGroupDetailsRoute = () => {
     jobDepartment,
   } = employeeGroup
 
+  console.log('x', employeeGroup._count.employees)
+
   return (
     <>
       <Container className="my-10 w-full">
@@ -162,8 +313,9 @@ const EmployeeGroupDetailsRoute = () => {
         />
         <section className="mb-7 flex flex-col items-center justify-between sm:flex-row">
           <Title className="text-steelBlue-800">{employeeGroup.name}</Title>
+
           <div className="mt-4 flex flex-wrap items-center justify-center gap-4 sm:mt-0 sm:flex-nowrap sm:justify-start">
-            {employeesData.length > 0 && (
+            {employeeGroup._count.employees > 0 && (
               <Button
                 href={$path(
                   '/dashboard/manage/employee-groups/:employeeGroupId/add',
@@ -239,7 +391,7 @@ const EmployeeGroupDetailsRoute = () => {
         </div>
 
         {benefits?.length > 0 ? (
-          <div className="mt-10 items-center gap-6 p-5 md:inline-flex">
+          <div className="mt-4 items-center gap-6 p-5 md:inline-flex">
             <p className="mb-4 font-medium text-steelBlue-500 md:mb-0">
               Beneficios disponibles:
             </p>
@@ -255,18 +407,27 @@ const EmployeeGroupDetailsRoute = () => {
             </div>
           </div>
         ) : (
-          <p className="mt-10">Este grupo no posee beneficios disponibles.</p>
+          <p className="mt-4">Este grupo no posee beneficios disponibles.</p>
         )}
 
-        {employeesData.length > 0 ? (
-          <Form method="DELETE">
+        {employeeGroup._count.employees > 0 ? (
+          <>
             <DataTable
               columns={columns}
               data={employeesData}
               className="mt-4"
-              tableActions={TableActions}
+              tableActions={(table) => (
+                <TableActions
+                  table={table}
+                  jobDepartments={jobDepartments}
+                  salaryRanges={salaryRanges}
+                  ageRanges={ageRanges}
+                />
+              )}
             />
-          </Form>
+
+            <Form method="DELETE" id={deleteFormId} />
+          </>
         ) : (
           <TableIsEmpty
             title="Aún no tienes ningún colaborador asociado a este grupo"

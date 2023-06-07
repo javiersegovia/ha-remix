@@ -1,6 +1,6 @@
 import type { ButtonHTMLAttributes } from 'react'
 import { Link } from '@remix-run/react'
-import { HiCheck, HiPlus } from 'react-icons/hi'
+import { HiCheck, HiPlus, HiSearch } from 'react-icons/hi'
 import { Spinner } from '~/components/Spinner'
 import { twMerge } from 'tailwind-merge'
 import clsx from 'clsx'
@@ -26,6 +26,7 @@ export enum ButtonIconVariants {
   CREATE = 'CREATE',
   DOWNLOAD = 'DOWNLOAD',
   DELETE = 'DELETE',
+  SEARCH = 'SEARCH',
 }
 
 export enum ButtonDesignVariants {
@@ -143,18 +144,17 @@ export const ButtonElement = ({
         <>
           {children}
 
-          {icon && (
-            <span
-              className={clsx(
-                design === ButtonDesignVariants.BUTTON && 'ml-3 text-xl'
-              )}
-            >
-              {icon === ButtonIconVariants.UPLOAD && <MdOutlineUploadFile />}
-              {icon === ButtonIconVariants.CREATE && <HiPlus />}
-              {icon === ButtonIconVariants.DOWNLOAD && <MdOutlineDownload />}
-              {icon === ButtonIconVariants.DELETE && <MdOutlineDelete />}
-            </span>
-          )}
+          <span
+            className={clsx(
+              design === ButtonDesignVariants.BUTTON && icon && 'ml-3 text-xl'
+            )}
+          >
+            {icon === ButtonIconVariants.UPLOAD && <MdOutlineUploadFile />}
+            {icon === ButtonIconVariants.CREATE && <HiPlus />}
+            {icon === ButtonIconVariants.DOWNLOAD && <MdOutlineDownload />}
+            {icon === ButtonIconVariants.DELETE && <MdOutlineDelete />}
+            {icon === ButtonIconVariants.SEARCH && <HiSearch />}
+          </span>
         </>
       )}
     </button>

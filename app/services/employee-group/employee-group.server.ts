@@ -59,40 +59,15 @@ export const getEmployeeGroupById = async (id: EmployeeGroup['id']) => {
     select: {
       id: true,
       name: true,
-      employees: {
-        select: {
-          id: true,
-          status: true,
-          salaryFiat: true,
-          birthDay: true,
-          gender: {
-            select: {
-              name: true,
-            },
-          },
-          jobDepartment: {
-            select: {
-              name: true,
-            },
-          },
-          user: {
-            select: {
-              email: true,
-              firstName: true,
-              lastName: true,
-            },
-          },
-        },
-        orderBy: {
-          user: {
-            firstName: 'asc',
-          },
-        },
-      },
       benefits: {
         select: {
           id: true,
           name: true,
+        },
+      },
+      _count: {
+        select: {
+          employees: true,
         },
       },
       country: {
