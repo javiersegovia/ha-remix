@@ -83,14 +83,14 @@ export const columns: ColumnDef<EmployeeDataItem>[] = [
   },
   {
     accessorKey: 'age',
-    sortingFn: 'basic',
+    sortingFn: 'alphanumeric',
     header: ({ column }) => {
       return <TableSortableButton title="Edad" column={column} />
     },
   },
   {
     accessorKey: 'salary',
-    sortingFn: 'basic',
+    sortingFn: 'alphanumeric',
     header: ({ column }) => {
       return <TableSortableButton title="Salario" column={column} />
     },
