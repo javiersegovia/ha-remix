@@ -17,6 +17,8 @@ import { Title } from '../Typography/Title'
 import { ImageInput } from '../FormFields/ImageInput'
 import { Toggle } from '../FormFields/Toggle'
 import { MultiplicableInput } from '../FormFields/MultiplicableInput'
+import { CurrencyInput } from '../FormFields/CurrencyInput'
+import { CurrencySymbol } from '../FormFields/CurrencyInput'
 
 interface BenefitFormProps {
   buttonText: string
@@ -27,6 +29,7 @@ interface BenefitFormProps {
     | 'buttonText'
     | 'buttonHref'
     | 'slug'
+    | 'cost'
     | 'benefitCategoryId'
     | 'shortDescription'
     | 'description'
@@ -57,6 +60,7 @@ export const BenefitForm = ({
     buttonText,
     buttonHref,
     slug,
+    cost,
     mainImage,
     benefitCategoryId,
     description,
@@ -85,6 +89,7 @@ export const BenefitForm = ({
           buttonText,
           buttonHref,
           slug,
+          cost,
           benefitCategoryId,
           description,
           shortDescription,
@@ -136,6 +141,15 @@ export const BenefitForm = ({
             )}
           >
             <Input name="slug" label="Slug (identificador)" type="text" />
+          </FormGridItem>
+          <FormGridItem>
+            <CurrencyInput
+              name="cost"
+              type="number"
+              label="Costo"
+              placeholder="Ingrese el costo del beneficio"
+              symbol={CurrencySymbol.COP}
+            />
           </FormGridItem>
 
           <FormGridItem isFullWidth>
