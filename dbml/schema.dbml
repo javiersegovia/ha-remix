@@ -1,0 +1,984 @@
+//// ------------------------------------------------------
+//// THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+//// ------------------------------------------------------
+
+Table User {
+  id String [pk]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  email String [unique, not null]
+  password String
+  firstName String
+  lastName String
+  verifiedEmail Boolean [not null, default: false]
+  loginToken String [unique]
+  loginExpiration DateTime
+  employee Employee
+  role UserRole
+  roleId String
+}
+
+Table AdminUser {
+  id String [pk]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  email String [unique, not null]
+  password String [not null]
+  payrollAdvanceTransfers PayrollAdvanceTransfer [not null]
+  payrollAdvanceHistories PayrollAdvanceHistory [not null]
+  premiumAdvanceHistories PremiumAdvanceHistory [not null]
+}
+
+Table Company {
+  id String [pk]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  name String [not null]
+  status CompanyStatus [not null, default: 'INACTIVE']
+  description String
+  address String
+  phone String
+  dispersion Float
+  paymentDays Int[] [not null]
+  lastRequestDay Int [default: 25]
+  premiumDispersion Float
+  premiumPaymentDays Int[] [not null]
+  premiumLastRequestDay Int [default: 25]
+  country Country
+  countryId Int
+  membership Membership
+  membershipId Int
+  logoImage Image
+  logoImageId String
+  banks Bank [not null]
+  benefits Benefit [not null]
+  categories CompanyCategory [not null]
+  companyBenefits CompanyBenefit [not null]
+  companyBenefitCategories CompanyBenefitCategory [not null]
+  companyCryptoDebts CompanyCryptoDebt [not null]
+  companyDebts CompanyDebt [not null]
+  companyFiatDebts CompanyFiatDebt [not null]
+  companyTaxes CompanyTax [not null]
+  contactPerson CompanyContactPerson
+  cryptocurrencies Cryptocurrency [not null]
+  employees Employee [not null]
+  employeeGroups EmployeeGroup [not null]
+  payrollAdvances PayrollAdvance [not null]
+  premiumAdvances PremiumAdvance [not null]
+}
+
+Table CompanyDebt {
+  id String [pk]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  month Int [not null]
+  year Int [not null]
+  fiatDebt CompanyFiatDebt
+  cryptoDebt CompanyCryptoDebt
+  company Company [not null]
+  companyId String [not null]
+}
+
+Table CompanyFiatDebt {
+  id String [pk]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  amount Float [not null]
+  currentAmount Float [not null]
+  currency Currency [not null]
+  currencyId Int [not null]
+  companyDebt CompanyDebt
+  companyDebtId String [unique]
+  company Company [not null]
+  companyId String [not null]
+  payrollAdvances PayrollAdvance [not null]
+}
+
+Table CompanyCryptoDebt {
+  id String [pk]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  amount Float [not null]
+  currentAmount Float [not null]
+  cryptocurrency Cryptocurrency [not null]
+  cryptocurrencyId Int [not null]
+  companyDebt CompanyDebt
+  companyDebtId String [unique]
+  company Company [not null]
+  companyId String [not null]
+  payrollAdvances PayrollAdvance [not null]
+}
+
+Table CompanyContactPerson {
+  id String [pk]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  firstName String [not null]
+  lastName String [not null]
+  phone String [not null]
+  company Company [not null]
+  companyId String [unique, not null]
+}
+
+Table CompanyCategory {
+  id Int [pk, increment]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  name String [unique, not null]
+  companies Company [not null]
+}
+
+Table Employee {
+  id String [pk]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  startedAt DateTime
+  inactivatedAt DateTime
+  status EmployeeStatus [not null, default: 'INACTIVE']
+  roles EmployeeRole[] [not null]
+  availablePoints Int [not null, default: 0]
+  acceptedPrivacyPolicy Boolean [not null, default: false]
+  acceptedTermsOfService Boolean [not null, default: false]
+  salaryFiat Float
+  advanceMaxAmount Float [not null, default: 0]
+  advanceAvailableAmount Float [not null, default: 0]
+  currency Currency
+  currencyId Int
+  documentIssueDate DateTime
+  birthDay DateTime
+  salaryCrypto Float
+  advanceCryptoMaxAmount Float [default: 0]
+  advanceCryptoAvailableAmount Float [default: 0]
+  cryptocurrency Cryptocurrency
+  cryptocurrencyId Int
+  wallet Wallet
+  walletId String [unique]
+  numberOfChildren Int [not null, default: 0]
+  phone String
+  address String
+  company Company [not null]
+  companyId String [not null]
+  user User [not null]
+  userId String [unique, not null]
+  bankAccount BankAccount
+  bankAccountId String [unique]
+  gender Gender
+  genderId Int
+  jobDepartment JobDepartment
+  jobDepartmentId Int
+  jobPosition JobPosition
+  jobPositionId Int
+  membership Membership
+  membershipId Int
+  country Country
+  countryId Int
+  state State
+  stateId Int
+  city City
+  cityId Int
+  employeeGroups EmployeeGroup [not null]
+  zapsignDocuments ZapsignDocument [not null]
+  companyTaxes CompanyTax [not null]
+  payrollAdvances PayrollAdvance [not null]
+  premiumAdvances PremiumAdvance [not null]
+  payrollAdvanceHistories PayrollAdvanceHistory [not null]
+  premiumAdvanceHistories PremiumAdvanceHistory [not null]
+  benefits Benefit [not null]
+  benefitConsumptions BenefitConsumption [not null]
+}
+
+Table EmployeeGroup {
+  id String [pk]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  name String [not null]
+  company Company [not null]
+  companyId String [not null]
+  jobDepartment JobDepartment
+  jobDepartmentId Int
+  country Country
+  countryId Int
+  state State
+  stateId Int
+  city City
+  cityId Int
+  gender Gender
+  genderId Int
+  ageRange AgeRange
+  ageRangeId Int
+  salaryRange SalaryRange
+  salaryRangeId Int
+  employees Employee [not null]
+  benefits Benefit [not null]
+}
+
+Table AgeRange {
+  id Int [pk, increment]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  minAge Int [not null]
+  maxAge Int
+  employeeGroups EmployeeGroup [not null]
+}
+
+Table Gender {
+  id Int [pk, increment]
+  name String [unique, not null]
+  employees Employee [not null]
+  employeeGroups EmployeeGroup [not null]
+}
+
+Table Country {
+  id Int [pk, increment]
+  name String [unique, not null]
+  code2 String [unique, not null]
+  phoneCode String [not null]
+  employees Employee [not null]
+  currencies Currency [not null]
+  banks Bank [not null]
+  companies Company [not null]
+  states State [not null]
+  employeeGroups EmployeeGroup [not null]
+}
+
+Table State {
+  id Int [pk, increment]
+  name String [not null]
+  country Country [not null]
+  countryId Int [not null]
+  cities City [not null]
+  employees Employee [not null]
+  employeeGroups EmployeeGroup [not null]
+}
+
+Table City {
+  id Int [pk, increment]
+  name String [not null]
+  state State [not null]
+  stateId Int [not null]
+  employees Employee [not null]
+  employeeGroups EmployeeGroup [not null]
+}
+
+Table JobDepartment {
+  id Int [pk, increment]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  name String [unique, not null]
+  employees Employee [not null]
+  employeeGroups EmployeeGroup [not null]
+}
+
+Table JobPosition {
+  id Int [pk, increment]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  name String [unique, not null]
+  employees Employee [not null]
+}
+
+Table CompanyTax {
+  id Int [pk, increment]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  name String [not null]
+  description String
+  valueType TaxType [not null, default: 'PERCENTAGE']
+  value Float [not null]
+  company Company [not null]
+  companyId String [not null]
+  employees Employee [not null]
+}
+
+Table GlobalTax {
+  id Int [pk, increment]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  name String [unique, not null]
+  description String
+  valueType TaxType [not null, default: 'PERCENTAGE']
+  value Float [not null]
+}
+
+Table Bank {
+  id Int [pk, increment]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  name String [not null]
+  fee BankFee
+  country Country
+  countryId Int
+  bankAccounts BankAccount [not null]
+  companies Company [not null]
+}
+
+Table BankFee {
+  id Int [pk, increment]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  name String [not null]
+  description String
+  valueType TaxType [not null, default: 'FIXED']
+  value Float [not null]
+  bank Bank [not null]
+  bankId Int [unique, not null]
+}
+
+Table BankAccount {
+  id String [pk]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  accountNumber String [not null]
+  accountType BankAccountType [not null]
+  accountTypeId Int [not null]
+  bank Bank [not null]
+  bankId Int [not null]
+  identityDocument IdentityDocument [not null]
+  identityDocumentId Int [unique, not null]
+  employee Employee
+}
+
+Table BankAccountType {
+  id Int [pk, increment]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  name String [unique, not null]
+  bankAccounts BankAccount [not null]
+}
+
+Table IdentityDocument {
+  id Int [pk, increment]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  value String [not null]
+  documentType IdentityDocumentType [not null]
+  documentTypeId Int [not null]
+  bankAccount BankAccount
+}
+
+Table IdentityDocumentType {
+  id Int [pk, increment]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  name String [unique, not null]
+  identityDocuments IdentityDocument [not null]
+}
+
+Table Currency {
+  id Int [pk, increment]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  name String [unique, not null]
+  code String [unique, not null]
+  country Country
+  countryId Int
+  employees Employee [not null]
+  companyFiatDebts CompanyFiatDebt [not null]
+}
+
+Table Cryptocurrency {
+  id Int [pk, increment]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  name String [unique, not null]
+  acronym String [not null]
+  wallets Wallet [not null]
+  companies Company [not null]
+  companyCryptoDebts CompanyCryptoDebt [not null]
+  employee Employee [not null]
+}
+
+Table Wallet {
+  id String [pk]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  address String [not null]
+  network CryptoNetwork
+  networkId Int
+  cryptocurrency Cryptocurrency
+  cryptocurrencyId Int
+  employee Employee
+}
+
+Table CryptoNetwork {
+  id Int [pk, increment]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  name String [unique, not null]
+  networkIdNumber Int [not null]
+  wallets Wallet [not null]
+}
+
+Table PayrollAdvance {
+  id Int [pk, increment]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  requestedAmount Float [not null]
+  totalAmount Float [not null]
+  status PayrollAdvanceStatus [not null, default: 'REQUESTED']
+  paymentMethod PayrollAdvancePaymentMethod [not null]
+  paymentTermDays Int
+  approvedAt DateTime
+  paidAt DateTime
+  cancelledAt DateTime
+  deniedAt DateTime
+  paymentDate Int
+  periodOfDays Int
+  taxes PayrollAdvanceTax [not null]
+  history PayrollAdvanceHistory [not null]
+  transfers PayrollAdvanceTransfer [not null]
+  bankAccountData PayrollAdvanceBankAccount
+  walletData PayrollAdvanceWallet
+  requestReason RequestReason
+  requestReasonId Int
+  requestReasonDescription String
+  employee Employee
+  employeeId String
+  company Company [not null]
+  companyId String [not null]
+  companyCryptoDebt CompanyCryptoDebt
+  companyCryptoDebtId String
+  companyFiatDebt CompanyFiatDebt
+  companyFiatDebtId String
+}
+
+Table PayrollAdvanceHistory {
+  id Int [pk, increment]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  toStatus PayrollAdvanceStatus [not null]
+  actor PayrollAdvanceHistoryActor [not null]
+  payrollAdvance PayrollAdvance [not null]
+  payrollAdvanceId Int [not null]
+  employee Employee
+  employeeId String
+  adminUser AdminUser
+  adminUserId String
+}
+
+Table PayrollAdvanceTransfer {
+  id Int [pk, increment]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  transactionHash String [unique, not null]
+  status PayrollAdvanceTransferStatus [not null]
+  payrollAdvance PayrollAdvance [not null]
+  payrollAdvanceId Int [not null]
+  adminUser AdminUser [not null]
+  adminUserId String [not null]
+}
+
+Table PayrollAdvanceTax {
+  id Int [pk, increment]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  name String [not null]
+  description String
+  value Float [not null]
+  payrollAdvance PayrollAdvance [not null]
+  payrollAdvanceId Int [not null]
+}
+
+Table PayrollAdvanceBankAccount {
+  id String [pk]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  accountNumber String [not null]
+  accountType String [not null]
+  currencyName String
+  bankName String [not null]
+  bankFeeName String
+  bankFeeValue Float
+  bankFeeValueType String
+  identityDocumentValue String [not null]
+  identityDocumentType String [not null]
+  payrollAdvance PayrollAdvance [not null]
+  payrollAdvanceId Int [unique, not null]
+}
+
+Table RequestReason {
+  id Int [pk, increment]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  name String [not null]
+  payrollAdvances PayrollAdvance [not null]
+  premiumAdvances PremiumAdvance [not null]
+}
+
+Table PayrollAdvanceWallet {
+  id String [pk]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  address String [not null]
+  cryptocurrencyName String [not null]
+  cryptocurrencyAcronym String [not null]
+  cryptoNetworkName String [not null]
+  cryptoNetworkIdNumber Int [not null]
+  payrollAdvance PayrollAdvance [not null]
+  payrollAdvanceId Int [unique, not null]
+}
+
+Table GlobalSettings {
+  id String [pk]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  daysWithoutRequestsBeforePaymentDay Int [not null]
+  annualInterestRate Float [not null]
+  transportationAid Float
+}
+
+Table ZapsignDocument {
+  id String [pk]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  externalToken String [not null]
+  signerToken String [not null]
+  documentStatus ZapsignDocumentStatus [not null, default: 'pending']
+  employee Employee [not null]
+  employeeId String [not null]
+}
+
+Table PremiumAdvance {
+  id String [pk]
+  status PayrollAdvanceStatus [not null, default: 'REQUESTED']
+  updatedAt DateTime [not null]
+  createdAt DateTime [default: `now()`, not null]
+  approvedAt DateTime
+  paidAt DateTime
+  cancelledAt DateTime
+  deniedAt DateTime
+  startDate DateTime
+  endDate DateTime
+  requestedAmount Float
+  totalAmount Float
+  requestReasonDescription String
+  bankAccountData PremiumAdvanceBankAccount
+  history PremiumAdvanceHistory [not null]
+  taxes PremiumAdvanceTax [not null]
+  employee Employee
+  employeeId String
+  company Company [not null]
+  companyId String [not null]
+  requestReason RequestReason
+  requestReasonId Int
+}
+
+Table PremiumAdvanceHistory {
+  id Int [pk, increment]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  toStatus PremiumAdvanceStatus [not null]
+  actor PremiumAdvanceHistoryActor [not null]
+  premiumAdvance PremiumAdvance [not null]
+  premiumAdvanceId String [not null]
+  employee Employee
+  employeeId String
+  adminUser AdminUser
+  adminUserId String
+}
+
+Table PremiumAdvanceBankAccount {
+  id String [pk]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  accountNumber String [not null]
+  accountType String [not null]
+  currencyName String
+  bankName String [not null]
+  bankFeeName String
+  bankFeeValue Float
+  bankFeeValueType String
+  identityDocumentValue String [not null]
+  identityDocumentType String [not null]
+  premiumAdvance PremiumAdvance [not null]
+  premiumAdvanceId String [unique, not null]
+}
+
+Table PremiumAdvanceTax {
+  id Int [pk, increment]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  name String [not null]
+  description String
+  value Float [not null]
+  premiumAdvance PremiumAdvance [not null]
+  premiumAdvanceId String [not null]
+}
+
+Table Membership {
+  id Int [pk, increment]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  name String [not null]
+  companies Company [not null]
+  employees Employee [not null]
+  benefits Benefit [not null]
+}
+
+Table Benefit {
+  id Int [pk, increment]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  slug String
+  name String [not null]
+  buttonText String
+  buttonHref String
+  cost Int
+  description String
+  shortDescription String
+  isHighlighted Boolean [not null, default: false]
+  instructions String[] [not null]
+  imageUrl String
+  mainImage Image
+  mainImageId String
+  benefitCategory BenefitCategory
+  benefitCategoryId Int
+  employees Employee [not null]
+  employeeGroups EmployeeGroup [not null]
+  companies Company [not null]
+  membership Membership [not null]
+  subproducts BenefitSubproduct [not null]
+  consumptions BenefitConsumption [not null]
+  benefitHighlight BenefitHighlight
+  companyBenefit CompanyBenefit
+}
+
+Table CompanyBenefit {
+  id Int [pk, increment]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  company Company [not null]
+  companyId String [not null]
+  benefit Benefit [not null]
+  benefitId Int [unique, not null]
+}
+
+Table CompanyBenefitCategory {
+  id Int [pk, increment]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  company Company [not null]
+  companyId String [not null]
+  benefitCategory BenefitCategory [not null]
+  benefitCategoryId Int [unique, not null]
+}
+
+Table BenefitSubproduct {
+  id Int [pk, increment]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  name String [not null]
+  discount Float
+  benefit Benefit [not null]
+  benefitId Int [not null]
+  benefitConsumptions BenefitConsumption [not null]
+}
+
+Table BenefitConsumption {
+  id Int [pk, increment]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  consumedAt DateTime [not null]
+  value Int [not null]
+  benefitSubproduct BenefitSubproduct
+  benefitSubproductId Int
+  benefit Benefit [not null]
+  benefitId Int [not null]
+  employee Employee [not null]
+  employeeId String [not null]
+}
+
+Table BenefitCategory {
+  id Int [pk, increment]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  name String [not null]
+  hexColor String
+  opacity Float
+  benefits Benefit [not null]
+  companyBenefitCategory CompanyBenefitCategory
+}
+
+Table BenefitHighlight {
+  id Int [pk, increment]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  title String [not null]
+  description String [not null]
+  buttonText String [not null]
+  buttonHref String [not null]
+  isActive Boolean [default: false]
+  image Image
+  imageId String
+  benefit Benefit [not null]
+  benefitId Int [unique, not null]
+}
+
+Table Image {
+  id String [pk]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  url String [not null]
+  key String [unique, not null]
+  benefits Benefit [not null]
+  benefitHighlights BenefitHighlight [not null]
+  companies Company [not null]
+}
+
+Table UserRole {
+  id String [pk]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  name String [unique, not null]
+  users User [not null]
+  permissions Permission [not null]
+}
+
+Table Permission {
+  id Int [pk, increment]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  name String [not null]
+  description String
+  code PermissionCode [unique, not null]
+  userRoles UserRole [not null]
+}
+
+Table SalaryRange {
+  id Int [pk, increment]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  minValue Int [not null]
+  maxValue Int
+  employeeGroups EmployeeGroup [not null]
+}
+
+Enum CompanyStatus {
+  ACTIVE
+  INACTIVE
+}
+
+Enum EmployeeRole {
+  MEMBER
+  MANAGER
+  OWNER
+}
+
+Enum EmployeeStatus {
+  ACTIVE
+  INACTIVE
+}
+
+Enum TaxType {
+  FIXED
+  PERCENTAGE
+}
+
+Enum PayrollAdvanceStatus {
+  REQUESTED
+  APPROVED
+  PAID
+  CANCELLED
+  DENIED
+}
+
+Enum PayrollAdvancePaymentMethod {
+  WALLET
+  BANK_ACCOUNT
+}
+
+Enum PayrollAdvanceTransferStatus {
+  PENDING
+  FAILURE
+  SUCCESS
+}
+
+Enum PayrollAdvanceHistoryActor {
+  ADMIN
+  EMPLOYEE
+}
+
+Enum ZapsignDocumentStatus {
+  pending
+  signed
+}
+
+Enum PremiumAdvanceStatus {
+  REQUESTED
+  APPROVED
+  PAID
+  CANCELLED
+  DENIED
+}
+
+Enum PremiumAdvanceHistoryActor {
+  ADMIN
+  EMPLOYEE
+}
+
+Enum PermissionCode {
+  MANAGE_EMPLOYEE_GROUP
+  MANAGE_EMPLOYEE_MAIN_INFORMATION
+  MANAGE_EMPLOYEE_FINANCIAL_INFORMATION
+  MANAGE_COMPANY
+  MANAGE_BENEFIT
+  MANAGE_BENEFIT_CATEGORY
+}
+
+Ref: User.roleId > UserRole.id [delete: Set Null]
+
+Ref: Company.countryId > Country.id [delete: Set Null]
+
+Ref: Company.membershipId > Membership.id [delete: Set Null]
+
+Ref: Company.logoImageId > Image.id [delete: Set Null]
+
+Ref: CompanyDebt.companyId > Company.id [delete: Cascade]
+
+Ref: CompanyFiatDebt.currencyId > Currency.id [delete: Restrict]
+
+Ref: CompanyFiatDebt.companyDebtId - CompanyDebt.id [delete: Cascade]
+
+Ref: CompanyFiatDebt.companyId > Company.id [delete: Cascade]
+
+Ref: CompanyCryptoDebt.cryptocurrencyId > Cryptocurrency.id [delete: Restrict]
+
+Ref: CompanyCryptoDebt.companyDebtId - CompanyDebt.id [delete: Cascade]
+
+Ref: CompanyCryptoDebt.companyId > Company.id [delete: Cascade]
+
+Ref: CompanyContactPerson.companyId - Company.id [delete: Cascade]
+
+Ref: Employee.currencyId > Currency.id [delete: Set Null]
+
+Ref: Employee.cryptocurrencyId > Cryptocurrency.id [delete: Set Null]
+
+Ref: Employee.walletId - Wallet.id [delete: Set Null]
+
+Ref: Employee.companyId > Company.id [delete: Cascade]
+
+Ref: Employee.userId - User.id [delete: Cascade]
+
+Ref: Employee.bankAccountId - BankAccount.id [delete: Set Null]
+
+Ref: Employee.genderId > Gender.id [delete: Set Null]
+
+Ref: Employee.jobDepartmentId > JobDepartment.id [delete: Set Null]
+
+Ref: Employee.jobPositionId > JobPosition.id [delete: Set Null]
+
+Ref: Employee.membershipId > Membership.id [delete: Set Null]
+
+Ref: Employee.countryId > Country.id [delete: Set Null]
+
+Ref: Employee.stateId > State.id [delete: Set Null]
+
+Ref: Employee.cityId > City.id [delete: Set Null]
+
+Ref: EmployeeGroup.companyId > Company.id [delete: Cascade]
+
+Ref: EmployeeGroup.jobDepartmentId > JobDepartment.id [delete: Set Null]
+
+Ref: EmployeeGroup.countryId > Country.id [delete: Set Null]
+
+Ref: EmployeeGroup.stateId > State.id [delete: Set Null]
+
+Ref: EmployeeGroup.cityId > City.id [delete: Set Null]
+
+Ref: EmployeeGroup.genderId > Gender.id [delete: Set Null]
+
+Ref: EmployeeGroup.ageRangeId > AgeRange.id [delete: Set Null]
+
+Ref: EmployeeGroup.salaryRangeId > SalaryRange.id [delete: Set Null]
+
+Ref: State.countryId > Country.id [delete: Cascade]
+
+Ref: City.stateId > State.id [delete: Cascade]
+
+Ref: CompanyTax.companyId > Company.id [delete: Cascade]
+
+Ref: Bank.countryId > Country.id [delete: Set Null]
+
+Ref: BankFee.bankId - Bank.id [delete: Cascade]
+
+Ref: BankAccount.accountTypeId > BankAccountType.id [delete: Restrict]
+
+Ref: BankAccount.bankId > Bank.id [delete: Restrict]
+
+Ref: BankAccount.identityDocumentId - IdentityDocument.id [delete: Restrict]
+
+Ref: IdentityDocument.documentTypeId > IdentityDocumentType.id
+
+Ref: Currency.countryId > Country.id [delete: Set Null]
+
+Ref: Wallet.networkId > CryptoNetwork.id [delete: Set Null]
+
+Ref: Wallet.cryptocurrencyId > Cryptocurrency.id [delete: Cascade]
+
+Ref: PayrollAdvance.requestReasonId > RequestReason.id [delete: Set Null]
+
+Ref: PayrollAdvance.employeeId > Employee.id [delete: Set Null]
+
+Ref: PayrollAdvance.companyId > Company.id [delete: Cascade]
+
+Ref: PayrollAdvance.companyCryptoDebtId > CompanyCryptoDebt.id [delete: Set Null]
+
+Ref: PayrollAdvance.companyFiatDebtId > CompanyFiatDebt.id [delete: Set Null]
+
+Ref: PayrollAdvanceHistory.payrollAdvanceId > PayrollAdvance.id [delete: Cascade]
+
+Ref: PayrollAdvanceHistory.employeeId > Employee.id [delete: Set Null]
+
+Ref: PayrollAdvanceHistory.adminUserId > AdminUser.id [delete: Set Null]
+
+Ref: PayrollAdvanceTransfer.payrollAdvanceId > PayrollAdvance.id [delete: Cascade]
+
+Ref: PayrollAdvanceTransfer.adminUserId > AdminUser.id [delete: Restrict]
+
+Ref: PayrollAdvanceTax.payrollAdvanceId > PayrollAdvance.id [delete: Cascade]
+
+Ref: PayrollAdvanceBankAccount.payrollAdvanceId - PayrollAdvance.id [delete: Cascade]
+
+Ref: PayrollAdvanceWallet.payrollAdvanceId - PayrollAdvance.id [delete: Cascade]
+
+Ref: ZapsignDocument.employeeId > Employee.id [delete: Cascade]
+
+Ref: PremiumAdvance.employeeId > Employee.id [delete: Set Null]
+
+Ref: PremiumAdvance.companyId > Company.id [delete: Cascade]
+
+Ref: PremiumAdvance.requestReasonId > RequestReason.id [delete: Set Null]
+
+Ref: PremiumAdvanceHistory.premiumAdvanceId > PremiumAdvance.id [delete: Cascade]
+
+Ref: PremiumAdvanceHistory.employeeId > Employee.id [delete: Set Null]
+
+Ref: PremiumAdvanceHistory.adminUserId > AdminUser.id [delete: Set Null]
+
+Ref: PremiumAdvanceBankAccount.premiumAdvanceId - PremiumAdvance.id [delete: Cascade]
+
+Ref: PremiumAdvanceTax.premiumAdvanceId > PremiumAdvance.id [delete: Cascade]
+
+Ref: Benefit.mainImageId > Image.id [delete: Set Null]
+
+Ref: Benefit.benefitCategoryId > BenefitCategory.id [delete: Set Null]
+
+Ref: CompanyBenefit.companyId > Company.id [delete: Cascade]
+
+Ref: CompanyBenefit.benefitId - Benefit.id [delete: Cascade]
+
+Ref: CompanyBenefitCategory.companyId > Company.id [delete: Cascade]
+
+Ref: CompanyBenefitCategory.benefitCategoryId - BenefitCategory.id [delete: Cascade]
+
+Ref: BenefitSubproduct.benefitId > Benefit.id [delete: Cascade]
+
+Ref: BenefitConsumption.benefitSubproductId > BenefitSubproduct.id [delete: Set Null]
+
+Ref: BenefitConsumption.benefitId > Benefit.id [delete: Cascade]
+
+Ref: BenefitConsumption.employeeId > Employee.id [delete: Cascade]
+
+Ref: BenefitHighlight.imageId > Image.id [delete: Set Null]
+
+Ref: BenefitHighlight.benefitId - Benefit.id [delete: Cascade]

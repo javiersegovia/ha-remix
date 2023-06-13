@@ -5,6 +5,7 @@ node_modules
 /public/build
 .env
 .env.test
+.env*
 
 /cypress/screenshots
 /cypress/videos

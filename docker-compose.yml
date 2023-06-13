@@ -10,6 +10,16 @@ services:
     volumes:
       - ./postgres-data:/var/lib/postgresql/data
 
+  postgres_temp:
+    image: postgres:13
+    restart: always
+    ports:
+      - 5432:5200
+    env_file:
+    - .env.temp
+    volumes:
+      - ./postgres-data-2:/var/lib/postgresql/data
+
   postgres_testing:
     image: postgres:13
     container_name: postgres_testing
