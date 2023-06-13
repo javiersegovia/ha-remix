@@ -89,6 +89,7 @@ export const benefitSchema = z.object({
   buttonText: zfd.text(z.string().trim().nullish()),
   buttonHref: zfd.text(z.string().trim().nullish()),
   slug: zfd.text(z.string().trim().nullish()),
+  cost: zfd.numeric(z.number().nullish()),
 
   benefitCategoryId: zfd.numeric(z.number().nullish()),
 

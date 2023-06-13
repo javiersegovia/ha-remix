@@ -825,6 +825,7 @@ model Benefit {
   name             String
   buttonText       String?
   buttonHref       String?
+  cost             Int?
   description      String?
   shortDescription String?
   isHighlighted    Boolean  @default(false)
