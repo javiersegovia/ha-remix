@@ -19,6 +19,7 @@ import { Toggle } from '../FormFields/Toggle'
 import { MultiplicableInput } from '../FormFields/MultiplicableInput'
 import { CurrencyInput } from '../FormFields/CurrencyInput'
 import { CurrencySymbol } from '../FormFields/CurrencyInput'
+import { HiOutlineExternalLink } from 'react-icons/hi'
 
 interface BenefitFormProps {
   buttonText: string
@@ -112,7 +113,19 @@ export const BenefitForm = ({
               isCentered
             />
           </FormGridItem>
-
+          <FormGridItem
+            isFullWidth
+            className="relative top-[-24px] flex items-center justify-center text-steelBlue-800 underline"
+          >
+            <a
+              href="https://drive.google.com/drive/folders/1oZoTWM1fm1HDFdFUBCcSaM6m5cqhqz45?usp=drive_link"
+              target="_blank"
+              rel="noreferrer"
+            >
+              Ver banco de imágenes
+              <HiOutlineExternalLink className="mx-1 my-3 inline-flex items-center pb-1" />
+            </a>
+          </FormGridItem>
           <FormGridItem>
             <Input name="name" label="Nombre" type="text" />
           </FormGridItem>
