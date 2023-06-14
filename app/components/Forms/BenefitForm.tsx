@@ -202,11 +202,11 @@ export const BenefitForm = ({
         <div className="my-10 h-[1px] w-full border-b border-dashed border-gray-300" />
 
         <Title as="h4" className="my-10">
-          Información de beneficio destacado
+          Destacar en el carrusel
         </Title>
 
         <FormGridItem className="items-center">
-          <Toggle name="isHighlighted" label="Es un beneficio destacado" />
+          <Toggle name="isHighlighted" label="Mostrar como destacado" />
         </FormGridItem>
 
         {benefitIsHighlighted && (
