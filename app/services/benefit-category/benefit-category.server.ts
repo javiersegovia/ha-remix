@@ -48,7 +48,6 @@ export const getBenefitCategoryById = async (id: BenefitCategory['id']) => {
       id: true,
       name: true,
       hexColor: true,
-      opacity: true,
     },
   })
 }
@@ -65,7 +64,7 @@ export const updateBenefitCategoryById = async (
   id: BenefitCategory['id'],
   data: BenefitCategoryInputSchema
 ) => {
-  const { hexColor, opacity, name } = data
+  const { hexColor, name } = data
   try {
     return prisma.benefitCategory.update({
       where: {
@@ -74,7 +73,6 @@ export const updateBenefitCategoryById = async (
       data: {
         name,
         hexColor: hexColor || null,
-        opacity: opacity || null,
       },
     })
   } catch (e) {

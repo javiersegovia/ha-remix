@@ -94,7 +94,7 @@ const onCloseRedirectTo = '/dashboard/manage/benefit-categories' as const
 
 export default function CompanyBenefitCategoryUpdateRoute() {
   const { benefitCategory } = useLoaderData<typeof loader>()
-  const { name, hexColor, opacity } = benefitCategory
+  const { name, hexColor } = benefitCategory
 
   return (
     <Modal onCloseRedirectTo={onCloseRedirectTo}>
@@ -103,7 +103,7 @@ export default function CompanyBenefitCategoryUpdateRoute() {
 
         <BenefitCategoryForm
           buttonText="Guardar"
-          defaultValues={{ name, hexColor, opacity }}
+          defaultValues={{ name, hexColor }}
           showDeleteButton
         />
       </RightPanel>

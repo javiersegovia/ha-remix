@@ -911,7 +911,6 @@ model BenefitCategory {
 
   name     String
   hexColor String?
-  opacity  Float?
 
   benefits Benefit[]
 
