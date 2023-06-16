@@ -272,7 +272,10 @@ export const BenefitForm = ({
                     value={defaultValue?.id}
                   />
 
-                  <FormGridItem isFullWidth className="flex items-center gap-3">
+                  <FormGridItem
+                    isFullWidth
+                    className="flex flex-col items-center gap-3 md:flex-row"
+                  >
                     <Input
                       name={`dataItems[${index}].label`}
                       type="text"
@@ -304,7 +307,7 @@ export const BenefitForm = ({
 
               <FormGridItem isFullWidth>
                 <Button
-                  className="w-auto"
+                  className="md:w-auto"
                   size="XS"
                   variant={ButtonColorVariants.SECONDARY}
                   icon={ButtonIconVariants.CREATE}
