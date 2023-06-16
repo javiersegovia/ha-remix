@@ -1,48 +1,30 @@
-import type { Employee, EmployeeStatus } from '@prisma/client'
-import { Link } from '@remix-run/react'
+import type {
+  City,
+  Company,
+  Employee,
+  EmployeeStatus,
+  JobDepartment,
+} from '@prisma/client'
 import type { ColumnDef } from '@tanstack/react-table'
+
+import { Link } from '@remix-run/react'
 import { $path } from 'remix-routes'
 import { EmployeeStatusPill } from '~/components/Pills/EmployeeStatusPill'
 import { TableSortableButton } from '~/components/UI/Table'
-import { ControlledCheckbox } from '~/components/FormFields/ControlledCheckbox'
-import { deleteFormId } from './table-actions'
 
 export type EmployeeDataItem = {
   id: Employee['id']
-  email: string
-  fullName?: string
-  jobDepartment?: string | null
-  gender?: string | null
-  age?: number | null
-  salary?: string | null
+  companyId: Company['id']
+  fullName: string | null
+  email: string | null
+  jobDepartment?: Pick<JobDepartment, 'name'> | null
+  city?: Pick<City, 'name'> | null
+  employeeGroups?: number
+  enabledBenefits?: number | null
   status: EmployeeStatus
 }
 
 export const columns: ColumnDef<EmployeeDataItem>[] = [
-  {
-    id: 'select',
-    header: ({ table }) => (
-      <ControlledCheckbox
-        name="select-all"
-        checked={table.getIsAllPageRowsSelected()}
-        onChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Seleccionar todos"
-        formId={deleteFormId}
-      />
-    ),
-    cell: ({ row }) => (
-      <ControlledCheckbox
-        name="employeesIds"
-        value={row.original.id}
-        checked={row.getIsSelected()}
-        onChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Seleccionar fila"
-        formId={deleteFormId}
-      />
-    ),
-    enableSorting: false,
-    enableHiding: false,
-  },
   {
     id: 'fullName',
     header: ({ column }) => {
@@ -55,9 +37,13 @@ export const columns: ColumnDef<EmployeeDataItem>[] = [
       return (
         <>
           <Link
-            to={$path('/dashboard/manage/employees/:employeeId/account', {
-              employeeId: item.id,
-            })}
+            to={$path(
+              '/admin/dashboard/companies/:companyId/employees/:employeeId',
+              {
+                companyId: item.companyId,
+                employeeId: item.id,
+              }
+            )}
             className="whitespace-pre-line hover:text-cyan-600"
           >
             <p>{item.fullName}</p>
@@ -68,33 +54,41 @@ export const columns: ColumnDef<EmployeeDataItem>[] = [
     },
   },
   {
-    accessorKey: 'jobDepartment',
+    accessorKey: 'jobDepartment.name',
     sortingFn: 'alphanumeric',
     header: ({ column }) => {
       return <TableSortableButton title="Área" column={column} />
     },
   },
   {
-    accessorKey: 'gender',
+    accessorKey: 'city.name',
     sortingFn: 'alphanumeric',
     header: ({ column }) => {
-      return <TableSortableButton title="Género" column={column} />
+      return <TableSortableButton title="Ciudad" column={column} />
     },
   },
   {
-    accessorKey: 'age',
+    accessorKey: 'employeeGroups',
     sortingFn: 'alphanumeric',
     header: ({ column }) => {
-      return <TableSortableButton title="Edad" column={column} />
+      return <TableSortableButton title="Grupos asignados" column={column} />
+    },
+    cell: (props) => {
+      return (
+        <div className="w-full text-center">{props.renderValue<number>()}</div>
+      )
     },
   },
   {
-    accessorKey: 'salary',
+    accessorKey: 'enabledBenefits',
     sortingFn: 'alphanumeric',
     header: ({ column }) => {
-      return <TableSortableButton title="Salario" column={column} />
+      return (
+        <TableSortableButton title="Beneficios asignados" column={column} />
+      )
     },
   },
+
   {
     accessorKey: 'status',
     sortingFn: 'alphanumeric',

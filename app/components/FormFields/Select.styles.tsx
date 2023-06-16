@@ -14,7 +14,7 @@ export function selectStyles<isMulti extends boolean>(
       borderRadius: '2rem',
       paddingTop: '0.5rem',
       paddingBottom: '0.5rem',
-      paddingLeft: '0.75rem',
+      paddingLeft: '1rem',
       paddingRight: '0.75rem',
       backgroundColor: '#ffffff',
       fontSize: '0.875rem',

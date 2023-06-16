@@ -171,6 +171,7 @@ describe('LOADER /dashboard/overview', () => {
           mainImage: null,
           benefitCategory: null,
           benefitHighlight: null,
+          isHighlighted: false,
         },
       ],
       company: {
@@ -234,6 +235,7 @@ describe('LOADER /dashboard/overview', () => {
         mainImage: null,
         benefitCategory: null,
         benefitHighlight: null,
+        isHighlighted: false,
       },
       {
         id: benefitPremium_2.id,
@@ -244,6 +246,7 @@ describe('LOADER /dashboard/overview', () => {
         mainImage: null,
         benefitCategory: null,
         benefitHighlight: null,
+        isHighlighted: false,
       },
     ])
   })

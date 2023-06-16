@@ -38,7 +38,7 @@ export const BenefitFactory = Factory.define<ExtendedBenefit>(
       buttonText: faker.datatype.string(),
       slug: faker.datatype.string(),
       cost: faker.datatype.number(),
-      isHighlighted: faker.datatype.boolean(),
+      isHighlighted: false,
 
       companyBenefit: associations?.companyBenefit || null,
 

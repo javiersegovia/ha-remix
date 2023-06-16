@@ -169,7 +169,7 @@ export default function App() {
           />
         )}
 
-        <Toaster position="top-center">
+        <Toaster position="top-right">
           {(t) => (
             <ToastBar
               toast={t}
@@ -188,11 +188,11 @@ export default function App() {
                   )}
                 >
                   {t.type === 'success' && (
-                    <RiCheckboxCircleFill className="my-1 mr-3 text-3xl text-green-500" />
+                    <RiCheckboxCircleFill className="my-1 mr-3 min-w-[2rem] text-3xl text-green-500" />
                   )}
 
                   {t.type === 'error' && (
-                    <MdOutlineError className="my-1 mr-3 text-3xl text-red-500" />
+                    <MdOutlineError className="my-1 mr-3 min-w-[2rem] text-3xl text-red-500" />
                   )}
 
                   {message}

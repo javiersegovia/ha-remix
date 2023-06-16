@@ -43,7 +43,7 @@ export const FilterSummary = ({
     <Box
       className={twMerge(
         clsx(
-          'items-center gap-6 border border-steelBlue-100 p-5 md:inline-flex',
+          'flex-col items-center gap-6 border border-steelBlue-100 p-5 md:inline-flex lg:flex-row',
           className
         )
       )}

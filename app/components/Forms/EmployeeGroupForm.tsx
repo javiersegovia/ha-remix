@@ -129,8 +129,8 @@ export const EmployeeGroupForm = ({
             <FormGridItem>
               <Select
                 name="stateId"
-                label="Estado"
-                placeholder="Seleccionar estado"
+                label="Departamento"
+                placeholder="Seleccionar departamento"
                 options={stateFetcher?.data?.states || []}
                 isClearable
                 onSelectChange={(id) => {
@@ -204,10 +204,11 @@ export const EmployeeGroupForm = ({
         </Box>
         {actions}
       </ValidatedForm>
+
       {showDeleteButton && (
         <Form method="delete">
           <SubmitButton
-            className="mt-6  w-auto "
+            className="mt-6 w-auto"
             variant={ButtonColorVariants.WARNING}
           >
             Eliminar

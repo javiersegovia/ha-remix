@@ -6,7 +6,7 @@ import { useField, useIsSubmitting } from 'remix-validated-form'
 import { twMerge } from 'tailwind-merge'
 
 export const inputBaseStyles =
-  'placeholder:text-gray-400 block p-3 w-full text-sm leading-6 bg-white border shadow-sm rounded-[2rem] border-gray-300 focus:outline-none focus:ring-2 focus:border-blue-400 focus:ring-blue-400'
+  'placeholder:text-gray-400 block px-4 py-3 w-full text-sm leading-6 bg-white border shadow-sm rounded-[2rem] border-gray-300 focus:outline-none focus:ring-2 focus:border-blue-400 focus:ring-blue-400'
 
 export const inputErrorStyles =
   'text-red-600 border-red-500 focus:border-red-500 focus:ring-red-500'

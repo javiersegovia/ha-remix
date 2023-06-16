@@ -14,7 +14,7 @@ import { requirePermissionByUserId } from '~/services/permissions/permissions.se
 import { getEmployeeGroupsByCompanyId } from '~/services/employee-group/employee-group.server'
 import { ButtonIconVariants } from '~/components/Button'
 import { Tabs } from '~/components/Tabs/Tabs'
-import { employeeTabPaths } from './dashboard.manage.employees'
+import { employeeTabPaths } from './dashboard.manage.employees/route'
 import { TableIsEmpty } from '~/components/Lists/TableIsEmpty'
 
 export const loader = async ({ request }: LoaderArgs) => {

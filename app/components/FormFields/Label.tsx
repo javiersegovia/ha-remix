@@ -11,7 +11,7 @@ interface ILabelProps {
 }
 
 export const labelStyles =
-  'mb-1 block text-xs font-medium text-steelBlue-700' as const
+  'mb-1 ml-3 block text-xs font-medium text-steelBlue-700' as const
 
 export const Label = ({
   htmlFor = '',

@@ -1,10 +1,22 @@
-import type { ColumnDef } from '@tanstack/react-table'
+import type {
+  ColumnDef,
+  SortingState,
+  Table as TTable,
+} from '@tanstack/react-table'
+import React, { useEffect } from 'react'
+import type { PaginationProps } from '../Lists/Pagination'
+
 import {
   flexRender,
   getCoreRowModel,
+  getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table'
+import clsx from 'clsx'
+import { twMerge } from 'tailwind-merge'
+import { useNavigation } from '@remix-run/react'
 
+import { Pagination } from '../Lists/Pagination'
 import {
   Table,
   TableBody,
@@ -13,31 +25,48 @@ import {
   TableHeader,
   TableRow,
 } from '~/components/UI/Table'
-import clsx from 'clsx'
-import { twMerge } from 'tailwind-merge'
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
   data: TData[]
   className?: string
+  tableActions?: (table: TTable<TData>) => JSX.Element
+  pagination?: PaginationProps
 }
 
-export function AddEmployeesTable<TData, TValue>({
+export function DataTable<TData, TValue>({
   columns,
   data,
   className,
+  tableActions,
+  pagination,
 }: DataTableProps<TData, TValue>) {
+  const [sorting, setSorting] = React.useState<SortingState>([])
+
   const table = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
+    onSortingChange: setSorting,
+    getSortedRowModel: getSortedRowModel(),
+    state: {
+      sorting,
+    },
   })
 
+  const navigation = useNavigation()
+
+  useEffect(() => {
+    if (navigation.state !== 'idle') {
+      table.resetRowSelection()
+    }
+  }, [navigation.state, table])
+
   return (
-    <div>
-      <div
-        className={twMerge(clsx('rounded-3xl border bg-white p-3', className))}
-      >
+    <div className={className}>
+      {tableActions?.(table)}
+
+      <div className={twMerge(clsx('rounded-3xl border bg-white p-3'))}>
         <Table>
           <TableHeader className="overflow-hidden">
             {table.getHeaderGroups().map((headerGroup) => (
@@ -57,6 +86,7 @@ export function AddEmployeesTable<TData, TValue>({
               </TableRow>
             ))}
           </TableHeader>
+
           <TableBody>
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row, idx) => (
@@ -85,12 +115,21 @@ export function AddEmployeesTable<TData, TValue>({
                   colSpan={columns.length}
                   className="h-24 text-center"
                 >
-                  No results.
+                  Sin resultados.
                 </TableCell>
               </TableRow>
             )}
           </TableBody>
         </Table>
+
+        {pagination && (
+          <div className="pb-5 pt-2">
+            <Pagination
+              currentPage={pagination.currentPage}
+              totalPages={pagination.totalPages}
+            />
+          </div>
+        )}
       </div>
     </div>
   )

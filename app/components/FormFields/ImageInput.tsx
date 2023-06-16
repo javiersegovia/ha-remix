@@ -110,7 +110,7 @@ export const ImageInput = ({
           setSelectedImage(event?.target?.files?.[0] || null)
         }
         className={clsx(
-          'pointer-events-none invisible mx-auto my-3 block h-0 text-center'
+          'pointer-events-none invisible mx-auto block h-0 text-center'
         )}
       />
     </>

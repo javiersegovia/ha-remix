@@ -1,9 +1,11 @@
 import type { ActionArgs, LoaderArgs, MetaFunction } from '@remix-run/node'
+import type { EmployeeDataItem } from './table-columns'
 
-import { Form, Link, Outlet } from '@remix-run/react'
+import { Form, Link, Outlet, useLoaderData } from '@remix-run/react'
 import { redirect, json } from '@remix-run/node'
-import { useLoaderData } from '@remix-run/react'
 import { PermissionCode } from '@prisma/client'
+import { $path } from 'remix-routes'
+import { getSearchParams } from 'remix-params-helper'
 import { MdOutlineModeEditOutline, MdOutlineDelete } from 'react-icons/md'
 
 import { Container } from '~/components/Layout/Container'
@@ -22,15 +24,20 @@ import { FilterSummary } from '~/containers/dashboard/EmployeeGroup/FilterSummar
 import { calculateAge } from '~/utils/formatDate'
 import { formatMoney } from '~/utils/formatMoney'
 import { CurrencySymbol } from '~/components/FormFields/CurrencyInput'
-
-import { EmployeesTable } from './EmployeesTable'
-import type { EmployeeDataItem } from './table-columns'
 import { columns } from './table-columns'
 import { employeeTableSchema } from '~/services/employee/employee.schema'
 import { TableIsEmpty } from '~/components/Lists/TableIsEmpty'
-import { $path } from 'remix-routes'
 import { Box } from '~/components/Layout/Box'
 import { HiOutlineUser } from 'react-icons/hi'
+import { DataTable } from '~/components/Table/DataTable'
+import { TableActions, deleteFormId } from './table-actions'
+import { getJobDepartments } from '~/services/job-department/job-department.server'
+import { getAgeRanges } from '~/services/age-range/age-range.server'
+import { getSalaryRanges } from '~/services/salary-range/salary-range.server'
+import { prisma } from '~/db.server'
+import { employeeSearchSchema } from '~/services/employee/employee-search.schema'
+import { buildEmployeeFilters } from '~/services/employee/employee.server'
+import { getPaginationOptions } from '~/utils/getPaginationOptions'
 
 const onCloseRedirectTo = '/dashboard/manage/employee-groups' as const
 
@@ -69,7 +76,92 @@ export const loader = async ({ request, params }: LoaderArgs) => {
     })
   }
 
-  const employeeGroup = await getEmployeeGroupById(employeeGroupId)
+  const searchResult = getSearchParams(request, employeeSearchSchema)
+
+  if (!searchResult.success) {
+    throw badRequest({
+      message: 'Se ha recibido un formato de búsqueda incorrecto',
+      redirect: null,
+    })
+  }
+
+  const { keywords, jobDepartmentId, ageRangeId, salaryRangeId } =
+    searchResult.data
+
+  const employeeFilters = await buildEmployeeFilters({
+    keywords,
+    jobDepartmentId,
+    ageRangeId,
+    salaryRangeId,
+    employeeGroupId,
+    companyId: employee.companyId,
+  })
+
+  const totalEmployeesCount = await prisma.employee.count({
+    where: {
+      AND: await buildEmployeeFilters({
+        companyId: employee.companyId,
+        employeeGroupId,
+      }),
+    },
+  })
+
+  const employeeCount = await prisma.employee.count({
+    where: {
+      AND: employeeFilters,
+    },
+  })
+
+  const { take, skip, pagination } = getPaginationOptions({
+    request,
+    itemsCount: employeeCount,
+  })
+
+  const getEmployees = () =>
+    prisma.employee.findMany({
+      where: {
+        AND: employeeFilters,
+      },
+      take,
+      skip,
+      select: {
+        id: true,
+        status: true,
+        salaryFiat: true,
+        birthDay: true,
+        gender: {
+          select: {
+            name: true,
+          },
+        },
+        jobDepartment: {
+          select: {
+            name: true,
+          },
+        },
+        user: {
+          select: {
+            email: true,
+            firstName: true,
+            lastName: true,
+          },
+        },
+      },
+      orderBy: {
+        user: {
+          firstName: 'asc',
+        },
+      },
+    })
+
+  const [employees, employeeGroup, jobDepartments, salaryRanges, ageRanges] =
+    await Promise.all([
+      getEmployees(),
+      getEmployeeGroupById(employeeGroupId),
+      getJobDepartments(),
+      getSalaryRanges(),
+      getAgeRanges(),
+    ])
 
   if (!employeeGroup) {
     throw badRequest({
@@ -78,7 +170,7 @@ export const loader = async ({ request, params }: LoaderArgs) => {
     })
   }
 
-  const employeesData: EmployeeDataItem[] = employeeGroup.employees.map((e) => {
+  const employeesData: EmployeeDataItem[] = employees?.map((e) => {
     return {
       id: e.id,
       email: e.user.email,
@@ -93,7 +185,15 @@ export const loader = async ({ request, params }: LoaderArgs) => {
     }
   })
 
-  return json({ employeeGroup, employeesData })
+  return json({
+    employeeGroup,
+    employeesData,
+    totalEmployeesCount,
+    jobDepartments,
+    salaryRanges,
+    ageRanges,
+    pagination,
+  })
 }
 
 export const action = async ({ request, params }: ActionArgs) => {
@@ -140,7 +240,16 @@ export const action = async ({ request, params }: ActionArgs) => {
 }
 
 const EmployeeGroupDetailsRoute = () => {
-  const { employeeGroup, employeesData } = useLoaderData<typeof loader>()
+  const {
+    employeeGroup,
+    employeesData,
+    totalEmployeesCount,
+    jobDepartments,
+    salaryRanges,
+    ageRanges,
+    pagination,
+  } = useLoaderData<typeof loader>()
+
   const {
     country,
     state,
@@ -159,10 +268,11 @@ const EmployeeGroupDetailsRoute = () => {
           redirectTo="/dashboard/manage/employee-groups"
           description="Regresar"
         />
-        <section className="mb-7 flex flex-col items-center justify-between sm:flex-row">
+        <section className="flex flex-col items-center justify-between sm:flex-row">
           <Title className="text-steelBlue-800">{employeeGroup.name}</Title>
+
           <div className="mt-4 flex flex-wrap items-center justify-center gap-4 sm:mt-0 sm:flex-nowrap sm:justify-start">
-            {employeesData.length > 0 && (
+            {employeeGroup._count.employees > 0 && (
               <Button
                 href={$path(
                   '/dashboard/manage/employee-groups/:employeeGroupId/add',
@@ -207,13 +317,13 @@ const EmployeeGroupDetailsRoute = () => {
           </div>
         </section>
 
-        <div className="flex">
-          <div className="inline-flex flex-grow-[0.1] items-stretch">
-            <Box className="flex w-max flex-col items-center justify-center border border-steelBlue-100 p-1 text-steelBlue-800 sm:p-3">
+        <div className="mt-7 flex flex-col gap-3 sm:flex-row">
+          <div className="inline-flex">
+            <Box className="flex w-full flex-col items-center justify-center border border-steelBlue-100 p-5 text-steelBlue-800 sm:w-max sm:p-3">
               <span className="text-2xl">
-                <HiOutlineUser className="inline-flex rounded-full bg-electricYellow-700 ring-8 ring-electricYellow-700"></HiOutlineUser>
+                <HiOutlineUser className="inline-flex rounded-full bg-electricYellow-700 ring-8 ring-electricYellow-700" />
                 <div className="ml-5 inline-flex align-bottom text-4xl/7 font-bold">
-                  {employeesData.length}
+                  {totalEmployeesCount}
                 </div>
               </span>
               <p className="pt-5">Colaboradores </p>
@@ -222,7 +332,6 @@ const EmployeeGroupDetailsRoute = () => {
 
           {(country || gender || ageRange || salaryRange || jobDepartment) && (
             <FilterSummary
-              className=""
               country={country}
               state={state}
               city={city}
@@ -233,12 +342,12 @@ const EmployeeGroupDetailsRoute = () => {
               options={{ hasColumns: true }}
             />
           )}
-
-          <div />
         </div>
 
+        <div />
+
         {benefits?.length > 0 ? (
-          <div className="mt-10 items-center gap-6 p-5 md:inline-flex">
+          <div className="mt-4 items-center gap-6 p-5 md:inline-flex">
             <p className="mb-4 font-medium text-steelBlue-500 md:mb-0">
               Beneficios disponibles:
             </p>
@@ -254,15 +363,28 @@ const EmployeeGroupDetailsRoute = () => {
             </div>
           </div>
         ) : (
-          <p className="mt-10">Este grupo no posee beneficios disponibles.</p>
+          <p className="mt-4">Este grupo no posee beneficios disponibles.</p>
         )}
 
-        {employeesData.length > 0 ? (
-          <EmployeesTable
-            columns={columns}
-            data={employeesData}
-            className="mt-4"
-          />
+        {employeeGroup._count.employees > 0 ? (
+          <>
+            <DataTable
+              columns={columns}
+              data={employeesData}
+              className="mt-4"
+              pagination={pagination}
+              tableActions={(table) => (
+                <TableActions
+                  table={table}
+                  jobDepartments={jobDepartments}
+                  salaryRanges={salaryRanges}
+                  ageRanges={ageRanges}
+                />
+              )}
+            />
+
+            <Form method="DELETE" id={deleteFormId} />
+          </>
         ) : (
           <TableIsEmpty
             title="Aún no tienes ningún colaborador asociado a este grupo"

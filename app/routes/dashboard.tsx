@@ -17,12 +17,6 @@ import {
   hasPermissionByUserId,
 } from '~/services/permissions/permissions.server'
 
-export type DashboardLoaderData = {
-  user: Awaited<ReturnType<typeof requireUser>>
-  canUsePayrollAdvances: boolean
-  hasPayrollAdvances: boolean
-}
-
 const defaultNavPaths: INavPath[] = [
   {
     icon: HiOutlineHome,

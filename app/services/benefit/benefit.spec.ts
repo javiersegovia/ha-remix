@@ -45,6 +45,7 @@ describe('getBenefitById', () => {
       buttonHref,
       buttonText,
       slug,
+      isHighlighted: false,
       description: null,
       shortDescription: null,
       instructions: [],

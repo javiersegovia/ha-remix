@@ -1,14 +1,13 @@
-import type { Config } from "tailwindcss";
+import type { Config } from 'tailwindcss'
 
-import colors from 'tailwindcss/colors';
-import defaultTheme from 'tailwindcss/defaultTheme';
+import colors from 'tailwindcss/colors'
+import defaultTheme from 'tailwindcss/defaultTheme'
 
 const screens = {
   ...defaultTheme.screens,
   '3xl': '1900px',
   '4xl': '2200px',
 }
-
 
 export default {
   content: ['./app/**/*.{ts,tsx,jsx,js}'],
@@ -75,4 +74,4 @@ export default {
     },
   },
   plugins: [require('@tailwindcss/typography')],
-} satisfies Config;
+} satisfies Config
