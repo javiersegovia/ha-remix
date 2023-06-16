@@ -199,17 +199,16 @@ export const getEmployeesByCompanyId = async (
 /** This function is used inside the Company Admin Dashboard */
 export const getCompanyEmployeesByCompanyId = async (
   companyId: string,
-  options?: Pick<Prisma.EmployeeFindManyArgs, 'take' | 'skip' | 'cursor'>
+  options?: Pick<Prisma.EmployeeFindManyArgs, 'take' | 'skip' | 'where'>
 ) => {
-  const { take, skip, cursor } = options || {}
+  const { take, skip, where } = options || {}
 
   return prisma.employee.findMany({
-    where: {
+    where: where || {
       companyId: companyId,
     },
     take,
     skip,
-    cursor,
     orderBy: {
       user: {
         firstName: 'asc',
@@ -218,6 +217,7 @@ export const getCompanyEmployeesByCompanyId = async (
     select: {
       id: true,
       status: true,
+      companyId: true,
       membership: {
         select: {
           id: true,

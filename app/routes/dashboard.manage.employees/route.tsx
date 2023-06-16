@@ -1,5 +1,4 @@
 import type { LoaderArgs, MetaFunction } from '@remix-run/server-runtime'
-import type { TableRowProps } from '~/components/Lists/Table'
 
 import { PermissionCode } from '@prisma/client'
 import { json } from '@remix-run/node'
@@ -16,14 +15,23 @@ import {
   requirePermissionByUserId,
 } from '~/services/permissions/permissions.server'
 import { useToastError } from '~/hooks/useToastError'
-import { getCompanyEmployeesByCompanyId } from '~/services/employee/employee.server'
+import {
+  buildEmployeeFilters,
+  getCompanyEmployeesByCompanyId,
+} from '~/services/employee/employee.server'
 import { TableIsEmpty } from '~/components/Lists/TableIsEmpty'
-import { Table } from '~/components/Lists/Table'
-import { EmployeeStatusPill } from '~/components/Pills/EmployeeStatusPill'
 import { prisma } from '~/db.server'
-import { filterEmployeeEnabledBenefits } from '../services/permissions/permissions.shared'
+import { filterEmployeeEnabledBenefits } from '../../services/permissions/permissions.shared'
 import { badRequest } from '~/utils/responses'
 import { getPaginationOptions } from '~/utils/getPaginationOptions'
+import { DataTable } from '~/components/Table/DataTable'
+import { columns } from './table-columns'
+import { TableActions } from './table-actions'
+import { getJobDepartments } from '~/services/job-department/job-department.server'
+import { getSalaryRanges } from '~/services/salary-range/salary-range.server'
+import { getAgeRanges } from '~/services/age-range/age-range.server'
+import { getSearchParams } from 'remix-params-helper'
+import { employeeSearchSchema } from '~/services/employee/employee-search.schema'
 
 export const meta: MetaFunction = () => {
   return {
@@ -65,6 +73,11 @@ export const loader = async ({ request }: LoaderArgs) => {
           id: true,
         },
       },
+      _count: {
+        select: {
+          employees: true,
+        },
+      },
     },
   })
 
@@ -75,9 +88,29 @@ export const loader = async ({ request }: LoaderArgs) => {
     })
   }
 
+  const searchResult = getSearchParams(request, employeeSearchSchema)
+
+  if (!searchResult.success) {
+    throw badRequest({
+      message: 'Se ha recibido un formato de búsqueda incorrecto',
+      redirect: null,
+    })
+  }
+
+  const { keywords, jobDepartmentId, ageRangeId, salaryRangeId } =
+    searchResult.data
+
+  const employeeFilters = await buildEmployeeFilters({
+    keywords,
+    jobDepartmentId,
+    ageRangeId,
+    salaryRangeId,
+    companyId: employee.companyId,
+  })
+
   const employeeCount = await prisma.employee.count({
     where: {
-      companyId: employee.companyId,
+      AND: employeeFilters,
     },
   })
 
@@ -89,6 +122,9 @@ export const loader = async ({ request }: LoaderArgs) => {
   const employees = await getCompanyEmployeesByCompanyId(employee.companyId, {
     take,
     skip,
+    where: {
+      AND: employeeFilters,
+    },
   })
 
   const employeesWithEnabledBenefitsPromise = employees.map((e) => {
@@ -101,11 +137,27 @@ export const loader = async ({ request }: LoaderArgs) => {
         .flat(),
     })
 
-    return { ...e, enabledBenefits: filteredBenefits.size }
+    return {
+      ...e,
+      email: e.user.email,
+      fullName: `${e.user.firstName} ${e.user.lastName}`,
+      enabledBenefits: filteredBenefits.size,
+      employeeGroups: e.employeeGroups?.length,
+    }
   })
 
+  const [jobDepartments, salaryRanges, ageRanges] = await Promise.all([
+    getJobDepartments(),
+    getSalaryRanges(),
+    getAgeRanges(),
+  ])
+
   return json({
-    employees: await Promise.all(employeesWithEnabledBenefitsPromise),
+    totalEmployeesCount: company._count.employees,
+    employees: employeesWithEnabledBenefitsPromise,
+    jobDepartments,
+    salaryRanges,
+    ageRanges,
     pagination,
     companyBenefitsIds: employee.company.benefits?.map((b) => b.id),
     canManageEmployeeGroup,
@@ -113,80 +165,15 @@ export const loader = async ({ request }: LoaderArgs) => {
 }
 
 export default function DashboardEmployeesIndexRoute() {
-  const { employees, pagination, canManageEmployeeGroup } =
-    useLoaderData<typeof loader>()
-
-  const headings = [
-    'Nombre',
-    'Ciudad',
-    'Área',
-    'Grupos asignados',
-    'Beneficios',
-    'Estado',
-  ]
-
-  const rows: TableRowProps[] = employees?.map(
-    ({
-      id,
-      user,
-      city,
-      jobDepartment,
-      employeeGroups,
-      enabledBenefits,
-      status,
-    }) => ({
-      rowId: id,
-      href: `${id}/details`,
-      items: [
-        <>
-          <span className="whitespace-pre-wrap" key={`${id}_name`}>
-            {`${user.firstName} ${user.lastName}`}
-          </span>
-          <div className="text-sm text-gray-500">{user.email}</div>
-        </>,
-
-        city ? (
-          <span className="whitespace-pre-wrap" key={`${id}_city`}>
-            {city?.name}
-          </span>
-        ) : (
-          '-'
-        ),
-
-        jobDepartment ? (
-          <span className="whitespace-pre-wrap" key={`${id}_jobDepartment`}>
-            {jobDepartment?.name}
-          </span>
-        ) : (
-          '-'
-        ),
-
-        employeeGroups?.length > 0 ? (
-          <span className="whitespace-pre-wrap" key={`${id}_employeeGroups`}>
-            {employeeGroups?.length}
-          </span>
-        ) : (
-          '-'
-        ),
-
-        enabledBenefits > 0 ? (
-          <span className="whitespace-pre-wrap" key={`${id}_benefits`}>
-            {enabledBenefits}
-          </span>
-        ) : (
-          '-'
-        ),
-
-        status ? (
-          <span className="whitespace-pre-wrap" key={`${id}_status`}>
-            <EmployeeStatusPill employeeStatus={status} />
-          </span>
-        ) : (
-          '-'
-        ),
-      ],
-    })
-  )
+  const {
+    totalEmployeesCount,
+    employees,
+    pagination,
+    canManageEmployeeGroup,
+    jobDepartments,
+    salaryRanges,
+    ageRanges,
+  } = useLoaderData<typeof loader>()
 
   return (
     <>
@@ -195,7 +182,7 @@ export default function DashboardEmployeesIndexRoute() {
           <Tabs items={employeeTabPaths} className="mb-8 mt-10" />
         )}
 
-        {employees?.length > 0 ? (
+        {totalEmployeesCount > 0 ? (
           <>
             <TitleWithActions
               className="mb-10"
@@ -210,7 +197,19 @@ export default function DashboardEmployeesIndexRoute() {
                 </Button>
               }
             />
-            <Table headings={headings} rows={rows} pagination={pagination} />
+            <DataTable
+              columns={columns}
+              data={employees}
+              pagination={pagination}
+              tableActions={(table) => (
+                <TableActions
+                  table={table}
+                  jobDepartments={jobDepartments}
+                  salaryRanges={salaryRanges}
+                  ageRanges={ageRanges}
+                />
+              )}
+            />
           </>
         ) : (
           <TableIsEmpty

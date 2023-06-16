@@ -35,7 +35,7 @@ import { getJobDepartments } from '~/services/job-department/job-department.serv
 import { getAgeRanges } from '~/services/age-range/age-range.server'
 import { getSalaryRanges } from '~/services/salary-range/salary-range.server'
 import { prisma } from '~/db.server'
-import { searchSchema } from './search-schema'
+import { employeeSearchSchema } from '~/services/employee/employee-search.schema'
 import { buildEmployeeFilters } from '~/services/employee/employee.server'
 import { getPaginationOptions } from '~/utils/getPaginationOptions'
 
@@ -76,7 +76,7 @@ export const loader = async ({ request, params }: LoaderArgs) => {
     })
   }
 
-  const searchResult = getSearchParams(request, searchSchema)
+  const searchResult = getSearchParams(request, employeeSearchSchema)
 
   if (!searchResult.success) {
     throw badRequest({
@@ -95,6 +95,15 @@ export const loader = async ({ request, params }: LoaderArgs) => {
     salaryRangeId,
     employeeGroupId,
     companyId: employee.companyId,
+  })
+
+  const totalEmployeesCount = await prisma.employee.count({
+    where: {
+      AND: await buildEmployeeFilters({
+        companyId: employee.companyId,
+        employeeGroupId,
+      }),
+    },
   })
 
   const employeeCount = await prisma.employee.count({
@@ -179,6 +188,7 @@ export const loader = async ({ request, params }: LoaderArgs) => {
   return json({
     employeeGroup,
     employeesData,
+    totalEmployeesCount,
     jobDepartments,
     salaryRanges,
     ageRanges,
@@ -233,6 +243,7 @@ const EmployeeGroupDetailsRoute = () => {
   const {
     employeeGroup,
     employeesData,
+    totalEmployeesCount,
     jobDepartments,
     salaryRanges,
     ageRanges,
@@ -306,13 +317,13 @@ const EmployeeGroupDetailsRoute = () => {
           </div>
         </section>
 
-        <div className="flex">
-          <div className="inline-flex flex-grow-[0.1] items-stretch">
-            <Box className="flex w-max flex-col items-center justify-center border border-steelBlue-100 p-1 text-steelBlue-800 sm:p-3">
+        <div className="mt-7 flex flex-col gap-3 sm:flex-row">
+          <div className="inline-flex">
+            <Box className="flex w-full flex-col items-center justify-center border border-steelBlue-100 p-5 text-steelBlue-800 sm:w-max sm:p-3">
               <span className="text-2xl">
-                <HiOutlineUser className="inline-flex rounded-full bg-electricYellow-700 ring-8 ring-electricYellow-700"></HiOutlineUser>
+                <HiOutlineUser className="inline-flex rounded-full bg-electricYellow-700 ring-8 ring-electricYellow-700" />
                 <div className="ml-5 inline-flex align-bottom text-4xl/7 font-bold">
-                  {employeesData.length}
+                  {totalEmployeesCount}
                 </div>
               </span>
               <p className="pt-5">Colaboradores </p>
@@ -320,18 +331,16 @@ const EmployeeGroupDetailsRoute = () => {
           </div>
 
           {(country || gender || ageRange || salaryRange || jobDepartment) && (
-            <div className="mt-7">
-              <FilterSummary
-                country={country}
-                state={state}
-                city={city}
-                gender={gender}
-                ageRange={ageRange}
-                salaryRange={salaryRange}
-                jobDepartment={jobDepartment}
-                options={{ hasColumns: true }}
-              />
-            </div>
+            <FilterSummary
+              country={country}
+              state={state}
+              city={city}
+              gender={gender}
+              ageRange={ageRange}
+              salaryRange={salaryRange}
+              jobDepartment={jobDepartment}
+              options={{ hasColumns: true }}
+            />
           )}
         </div>
 

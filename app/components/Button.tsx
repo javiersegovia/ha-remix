@@ -144,17 +144,19 @@ export const ButtonElement = ({
         <>
           {children}
 
-          <span
-            className={clsx(
-              design === ButtonDesignVariants.BUTTON && icon && 'ml-3 text-xl'
-            )}
-          >
-            {icon === ButtonIconVariants.UPLOAD && <MdOutlineUploadFile />}
-            {icon === ButtonIconVariants.CREATE && <HiPlus />}
-            {icon === ButtonIconVariants.DOWNLOAD && <MdOutlineDownload />}
-            {icon === ButtonIconVariants.DELETE && <MdOutlineDelete />}
-            {icon === ButtonIconVariants.SEARCH && <HiSearch />}
-          </span>
+          {icon && (
+            <span
+              className={clsx(
+                design === ButtonDesignVariants.BUTTON && icon && 'ml-3 text-xl'
+              )}
+            >
+              {icon === ButtonIconVariants.UPLOAD && <MdOutlineUploadFile />}
+              {icon === ButtonIconVariants.CREATE && <HiPlus />}
+              {icon === ButtonIconVariants.DOWNLOAD && <MdOutlineDownload />}
+              {icon === ButtonIconVariants.DELETE && <MdOutlineDelete />}
+              {icon === ButtonIconVariants.SEARCH && <HiSearch />}
+            </span>
+          )}
         </>
       )}
     </button>

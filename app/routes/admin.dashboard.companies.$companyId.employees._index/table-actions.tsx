@@ -4,7 +4,6 @@ import type { getSalaryRanges } from '~/services/salary-range/salary-range.serve
 import type { getAgeRanges } from '~/services/age-range/age-range.server'
 
 import { ValidatedForm } from 'remix-validated-form'
-import { FormSubactions } from './route'
 import {
   Button,
   ButtonColorVariants,
@@ -24,10 +23,7 @@ interface TableActionsProps<TData extends unknown> {
   ageRanges: Awaited<ReturnType<typeof getAgeRanges>>
 }
 
-export const deleteFormId = 'DeleteForm' as const
-
 export const TableActions = <TData extends unknown>({
-  table,
   jobDepartments,
   salaryRanges,
   ageRanges,
@@ -85,22 +81,6 @@ export const TableActions = <TData extends unknown>({
           >
             Filtrar
           </Button>
-
-          {(table.getIsSomeRowsSelected() || table.getIsAllRowsSelected()) && (
-            <Button
-              type="submit"
-              name="subaction"
-              formMethod="DELETE"
-              form={deleteFormId}
-              value={FormSubactions.REMOVE_EMPLOYEES}
-              variant={ButtonColorVariants.SECONDARY}
-              icon={ButtonIconVariants.DELETE}
-              size="SM"
-              className="mb-5 w-full lg:mb-0 lg:w-auto"
-            >
-              Remover
-            </Button>
-          )}
         </div>
       </ValidatedForm>
     </>
