@@ -95,7 +95,7 @@
     "remix-params-helper": "^0.4.10",
     "remix-routes": "^1.4.3",
     "remix-utils": "^6.3.0",
-    "remix-validated-form": "^4.6.11",
+    "remix-validated-form": "^5.0.1",
     "slick-carousel": "^1.8.1",
     "tailwind-merge": "^1.12.0",
     "tiny-invariant": "^1.2.0",

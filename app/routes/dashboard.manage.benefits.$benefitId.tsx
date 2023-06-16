@@ -157,6 +157,10 @@ const CompanyBenefitDetailsIndexRoute = () => {
     benefitCategoryId,
     description,
     isHighlighted,
+    dataItems,
+    requireDataItems,
+    notificationEmails,
+    sendEmailNotifications,
     shortDescription,
     instructions,
     benefitHighlight,
@@ -187,6 +191,10 @@ const CompanyBenefitDetailsIndexRoute = () => {
             instructions,
             mainImage,
             benefitHighlight,
+            dataItems,
+            notificationEmails: notificationEmails?.join('; '),
+            requireDataItems,
+            sendEmailNotifications,
           }}
         />
       </section>

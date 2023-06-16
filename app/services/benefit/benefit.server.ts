@@ -45,6 +45,16 @@ export const getBenefitById = async (benefitId: Benefit['id']) => {
       shortDescription: true,
       instructions: true,
       isHighlighted: true,
+      requireDataItems: true,
+      sendEmailNotifications: true,
+      notificationEmails: true,
+      dataItems: {
+        select: {
+          id: true,
+          label: true,
+          type: true,
+        },
+      },
       mainImage: {
         select: {
           id: true,
@@ -96,6 +106,10 @@ export const createBenefit = async (
     instructions,
     isHighlighted,
     benefitHighlight,
+    notificationEmails,
+    sendEmailNotifications,
+    requireDataItems,
+    dataItems,
   } = data
 
   const createMainImage: Prisma.BenefitCreateInput['mainImage'] = mainImageKey
@@ -153,6 +167,23 @@ export const createBenefit = async (
         isHighlighted: Boolean(isHighlighted),
         mainImage: createMainImage,
         benefitHighlight: createBenefitHighlight,
+
+        notificationEmails:
+          notificationEmails?.split(';').map((item) => item.trim()) || [],
+        sendEmailNotifications: Boolean(sendEmailNotifications),
+        requireDataItems: Boolean(requireDataItems),
+
+        dataItems: dataItems
+          ? {
+              createMany: {
+                data: dataItems?.map((item) => ({
+                  label: item.label,
+                  type: item.type,
+                })),
+              },
+            }
+          : undefined,
+
         companyBenefit: companyId
           ? {
               create: {
@@ -230,6 +261,10 @@ export const updateBenefitById = async (
     description,
     shortDescription,
     instructions,
+    notificationEmails,
+    sendEmailNotifications,
+    requireDataItems,
+    dataItems,
   } = data
 
   const deletePromises: Promise<any>[] = []
@@ -327,7 +362,7 @@ export const updateBenefitById = async (
         }
   }
 
-  return prisma.benefit.update({
+  const benefit = await prisma.benefit.update({
     where: {
       id: benefitToUpdate.id,
     },
@@ -345,6 +380,37 @@ export const updateBenefitById = async (
         set: instructions?.filter((i): i is string => Boolean(i)) || [],
       },
 
+      notificationEmails: {
+        set: notificationEmails?.split(';').map((item) => item.trim()) || [],
+      },
+
+      /** Here we map over the dataItems that we receive.
+       *  If the DataItem.id is a string, it is a new item.
+       *  If the DataItem.id is a number, it already exists.
+       */
+      dataItems: {
+        /** Here we will delete all the DataItems that belong to this Benefit
+         *  and whose ids are not present in the DataItems we received.
+         */
+        deleteMany: {
+          AND: [
+            {
+              id: {
+                notIn: dataItems?.map((item) =>
+                  typeof item.id === 'number' ? item.id : 0
+                ),
+              },
+            },
+            {
+              benefitId,
+            },
+          ],
+        },
+      },
+
+      sendEmailNotifications: Boolean(sendEmailNotifications),
+      requireDataItems: Boolean(requireDataItems),
+
       benefitCategory: connectOrDisconnect(
         benefitCategoryId,
         Boolean(benefitToUpdate.benefitCategoryId)
@@ -357,6 +423,30 @@ export const updateBenefitById = async (
       name: true,
     },
   })
+
+  if (dataItems) {
+    await prisma.$transaction(
+      dataItems.map(({ id, label, type }) =>
+        prisma.dataItem.upsert({
+          where: {
+            id: typeof id === 'number' ? id : 0,
+          },
+          create: {
+            label,
+            type,
+            benefitId,
+          },
+          update: {
+            label,
+            type,
+            benefitId,
+          },
+        })
+      )
+    )
+  }
+
+  return benefit
 }
 
 export const deleteBenefitById = async (benefitId: Benefit['id']) => {

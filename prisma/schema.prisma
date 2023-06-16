@@ -821,15 +821,19 @@ model Benefit {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  slug             String?
-  name             String
-  buttonText       String?
-  buttonHref       String?
-  cost             Int?
-  description      String?
-  shortDescription String?
-  isHighlighted    Boolean  @default(false)
-  instructions     String[]
+  slug               String?
+  name               String
+  buttonText         String?
+  buttonHref         String?
+  cost               Int?
+  description        String?
+  shortDescription   String?
+  instructions       String[]
+  notificationEmails String[]
+
+  isHighlighted          Boolean @default(false)
+  requireDataItems       Boolean @default(false)
+  sendEmailNotifications Boolean @default(false)
 
   // @deprecated Use "mainImage" instead
   imageUrl String?
@@ -840,6 +844,7 @@ model Benefit {
   benefitCategory   BenefitCategory? @relation(fields: benefitCategoryId, references: id, onDelete: SetNull)
   benefitCategoryId Int?
 
+  dataItems        DataItem[]
   employees        Employee[]
   employeeGroups   EmployeeGroup[]
   companies        Company[]
@@ -992,4 +997,22 @@ model SalaryRange {
   maxValue  Int?
 
   employeeGroups EmployeeGroup[]
+}
+
+model DataItem {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  label String
+  type  DataItemType
+
+  benefit   Benefit @relation(fields: [benefitId], references: [id], onDelete: Cascade)
+  benefitId Int
+}
+
+enum DataItemType {
+  DATE
+  TEXT
+  NUMBER
 }

@@ -1,12 +1,32 @@
-import type { BenefitCategory, BenefitHighlight, Image } from '@prisma/client'
+import {
+  DataItemType,
+  type BenefitCategory,
+  type BenefitHighlight,
+  type DataItem,
+  type Image,
+} from '@prisma/client'
+import type { EnumOption } from '~/schemas/helpers'
 import type { BenefitInputSchema } from '~/services/benefit/benefit.schema'
 
 import clsx from 'clsx'
 import { Form } from '@remix-run/react'
-import { ValidatedForm, useControlField } from 'remix-validated-form'
+import {
+  ValidatedForm,
+  useControlField,
+  useFieldArray,
+} from 'remix-validated-form'
+import { Fragment, useEffect } from 'react'
+import { HiOutlineExternalLink } from 'react-icons/hi'
+import { faker } from '@faker-js/faker'
+
 import { benefitValidator } from '~/services/benefit/benefit.schema'
 
-import { ButtonColorVariants } from '../Button'
+import {
+  Button,
+  ButtonColorVariants,
+  ButtonDesignVariants,
+  ButtonIconVariants,
+} from '../Button'
 import { FormGridItem } from '../FormFields/FormGridItem'
 import { FormGridWrapper } from '../FormFields/FormGridWrapper'
 import { Input } from '../FormFields/Input'
@@ -17,8 +37,13 @@ import { Title } from '../Typography/Title'
 import { ImageInput } from '../FormFields/ImageInput'
 import { Toggle } from '../FormFields/Toggle'
 import { MultiplicableInput } from '../FormFields/MultiplicableInput'
-import { CurrencyInput } from '../FormFields/CurrencyInput'
-import { CurrencySymbol } from '../FormFields/CurrencyInput'
+import { CurrencyInput, CurrencySymbol } from '../FormFields/CurrencyInput'
+
+const dataItemTypeList: EnumOption[] = [
+  { name: 'Texto', value: DataItemType.TEXT },
+  { name: 'Número', value: DataItemType.NUMBER },
+  { name: 'Fecha', value: DataItemType.DATE },
+]
 
 interface BenefitFormProps {
   buttonText: string
@@ -34,9 +59,13 @@ interface BenefitFormProps {
     | 'shortDescription'
     | 'description'
     | 'instructions'
+    | 'notificationEmails'
+    | 'isHighlighted'
+    | 'requireDataItems'
+    | 'sendEmailNotifications'
   > & {
-    isHighlighted?: boolean
     mainImage?: Pick<Image, 'key' | 'url'> | null
+    dataItems?: Pick<DataItem, 'id' | 'label' | 'type'>[]
     benefitHighlight:
       | (Pick<
           BenefitHighlight,
@@ -76,6 +105,24 @@ export const BenefitForm = ({
     'isHighlighted',
     formId
   )
+  const [requireDataItems] = useControlField<boolean>(
+    'requireDataItems',
+    formId
+  )
+  const [sendEmailNotifications] = useControlField<boolean>(
+    'sendEmailNotifications',
+    formId
+  )
+
+  const [dataItems, { push, remove }] = useFieldArray('dataItems', {
+    formId,
+  })
+
+  useEffect(() => {
+    if (requireDataItems && dataItems.length === 0) {
+      push({ id: faker.datatype.uuid() })
+    }
+  }, [requireDataItems, push, dataItems.length])
 
   return (
     <Box className="mt-auto flex w-full flex-col  space-y-5 rounded-xl p-5 md:w-auto">
@@ -96,6 +143,10 @@ export const BenefitForm = ({
           instructions,
           benefitHighlight,
           isHighlighted,
+          notificationEmails: defaultValues?.notificationEmails,
+          requireDataItems: defaultValues?.requireDataItems,
+          sendEmailNotifications: defaultValues?.sendEmailNotifications,
+          dataItems: defaultValues?.dataItems,
         }}
       >
         <Title as="h4" className="mb-10">
@@ -111,6 +162,20 @@ export const BenefitForm = ({
               currentImageKey={mainImage?.key}
               isCentered
             />
+          </FormGridItem>
+
+          <FormGridItem
+            isFullWidth
+            className="relative top-[-24px] flex items-center justify-center text-sm text-steelBlue-800 underline"
+          >
+            <a
+              href="https://drive.google.com/drive/folders/1oZoTWM1fm1HDFdFUBCcSaM6m5cqhqz45?usp=drive_link"
+              target="_blank"
+              rel="noreferrer noopener"
+            >
+              Ver banco de imágenes
+              <HiOutlineExternalLink className="mx-1 my-3 inline-flex items-center pb-1" />
+            </a>
           </FormGridItem>
 
           <FormGridItem>
@@ -186,58 +251,159 @@ export const BenefitForm = ({
           </FormGridItem>
         </FormGridWrapper>
 
-        <div className="my-10 h-[1px] w-full border-b border-dashed border-gray-300" />
+        <FormGridWrapper>
+          <FormGridItem isFullWidth className="items-center">
+            <Toggle
+              name="requireDataItems"
+              label="Solicitar información extra al colaborador"
+            />
+          </FormGridItem>
 
-        <Title as="h4" className="my-10">
-          Información de beneficio destacado
-        </Title>
+          {requireDataItems && (
+            <>
+              {dataItems.map(({ defaultValue, key, ...rest }, index) => (
+                <Fragment key={key}>
+                  <input
+                    type="hidden"
+                    name={`dataItems[${index}].id`}
+                    value={defaultValue?.id}
+                  />
 
-        <FormGridItem className="items-center">
-          <Toggle name="isHighlighted" label="Es un beneficio destacado" />
-        </FormGridItem>
+                  <FormGridItem isFullWidth className="flex items-center gap-3">
+                    <Input
+                      name={`dataItems[${index}].label`}
+                      type="text"
+                      label="Nombre del campo"
+                      placeholder="Ej: ¿Por qué quieres el beneficio?"
+                    />
+                    <Select
+                      name={`dataItems[${index}].type`}
+                      label="Seleccione el tipo de dato"
+                      placeholder="Seleccionar tipo de dato"
+                      options={dataItemTypeList}
+                    />
+
+                    <Button
+                      variant={ButtonColorVariants.WARNING}
+                      design={ButtonDesignVariants.FAB}
+                      icon={ButtonIconVariants.DELETE}
+                      className={clsx(
+                        index === 0 && 'cursor-default opacity-0'
+                      )}
+                      disabled={index === 0}
+                      onClick={() => {
+                        remove(index)
+                      }}
+                    />
+                  </FormGridItem>
+                </Fragment>
+              ))}
+
+              <FormGridItem isFullWidth>
+                <Button
+                  className="w-auto"
+                  size="XS"
+                  variant={ButtonColorVariants.SECONDARY}
+                  icon={ButtonIconVariants.CREATE}
+                  onClick={() => {
+                    push({ id: faker.datatype.uuid() })
+                  }}
+                >
+                  Agregar nuevo campo
+                </Button>
+              </FormGridItem>
+
+              <FormGridItem isFullWidth>
+                <div className="my-10 h-[1px] w-full border-b border-dashed border-gray-300" />
+              </FormGridItem>
+            </>
+          )}
+
+          <FormGridItem isFullWidth className="items-center">
+            <Toggle
+              name="sendEmailNotifications"
+              label="Generar notificationes automáticas"
+            />
+          </FormGridItem>
+
+          {sendEmailNotifications && (
+            <>
+              <FormGridItem isFullWidth>
+                <Input
+                  name="notificationEmails"
+                  type="text"
+                  label="Correos asociados"
+                  isTextArea
+                  placeholder="Agrega uno o más correos electrónicos a donde enviaremos la notificación"
+                  description="Puedes agregar múltiples correos separados por punto y coma (;)"
+                />
+              </FormGridItem>
+
+              <FormGridItem isFullWidth>
+                <div className="my-10 h-[1px] w-full border-b border-dashed border-gray-300" />
+              </FormGridItem>
+            </>
+          )}
+
+          <FormGridItem isFullWidth className="items-center">
+            <Toggle name="isHighlighted" label="Mostrar como destacado" />
+          </FormGridItem>
+        </FormGridWrapper>
 
         {benefitIsHighlighted && (
-          <FormGridWrapper>
-            <FormGridItem isFullWidth>
-              <ImageInput
-                name="benefitHighlight.image"
-                alt="Imagen del beneficio destacado"
-                currentImageUrl={benefitHighlight?.image?.url}
-                currentImageKey={benefitHighlight?.image?.key}
-                isCentered
-              />
-            </FormGridItem>
+          <>
+            <div className="my-10 h-[1px] w-full border-b border-dashed border-gray-300" />
 
-            <FormGridItem>
-              <Input name="benefitHighlight.title" label="Título" type="text" />
-            </FormGridItem>
+            <Title as="h4" className="my-10">
+              Destacar en el carrusel
+            </Title>
 
-            <FormGridItem isFullWidth>
-              <Input
-                name="benefitHighlight.description"
-                type="text"
-                label="Descripción"
-                isTextArea
-                placeholder="Descripción a destacar"
-              />
-            </FormGridItem>
+            <FormGridWrapper>
+              <FormGridItem isFullWidth>
+                <ImageInput
+                  name="benefitHighlight.image"
+                  alt="Imagen del beneficio destacado"
+                  currentImageUrl={benefitHighlight?.image?.url}
+                  currentImageKey={benefitHighlight?.image?.key}
+                  isCentered
+                />
+              </FormGridItem>
 
-            <FormGridItem>
-              <Input
-                name="benefitHighlight.buttonText"
-                label="Texto del botón"
-                type="text"
-              />
-            </FormGridItem>
+              <FormGridItem>
+                <Input
+                  name="benefitHighlight.title"
+                  label="Título"
+                  type="text"
+                />
+              </FormGridItem>
 
-            <FormGridItem>
-              <Input
-                name="benefitHighlight.buttonHref"
-                label="URL del botón"
-                type="text"
-              />
-            </FormGridItem>
-          </FormGridWrapper>
+              <FormGridItem isFullWidth>
+                <Input
+                  name="benefitHighlight.description"
+                  type="text"
+                  label="Descripción"
+                  isTextArea
+                  placeholder="Descripción a destacar"
+                />
+              </FormGridItem>
+
+              <FormGridItem>
+                <Input
+                  name="benefitHighlight.buttonText"
+                  label="Texto del botón"
+                  type="text"
+                />
+              </FormGridItem>
+
+              <FormGridItem>
+                <Input
+                  name="benefitHighlight.buttonHref"
+                  label="URL del botón"
+                  type="text"
+                />
+              </FormGridItem>
+            </FormGridWrapper>
+          </>
         )}
       </ValidatedForm>
 
