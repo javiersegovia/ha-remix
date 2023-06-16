@@ -30,7 +30,10 @@ export const BenefitCategoryForm = ({
         validator={benefitCategoryValidator}
         method="post"
         className="pt-10"
-        defaultValues={defaultValues}
+        defaultValues={{
+          ...defaultValues,
+          hexColor: defaultValues?.hexColor || '#fff',
+        }}
       >
         <FormGridWrapper>
           <FormGridItem isFullWidth>
@@ -46,7 +49,7 @@ export const BenefitCategoryForm = ({
             <ColorPicker name="hexColor" label="Color de categoría" />
           </FormGridItem>
 
-          <FormGridItem isFullWidth>
+          <FormGridItem isFullWidth className="mt-10">
             <SubmitButton>{buttonText}</SubmitButton>
           </FormGridItem>
         </FormGridWrapper>
