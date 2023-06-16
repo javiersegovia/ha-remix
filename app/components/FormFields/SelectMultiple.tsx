@@ -1,10 +1,6 @@
 import React from 'react'
 import ReactSelect from 'react-select'
-import {
-  useControlField,
-  useField,
-  useIsSubmitting,
-} from 'remix-validated-form'
+import { useControlField, useField } from 'remix-validated-form'
 
 import { ErrorMessage } from './ErrorMessage'
 import { Label } from './Label'
@@ -13,6 +9,7 @@ import type { TReactSelectOption } from './Select'
 import { getSelectValue } from './Select'
 import { useHydrated } from 'remix-utils'
 import makeAnimated from 'react-select/animated'
+import { useNavigation } from '@remix-run/react'
 
 export type TSelectProps = Omit<
   React.DetailedHTMLProps<
@@ -52,7 +49,7 @@ export const SelectMultiple = ({
   } = useField(name)
   const [value, setValue] = useControlField<readonly TReactSelectOption[]>(name)
 
-  const isSubmitting = useIsSubmitting()
+  const { state } = useNavigation()
   const fieldError: string | undefined = error || formError
   const styles = selectStyles<true>(!!fieldError)
 
@@ -89,7 +86,7 @@ export const SelectMultiple = ({
           options={options || []}
           placeholder={placeholder}
           defaultValue={formattedDefaultValues}
-          isDisabled={disabled || isSubmitting || !isHydrated}
+          isDisabled={disabled || state !== 'idle' || !isHydrated}
           getOptionValue={(option: TReactSelectOption) =>
             `${getSelectValue(option)}`
           }

@@ -3,13 +3,14 @@ import type { KeyboardEventHandler } from 'react'
 import React from 'react'
 import CreatableSelect from 'react-select/creatable'
 import { useHydrated } from 'remix-utils'
-import { useField, useIsSubmitting } from 'remix-validated-form'
+import { useField } from 'remix-validated-form'
 
 import { ErrorMessage } from './ErrorMessage'
 import { Label } from './Label'
 import { selectStyles } from './Select.styles'
 import type { TReactSelectOption } from './Select'
 import { getSelectValue } from './Select'
+import { useNavigation } from '@remix-run/react'
 
 export type TSelectProps = Omit<
   React.DetailedHTMLProps<
@@ -40,7 +41,8 @@ export const SelectMultipleCreatableInput = ({
   const isHydrated = useHydrated()
   const { error: formError, validate } = useField(name)
 
-  const isSubmitting = useIsSubmitting()
+  const { state } = useNavigation()
+
   const fieldError: string | undefined = error || formError
   const styles = selectStyles<true>(!!fieldError)
 
@@ -104,7 +106,7 @@ export const SelectMultipleCreatableInput = ({
           isMulti
           styles={styles}
           menuIsOpen={false}
-          isDisabled={disabled || isSubmitting || !isHydrated}
+          isDisabled={disabled || state !== 'idle' || !isHydrated}
           getOptionValue={(option: TReactSelectOption) =>
             `${getSelectValue(option)}`
           }

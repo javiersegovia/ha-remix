@@ -2,8 +2,9 @@ import type { InputHTMLAttributes, TextareaHTMLAttributes } from 'react'
 import clsx from 'clsx'
 import { ErrorMessage } from './ErrorMessage'
 import { Label } from './Label'
-import { useField, useIsSubmitting } from 'remix-validated-form'
+import { useField } from 'remix-validated-form'
 import { twMerge } from 'tailwind-merge'
+import { useNavigation } from '@remix-run/react'
 
 export const inputBaseStyles =
   'placeholder:text-gray-400 block px-4 py-3 w-full text-sm leading-6 bg-white border shadow-sm rounded-[2rem] border-gray-300 focus:outline-none focus:ring-2 focus:border-blue-400 focus:ring-blue-400'
@@ -50,7 +51,7 @@ export const Input: React.FC<TInput> = ({
   const Tagname = isTextArea ? 'textarea' : 'input'
 
   const { error: formError, getInputProps } = useField(name)
-  const isSubmitting = useIsSubmitting()
+  const { state } = useNavigation()
   const fieldError: string | undefined = error || formError
 
   return (
@@ -68,13 +69,13 @@ export const Input: React.FC<TInput> = ({
           // We want do disable the ability to modify the form while we are submitting...
           // BUT if we use the "disabled" field, the data won't be submitted. That's why we use readonly.
           // See details: https://stackoverflow.com/a/7357314/10653675
-          readOnly: disabled || isSubmitting,
+          readOnly: disabled || state !== 'idle',
           rows: 3,
           className: twMerge(
             clsx(
               inputBaseStyles,
               !!fieldError && inputErrorStyles,
-              (disabled || isSubmitting) && inputDisabledStyles,
+              (disabled || state !== 'idle') && inputDisabledStyles,
               isTextArea && 'rounded-xl'
             )
           ),

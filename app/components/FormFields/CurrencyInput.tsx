@@ -1,16 +1,13 @@
 import type { InputHTMLAttributes } from 'react'
 import { useState } from 'react'
 import clsx from 'clsx'
-import {
-  useControlField,
-  useField,
-  useIsSubmitting,
-} from 'remix-validated-form'
+import { useControlField, useField } from 'remix-validated-form'
 import ReactCurrencyInput from 'react-currency-input-field'
 
 import { inputBaseStyles, inputErrorStyles } from './Input'
 import { Label } from './Label'
 import { ErrorMessage } from './ErrorMessage'
+import { useNavigation } from '@remix-run/react'
 
 export enum CurrencySymbol {
   COP = 'COP',
@@ -37,7 +34,7 @@ export const CurrencyInput = ({
 }: CurrencyInputProps) => {
   const { error: formError, defaultValue, validate } = useField(name)
   const [value, setValue] = useControlField<number | undefined>(name)
-  const isSubmitting = useIsSubmitting()
+  const { state } = useNavigation()
 
   const fieldError: string | undefined = error || formError
   const [maskedValue, setMaskedValue] = useState(defaultValue)
@@ -49,7 +46,7 @@ export const CurrencyInput = ({
           name={`${name}-mask`}
           value={maskedValue}
           defaultValue={defaultValue}
-          disabled={disabled || isSubmitting}
+          disabled={disabled || state !== 'idle'}
           placeholder={placeholder}
           prefix={symbol && `${symbol} `}
           onValueChange={(value, __, values) => {

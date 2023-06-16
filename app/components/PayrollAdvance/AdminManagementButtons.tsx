@@ -2,7 +2,7 @@ import type { PayrollAdvance, PayrollAdvanceWallet } from '@prisma/client'
 
 import { PayrollAdvancePaymentMethod } from '@prisma/client'
 import { PayrollAdvanceStatus } from '@prisma/client'
-import { Form, useTransition } from '@remix-run/react'
+import { Form, useNavigation } from '@remix-run/react'
 import { Button, ButtonColorVariants } from '../Button'
 
 interface ManagementButtonsProps {
@@ -22,8 +22,8 @@ export const AdminManagementButtons = ({
 }: ManagementButtonsProps) => {
   // todo Javier: add toast notification for success
 
-  const transition = useTransition()
-  const isSubmitting = transition.state !== 'idle'
+  const { state } = useNavigation()
+  const isSubmitting = state !== 'idle'
 
   return (
     <div className="flex w-full flex-col justify-end gap-4 sm:flex-row">

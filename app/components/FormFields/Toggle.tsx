@@ -1,9 +1,6 @@
+import { useNavigation } from '@remix-run/react'
 import clsx from 'clsx'
-import {
-  useControlField,
-  useField,
-  useIsSubmitting,
-} from 'remix-validated-form'
+import { useControlField, useField } from 'remix-validated-form'
 
 interface ToggleProps {
   name: string
@@ -13,7 +10,7 @@ interface ToggleProps {
 export const Toggle = ({ name, label }: ToggleProps) => {
   const { validate, defaultValue } = useField(name)
   const [value, setValue] = useControlField<boolean>(name)
-  const isSubmitting = useIsSubmitting()
+  const { state } = useNavigation()
 
   return (
     <div className="flex h-full w-full items-center">
@@ -27,7 +24,7 @@ export const Toggle = ({ name, label }: ToggleProps) => {
           type="checkbox"
           className={clsx(
             'peer sr-only',
-            isSubmitting &&
+            state !== 'idle' &&
               'cursor-not-allowed focus:border-transparent focus:ring-0'
           )}
           onChange={(e) => {

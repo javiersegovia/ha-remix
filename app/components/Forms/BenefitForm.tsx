@@ -200,13 +200,16 @@ export const BenefitForm = ({
             />
           </FormGridItem>
 
-          <FormGridItem
-            className={clsx(
-              process.env.NODE_ENV !== 'development' && 'invisible h-0 w-0'
-            )}
-          >
-            <Input name="slug" label="Slug (identificador)" type="text" />
-          </FormGridItem>
+          {process.env.NODE_ENV === 'development' && (
+            <FormGridItem
+              className={clsx(
+                process.env.NODE_ENV !== 'development' && 'invisible h-0 w-0'
+              )}
+            >
+              <Input name="slug" label="Slug (identificador)" type="text" />
+            </FormGridItem>
+          )}
+
           <FormGridItem>
             <CurrencyInput
               name="cost"

@@ -1,6 +1,6 @@
 import type { MetaFunction } from '@remix-run/server-runtime'
 
-import { Form, useTransition } from '@remix-run/react'
+import { Form, useNavigation } from '@remix-run/react'
 import { Button, ButtonColorVariants } from '~/components/Button'
 import { Modal } from '~/components/Dialog/Modal'
 import { Box } from '~/components/Layout/Box'
@@ -13,7 +13,7 @@ export const meta: MetaFunction = () => {
 }
 
 export default function RequestPremiumAdvanceModalRoute() {
-  const transition = useTransition()
+  const { state } = useNavigation()
 
   return (
     <Modal onCloseRedirectTo="/dashboard/overview">
@@ -34,7 +34,7 @@ export default function RequestPremiumAdvanceModalRoute() {
               <Button
                 variant={ButtonColorVariants.SECONDARY}
                 href="/dashboard/overview"
-                disabled={transition.state !== 'idle'}
+                disabled={state !== 'idle'}
               >
                 Cancelar
               </Button>

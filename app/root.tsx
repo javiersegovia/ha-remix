@@ -16,7 +16,7 @@ import {
   ScrollRestoration,
   useCatch,
   useLocation,
-  useTransition,
+  useNavigation,
   useRevalidator,
   useNavigate,
 } from '@remix-run/react'
@@ -77,7 +77,7 @@ export async function loader({ request }: LoaderArgs) {
 
 export default function App() {
   const location = useLocation()
-  const transition = useTransition()
+  const { state } = useNavigation()
   const revalidator = useRevalidator()
   const isProd = process.env.NODE_ENV === 'production'
 
@@ -104,7 +104,7 @@ export default function App() {
     nProgressTimeoutRef.current && clearTimeout(nProgressTimeoutRef.current)
 
     // when the state is idle then we can to complete the progress bar
-    if (transition.state !== 'idle') {
+    if (state !== 'idle') {
       nProgressTimeoutRef.current = setTimeout(() => NProgress.start(), 700)
     } else {
       clearTimeout(nProgressTimeoutRef.current)
@@ -114,7 +114,7 @@ export default function App() {
     return () => {
       clearTimeout(nProgressTimeoutRef.current)
     }
-  }, [transition.state])
+  }, [state])
 
   return (
     <html lang="es" className="h-full">

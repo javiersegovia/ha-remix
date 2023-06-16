@@ -4,17 +4,14 @@ import type { getSalaryRanges } from '~/services/salary-range/salary-range.serve
 import type { getAgeRanges } from '~/services/age-range/age-range.server'
 
 import { ValidatedForm } from 'remix-validated-form'
-import {
-  Button,
-  ButtonColorVariants,
-  ButtonIconVariants,
-} from '~/components/Button'
+import { ButtonColorVariants, ButtonIconVariants } from '~/components/Button'
 import { Input } from '~/components/FormFields/Input'
 import { Select } from '~/components/FormFields/Select'
 import { formatAgeRange } from '~/utils/formatAgeRange'
 import { formatSalaryRange } from '~/utils/formatSalaryRange'
 import { employeeSearchValidator } from '~/services/employee/employee-search.schema'
 import { Title } from '~/components/Typography/Title'
+import { SubmitButton } from '~/components/SubmitButton'
 
 interface TableActionsProps<TData extends unknown> {
   table: Table<TData>
@@ -71,7 +68,7 @@ export const TableActions = <TData extends unknown>({
             }))}
           />
 
-          <Button
+          <SubmitButton
             type="submit"
             formMethod="GET"
             variant={ButtonColorVariants.PRIMARY}
@@ -80,7 +77,7 @@ export const TableActions = <TData extends unknown>({
             className="mb-5 w-full lg:mb-0 lg:w-auto"
           >
             Filtrar
-          </Button>
+          </SubmitButton>
         </div>
       </ValidatedForm>
     </>

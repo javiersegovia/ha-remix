@@ -2,14 +2,11 @@ import clsx from 'clsx'
 import React from 'react'
 import ReactSelect from 'react-select'
 import { ClientOnly } from 'remix-utils'
-import {
-  useControlField,
-  useField,
-  useIsSubmitting,
-} from 'remix-validated-form'
+import { useControlField, useField } from 'remix-validated-form'
 import { ErrorMessage } from './ErrorMessage'
 import { Label } from './Label'
 import { selectStyles } from './Select.styles'
+import { useNavigation } from '@remix-run/react'
 
 export type TOptionValue = string | number
 
@@ -86,7 +83,7 @@ export const Select = ({
 }: SelectProps) => {
   const { error: formError, defaultValue, validate } = useField(name)
   const [value, setValue] = useControlField<TOptionValue | undefined>(name)
-  const isSubmitting = useIsSubmitting()
+  const { state } = useNavigation()
 
   const fieldError: string | undefined = error || formError
   const styles = selectStyles<false>(!!fieldError)
@@ -112,7 +109,7 @@ export const Select = ({
                 'flex min-h-[50px] w-full items-center rounded-[15px] border border-gray-300 bg-white p-3 text-sm leading-6 shadow-sm focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-400',
                 fieldError &&
                   'border-red-500 text-red-600 hover:border-red-500 focus:ring-red-500',
-                (disabled || isSubmitting) &&
+                (disabled || state !== 'idle') &&
                   'pointer-events-auto cursor-not-allowed bg-gray-200'
               )}
             >
@@ -143,7 +140,7 @@ export const Select = ({
                 options={formattedOptions}
                 placeholder={placeholder}
                 isClearable={isClearable}
-                isDisabled={disabled || isSubmitting}
+                isDisabled={disabled || state !== 'idle'}
                 getOptionValue={(option: TReactSelectOption) =>
                   `${getSelectValue(option)}`
                 }

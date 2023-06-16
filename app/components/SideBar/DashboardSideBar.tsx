@@ -3,7 +3,7 @@ import type { IconType } from 'react-icons'
 
 import clsx from 'clsx'
 import { useEffect, useRef, useState } from 'react'
-import { Form as RemixForm, Link, useTransition } from '@remix-run/react'
+import { Form as RemixForm, Link, useNavigation } from '@remix-run/react'
 import { Transition } from '@headlessui/react'
 import { HiLogout, HiMenu } from 'react-icons/hi'
 import { RiCloseFill } from 'react-icons/ri'
@@ -72,7 +72,7 @@ export const DashboardSideBar = ({
   logoHref,
   paths,
 }: PropsWithChildren<DashboardSideBarProps>) => {
-  const transition = useTransition()
+  const { state } = useNavigation()
   const [showMobileMenu, setShowMobileMenu] = useState(false)
 
   const navRef = useRef(null)
@@ -80,10 +80,10 @@ export const DashboardSideBar = ({
 
   // Close mobile menu if open on client navigation
   useEffect(() => {
-    if (showMobileMenu && transition.state !== 'idle') {
+    if (showMobileMenu && state !== 'idle') {
       setShowMobileMenu(false)
     }
-  }, [transition.state, showMobileMenu, setShowMobileMenu])
+  }, [state, showMobileMenu, setShowMobileMenu])
 
   return (
     <>

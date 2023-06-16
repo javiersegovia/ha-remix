@@ -1,6 +1,6 @@
 import type { PremiumAdvance } from '@prisma/client'
 import { PremiumAdvanceStatus } from '@prisma/client'
-import { Form, useTransition } from '@remix-run/react'
+import { Form, useNavigation } from '@remix-run/react'
 import { Button, ButtonColorVariants } from '~/components/Button'
 
 interface ManagementButtonsProps {
@@ -13,8 +13,8 @@ export const EmployeeManagementButtons = ({
 }: ManagementButtonsProps) => {
   // todo Javier: add toast notification for success
 
-  const transition = useTransition()
-  const isSubmitting = transition.state !== 'idle'
+  const { state } = useNavigation()
+  const isSubmitting = state !== 'idle'
 
   return status === REQUESTED ? (
     <div className="inline-flex w-full gap-4 md:ml-auto md:w-auto">

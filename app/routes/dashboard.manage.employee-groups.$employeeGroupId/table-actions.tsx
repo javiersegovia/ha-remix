@@ -5,17 +5,14 @@ import type { getAgeRanges } from '~/services/age-range/age-range.server'
 
 import { ValidatedForm } from 'remix-validated-form'
 import { FormSubactions } from './route'
-import {
-  Button,
-  ButtonColorVariants,
-  ButtonIconVariants,
-} from '~/components/Button'
+import { ButtonColorVariants, ButtonIconVariants } from '~/components/Button'
 import { Input } from '~/components/FormFields/Input'
 import { Select } from '~/components/FormFields/Select'
 import { formatAgeRange } from '~/utils/formatAgeRange'
 import { formatSalaryRange } from '~/utils/formatSalaryRange'
 import { employeeSearchValidator } from '~/services/employee/employee-search.schema'
 import { Title } from '~/components/Typography/Title'
+import { SubmitButton } from '~/components/SubmitButton'
 
 interface TableActionsProps<TData extends unknown> {
   table: Table<TData>
@@ -75,8 +72,7 @@ export const TableActions = <TData extends unknown>({
             }))}
           />
 
-          <Button
-            type="submit"
+          <SubmitButton
             formMethod="GET"
             variant={ButtonColorVariants.PRIMARY}
             icon={ButtonIconVariants.SEARCH}
@@ -84,11 +80,10 @@ export const TableActions = <TData extends unknown>({
             className="mb-5 w-full lg:mb-0 lg:w-auto"
           >
             Filtrar
-          </Button>
+          </SubmitButton>
 
           {(table.getIsSomeRowsSelected() || table.getIsAllRowsSelected()) && (
-            <Button
-              type="submit"
+            <SubmitButton
               name="subaction"
               formMethod="DELETE"
               form={deleteFormId}
@@ -99,7 +94,7 @@ export const TableActions = <TData extends unknown>({
               className="mb-5 w-full lg:mb-0 lg:w-auto"
             >
               Remover
-            </Button>
+            </SubmitButton>
           )}
         </div>
       </ValidatedForm>

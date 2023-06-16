@@ -1,10 +1,11 @@
 import { ErrorMessage } from './ErrorMessage'
 import { Label } from './Label'
 import { inputBaseStyles, inputDisabledStyles, inputErrorStyles } from './Input'
-import { useField, useIsSubmitting } from 'remix-validated-form'
+import { useField } from 'remix-validated-form'
 import clsx from 'clsx'
 import { format } from 'date-fns'
 import { es } from 'date-fns/locale'
+import { useNavigation } from '@remix-run/react'
 
 type d = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 0
 type oneToNine = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
@@ -34,7 +35,7 @@ export const DatePicker = ({
   disabled,
 }: DatePickerProps) => {
   const { error: formError, defaultValue, getInputProps } = useField(name)
-  const isSubmitting = useIsSubmitting()
+  const { state } = useNavigation()
   const fieldError: string | undefined = error || formError
 
   const fieldDefault = defaultValue
@@ -54,14 +55,14 @@ export const DatePicker = ({
           // We want do disable the ability to modify the form while we are submitting...
           // BUT if we use the "disabled" field, the data won't be submitted. That's why we use readonly.
           // See details: https://stackoverflow.com/a/7357314/10653675
-          readOnly: disabled || isSubmitting,
+          readOnly: disabled || state !== 'idle',
           min: minDate,
           max: maxDate,
           placeholder,
           className: clsx(
             inputBaseStyles,
             !!fieldError && inputErrorStyles,
-            (disabled || isSubmitting) && inputDisabledStyles
+            (disabled || state !== 'idle') && inputDisabledStyles
           ),
         })}
         defaultValue={fieldDefault}

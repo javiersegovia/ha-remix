@@ -1,6 +1,6 @@
 import type { LoaderArgs } from '@remix-run/server-runtime'
 
-import { useLoaderData, useTransition } from '@remix-run/react'
+import { useLoaderData, useNavigation } from '@remix-run/react'
 import { json } from '@remix-run/node'
 import { badRequest } from '~/utils/responses'
 
@@ -31,8 +31,8 @@ export const loader = async ({ request, params }: LoaderArgs) => {
 export default function BenefitConsumptionCreateRoute() {
   const { benefitId } = useLoaderData<typeof loader>()
   const onCloseRedirectTo = `/admin/dashboard/benefits/${benefitId}/consumptions`
-  const transition = useTransition()
-  const isLoading = transition.state !== 'idle'
+  const { state } = useNavigation()
+  const isLoading = state !== 'idle'
 
   return (
     <>

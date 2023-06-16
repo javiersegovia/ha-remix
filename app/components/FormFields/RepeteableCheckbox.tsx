@@ -1,7 +1,8 @@
 import type { ReactNode } from 'react'
 
 import clsx from 'clsx'
-import { useField, useIsSubmitting } from 'remix-validated-form'
+import { useField } from 'remix-validated-form'
+import { useNavigation } from '@remix-run/react'
 
 interface CheckboxProps {
   name: string
@@ -16,7 +17,7 @@ const checkboxInputStyle = clsx(
 
 export const RepeteableCheckbox = ({ name, label, value }: CheckboxProps) => {
   const { validate, getInputProps } = useField(name)
-  const isSubmitting = useIsSubmitting()
+  const { state } = useNavigation()
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     validate()
@@ -30,7 +31,7 @@ export const RepeteableCheckbox = ({ name, label, value }: CheckboxProps) => {
           name={name}
           {...getInputProps({ type: 'checkbox', value })}
           onChange={handleChange}
-          readOnly={isSubmitting}
+          readOnly={state !== 'idle'}
           className={checkboxInputStyle}
         />
       </div>

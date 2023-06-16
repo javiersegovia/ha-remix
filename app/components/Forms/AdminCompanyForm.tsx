@@ -90,10 +90,6 @@ export const AdminCompanyForm = ({
     logoImage,
   } = defaultValues || {}
 
-  // todo Javier: block buttons onSubmit transition
-  // const transition = useTransition()
-  // const isLoading = transition.state !== 'idle'
-
   return (
     <>
       <ValidatedForm

@@ -1,10 +1,7 @@
+import { useNavigation } from '@remix-run/react'
 import clsx from 'clsx'
 import type { ReactNode } from 'react'
-import {
-  useControlField,
-  useField,
-  useIsSubmitting,
-} from 'remix-validated-form'
+import { useControlField, useField } from 'remix-validated-form'
 
 interface CheckboxProps {
   name: string
@@ -19,7 +16,7 @@ export const checkboxInputStyle = clsx(
 export const Checkbox = ({ name, label }: CheckboxProps) => {
   const { validate } = useField(name)
   const [value, setValue] = useControlField<boolean | undefined>(name)
-  const isSubmitting = useIsSubmitting()
+  const { state } = useNavigation()
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setValue(event.target.checked)
@@ -35,7 +32,7 @@ export const Checkbox = ({ name, label }: CheckboxProps) => {
           type="checkbox"
           checked={value || false}
           onChange={handleChange}
-          readOnly={isSubmitting}
+          readOnly={state !== 'idle'}
           className={checkboxInputStyle}
         />
       </div>
