@@ -8,7 +8,7 @@ import { Title } from '../Typography/Title'
 export interface BenefitCardProps
   extends Pick<Benefit, 'id' | 'name' | 'buttonText' | 'buttonHref'> {
   mainImage?: Pick<Image, 'url'> | null
-  benefitCategory?: Pick<BenefitCategory, 'hexColor' | 'opacity'> | null
+  benefitCategory?: Pick<BenefitCategory, 'hexColor'> | null
 }
 
 export const BenefitCard = ({
@@ -17,7 +17,7 @@ export const BenefitCard = ({
   mainImage,
   benefitCategory,
 }: BenefitCardProps) => {
-  const { hexColor, opacity } = benefitCategory || {}
+  const { hexColor } = benefitCategory || {}
   const biggestWordInTheName = name
     .split(' ')
     .sort((a, b) => b.length - a.length)?.[0]
@@ -35,12 +35,11 @@ export const BenefitCard = ({
         <div
           className={clsx(
             'absolute bottom-0 left-0 right-0 top-0',
-            !hexColor && 'bg-gray-900',
-            !opacity && 'opacity-50'
+            !hexColor && 'bg-gray-900'
           )}
           style={{
             backgroundColor: hexColor || undefined,
-            opacity: opacity || undefined,
+            opacity: 0.5,
           }}
         />
 

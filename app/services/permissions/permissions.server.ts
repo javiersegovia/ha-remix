@@ -126,7 +126,6 @@ export const getEmployeeEnabledBenefits = async (userId: User['id']) => {
           id: true,
           name: true,
           hexColor: true,
-          opacity: true,
         },
       },
     },
