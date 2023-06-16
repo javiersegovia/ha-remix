@@ -384,10 +384,6 @@ export const updateBenefitById = async (
         set: notificationEmails?.split(';').map((item) => item.trim()) || [],
       },
 
-      /** Here we map over the dataItems that we receive.
-       *  If the DataItem.id is a string, it is a new item.
-       *  If the DataItem.id is a number, it already exists.
-       */
       dataItems: {
         /** Here we will delete all the DataItems that belong to this Benefit
          *  and whose ids are not present in the DataItems we received.
@@ -425,6 +421,11 @@ export const updateBenefitById = async (
   })
 
   if (dataItems) {
+    /** Here we map over the dataItems that we receive.
+     *  If the DataItem.id is a string, it is a new item.
+     *  If the DataItem.id is a number, it already exists.
+     */
+
     await prisma.$transaction(
       dataItems.map(({ id, label, type }) =>
         prisma.dataItem.upsert({
