@@ -1,6 +1,6 @@
 import type { ColorResult } from 'react-color'
 
-import { CirclePicker } from 'react-color'
+import { SketchPicker } from 'react-color'
 import { Label } from './Label'
 import { useControlField } from 'remix-validated-form'
 
@@ -18,17 +18,13 @@ export const ColorPicker = ({ name, label }: ColorPickerProps) => {
   return (
     <>
       <Label htmlFor={name} description={label}>
-        <div className="mt-4 flex">
-          <div
-            className="mr-5 inline-flex w-2/5 items-stretch gap-4 rounded-3xl border border-gray-200"
-            style={{ backgroundColor: currentColor }}
-          />
-          <input type="hidden" name={name} id={name} value={currentColor} />
-
-          <CirclePicker
+        <div className="ml-3 mt-4">
+          <SketchPicker
             color={currentColor}
             onChangeComplete={handleOnChange}
           />
+
+          <input type="hidden" name={name} id={name} value={currentColor} />
         </div>
       </Label>
     </>
