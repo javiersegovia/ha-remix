@@ -1,4 +1,4 @@
-import type { UploadEmployeeSchemaInput } from '~/schemas/upload-employees.schema'
+import type { ClientUploadEmployeeSchemaInput } from '~/schemas/upload-employees.schema'
 
 import { faker } from '@faker-js/faker'
 import { prisma } from '~/db.server'
@@ -6,12 +6,13 @@ import { prisma } from '~/db.server'
 import { truncateDB } from 'test/helpers/truncateDB'
 import { CompanyFactory } from '../company/company.factory'
 import { CountryFactory } from '../country/country.factory'
-import { MembershipFactory } from '../membership/membership.factory'
 import { BankFactory } from '../bank/bank.factory'
 import { BankAccountTypeFactory } from '../bank-account-type/bank-account-type.factory'
 import { IdentityDocumentTypeFactory } from '../identity-document-type/identity-document-type.factory'
 import { uploadEmployees } from './upload-employees.server'
 import { EmployeeStatus } from '@prisma/client'
+import { JobPositionFactory } from '../job-position/job-position.factory'
+import { JobDepartmentFactory } from '../job-department/job-department.factory'
 
 beforeEach(async () => {
   await truncateDB()
@@ -23,31 +24,32 @@ describe('uploadEmployees', () => {
         Should create users and return createdUsersCount`, async () => {
     const [
       company,
-      membership,
       country,
       bank,
       bankAccountType,
       identityDocumentType,
+      jobPosition,
+      jobDepartment,
     ] = await Promise.all([
       CompanyFactory.create(),
-      MembershipFactory.create(),
       CountryFactory.create(),
       BankFactory.create(),
       BankAccountTypeFactory.create(),
       IdentityDocumentTypeFactory.create(),
+      JobPositionFactory.create(),
+      JobDepartmentFactory.create(),
     ])
 
-    const dummyCsvData: UploadEmployeeSchemaInput[] = []
+    const dummyCsvData: ClientUploadEmployeeSchemaInput[] = []
 
     for (let i = 0; i < 3; i++) {
       dummyCsvData.push({
         CORREO_ELECTRONICO: faker.internet.email(),
         NOMBRE: faker.name.firstName(),
         APELLIDO: faker.name.lastName(),
-        MEMBRESIA: membership.name,
         ESTADO: 'Activo',
-        CARGO: faker.name.jobTitle(),
-        DEPARTAMENTO: faker.name.jobArea(),
+        CARGO: jobPosition.name,
+        DEPARTAMENTO: jobDepartment.name,
         PAIS: country.name,
         BANCO: bank.name,
         TIPO_DE_CUENTA: bankAccountType.name,
@@ -55,8 +57,6 @@ describe('uploadEmployees', () => {
         TIPO_DE_DOCUMENTO: identityDocumentType.name,
         DOCUMENTO_DE_IDENTIDAD: faker.datatype.number().toString(),
         SALARIO: faker.datatype.number().toString(),
-        CUPO_APROBADO: faker.datatype.number().toString(),
-        CUPO_DISPONIBLE: faker.datatype.number().toString(),
         FECHA_DE_INGRESO: '2020-12-20',
         FECHA_DE_RETIRO: undefined,
         CELULAR: '+58 424 9999 999',
@@ -86,7 +86,6 @@ describe('uploadEmployees', () => {
             gender: true,
             jobDepartment: true,
             jobPosition: true,
-            membership: true,
             bankAccount: {
               include: {
                 bank: true,
@@ -108,7 +107,6 @@ describe('uploadEmployees', () => {
 
     expect(createdUser?.employee?.company.id).toEqual(company.id)
     expect(createdUser?.employee?.country?.id).toEqual(country.id)
-    expect(createdUser?.employee?.membership?.id).toEqual(membership.id)
     expect(createdUser?.employee?.status).toEqual(EmployeeStatus.ACTIVE)
     expect(createdUser?.employee?.phone).toEqual(expectedUser.CELULAR)
 
@@ -136,13 +134,6 @@ describe('uploadEmployees', () => {
     expect(createdUser?.employee?.salaryFiat).toEqual(
       parseFloat(expectedUser.SALARIO)
     )
-
-    expect(createdUser?.employee?.advanceAvailableAmount).toEqual(
-      parseFloat(expectedUser.CUPO_DISPONIBLE)
-    )
-    expect(createdUser?.employee?.advanceMaxAmount).toEqual(
-      parseFloat(expectedUser.CUPO_APROBADO)
-    )
   })
 
   test(`
@@ -150,18 +141,20 @@ describe('uploadEmployees', () => {
         Should update users and return the updatedUsersCount`, async () => {
     const [
       company,
-      membership,
       country,
       bank,
       bankAccountType,
       identityDocumentType,
+      jobPosition,
+      jobDepartment,
     ] = await Promise.all([
       CompanyFactory.create(),
-      MembershipFactory.create(),
       CountryFactory.create(),
       BankFactory.create(),
       BankAccountTypeFactory.create(),
       IdentityDocumentTypeFactory.create(),
+      JobPositionFactory.create(),
+      JobDepartmentFactory.create(),
     ])
 
     const testEmail = faker.internet.email()
@@ -170,10 +163,9 @@ describe('uploadEmployees', () => {
       CORREO_ELECTRONICO: testEmail,
       NOMBRE: faker.name.firstName(),
       APELLIDO: faker.name.lastName(),
-      MEMBRESIA: membership.name,
       ESTADO: 'Activo',
-      CARGO: faker.name.jobTitle(),
-      DEPARTAMENTO: faker.name.jobArea(),
+      CARGO: jobPosition.name,
+      DEPARTAMENTO: jobDepartment.name,
       PAIS: country.name,
       BANCO: bank.name,
       TIPO_DE_CUENTA: bankAccountType.name,
@@ -181,8 +173,6 @@ describe('uploadEmployees', () => {
       TIPO_DE_DOCUMENTO: identityDocumentType.name,
       DOCUMENTO_DE_IDENTIDAD: faker.datatype.number().toString(),
       SALARIO: faker.datatype.number().toString(),
-      CUPO_APROBADO: faker.datatype.number().toString(),
-      CUPO_DISPONIBLE: faker.datatype.number().toString(),
       CELULAR: faker.datatype.number().toString(),
     })
 
@@ -196,7 +186,13 @@ describe('uploadEmployees', () => {
     })
 
     const { createdUsersCount, updatedUsersCount, usersWithErrors } =
-      await uploadEmployees({ data: [newUserData], companyId: company.id })
+      await uploadEmployees({
+        data: [newUserData],
+        companyId: company.id,
+        canManageFinancialInformation: true,
+      })
+
+    console.log(usersWithErrors)
 
     expect(createdUsersCount).toEqual(0)
     expect(updatedUsersCount).toEqual(1)
@@ -221,9 +217,6 @@ describe('uploadEmployees', () => {
             address: true,
             status: true,
             salaryFiat: true,
-            advanceAvailableAmount: true,
-            advanceMaxAmount: true,
-            membershipId: true,
             phone: true,
             countryId: true,
             companyId: true,
@@ -268,12 +261,9 @@ describe('uploadEmployees', () => {
       address: null,
       companyId: company.id,
       countryId: country.id,
-      membershipId: membership.id,
       status: EmployeeStatus.ACTIVE,
       phone: newUserData.CELULAR,
       salaryFiat: parseFloat(newUserData.SALARIO),
-      advanceAvailableAmount: parseFloat(newUserData.CUPO_DISPONIBLE),
-      advanceMaxAmount: parseFloat(newUserData.CUPO_APROBADO),
       jobPosition: {
         name: newUserData.CARGO,
       },
