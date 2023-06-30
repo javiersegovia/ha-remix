@@ -1,12 +1,16 @@
-import type { LoaderArgs, MetaFunction } from '@remix-run/server-runtime'
+import type {
+  ActionArgs,
+  LoaderArgs,
+  MetaFunction,
+} from '@remix-run/server-runtime'
 import type { TabItem } from '~/components/Tabs/Tabs'
 
 import { json } from '@remix-run/server-runtime'
 import { getEmployeeEnabledBenefits } from '~/services/permissions/permissions.server'
 import { getBenefitById } from '~/services/benefit/benefit.server'
-import { requireUserId } from '~/session.server'
+import { requireEmployee, requireUserId } from '~/session.server'
 import { badRequest } from '~/utils/responses'
-import { Outlet, useLoaderData } from '@remix-run/react'
+import { Outlet, useFetcher, useLoaderData } from '@remix-run/react'
 import { Container } from '~/components/Layout/Container'
 import { GoBack } from '~/components/Button/GoBack'
 import { Title } from '~/components/Typography/Title'
@@ -17,6 +21,7 @@ import clsx from 'clsx'
 import { FaStar } from 'react-icons/fa'
 import { Tabs } from '~/components/Tabs/Tabs'
 import { $path } from 'remix-routes'
+import { sendBenefitResponseToNotificationEmails } from '~/services/email/email.server'
 
 export const meta: MetaFunction = () => {
   return {
@@ -65,6 +70,34 @@ export const loader = async ({ request, params }: LoaderArgs) => {
   })
 }
 
+export const action = async ({ request, params }: ActionArgs) => {
+  const employee = await requireEmployee(request)
+
+  const { benefitId } = params
+
+  if (!benefitId) {
+    throw badRequest({
+      message: 'No pudimos encontrar el ID del beneficio',
+      redirect: `/dashboard/benefits`,
+    })
+  }
+
+  const benefit = await getBenefitById(parseFloat(benefitId))
+  if (!benefit) {
+    throw badRequest({
+      message: 'No pudimos encontrar el beneficio',
+    })
+  }
+
+  sendBenefitResponseToNotificationEmails({
+    benefit,
+    employee,
+    notificationEmails: benefit.notificationEmails,
+  })
+
+  return null
+}
+
 export default function BenefitDetailsRoute() {
   const { benefit } = useLoaderData<typeof loader>()
   const {
@@ -79,6 +112,8 @@ export default function BenefitDetailsRoute() {
     dataItems,
   } = benefit
 
+  const fetcher = useFetcher<typeof action>()
+
   const tabItems: TabItem[] = []
 
   if (instructions?.length > 0) {
@@ -92,6 +127,17 @@ export default function BenefitDetailsRoute() {
         title: 'Instrucciones',
       }
     )
+  }
+
+  const handleNotification = () => {
+    if (fetcher.state === 'idle') {
+      fetcher.submit(null, {
+        method: 'post',
+        action: $path('/dashboard/benefits/:benefitId', {
+          benefitId: benefit.id,
+        }),
+      })
+    }
   }
 
   const urlTextContent = (buttonHref && buttonText) || 'Próximamente'
@@ -129,12 +175,13 @@ export default function BenefitDetailsRoute() {
 
         {/* If isValidURL returns true, then it means the URL must be an external route */}
         <div>
-          {!dataItems && buttonHref && isValidURL(buttonHref) ? (
+          {dataItems?.length === 0 && buttonHref && isValidURL(buttonHref) ? (
             <a
               className="mt-4 block w-full sm:mt-0 sm:w-auto"
               href={buttonHref}
               target="_blank"
               rel="noreferrer noopener"
+              onClick={handleNotification}
             >
               <Button type="button" size="MD">
                 {urlTextContent}
@@ -144,18 +191,22 @@ export default function BenefitDetailsRoute() {
             <Button
               type="button"
               href={
-                (!dataItems && buttonHref) ||
-                (dataItems &&
-                  $path('/dashboard/benefits/:benefitId/add-info', {
-                    benefitId: id,
-                  })) ||
-                undefined
+                dataItems?.length === 0
+                  ? buttonHref || undefined
+                  : $path('/dashboard/benefits/:benefitId/add-info', {
+                      benefitId: id,
+                    })
               }
-              disabled={!dataItems && !buttonHref}
+              disabled={dataItems?.length === 0 && !buttonHref}
               size="MD"
+              onClick={
+                dataItems?.length === 0 && buttonHref
+                  ? handleNotification
+                  : undefined
+              }
               className={clsx(
                 'w-full sm:w-auto',
-                !dataItems &&
+                dataItems?.length === 0 &&
                   !buttonHref &&
                   'bg-gray-300 text-gray-400 opacity-100'
               )}
