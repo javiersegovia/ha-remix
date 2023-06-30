@@ -93,12 +93,6 @@ export const action = async ({ request, params }: ActionArgs) => {
     })
   }
 
-  if (!employee) {
-    throw badRequest({
-      message: 'No pudimos encontrar información del colaborador',
-    })
-  }
-
   const { data, submittedData, error } =
     await benefitDataItemsValidator.validate(await request.formData())
 
@@ -112,7 +106,7 @@ export const action = async ({ request, params }: ActionArgs) => {
     'Solicitud de beneficio exitosa. Mantente atento al correo para el siguiente paso.'
   )
 
-  await sendBenefitResponseToNotificationEmails({
+  sendBenefitResponseToNotificationEmails({
     benefit,
     employee,
     notificationEmails: benefit.notificationEmails,

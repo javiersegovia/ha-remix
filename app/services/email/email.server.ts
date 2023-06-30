@@ -177,7 +177,7 @@ interface SendBenefitResponseToNotificationEmailsArgs {
     identityDocument?: Pick<IdentityDocument, 'value'> | null
     identityDocumentType?: Pick<IdentityDocumentType, 'name'> | null
   }
-  responses: {
+  responses?: {
     label: string
     value: string | Date | number
   }[]
@@ -187,7 +187,7 @@ export const sendBenefitResponseToNotificationEmails = async ({
   notificationEmails,
   benefit,
   employee,
-  responses,
+  responses = [],
 }: SendBenefitResponseToNotificationEmailsArgs) => {
   const employeeFullName = `${employee.user?.firstName} ${employee.user?.lastName}`
 
