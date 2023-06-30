@@ -89,11 +89,13 @@ export const action = async ({ request, params }: ActionArgs) => {
     })
   }
 
-  sendBenefitResponseToNotificationEmails({
-    benefit,
-    employee,
-    notificationEmails: benefit.notificationEmails,
-  })
+  if (benefit.notificationEmails?.length > 0) {
+    sendBenefitResponseToNotificationEmails({
+      benefit,
+      employee,
+      notificationEmails: benefit.notificationEmails,
+    })
+  }
 
   return null
 }

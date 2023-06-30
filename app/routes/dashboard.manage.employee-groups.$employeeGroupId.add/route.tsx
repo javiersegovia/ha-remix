@@ -204,11 +204,11 @@ export default function CreateEmployeeGroupRoute() {
   return (
     <>
       <Modal onCloseRedirectTo={onCloseRedirectTo}>
-        <Form method="PUT">
-          <RightPanel
-            onCloseRedirectTo={onCloseRedirectTo}
-            title="Colaboradores disponibles"
-          >
+        <RightPanel
+          onCloseRedirectTo={onCloseRedirectTo}
+          title="Colaboradores disponibles"
+        >
+          <Form method="PUT" className="max-h-screen">
             {hasFilters && (
               <FilterSummary
                 country={country}
@@ -260,8 +260,8 @@ export default function CreateEmployeeGroupRoute() {
                 </Button>
               )}
             </div>
-          </RightPanel>
-        </Form>
+          </Form>
+        </RightPanel>
       </Modal>
     </>
   )
