@@ -35,7 +35,7 @@ export enum ButtonDesignVariants {
 }
 
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  href?: string
+  href?: string | null
   external?: boolean
   targetBlank?: boolean
   isLoading?: boolean
