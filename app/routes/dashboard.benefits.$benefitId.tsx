@@ -16,6 +16,7 @@ import { isValidURL } from '~/utils/isValidURL'
 import clsx from 'clsx'
 import { FaStar } from 'react-icons/fa'
 import { Tabs } from '~/components/Tabs/Tabs'
+import { $path } from 'remix-routes'
 
 export const meta: MetaFunction = () => {
   return {
@@ -67,6 +68,7 @@ export const loader = async ({ request, params }: LoaderArgs) => {
 export default function BenefitDetailsRoute() {
   const { benefit } = useLoaderData<typeof loader>()
   const {
+    id,
     buttonHref,
     buttonText,
     mainImage,
@@ -74,6 +76,7 @@ export default function BenefitDetailsRoute() {
     isHighlighted,
     shortDescription,
     instructions,
+    dataItems,
   } = benefit
 
   const tabItems: TabItem[] = []
@@ -91,11 +94,14 @@ export default function BenefitDetailsRoute() {
     )
   }
 
+  const urlTextContent = (buttonHref && buttonText) || 'Próximamente'
+  const buttonTextContent = (dataItems && buttonText) || 'Solicitar'
+
   return (
     <Container className="mx-auto my-10 w-full">
       <GoBack redirectTo="/dashboard/overview" />
 
-      <section className="mb-16 flex w-full flex-col sm:flex-row sm:justify-between">
+      <section className="mb-16 flex w-full flex-col gap-6 sm:flex-row sm:justify-between">
         <div>
           <Title>{name}</Title>
           <div className="mt-10 flex gap-8">
@@ -121,33 +127,43 @@ export default function BenefitDetailsRoute() {
           </div>
         </div>
 
-        {/* If isValidURL returns true, then it means the URL must be an externa route */}
-        {buttonHref && isValidURL(buttonHref) ? (
-          <a
-            className="mt-4 block w-full sm:mt-0 sm:w-auto"
-            href={`/dashboard/benefits/${benefit.id}/addInfo`}
-            rel="noreferrer noopener"
-          >
-            <Button type="button" size="MD">
-              {buttonText || 'Próximamente'}
-            </Button>
-          </a>
-        ) : (
-          <div>
+        {/* If isValidURL returns true, then it means the URL must be an external route */}
+        <div>
+          {!dataItems && buttonHref && isValidURL(buttonHref) ? (
+            <a
+              className="mt-4 block w-full sm:mt-0 sm:w-auto"
+              href={buttonHref}
+              target="_blank"
+              rel="noreferrer noopener"
+            >
+              <Button type="button" size="MD">
+                {urlTextContent}
+              </Button>
+            </a>
+          ) : (
             <Button
-              href={buttonHref || undefined}
               type="button"
-              disabled={!buttonHref}
+              href={
+                (!dataItems && buttonHref) ||
+                (dataItems &&
+                  $path('/dashboard/benefits/:benefitId/add-info', {
+                    benefitId: id,
+                  })) ||
+                undefined
+              }
+              disabled={!dataItems && !buttonHref}
               size="MD"
               className={clsx(
                 'w-full sm:w-auto',
-                !buttonHref && 'bg-gray-300 text-gray-400 opacity-100'
+                !dataItems &&
+                  !buttonHref &&
+                  'bg-gray-300 text-gray-400 opacity-100'
               )}
             >
-              {(buttonHref && buttonText) || 'Próximamente'}
+              {buttonTextContent}
             </Button>
-          </div>
-        )}
+          )}
+        </div>
       </section>
 
       {tabItems.length > 0 && <Tabs items={tabItems} className="mb-12" />}

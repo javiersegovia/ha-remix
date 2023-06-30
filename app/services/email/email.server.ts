@@ -1,3 +1,12 @@
+import type {
+  Benefit,
+  IdentityDocument,
+  IdentityDocumentType,
+  JobDepartment,
+  User,
+} from '@prisma/client'
+import type Mail from 'nodemailer/lib/mailer'
+
 import Email from 'email-templates'
 import nodemailer from 'nodemailer'
 import { PayrollAdvanceStatus } from '@prisma/client'
@@ -5,11 +14,7 @@ import * as aws from '@aws-sdk/client-ses'
 import { defaultProvider } from '@aws-sdk/credential-provider-node'
 
 import type { TBasicTemplate } from './templates/basic/interface'
-
-type TEmailInfo = {
-  to: string
-  subject: string
-}
+import { formatDate } from '~/utils/formatDate'
 
 type TSendLoginArgs = {
   destination: string
@@ -68,7 +73,7 @@ export const sendEmail = async ({
   templateName,
   templateData,
 }: {
-  info: TEmailInfo
+  info: Mail.Options
   templateName: string
   templateData: Record<string, unknown>
 }) => {
@@ -161,6 +166,80 @@ type TSendAdminPayrollNotificationArgs = {
   payrollId: string | number
   status: Extract<PayrollAdvanceStatus, 'CANCELLED' | 'REQUESTED'>
   employeeFullName?: string
+}
+
+interface SendBenefitResponseToNotificationEmailsArgs {
+  notificationEmails: string[]
+  benefit: Pick<Benefit, 'name'>
+  employee: {
+    user?: Pick<User, 'firstName' | 'lastName' | 'email'>
+    jobDepartment?: Pick<JobDepartment, 'name'> | null
+    identityDocument?: Pick<IdentityDocument, 'value'> | null
+    identityDocumentType?: Pick<IdentityDocumentType, 'name'> | null
+  }
+  responses: {
+    label: string
+    value: string | Date | number
+  }[]
+}
+
+export const sendBenefitResponseToNotificationEmails = async ({
+  notificationEmails,
+  benefit,
+  employee,
+  responses,
+}: SendBenefitResponseToNotificationEmailsArgs) => {
+  const employeeFullName = `${employee.user?.firstName} ${employee.user?.lastName}`
+
+  const tableItems = [
+    {
+      label: 'Beneficio solicitado',
+      value: benefit.name,
+    },
+    {
+      label: 'Fecha de solicitud',
+      value: formatDate(new Date()),
+    },
+    {
+      label: 'Solicitante',
+      value: employeeFullName,
+    },
+    {
+      label: 'Correo electrónico',
+      value: employee.user?.email,
+    },
+  ]
+
+  if (employee.jobDepartment?.name) {
+    tableItems.push({
+      label: 'Área',
+      value: employee.jobDepartment.name,
+    })
+  }
+
+  if (employee.identityDocument) {
+    tableItems.push({
+      label: '# de documento',
+      value: employee.identityDocument.value,
+    })
+  }
+
+  const templateData = {
+    greetings: 'Buen día,',
+    description:
+      'Has recibido la siguiente solicitud de uso de un beneficio a través de Umany Benefits',
+    items: [...tableItems, ...responses],
+  }
+
+  return sendEmail({
+    templateName: 'benefit-response',
+    info: {
+      to: notificationEmails,
+      from: 'benefits.umany@hoytrabajas.com',
+      subject: `Nueva solicitud de ${benefit.name}, ${employeeFullName}`,
+    },
+    templateData,
+  })
 }
 
 /** Notify the admin about Payroll updates */

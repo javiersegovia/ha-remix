@@ -1,4 +1,5 @@
 import { type DataItem, DataItemType } from '@prisma/client'
+import type { LoaderArgs } from '@remix-run/server-runtime'
 
 import { Link, useLoaderData } from '@remix-run/react'
 import { ValidatedForm } from 'remix-validated-form'
@@ -7,14 +8,13 @@ import { json } from '@remix-run/node'
 import { FormGridWrapper } from '~/components/FormFields/FormGridWrapper'
 import { FormGridItem } from '~/components/FormFields/FormGridItem'
 
-import { Button, ButtonColorVariants, ButtonElement } from '~/components/Button'
+import { ButtonColorVariants, ButtonElement } from '~/components/Button'
 import { SubmitButton } from '../SubmitButton'
-import type { LoaderArgs } from '@remix-run/server-runtime'
 import { getBenefitById } from '~/services/benefit/benefit.server'
 import { badRequest } from 'remix-utils'
-import { benefitValidator } from '~/services/benefit/benefit.schema'
 import { DatePicker } from '../FormFields/DatePicker'
 import { Input } from '../FormFields/Input'
+import { benefitDataItemsValidator } from '~/services/benefit/benefit-data-items.schema'
 
 export type BenefitRouteData = {
   benefit: Awaited<ReturnType<typeof getBenefitById>>
@@ -34,6 +34,7 @@ export const loader = async ({ params }: LoaderArgs) => {
       redirect: `/dashboard/benefits`,
     })
   }
+
   const benefit = await getBenefitById(parseFloat(benefitId))
 
   if (!benefit) {
@@ -50,43 +51,60 @@ export const loader = async ({ params }: LoaderArgs) => {
 
 export const DataItemForm = ({ buttonText }: DataItemFormProps) => {
   const { benefit } = useLoaderData<typeof loader>()
-  const { dataItems } = benefit
+  const { dataItems, notificationEmails } = benefit
+
   return (
     <>
       <ValidatedForm
         id="DataItemForm"
-        validator={benefitValidator}
+        validator={benefitDataItemsValidator}
         method="post"
       >
-        <div>
-          {dataItems.map((dataItem, _index) => (
-            <>
-              {dataItem.type === DataItemType.DATE ? (
-                <FormGridItem isFullWidth>
-                  <DatePicker
-                    name={`response[${_index}]`}
-                    label={dataItem.label}
-                  />
-                </FormGridItem>
-              ) : (
-                <FormGridItem isFullWidth>
-                  <Input
-                    name={`response[${_index}]`}
-                    type={
-                      dataItem.type === DataItemType.TEXT
-                        ? DataItemType.TEXT
-                        : DataItemType.NUMBER
-                    }
-                    label={dataItem.label}
-                    placeholder="Ingrese una respuesta..."
-                  />
-                </FormGridItem>
-              )}
-            </>
-          ))}
+        <div className="max-h-80 overflow-y-auto">
+          <FormGridWrapper>
+            {dataItems.map((dataItem, _index) => (
+              <>
+                <input
+                  type="hidden"
+                  name={`responses[${_index}].label`}
+                  value={dataItem.label}
+                />
+
+                {dataItem.type === DataItemType.DATE ? (
+                  <FormGridItem isFullWidth={dataItems.length <= 3}>
+                    <DatePicker
+                      name={`responses[${_index}].value`}
+                      label={dataItem.label}
+                    />
+                  </FormGridItem>
+                ) : (
+                  <FormGridItem isFullWidth={dataItems.length <= 3}>
+                    <Input
+                      name={`responses[${_index}].value`}
+                      type={
+                        dataItem.type === DataItemType.TEXT
+                          ? DataItemType.TEXT
+                          : DataItemType.NUMBER
+                      }
+                      label={dataItem.label}
+                      placeholder="Ingrese una respuesta..."
+                    />
+                  </FormGridItem>
+                )}
+              </>
+            ))}
+          </FormGridWrapper>
         </div>
 
-        <FormGridWrapper className="mt-5">
+        <FormGridWrapper className="pt-6">
+          <FormGridItem isFullWidth className="text-center text-sm">
+            <p>
+              Esta información será enviada a los siguientes correos
+              electrónicos:
+            </p>
+            <p className="text-gray-500">{notificationEmails.join(', ')}</p>
+          </FormGridItem>
+
           <FormGridItem>
             <Link
               to={`/dashboard/benefits/${benefit.id}/details`}
@@ -100,16 +118,8 @@ export const DataItemForm = ({ buttonText }: DataItemFormProps) => {
               </ButtonElement>
             </Link>
           </FormGridItem>
+
           <FormGridItem>
-            <a
-              className="mt-4 block w-full sm:mt-0 sm:w-auto"
-              href={`/dashboard/benefits/${benefit.id}/addInfo/confirm`}
-              rel="noreferrer noopener"
-            >
-              <Button type="button" size="MD">
-                {buttonText || 'Próximamente'}
-              </Button>
-            </a>
             <SubmitButton>{buttonText}</SubmitButton>
           </FormGridItem>
         </FormGridWrapper>

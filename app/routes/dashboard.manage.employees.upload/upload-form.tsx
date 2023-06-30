@@ -21,8 +21,6 @@ export const UploadForm = ({ onCloseRedirectTo }: UploadFormProps) => {
   const handleCSVChange = (e: ChangeEvent<HTMLInputElement>) => {
     const fileName = e.target?.files?.[0].name
 
-    console.log(fileName)
-
     if (fileName) {
       setCsvFileName(fileName)
     }

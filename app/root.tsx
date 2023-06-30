@@ -76,8 +76,6 @@ export async function loader({ request }: LoaderArgs) {
   const success = (session.get(SUCCESS_FLASH_KEY) as string) || null
   const error = (session.get(ERROR_FLASH_KEY) as string) || null
 
-  console.log({ success })
-
   return json(
     {
       message: {
