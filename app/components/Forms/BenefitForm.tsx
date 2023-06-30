@@ -215,7 +215,7 @@ export const BenefitForm = ({
               name="cost"
               type="number"
               label="Costo"
-              placeholder="Ingrese el costo del beneficio"
+              placeholder="Ingrese el costo por cada uso del beneficio"
               symbol={CurrencySymbol.COP}
             />
           </FormGridItem>

@@ -49,7 +49,7 @@ export const BenefitCategoryForm = ({
             <ColorPicker name="hexColor" label="Color de categoría" />
           </FormGridItem>
 
-          <FormGridItem isFullWidth className="mt-10">
+          <FormGridItem isFullWidth className="mt-6">
             <SubmitButton>{buttonText}</SubmitButton>
           </FormGridItem>
         </FormGridWrapper>
