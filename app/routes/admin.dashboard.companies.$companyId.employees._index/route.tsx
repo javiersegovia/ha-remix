@@ -1,8 +1,7 @@
 import type { MetaFunction, LoaderArgs } from '@remix-run/server-runtime'
 
-import { Link } from '@remix-run/react'
+import { Link, useLoaderData } from '@remix-run/react'
 import { json } from '@remix-run/server-runtime'
-import { useLoaderData } from '@remix-run/react'
 import {
   Button,
   ButtonColorVariants,
@@ -229,7 +228,7 @@ export default function AdminDashboardCompanyEmployees() {
   )
 }
 
-export const CatchBoundary = () => {
+export const ErrorBoundary = () => {
   useToastError()
   return null
 }

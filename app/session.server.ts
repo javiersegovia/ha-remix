@@ -23,6 +23,9 @@ export const sessionStorage = createCookieSessionStorage({
 export const USER_SESSION_KEY = 'userId'
 export const ADMIN_SESSION_KEY = 'adminUserId'
 
+export const SUCCESS_FLASH_KEY = '__success'
+export const ERROR_FLASH_KEY = '__error'
+
 export async function getSession(request: Request) {
   const cookie = request.headers.get('Cookie')
   return sessionStorage.getSession(cookie)

@@ -3,11 +3,11 @@ import type { ActionArgs } from '@remix-run/server-runtime'
 
 import { redirect } from '@remix-run/server-runtime'
 import { badRequest } from '~/utils/responses'
-import { parse } from 'csv-parse/sync'
 import { stringify } from 'csv-stringify/sync'
 import { requireAdminUserId } from '~/session.server'
-import { uploadEmployees } from '~/services/employee/employee.server'
+import { uploadEmployeesByAdmin } from '~/services/employee/upload-employees-by-admin.server'
 import { useToastError } from '~/hooks/useToastError'
+import { parseCSV } from '~/utils/utils.server'
 
 export const action = async ({ request, params }: ActionArgs) => {
   await requireAdminUserId(request)
@@ -34,18 +34,17 @@ export const action = async ({ request, params }: ActionArgs) => {
   const csvString = await csvFile.text()
 
   try {
-    const result = parse(csvString, {
-      columns: true,
-      skipEmptyLines: true,
-      delimiter: [';', ','],
-    })
+    const csvData = parseCSV(csvString)
 
-    const { usersWithErrors } = await uploadEmployees(result, companyId)
+    const { usersWithErrors } = await uploadEmployeesByAdmin({
+      data: csvData,
+      companyId,
+    })
 
     let csv: string | null = null
 
     if (usersWithErrors?.length > 0) {
-      const columns: Array<keyof UploadEmployeeSchemaInput | 'ERRORES'> = [
+      const columns: Array<keyof UploadEmployeeSchemaInput> = [
         'CORREO_ELECTRONICO',
         'NOMBRE',
         'APELLIDO',
@@ -99,7 +98,7 @@ export default function CSVErrorPage() {
   return <p>Ha ocurrido un error inesperado</p>
 }
 
-export const CatchBoundary = () => {
+export const ErrorBoundary = () => {
   useToastError()
   return null
 }

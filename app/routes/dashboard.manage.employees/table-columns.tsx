@@ -26,7 +26,13 @@ export const columns: ColumnDef<EmployeeDataItem>[] = [
   {
     id: 'fullName',
     header: ({ column }) => {
-      return <TableSortableButton title="Nombre colaborador" column={column} />
+      return (
+        <TableSortableButton
+          title="Nombre colaborador"
+          column={column}
+          className="mx-0"
+        />
+      )
     },
     accessorKey: 'fullName',
     cell: (props) => {
@@ -66,11 +72,6 @@ export const columns: ColumnDef<EmployeeDataItem>[] = [
     sortingFn: 'alphanumeric',
     header: ({ column }) => {
       return <TableSortableButton title="Grupos asignados" column={column} />
-    },
-    cell: (props) => {
-      return (
-        <div className="w-full text-center">{props.renderValue<number>()}</div>
-      )
     },
   },
   {

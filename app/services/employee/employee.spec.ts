@@ -10,7 +10,7 @@ import { MembershipFactory } from '../membership/membership.factory'
 import { BankFactory } from '../bank/bank.factory'
 import { BankAccountTypeFactory } from '../bank-account-type/bank-account-type.factory'
 import { IdentityDocumentTypeFactory } from '../identity-document-type/identity-document-type.factory'
-import { uploadEmployees } from './employee.server'
+import { uploadEmployees } from './upload-employees.server'
 import { EmployeeStatus } from '@prisma/client'
 
 beforeEach(async () => {
@@ -63,7 +63,11 @@ describe('uploadEmployees', () => {
       })
     }
 
-    const response = await uploadEmployees(dummyCsvData, company.id)
+    const response = await uploadEmployees({
+      data: dummyCsvData,
+      companyId: company.id,
+      canManageFinancialInformation: true,
+    })
 
     expect(response.createdUsersCount).toEqual(3)
     expect(response.updatedUsersCount).toEqual(0)
@@ -185,10 +189,14 @@ describe('uploadEmployees', () => {
     const existingUser = createDummyData()
     const newUserData = createDummyData()
 
-    await uploadEmployees([existingUser], company.id)
+    await uploadEmployees({
+      data: [existingUser],
+      companyId: company.id,
+      canManageFinancialInformation: true,
+    })
 
     const { createdUsersCount, updatedUsersCount, usersWithErrors } =
-      await uploadEmployees([newUserData], company.id)
+      await uploadEmployees({ data: [newUserData], companyId: company.id })
 
     expect(createdUsersCount).toEqual(0)
     expect(updatedUsersCount).toEqual(1)

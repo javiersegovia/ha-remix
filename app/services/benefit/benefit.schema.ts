@@ -148,9 +148,17 @@ export const benefitSchema = z
   })
   .superRefine((data, ctx) => {
     if (data) {
-      const { sendEmailNotifications, notificationEmails } = data
+      const { requireDataItems, sendEmailNotifications, notificationEmails } =
+        data
 
-      if (sendEmailNotifications && !notificationEmails) {
+      if (requireDataItems && !notificationEmails) {
+        ctx.addIssue({
+          code: 'custom',
+          path: ['notificationEmails'],
+          message:
+            'Por favor, ingrese correos electrónicos separados por punto y coma (;). Este campo es obligatorio debido a que la opción de "Solicitar información extra al colaborador" está activada',
+        })
+      } else if (sendEmailNotifications && !notificationEmails) {
         ctx.addIssue({
           code: 'custom',
           path: ['notificationEmails'],

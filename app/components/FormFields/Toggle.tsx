@@ -5,9 +5,10 @@ import { useControlField, useField } from 'remix-validated-form'
 interface ToggleProps {
   name: string
   label: string
+  isReadOnly?: boolean
 }
 
-export const Toggle = ({ name, label }: ToggleProps) => {
+export const Toggle = ({ name, label, isReadOnly }: ToggleProps) => {
   const { validate, defaultValue } = useField(name)
   const [value, setValue] = useControlField<boolean>(name)
   const { state } = useNavigation()
@@ -28,6 +29,11 @@ export const Toggle = ({ name, label }: ToggleProps) => {
               'cursor-not-allowed focus:border-transparent focus:ring-0'
           )}
           onChange={(e) => {
+            if (isReadOnly) {
+              e.preventDefault()
+              return
+            }
+
             validate()
             setValue(e.target.checked)
           }}

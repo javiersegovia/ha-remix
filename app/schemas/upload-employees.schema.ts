@@ -90,9 +90,28 @@ export const uploadEmployeeSchema = z.object({
       .trim()
       .nullish()
   ),
+  ERRORES: zfd.text(
+    z
+      .string({
+        invalid_type_error: 'Ingrese un cupo disponible',
+        required_error: 'Ingrese un cupo disponible',
+      })
+      .trim()
+      .optional()
+  ),
   CELULAR: zfd.text(z.string().trim().nullish()),
   PUNTOS_DISPONIBLES: zfd.text(z.string().trim().nullish()),
 })
 
+export const clientUploadEmployeesSchema = uploadEmployeeSchema.omit({
+  MEMBRESIA: true,
+  CUPO_APROBADO: true,
+  CUPO_DISPONIBLE: true,
+})
+
 export const uploadEmployeeValidator = withZod(uploadEmployeeSchema)
 export type UploadEmployeeSchemaInput = z.infer<typeof uploadEmployeeSchema>
+
+export type ClientUploadEmployeeSchemaInput = z.infer<
+  typeof clientUploadEmployeesSchema
+>

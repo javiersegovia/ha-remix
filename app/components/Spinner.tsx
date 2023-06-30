@@ -1,4 +1,5 @@
 import clsx from 'clsx'
+import { twMerge } from 'tailwind-merge'
 
 type TSpinnerColor = 'black' | 'white' | 'teal'
 type TSpinnerSize = 6 | 7 | 8 | 9 | 10
@@ -6,26 +7,35 @@ type TSpinnerSize = 6 | 7 | 8 | 9 | 10
 interface SpinnerProps {
   size?: TSpinnerSize
   color?: TSpinnerColor
+  className?: string
 }
 
-export const Spinner = ({ size = 6, color = 'white' }: SpinnerProps) => {
+export const Spinner = ({
+  size = 6,
+  color = 'white',
+  className,
+}: SpinnerProps) => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
       fill="none"
       viewBox="0 0 24 24"
-      className={clsx(
-        'animate-spin text-white',
+      className={twMerge(
+        clsx(
+          'animate-spin text-white',
 
-        color === 'white' && `text-white`,
-        color === 'black' && `text-black`,
-        color === 'teal' && `text-teal-800`,
+          color === 'white' && `text-white`,
+          color === 'black' && `text-black`,
+          color === 'teal' && `text-teal-800`,
 
-        size === 6 && `h-6 w-6`,
-        size === 7 && `h-7 w-7`,
-        size === 8 && `h-8 w-8`,
-        size === 9 && `h-9 w-9`,
-        size === 10 && `h-10 w-10`
+          size === 6 && `h-6 w-6`,
+          size === 7 && `h-7 w-7`,
+          size === 8 && `h-8 w-8`,
+          size === 9 && `h-9 w-9`,
+          size === 10 && `h-10 w-10`,
+
+          className
+        )
       )}
     >
       <circle

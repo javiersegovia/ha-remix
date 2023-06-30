@@ -8,5 +8,6 @@ module.exports = {
   postcss: true,
   future: {
     v2_routeConvention: true,
+    v2_errorBoundary: true,
   },
 }

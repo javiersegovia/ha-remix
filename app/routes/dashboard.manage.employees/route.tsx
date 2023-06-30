@@ -4,11 +4,14 @@ import { PermissionCode } from '@prisma/client'
 import { json } from '@remix-run/node'
 import { Outlet, useLoaderData } from '@remix-run/react'
 
-import { Button } from '~/components/Button'
+import {
+  Button,
+  ButtonColorVariants,
+  ButtonIconVariants,
+} from '~/components/Button'
 import { Container } from '~/components/Layout/Container'
 import { requireEmployee } from '~/session.server'
 import { TitleWithActions } from '~/components/Layout/TitleWithActions'
-import { ButtonIconVariants } from '~/components/Button'
 import { Tabs } from '~/components/Tabs/Tabs'
 import {
   hasPermissionByUserId,
@@ -188,13 +191,26 @@ export default function DashboardEmployeesIndexRoute() {
               className="mb-10"
               title="Colaboradores"
               actions={
-                <Button
-                  href="/dashboard/manage/employees/create"
-                  size="SM"
-                  icon={ButtonIconVariants.CREATE}
-                >
-                  Crear colaborador
-                </Button>
+                <>
+                  <Button
+                    className="flex w-full items-center whitespace-nowrap sm:w-auto"
+                    size="SM"
+                    href="/dashboard/manage/employees/upload"
+                    variant={ButtonColorVariants.SECONDARY}
+                    icon={ButtonIconVariants.UPLOAD}
+                  >
+                    Cargar
+                  </Button>
+
+                  <Button
+                    className="flex w-full items-center whitespace-nowrap sm:w-auto"
+                    href="/dashboard/manage/employees/create"
+                    size="SM"
+                    icon={ButtonIconVariants.CREATE}
+                  >
+                    Crear colaborador
+                  </Button>
+                </>
               }
             />
             <DataTable
@@ -233,7 +249,7 @@ export default function DashboardEmployeesIndexRoute() {
   )
 }
 
-export const CatchBoundary = () => {
+export const ErrorBoundary = () => {
   useToastError()
   return null
 }

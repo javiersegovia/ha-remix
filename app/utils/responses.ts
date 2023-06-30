@@ -2,11 +2,11 @@ import { json } from '@remix-run/node'
 
 export type ResponseError = {
   message: string
-  redirect: string | null
+  redirect?: string | null
 }
 
-const baseError = (error: ResponseError, status: number) => {
-  return json(error, { status, statusText: error.message })
+const baseError = (errorData: ResponseError, status: number) => {
+  return json({ errorData }, { status, statusText: errorData.message })
 }
 
 export const badRequest = (error: ResponseError) => baseError(error, 400)

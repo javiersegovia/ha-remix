@@ -25,6 +25,7 @@ import { getAgeRanges } from '~/services/age-range/age-range.server'
 import { getSalaryRanges } from '~/services/salary-range/salary-range.server'
 import { getJobDepartments } from '~/services/job-department/job-department.server'
 import { Container } from '~/components/Layout/Container'
+import { $path } from 'remix-routes'
 
 export const meta: MetaFunction = () => {
   return {
@@ -84,12 +85,14 @@ export const action = async ({ request }: ActionArgs) => {
     return validationError(error, submittedData)
   }
 
-  await createEmployeeGroup(data, employee.companyId)
+  const employeeGroup = await createEmployeeGroup(data, employee.companyId)
 
-  return redirect(onCloseRedirectTo)
+  return redirect(
+    $path('/dashboard/manage/employee-groups/:employeeGroupId/add', {
+      employeeGroupId: employeeGroup.id,
+    })
+  )
 }
-
-const onCloseRedirectTo = '/dashboard/manage/employee-groups' as const
 
 export default function CreateEmployeeGroupRoute() {
   const {

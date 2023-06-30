@@ -99,8 +99,11 @@ export function DataTable<TData, TValue>({
                       'bg-steelBlue-300 hover:bg-steelBlue-300'
                   )}
                 >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
+                  {row.getVisibleCells().map((cell, index) => (
+                    <TableCell
+                      key={cell.id}
+                      className={clsx(index === 0 && 'text-left')}
+                    >
                       {flexRender(
                         cell.column.columnDef.cell,
                         cell.getContext()

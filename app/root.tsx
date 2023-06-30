@@ -1,9 +1,4 @@
-import type {
-  ErrorBoundaryComponent,
-  LinksFunction,
-  LoaderArgs,
-  MetaFunction,
-} from '@remix-run/node'
+import type { LinksFunction, LoaderArgs, MetaFunction } from '@remix-run/node'
 
 import React, { useEffect, useRef } from 'react'
 import { json } from '@remix-run/node'
@@ -14,11 +9,12 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
-  useCatch,
   useLocation,
   useNavigation,
   useRevalidator,
-  useNavigate,
+  useLoaderData,
+  useRouteError,
+  isRouteErrorResponse,
 } from '@remix-run/react'
 
 import { toast, ToastBar, Toaster } from 'react-hot-toast'
@@ -32,7 +28,13 @@ import nProgressStyles from 'nprogress/nprogress.css'
 import reactSlickStylesheetUrl from 'slick-carousel/slick/slick.css'
 import reactSlickThemeStylesheetUrl from 'slick-carousel/slick/slick-theme.css'
 
-import { getUser } from './session.server'
+import {
+  SUCCESS_FLASH_KEY,
+  ERROR_FLASH_KEY,
+  getSession,
+  getUser,
+  sessionStorage,
+} from './session.server'
 import baseStyles from './styles/base.css'
 import ErrorContainer from './containers/ErrorContainer'
 
@@ -70,16 +72,43 @@ export const meta: MetaFunction = () => ({
 })
 
 export async function loader({ request }: LoaderArgs) {
-  return json({
-    user: await getUser(request),
-  })
+  const session = await getSession(request)
+  const success = (session.get(SUCCESS_FLASH_KEY) as string) || null
+  const error = (session.get(ERROR_FLASH_KEY) as string) || null
+
+  console.log({ success })
+
+  return json(
+    {
+      message: {
+        success,
+        error,
+      },
+      user: await getUser(request),
+    },
+    {
+      headers: {
+        'Set-Cookie': await sessionStorage.commitSession(session),
+      },
+    }
+  )
 }
 
 export default function App() {
+  const { message } = useLoaderData<typeof loader>()
   const location = useLocation()
   const { state } = useNavigation()
   const revalidator = useRevalidator()
   const isProd = process.env.NODE_ENV === 'production'
+
+  useEffect(() => {
+    if (message.success) {
+      toast.success(message.success, { duration: 5000 })
+    }
+    if (message.error) {
+      toast.error(message.error, { duration: Infinity })
+    }
+  }, [message])
 
   useEffect(() => {
     if (
@@ -220,40 +249,14 @@ export default function App() {
   )
 }
 
-export const ErrorBoundary: ErrorBoundaryComponent = ({ error }) => {
-  console.error(error)
-  return (
-    <html lang="es" className="h-full">
-      <head>
-        <title>Error | HoyTrabajas Beneficios</title>
-        <Meta />
-        <Links />
-      </head>
-      <body>
-        <ErrorContainer
-          title="Bueno, esto es inesperado..."
-          errorString={error.message}
-          showSuggestions
-        />
-        <Scripts />
-        <LiveReload />
-      </body>
-    </html>
-  )
-}
+export const ErrorBoundary = () => {
+  const error = useRouteError()
 
-export const CatchBoundary = () => {
-  const caught = useCatch()
-  const navigate = useNavigate()
-
-  const message = caught?.data?.message || caught?.data || caught.statusText
-  const redirect = caught?.data?.redirect
-
-  useEffect(() => {
-    if (redirect) {
-      navigate(redirect)
-    }
-  }, [navigate, redirect])
+  const message = isRouteErrorResponse(error)
+    ? error.data?.message || error.statusText
+    : error instanceof Error
+    ? error.message
+    : 'Error desconocido'
 
   return (
     <html lang="es" className="h-full">
@@ -262,6 +265,7 @@ export const CatchBoundary = () => {
         <Meta />
         <Links />
       </head>
+
       <body>
         <ErrorContainer title="Oops. Error." message={message} />
         <Scripts />
