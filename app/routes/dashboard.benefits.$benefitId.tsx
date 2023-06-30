@@ -125,8 +125,7 @@ export default function BenefitDetailsRoute() {
         {buttonHref && isValidURL(buttonHref) ? (
           <a
             className="mt-4 block w-full sm:mt-0 sm:w-auto"
-            href={buttonHref}
-            target="_blank"
+            href={`/dashboard/benefits/${benefit.id}/addInfo`}
             rel="noreferrer noopener"
           >
             <Button type="button" size="MD">
