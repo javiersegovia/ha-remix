@@ -5,12 +5,11 @@ import { PermissionCode } from '@prisma/client'
 import { json } from '@remix-run/node'
 import { Outlet, useLoaderData } from '@remix-run/react'
 
-import { Button } from '~/components/Button'
+import { Button, ButtonIconVariants } from '~/components/Button'
 import { Container } from '~/components/Layout/Container'
 import { getCompanyBenefitsByCompanyId } from '~/services/benefit/benefit.server'
 import { requireEmployee } from '~/session.server'
 import { TitleWithActions } from '~/components/Layout/TitleWithActions'
-import { ButtonIconVariants } from '~/components/Button'
 import { Tabs } from '~/components/Tabs/Tabs'
 import { requirePermissionByUserId } from '~/services/permissions/permissions.server'
 import { useToastError } from '~/hooks/useToastError'
@@ -28,12 +27,12 @@ export const meta: MetaFunction = () => {
 
 export const manageBenefitPaths = [
   {
-    title: 'Beneficios',
-    path: '/dashboard/manage/benefits',
+    title: 'Categorías',
+    path: '/dashboard/manage/benefit-categories',
   },
   {
-    title: 'Categorías de beneficios',
-    path: '/dashboard/manage/benefit-categories',
+    title: 'Beneficios',
+    path: '/dashboard/manage/benefits',
   },
 ]
 
@@ -139,7 +138,7 @@ export default function BenefitIndexRoute() {
   )
 }
 
-export const CatchBoundary = () => {
+export const ErrorBoundary = () => {
   useToastError()
   return null
 }

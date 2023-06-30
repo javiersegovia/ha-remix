@@ -83,7 +83,7 @@ const TableHead = React.forwardRef<
     ref={ref}
     className={twMerge(
       clsx(
-        'text-muted-foreground h-12 px-4 text-left align-middle text-base font-medium [&:has([role=checkbox])]:pr-0',
+        'text-muted-foreground h-12 px-4 text-center align-middle text-base font-medium [&:has([role=checkbox])]:pr-0',
         className
       )
     )}
@@ -99,7 +99,10 @@ const TableCell = React.forwardRef<
   <td
     ref={ref}
     className={twMerge(
-      clsx('p-4 align-middle [&:has([role=checkbox])]:pr-0', className)
+      clsx(
+        'p-4 text-center align-middle [&:has([role=checkbox])]:pr-0',
+        className
+      )
     )}
     {...props}
   />
@@ -118,18 +121,26 @@ const TableCaption = React.forwardRef<
 ))
 TableCaption.displayName = 'TableCaption'
 
-export function TableSortableButton<TData extends unknown>({
+export function TableSortableButton<TData>({
   title,
   column,
+  className,
 }: {
   title: string
   column: Column<TData>
+  className?: string
 }) {
   return (
     <button
       type="button"
       onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-      className={clsx('flex', column.getIsSorted() && 'text-steelBlue-600')}
+      className={twMerge(
+        clsx(
+          'mx-auto flex',
+          column.getIsSorted() && 'text-steelBlue-600',
+          className
+        )
+      )}
     >
       {title}
       <span className="ml-2 mt-[5px] h-4 w-4 text-sm">

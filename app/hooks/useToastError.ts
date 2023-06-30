@@ -1,31 +1,47 @@
-import type { ResponseError } from '~/utils/responses'
-import type { ThrownResponse } from '@remix-run/react'
-
 import { useEffect } from 'react'
-import { useCatch, useNavigate } from '@remix-run/react'
+import {
+  isRouteErrorResponse,
+  useActionData,
+  useLoaderData,
+  useNavigate,
+  useRouteError,
+} from '@remix-run/react'
 import { toast } from 'react-hot-toast'
+import type { ResponseError } from '~/utils/responses'
 
 /**
- * This hook should be used inside an ErrorBoundary or CatchBoundary component,
+ * This hook should be used inside an ErrorBoundary component,
  * and will display a toast with the error message.
  */
 export const useToastError = () => {
-  const caught = useCatch<ThrownResponse<number, ResponseError>>()
+  const error = useRouteError()
+  const loaderData = useLoaderData()
+  const actionData = useActionData()
   const navigate = useNavigate()
-  const parsedData = caught?.data
-
-  const message = parsedData?.message || caught.statusText
-  const redirect = parsedData?.redirect
 
   useEffect(() => {
-    toast.error(message, { duration: Infinity })
-  }, [message])
+    let message: string | null | undefined = null
+    let redirect: string | null | undefined = null
 
-  useEffect(() => {
+    if (isRouteErrorResponse(error)) {
+      message = error?.data?.message || error.statusText
+      redirect = error?.data?.redirect
+    } else if (loaderData && 'errorData' in loaderData) {
+      message = (loaderData.errorData as ResponseError).message
+      redirect = (loaderData.errorData as ResponseError).redirect
+    } else if (actionData && 'errorData' in actionData) {
+      message = (actionData.errorData as ResponseError).message
+      redirect = (actionData.errorData as ResponseError).redirect
+    }
+
+    if (message) {
+      toast.error(message, { duration: Infinity })
+    }
+
     if (redirect) {
       navigate(redirect)
     }
-  }, [navigate, redirect])
+  }, [error, navigate, actionData, loaderData])
 
   return null
 }

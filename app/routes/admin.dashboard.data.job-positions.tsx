@@ -4,7 +4,7 @@ import type { TableRowProps } from '~/components/Lists/Table'
 import { Outlet, useLoaderData } from '@remix-run/react'
 import { json } from '@remix-run/node'
 
-import { Button } from '~/components/Button'
+import { Button, ButtonIconVariants } from '~/components/Button'
 import { Container } from '~/components/Layout/Container'
 import { TitleWithActions } from '~/components/Layout/TitleWithActions'
 import { Table } from '~/components/Lists/Table'
@@ -23,7 +23,7 @@ export const loader = async ({ request }: LoaderArgs) => {
 
 export const meta: MetaFunction = () => {
   return {
-    title: '[Admin] Cargos de Trabajo | HoyAdelantas',
+    title: '[Admin] Cargos de Trabajo | HoyTrabajas Beneficios',
   }
 }
 
@@ -45,7 +45,7 @@ export default function JobPositionsIndexRoute() {
           className="mb-10"
           title="Cargos de trabajo"
           actions={
-            <Button href="create" size="SM">
+            <Button href="create" size="SM" icon={ButtonIconVariants.CREATE}>
               Crear cargo de trabajo
             </Button>
           }

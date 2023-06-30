@@ -35,7 +35,9 @@ export const columns: ColumnDef<EmployeeDataItem>[] = [
   },
   {
     id: 'email',
-    header: 'Nombre colaborador',
+    header: ({ column }) => {
+      return <span className="block text-left">Nombre colaborador</span>
+    },
     accessorKey: 'user.email',
     cell: (props) => {
       const item = props.row.original
@@ -46,7 +48,7 @@ export const columns: ColumnDef<EmployeeDataItem>[] = [
             to={$path('/dashboard/manage/employees/:employeeId/account', {
               employeeId: item.id,
             })}
-            className="whitespace-pre-line hover:text-cyan-600"
+            className="whitespace-pre-line text-left hover:text-cyan-600"
           >
             <p>
               {item.user.firstName} {item.user.lastName}

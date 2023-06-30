@@ -110,7 +110,7 @@ export default function CreateBenefitRoute() {
   )
 }
 
-export const CatchBoundary = () => {
+export const ErrorBoundary = () => {
   useToastError()
   return null
 }

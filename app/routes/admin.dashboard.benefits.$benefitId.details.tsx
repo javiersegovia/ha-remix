@@ -134,6 +134,10 @@ const AdminDashboardBenefitDetailsIndexRoute = () => {
     description,
     shortDescription,
     instructions,
+    dataItems,
+    requireDataItems,
+    notificationEmails,
+    sendEmailNotifications,
     benefitHighlight,
     isHighlighted,
     mainImage,
@@ -160,6 +164,10 @@ const AdminDashboardBenefitDetailsIndexRoute = () => {
           instructions,
           mainImage,
           benefitHighlight,
+          dataItems,
+          notificationEmails: notificationEmails?.join('; '),
+          requireDataItems,
+          sendEmailNotifications,
         }}
       />
     </section>

@@ -109,10 +109,8 @@ export const BenefitForm = ({
     'requireDataItems',
     formId
   )
-  const [sendEmailNotifications] = useControlField<boolean>(
-    'sendEmailNotifications',
-    formId
-  )
+  const [sendEmailNotifications, setSendEmailNotifications] =
+    useControlField<boolean>('sendEmailNotifications', formId)
 
   const [dataItems, { push, remove }] = useFieldArray('dataItems', {
     formId,
@@ -122,7 +120,17 @@ export const BenefitForm = ({
     if (requireDataItems && dataItems.length === 0) {
       push({ id: faker.datatype.uuid() })
     }
-  }, [requireDataItems, push, dataItems.length])
+
+    if (requireDataItems && !sendEmailNotifications) {
+      setSendEmailNotifications(true)
+    }
+  }, [
+    requireDataItems,
+    push,
+    dataItems.length,
+    sendEmailNotifications,
+    setSendEmailNotifications,
+  ])
 
   return (
     <Box className="mt-auto flex w-full flex-col  space-y-5 rounded-xl p-5 md:w-auto">
@@ -252,6 +260,10 @@ export const BenefitForm = ({
               }}
             />
           </FormGridItem>
+
+          <FormGridItem isFullWidth>
+            <div className="my-10 h-[1px] w-full border-b border-dashed border-gray-300" />
+          </FormGridItem>
         </FormGridWrapper>
 
         <FormGridWrapper>
@@ -264,7 +276,7 @@ export const BenefitForm = ({
 
           {requireDataItems && (
             <>
-              {dataItems.map(({ defaultValue, key, ...rest }, index) => (
+              {dataItems.map(({ defaultValue, key }, index) => (
                 <Fragment key={key}>
                   <input
                     type="hidden"
@@ -280,7 +292,7 @@ export const BenefitForm = ({
                       name={`dataItems[${index}].label`}
                       type="text"
                       label="Nombre del campo"
-                      placeholder="Ej: ¿Por qué quieres el beneficio?"
+                      placeholder="Ej: Fecha en que vas a usar tu día libre"
                     />
                     <Select
                       name={`dataItems[${index}].type`}
@@ -329,6 +341,7 @@ export const BenefitForm = ({
             <Toggle
               name="sendEmailNotifications"
               label="Generar notificationes automáticas"
+              isReadOnly={requireDataItems}
             />
           </FormGridItem>
 

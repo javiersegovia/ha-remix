@@ -111,7 +111,7 @@ export default function CompanyBenefitCategoryUpdateRoute() {
   )
 }
 
-export const CatchBoundary = () => {
+export const ErrorBoundary = () => {
   useToastError()
   return null
 }

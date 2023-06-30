@@ -62,7 +62,7 @@ export default function UpdateBenefitRoute() {
   )
 }
 
-export const CatchBoundary = () => {
+export const ErrorBoundary = () => {
   useToastError()
   return null
 }

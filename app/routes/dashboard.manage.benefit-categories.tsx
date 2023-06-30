@@ -96,7 +96,7 @@ export default function BenefitCategoriesIndexRoute() {
   )
 }
 
-export const CatchBoundary = () => {
+export const ErrorBoundary = () => {
   useToastError()
   return null
 }

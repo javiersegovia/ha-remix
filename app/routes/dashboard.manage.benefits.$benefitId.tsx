@@ -204,7 +204,7 @@ const CompanyBenefitDetailsIndexRoute = () => {
 
 export default CompanyBenefitDetailsIndexRoute
 
-export const CatchBoundary = () => {
+export const ErrorBoundary = () => {
   useToastError()
   return null
 }
