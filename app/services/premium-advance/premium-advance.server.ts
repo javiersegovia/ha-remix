@@ -7,13 +7,16 @@ import type {
   Prisma,
   User,
 } from '@prisma/client'
-import { PayrollAdvanceStatus } from '@prisma/client'
-import { CompanyStatus, EmployeeStatus } from '@prisma/client'
+import {
+  PayrollAdvanceStatus,
+  CompanyStatus,
+  EmployeeStatus,
+  PremiumAdvanceHistoryActor,
+  PremiumAdvanceStatus,
+} from '@prisma/client'
 
-import { PremiumAdvanceHistoryActor } from '@prisma/client'
 import { prisma } from '~/db.server'
 import { CLIENT_URL, sendEmail } from '../email/email.server'
-import { PremiumAdvanceStatus } from '@prisma/client'
 import { badRequest, forbidden, notFound } from '~/utils/responses'
 import { connect } from '~/utils/relationships'
 import { sanitizeDate } from '~/utils/formatDate'

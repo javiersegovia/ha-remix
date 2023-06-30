@@ -3,14 +3,18 @@ import type {
   LoaderArgs,
   MetaFunction,
 } from '@remix-run/server-runtime'
-import { getGlobalSettings } from '~/services/global-settings/global-settings.server'
+import {
+  getGlobalSettings,
+  upsertGlobalSettings,
+} from '~/services/global-settings/global-settings.server'
 
-import { validationError } from 'remix-validated-form'
-import { redirect } from '@remix-run/server-runtime'
-import { upsertGlobalSettings } from '~/services/global-settings/global-settings.server'
+import {
+  validationError,
+  ValidatedForm,
+  setFormDefaults,
+} from 'remix-validated-form'
+import { redirect, json } from '@remix-run/server-runtime'
 
-import { json } from '@remix-run/server-runtime'
-import { ValidatedForm, setFormDefaults } from 'remix-validated-form'
 import { FormActions } from '~/components/FormFields/FormActions'
 import { Input } from '~/components/FormFields/Input'
 import { Box } from '~/components/Layout/Box'
@@ -54,7 +58,7 @@ export const action = async ({ request }: ActionArgs) => {
 
 export const meta: MetaFunction = () => {
   return {
-    title: '[Admin] Configuración General | HoyAdelantas',
+    title: '[Admin] Configuración General | HoyTrabajas Beneficios',
   }
 }
 

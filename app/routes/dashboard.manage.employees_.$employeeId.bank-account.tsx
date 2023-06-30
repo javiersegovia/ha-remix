@@ -3,9 +3,8 @@ import type {
   LoaderArgs,
   MetaFunction,
 } from '@remix-run/server-runtime'
-import { redirect } from '@remix-run/server-runtime'
+import { redirect, json } from '@remix-run/server-runtime'
 
-import { json } from '@remix-run/server-runtime'
 import { PermissionCode } from '@prisma/client'
 
 import { requirePermissionByUserId } from '~/services/permissions/permissions.server'

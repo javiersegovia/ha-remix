@@ -1,4 +1,6 @@
 import type { CompanyContactPerson } from '@prisma/client'
+import type { CompanySchemaInput } from '~/services/company/company.schema'
+
 import { CompanyStatus } from '@prisma/client'
 import { truncateDB } from 'test/helpers/truncateDB'
 
@@ -9,7 +11,6 @@ import { CountryFactory } from '~/services/country/country.factory'
 import { BenefitFactory } from '~/services/benefit/benefit.factory'
 import { prisma } from '~/db.server'
 import { MembershipFactory } from '~/services/membership/membership.factory'
-import type { CompanySchemaInput } from '~/services/company/company.schema'
 
 beforeEach(async () => {
   await truncateDB()
@@ -58,11 +59,12 @@ describe('createCompany', () => {
     expect(createdCompany?.categories).toHaveLength(2)
     expect(createdCompany?.benefits).toHaveLength(3)
     expect(createdCompany?.country).toEqual(country)
+    expect(createdCompany?.id).toBeDefined()
 
     expect(createdCompany?.contactPerson).toEqual<CompanyContactPerson>({
       ...contactPerson,
       id: expect.any(String),
-      companyId: createdCompany?.id!,
+      companyId: createdCompany?.id || '',
       createdAt: expect.any(Date),
       updatedAt: expect.any(Date),
     })

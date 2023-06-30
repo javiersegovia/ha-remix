@@ -11,8 +11,10 @@ import { AiOutlineDatabase, AiOutlineThunderbolt } from 'react-icons/ai'
 import { RiShieldUserLine } from 'react-icons/ri'
 
 import { requireAdminUser } from '~/session.server'
-import { DashboardColorVariant } from '~/components/SideBar/DashboardSideBar'
-import { DashboardSideBar } from '~/components/SideBar/DashboardSideBar'
+import {
+  DashboardColorVariant,
+  DashboardSideBar,
+} from '~/components/SideBar/DashboardSideBar'
 
 export const loader = async ({ request }: LoaderArgs) => {
   const adminUser = await requireAdminUser(request)

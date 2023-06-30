@@ -22,7 +22,7 @@ export const JobPositionFactory = Factory.define<JobPosition>(
       createdAt: new Date(),
       updatedAt: new Date(),
 
-      name: faker.datatype.string(20),
+      name: faker.name.jobTitle(),
     }
   }
 )

@@ -4,9 +4,8 @@ import type {
   MetaFunction,
 } from '@remix-run/server-runtime'
 
-import { redirect } from '@remix-run/server-runtime'
+import { redirect, json } from '@remix-run/server-runtime'
 import { useLoaderData } from '@remix-run/react'
-import { json } from '@remix-run/server-runtime'
 import { validationError } from 'remix-validated-form'
 
 import { WelcomeForm } from '~/components/Forms/WelcomeForm'

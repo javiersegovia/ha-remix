@@ -3,11 +3,10 @@ import type { DashboardColorVariant } from './DashboardSideBar'
 
 import React, { useState } from 'react'
 import { HiOutlineChevronDown } from 'react-icons/hi'
-import { Link } from '@remix-run/react'
+import { Link, useLocation } from '@remix-run/react'
 import { Transition } from '@headlessui/react'
 import clsx from 'clsx'
 
-import { useLocation } from '@remix-run/react'
 import { NavItemContent } from './NavItem'
 
 interface NavDropdownItemProps {

@@ -68,7 +68,7 @@ export const uploadEmployees = async ({
         TIPO_DE_DOCUMENTO: documentTypeName,
         DOCUMENTO_DE_IDENTIDAD: documentNumber,
 
-        SALARIO: salary,
+        SALARIO: salaryFiat,
 
         FECHA_DE_INGRESO: startedAt,
         FECHA_DE_RETIRO: inactivatedAt,
@@ -313,7 +313,7 @@ export const uploadEmployees = async ({
               ? sanitizeDate(new Date(inactivatedAt))
               : undefined,
 
-            salaryFiat: parseFloat(salary),
+            salaryFiat: parseFloat(salaryFiat),
 
             roles: [EmployeeRole.MEMBER],
             phone,
@@ -347,7 +347,7 @@ export const uploadEmployees = async ({
               ? sanitizeDate(new Date(startedAt))
               : undefined,
 
-            salaryFiat: parseFloat(salary),
+            salaryFiat: parseFloat(salaryFiat),
 
             roles: [EmployeeRole.MEMBER],
             phone,

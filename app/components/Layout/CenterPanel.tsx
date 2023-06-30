@@ -18,10 +18,10 @@ export const CenterPanel = ({
   return (
     <div
       className={twMerge(
-        clsx('m-auto flex h-1/2 w-1/2 items-center justify-center', className)
+        clsx('m-auto flex items-center justify-center', className)
       )}
     >
-      <Box className="flex h-auto min-h-min flex-col space-y-4 rounded-xl p-8 md:w-auto md:min-w-min">
+      <Box className="flex h-auto min-h-min flex-col space-y-4 rounded-xl p-8 md:w-full md:min-w-min">
         <div className="flex items-center justify-end gap-4">
           {title && <Title className="mr-1/4 flex justify-end">{title}</Title>}
 
