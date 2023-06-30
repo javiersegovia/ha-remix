@@ -46,7 +46,13 @@ export const columns: ColumnDef<EmployeeDataItem>[] = [
   {
     id: 'fullName',
     header: ({ column }) => {
-      return <TableSortableButton title="Nombre colaborador" column={column} />
+      return (
+        <TableSortableButton
+          title="Nombre colaborador"
+          className="mx-0 text-left"
+          column={column}
+        />
+      )
     },
     accessorKey: 'fullName',
     cell: (props) => {
@@ -58,7 +64,7 @@ export const columns: ColumnDef<EmployeeDataItem>[] = [
             to={$path('/dashboard/manage/employees/:employeeId/account', {
               employeeId: item.id,
             })}
-            className="whitespace-pre-line hover:text-cyan-600"
+            className="whitespace-pre-line text-left hover:text-cyan-600"
           >
             <p>{item.fullName}</p>
             <p className="block text-gray-500">{item.email}</p>
