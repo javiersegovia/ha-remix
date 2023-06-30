@@ -13,14 +13,14 @@ import { employeeSearchValidator } from '~/services/employee/employee-search.sch
 import { Title } from '~/components/Typography/Title'
 import { SubmitButton } from '~/components/SubmitButton'
 
-interface TableActionsProps<TData extends unknown> {
+interface TableActionsProps<TData> {
   table: Table<TData>
   jobDepartments: Awaited<ReturnType<typeof getJobDepartments>>
   salaryRanges: Awaited<ReturnType<typeof getSalaryRanges>>
   ageRanges: Awaited<ReturnType<typeof getAgeRanges>>
 }
 
-export const TableActions = <TData extends unknown>({
+export const TableActions = <TData extends Record<string, any>>({
   jobDepartments,
   salaryRanges,
   ageRanges,

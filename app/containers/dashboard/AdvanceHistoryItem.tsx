@@ -1,5 +1,4 @@
-import { PremiumAdvanceStatus } from '@prisma/client'
-import { PayrollAdvanceStatus } from '@prisma/client'
+import { PremiumAdvanceStatus, PayrollAdvanceStatus } from '@prisma/client'
 import { formatRelative } from 'date-fns'
 import { es } from 'date-fns/locale'
 import { Box } from '~/components/Layout/Box'

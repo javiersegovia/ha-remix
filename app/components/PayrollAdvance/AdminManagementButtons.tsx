@@ -1,7 +1,9 @@
 import type { PayrollAdvance, PayrollAdvanceWallet } from '@prisma/client'
 
-import { PayrollAdvancePaymentMethod } from '@prisma/client'
-import { PayrollAdvanceStatus } from '@prisma/client'
+import {
+  PayrollAdvancePaymentMethod,
+  PayrollAdvanceStatus,
+} from '@prisma/client'
 import { Form, useNavigation } from '@remix-run/react'
 import { Button, ButtonColorVariants } from '../Button'
 

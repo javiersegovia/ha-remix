@@ -4,6 +4,7 @@ import {
   PayrollAdvanceStatus,
   PayrollAdvanceHistoryActor,
   PayrollAdvancePaymentMethod,
+  EmployeeStatus,
 } from '@prisma/client'
 import { truncateDB } from 'test/helpers/truncateDB'
 import { prisma } from '~/db.server'
@@ -13,7 +14,6 @@ import { JobPositionFactory } from '~/services/job-position/job-position.factory
 import { BankFactory } from '~/services/bank/bank.factory'
 import { CompanyFactory } from '~/services/company/company.factory'
 import { GenderFactory } from '~/services/gender/gender.factory'
-import { EmployeeStatus } from '@prisma/client'
 import { connect } from '~/utils/relationships'
 
 beforeEach(async () => {

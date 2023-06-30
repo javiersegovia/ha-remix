@@ -1,13 +1,16 @@
 import type { PutObjectCommandInput } from '@aws-sdk/client-s3'
 import type { UploadHandler } from '@remix-run/node'
-import { DeleteObjectCommand } from '@aws-sdk/client-s3'
+import {
+  DeleteObjectCommand,
+  PutObjectCommand,
+  S3Client,
+} from '@aws-sdk/client-s3'
 
 import {
   writeAsyncIterableToWritable,
   unstable_composeUploadHandlers as composeUploadHandlers,
   unstable_createMemoryUploadHandler as createMemoryUploadHandler,
 } from '@remix-run/node'
-import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3'
 import { defaultProvider } from '@aws-sdk/credential-provider-node'
 import { PassThrough } from 'stream'
 import { faker } from '@faker-js/faker'

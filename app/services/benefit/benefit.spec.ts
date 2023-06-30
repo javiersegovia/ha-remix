@@ -52,6 +52,11 @@ describe('getBenefitById', () => {
       mainImage: null,
       benefitHighlight: null,
       benefitCategoryId,
+      cost: 0,
+      requireDataItems: false,
+      sendEmailNotifications: false,
+      notificationEmails: [],
+      dataItems: [],
       subproducts: [
         {
           id: existingBenefitSubproduct.id,

@@ -9,12 +9,12 @@ import { Modal } from '~/components/Dialog/Modal'
 import { JobDepartmentForm } from '~/components/Forms/JobDepartmentForm'
 import { RightPanel } from '~/components/Layout/RightPanel'
 import { Title } from '~/components/Typography/Title'
-import { getJobDepartmentById } from '~/services/job-department/job-department.server'
-import { jobDepartmentValidator } from '~/services/job-department/job-department.schema'
 import {
+  getJobDepartmentById,
   deleteJobDepartmentById,
   updateJobDepartmentById,
 } from '~/services/job-department/job-department.server'
+import { jobDepartmentValidator } from '~/services/job-department/job-department.schema'
 import { requireAdminUserId } from '~/session.server'
 
 export const loader = async ({ request, params }: LoaderArgs) => {

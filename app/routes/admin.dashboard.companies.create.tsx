@@ -1,8 +1,11 @@
 import type { ActionArgs, LoaderArgs, MetaFunction } from '@remix-run/node'
-import { json, unstable_parseMultipartFormData } from '@remix-run/node'
+import {
+  json,
+  unstable_parseMultipartFormData,
+  redirect,
+} from '@remix-run/node'
 
 import { useLoaderData } from '@remix-run/react'
-import { redirect } from '@remix-run/node'
 import { validationError } from 'remix-validated-form'
 
 import { requireAdminUserId } from '~/session.server'
@@ -30,7 +33,7 @@ export const loader = async ({ request }: LoaderArgs) => {
 
 export const meta: MetaFunction = () => {
   return {
-    title: '[Admin] Crear compañía | HoyAdelantas',
+    title: '[Admin] Crear compañía | HoyTrabajas Beneficios',
   }
 }
 

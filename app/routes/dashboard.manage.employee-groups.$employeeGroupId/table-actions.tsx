@@ -14,7 +14,7 @@ import { employeeSearchValidator } from '~/services/employee/employee-search.sch
 import { Title } from '~/components/Typography/Title'
 import { SubmitButton } from '~/components/SubmitButton'
 
-interface TableActionsProps<TData extends unknown> {
+interface TableActionsProps<TData> {
   table: Table<TData>
   jobDepartments: Awaited<ReturnType<typeof getJobDepartments>>
   salaryRanges: Awaited<ReturnType<typeof getSalaryRanges>>
@@ -23,7 +23,7 @@ interface TableActionsProps<TData extends unknown> {
 
 export const deleteFormId = 'DeleteForm' as const
 
-export const TableActions = <TData extends unknown>({
+export const TableActions = <TData extends Record<string, any>>({
   table,
   jobDepartments,
   salaryRanges,

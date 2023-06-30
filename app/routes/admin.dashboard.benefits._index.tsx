@@ -3,12 +3,11 @@ import type { TableRowProps } from '~/components/Lists/Table'
 
 import { json } from '@remix-run/node'
 import { useLoaderData } from '@remix-run/react'
-import { Button } from '~/components/Button'
+import { Button, ButtonIconVariants } from '~/components/Button'
 
 import { Container } from '~/components/Layout/Container'
 import { requireAdminUserId } from '~/session.server'
 import { TitleWithActions } from '~/components/Layout/TitleWithActions'
-import { ButtonIconVariants } from '~/components/Button'
 import { constants } from '~/config/constants'
 import { prisma } from '~/db.server'
 import { Table } from '~/components/Lists/Table'
