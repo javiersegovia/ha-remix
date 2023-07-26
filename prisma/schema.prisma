@@ -50,6 +50,9 @@ model Company {
   address     String?
   phone       String?
 
+  // USED FOR BENEFIT BLACKLIST
+  isBlacklisted Boolean @default(false)
+
   // USED FOR PAYROLL ADVANCES
   dispersion     Float?
   paymentDays    Int[]

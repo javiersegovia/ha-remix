@@ -4,7 +4,7 @@ import { Link, useSearchParams } from '@remix-run/react'
 import { ValidatedForm, validationError } from 'remix-validated-form'
 
 import { verifyUserLogin } from '~/services/user/user.server'
-import { createUserSession, getUserIdFromSession } from '~/session.server'
+import { createUserSession, getEmployee } from '~/session.server'
 import { safeRedirect } from '~/utils/utils'
 import { loginValidator } from '~/schemas/login.schema'
 import { Input } from '~/components/FormFields/Input'
@@ -13,8 +13,15 @@ import { Title } from '~/components/Typography/Title'
 import { SubmitButton } from '~/components/SubmitButton'
 
 export async function loader({ request }: LoaderArgs) {
-  const userId = await getUserIdFromSession(request)
-  if (userId) return redirect('/dashboard')
+  const employee = await getEmployee(request)
+
+  if (employee) {
+    if (employee.company.isBlacklisted) {
+      return redirect('/dashboard')
+    }
+    return redirect('/home')
+  }
+
   return null
 }
 
@@ -46,6 +53,13 @@ export async function action({ request }: ActionArgs) {
   // todo: check if user has signed terms in Zapsign
 
   let redirectPath = redirectTo
+  let baseRedirectPath: string
+
+  if (user.employee?.company?.isBlacklisted) {
+    baseRedirectPath = '/dashboard/overview'
+  } else {
+    baseRedirectPath = '/home'
+  }
 
   if (
     !user.employee?.acceptedPrivacyPolicy &&
@@ -57,7 +71,7 @@ export async function action({ request }: ActionArgs) {
   return createUserSession({
     request,
     userId: user.id,
-    redirectTo: safeRedirect(redirectPath, '/dashboard/overview'),
+    redirectTo: safeRedirect(redirectPath, baseRedirectPath),
   })
 }
 
@@ -69,7 +83,7 @@ export const meta: MetaFunction = () => {
 
 export default function LoginRemixRoute() {
   const [searchParams] = useSearchParams()
-  const redirectTo = searchParams.get('redirectTo') || '/dashboard/overview'
+  const redirectTo = searchParams.get('redirectTo') || ''
 
   return (
     <section className="min-h-screen bg-[#43ab89]">

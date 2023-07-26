@@ -4,7 +4,7 @@ import { redirect } from '@remix-run/node'
 import { ValidatedForm, validationError } from 'remix-validated-form'
 
 import { requestLoginLink } from '~/services/auth.server'
-import { getUserIdFromSession } from '~/session.server'
+import { getEmployee } from '~/session.server'
 import { loginEmailValidator } from '~/schemas/login.schema'
 import { Input } from '~/components/FormFields/Input'
 import { Title } from '~/components/Typography/Title'
@@ -13,8 +13,15 @@ import { Button, ButtonColorVariants } from '~/components/Button'
 import { $path } from 'remix-routes'
 
 export async function loader({ request }: LoaderArgs) {
-  const userId = await getUserIdFromSession(request)
-  if (userId) return redirect('/dashboard')
+  const employee = await getEmployee(request)
+
+  if (employee) {
+    if (employee.company.isBlacklisted) {
+      return redirect('/dashboard')
+    }
+    return redirect('/home')
+  }
+
   return null
 }
 

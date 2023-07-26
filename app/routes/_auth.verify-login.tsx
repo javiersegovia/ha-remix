@@ -17,14 +17,17 @@ export async function loader({ request }: LoaderArgs) {
   let redirectPath = $path('/dashboard/overview')
 
   try {
-    const { user, hasPassword, hasAcceptedTerms } = await verifyLoginLink(token)
+    const { user, companyIsBlacklisted, hasPassword, hasAcceptedTerms } =
+      await verifyLoginLink(token)
+
+    if (companyIsBlacklisted && (!hasPassword || !hasAcceptedTerms)) {
+      redirectPath = $path('/dashboard/welcome')
+    } else if (!companyIsBlacklisted) {
+      redirectPath = $path('/home')
+    }
 
     if (updatePassword) {
       redirectPath = $path('/update-password')
-    }
-
-    if (!hasPassword || !hasAcceptedTerms) {
-      redirectPath = $path('/dashboard/welcome')
     }
 
     return await createUserSession({
