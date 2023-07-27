@@ -85,6 +85,7 @@ model Company {
 
   payrollAdvances PayrollAdvance[]
   premiumAdvances PremiumAdvance[]
+  Team            Team[]
 }
 
 enum CompanyStatus {
@@ -240,6 +241,9 @@ model Employee {
 
   benefits            Benefit[]
   benefitConsumptions BenefitConsumption[]
+  Team                Team?                @relation(fields: [teamId], references: [id])
+  teamId              String?
+  TeamMember          TeamMember[]
 }
 
 enum EmployeeRole {
@@ -1014,4 +1018,29 @@ enum DataItemType {
   DATE
   TEXT
   NUMBER
+}
+
+model Team {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  name String
+
+  company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  companyId String
+
+  members   TeamMember[]
+  employees Employee[]
+}
+
+model TeamMember {
+  id Int @id @default(autoincrement())
+
+  isTeamLeader Boolean @default(false)
+
+  Team       Team?     @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  teamId     String?
+  employee   Employee? @relation(fields: [employeeId], references: [id], onDelete: SetNull)
+  employeeId String?
 }

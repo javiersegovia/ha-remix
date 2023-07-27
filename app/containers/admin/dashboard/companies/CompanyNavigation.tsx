@@ -29,6 +29,10 @@ export const CompanyNavigation = ({
       title: 'Novedades',
       path: `/admin/dashboard/companies/${company.id}/debts`,
     },
+    {
+      title: 'Equipos',
+      path: `/admin/dashboard/companies/${company.id}/teams`,
+    },
   ]
 
   return (
