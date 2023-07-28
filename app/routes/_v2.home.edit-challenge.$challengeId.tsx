@@ -16,9 +16,10 @@ import { badRequest } from '~/utils/responses'
 import { challengeValidator } from '~/services/challenge/challenge.schema'
 import { parseISOLocalNullable } from '~/utils/formatDate'
 import { useToastError } from '~/hooks/useToastError'
+import { getTeamsByCompanyId } from '../services/team/team.server'
 
 export const loader = async ({ request, params }: LoaderArgs) => {
-  await requireEmployee(request)
+  const employee = await requireEmployee(request)
 
   const { challengeId } = params
   if (!challengeId || isNaN(Number(challengeId))) {
@@ -29,6 +30,7 @@ export const loader = async ({ request, params }: LoaderArgs) => {
   }
 
   const challenge = await getChallengeById(Number(challengeId))
+  const teams = await getTeamsByCompanyId(employee.companyId)
 
   if (!challenge) {
     throw badRequest({
@@ -37,7 +39,7 @@ export const loader = async ({ request, params }: LoaderArgs) => {
     })
   }
 
-  return json({ challenge })
+  return json({ challenge, teams })
 }
 
 export const action = async ({ request, params }: ActionArgs) => {
@@ -69,7 +71,7 @@ export const action = async ({ request, params }: ActionArgs) => {
 }
 
 const HomeEditChallengeRoute = () => {
-  const { challenge } = useLoaderData<typeof loader>() || {}
+  const { challenge, teams } = useLoaderData<typeof loader>() || {}
   const {
     title,
     description,
@@ -78,6 +80,7 @@ const HomeEditChallengeRoute = () => {
     rewardDescription,
     startDate,
     finishDate,
+    teams: currentTeams,
   } = challenge || {}
 
   return (
@@ -96,6 +99,7 @@ const HomeEditChallengeRoute = () => {
         }
       >
         <ChallengeForm
+          teams={teams}
           formId="ChallengeForm"
           defaultValues={{
             title,
@@ -105,6 +109,7 @@ const HomeEditChallengeRoute = () => {
             rewardDescription,
             startDate: parseISOLocalNullable(startDate),
             finishDate: parseISOLocalNullable(finishDate),
+            teams: currentTeams,
           }}
         />
       </AnimatedRightPanel>

@@ -1,4 +1,4 @@
-import type { Challenge } from '@prisma/client'
+import type { Challenge, Team } from '@prisma/client'
 
 import { Card } from './Card'
 import { Title } from '../Typography/Title'
@@ -20,6 +20,7 @@ type ChallengeCardProps = Pick<
 > & {
   startDate?: string | null
   finishDate?: string | null
+  teams?: Pick<Team, 'id' | 'name'>[]
 }
 
 type TGridItems = {
@@ -36,6 +37,7 @@ export const ChallengeCard = ({
   goalDescription,
   rewardDescription,
   measurerDescription,
+  teams,
 }: ChallengeCardProps) => {
   const navigation = [
     {
@@ -55,7 +57,10 @@ export const ChallengeCard = ({
   const gridItems: TGridItems[] = [
     {
       label: 'Equipos',
-      content: '-',
+      content:
+        teams?.length && teams.length > 0
+          ? teams.map((t) => t.name).join(', ')
+          : '-',
     },
     {
       label: 'Fecha de inicio',

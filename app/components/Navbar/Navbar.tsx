@@ -16,12 +16,6 @@ import clsx from 'clsx'
 import { Button } from '../Button'
 import { HiOutlinePencil } from 'react-icons/hi'
 
-const navigation = [
-  { name: 'Retos', href: $path('/home'), Icon: HiOutlineClipboardDocumentList },
-  { name: 'Personas', href: $path('/people'), Icon: HiOutlineUserGroup },
-  { name: 'Logros', href: $path('/achievements'), Icon: HiOutlineTrophy },
-]
-
 const menuNavigation = [
   {
     name: 'Cerrar sesión',
@@ -37,11 +31,12 @@ interface NavbarProps {
   }
   permissions: {
     canManageCompany: boolean
+    canManageEmployees: boolean
   }
 }
 
 export const Navbar = ({ avatar, permissions }: NavbarProps) => {
-  const { canManageCompany } = permissions
+  const { canManageCompany, canManageEmployees } = permissions
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const { pathname } = useLocation()
@@ -49,6 +44,23 @@ export const Navbar = ({ avatar, permissions }: NavbarProps) => {
   useEffect(() => {
     setMobileMenuOpen(false)
   }, [pathname])
+
+  const navigation = [
+    {
+      name: 'Retos',
+      href: $path('/home'),
+      Icon: HiOutlineClipboardDocumentList,
+    },
+    { name: 'Logros', href: $path('/achievements'), Icon: HiOutlineTrophy },
+  ]
+
+  if (canManageEmployees) {
+    navigation.splice(1, 0, {
+      name: 'Personas',
+      href: $path('/people'),
+      Icon: HiOutlineUserGroup,
+    })
+  }
 
   return (
     <>

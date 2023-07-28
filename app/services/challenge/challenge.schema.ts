@@ -59,6 +59,8 @@ export const challengeSchema = z.object({
     })
     .trim()
     .nullish(),
+
+  teamIds: z.array(zfd.text(z.string())).nullish(),
 })
 
 export const challengeValidator = withZod(challengeSchema)

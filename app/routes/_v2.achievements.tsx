@@ -1,10 +1,10 @@
-import { Button } from '~/components/Button'
+import { Button, ButtonColorVariants } from '~/components/Button'
 import { Container } from '~/components/Layout/Container'
 
 const AchievementsIndexRoute = () => {
   return (
     <>
-      <Container className="max-w-max rounded-3xl bg-steelBlue-600">
+      <Container className="max-w-max rounded-3xl bg-teal-600">
         <section className="my-5 space-y-8">
           <h1 className="flex items-center justify-center text-3xl font-semibold text-white">
             Bienvenido a Logros
@@ -16,12 +16,15 @@ const AchievementsIndexRoute = () => {
             doloremque.
           </p>
           <span className="flex justify-center ">
-            <Button
-              href="https://docs.google.com/forms/d/e/1FAIpQLSdBSCR3eWdIhvgENg1GRotj6CkpsDXHIVk2LwgSLWV1BBl_6A/viewform?vc=0&c=0&w=1&flr=0"
-              className="flex max-w-max  bg-white text-slate-500 hover:bg-white"
-            >
-              Solicita el acceso a Logros
-            </Button>
+            <div className="mx-auto">
+              <Button
+                href="https://docs.google.com/forms/d/e/1FAIpQLSdBSCR3eWdIhvgENg1GRotj6CkpsDXHIVk2LwgSLWV1BBl_6A/viewform?vc=0&c=0&w=1&flr=0"
+                variant={ButtonColorVariants.SECONDARY}
+                className="bg-white hover:bg-white"
+              >
+                Solicitar el acceso a Logros
+              </Button>
+            </div>
           </span>
         </section>
       </Container>

@@ -20,12 +20,18 @@ export const loader = async ({ request }: LoaderArgs) => {
     PermissionCode.MANAGE_COMPANY
   )
 
+  const canManageEmployees = await hasPermissionByUserId(
+    userId,
+    PermissionCode.MANAGE_EMPLOYEE_MAIN_INFORMATION
+  )
+
   return json({
     avatar: {
       initials: `${firstName?.[0]}${lastName?.[0]}`,
     },
     permissions: {
       canManageCompany,
+      canManageEmployees,
     },
   })
 }

@@ -1,4 +1,5 @@
-import type { Challenge } from '@prisma/client'
+import type { Challenge, Team } from '@prisma/client'
+import type { getTeamsByCompanyId } from '~/services/team/team.server'
 
 import { ValidatedForm } from 'remix-validated-form'
 
@@ -11,6 +12,7 @@ import { challengeValidator } from '~/services/challenge/challenge.schema'
 
 interface ChallengeFormProps {
   formId: string
+  teams: Awaited<ReturnType<typeof getTeamsByCompanyId>>
   defaultValues?: Pick<
     Challenge,
     | 'title'
@@ -20,13 +22,18 @@ interface ChallengeFormProps {
     | 'rewardDescription'
     | 'startDate'
     | 'finishDate'
-  >
+  > & {
+    teams: Pick<Team, 'id' | 'name'>[]
+  }
 }
 
 export const ChallengeForm = ({
   formId,
   defaultValues,
+  teams,
 }: ChallengeFormProps) => {
+  const { teams: currentTeams } = defaultValues || {}
+
   return (
     <>
       <ValidatedForm
@@ -36,6 +43,7 @@ export const ChallengeForm = ({
         defaultValues={{
           ...defaultValues,
           goalDescription: defaultValues?.goalDescription || undefined,
+          teamIds: currentTeams?.map((t) => t.id),
         }}
       >
         <FormGridWrapper>
@@ -103,11 +111,10 @@ export const ChallengeForm = ({
 
           <FormGridItem isFullWidth>
             <SelectMultiple
-              name="teamsIds"
+              name="teamIds"
               label="Equipos participantes"
               placeholder="Seleccione uno o más equipos"
-              options={[]}
-              defaultValue={[]}
+              options={teams}
             />
           </FormGridItem>
         </FormGridWrapper>

@@ -11,7 +11,6 @@ import { redirect } from '@remix-run/node'
 import { json } from '@remix-run/server-runtime'
 import { validationError } from 'remix-validated-form'
 import { ButtonColorVariants, ButtonElement } from '~/components/Button'
-import { EmployeeAccountForm } from '~/components/Forms/Employees/EmployeeAccountForm'
 import { SubmitButton } from '~/components/SubmitButton'
 
 import { getAvailableBenefitsByCompanyId } from '~/services/benefit/benefit.server'
@@ -31,6 +30,7 @@ import { badRequest } from '~/utils/responses'
 import { Container, ContainerSize } from '~/components/Layout/Container'
 import { GoBack } from '~/components/Button/GoBack'
 import { TabDesign, Tabs } from '~/components/Tabs/Tabs'
+import { EmployeePeopleAccountForm } from '~/components/Forms/Employees/EmployeePeopleAccountForm'
 
 export const meta: MetaFunction = () => {
   return {
@@ -131,7 +131,7 @@ const CreateEmployeeAccountRoute = () => {
 
         <div className="my-10" />
 
-        <EmployeeAccountForm
+        <EmployeePeopleAccountForm
           actions={
             <div className="mt-10 flex flex-col items-center justify-end gap-4 md:flex-row">
               <Link to="/people" className="w-full md:w-auto">

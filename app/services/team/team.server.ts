@@ -121,52 +121,54 @@ export const deleteTeamById = async (id: Team['id']) => {
   }
 }
 
-// export const addEmployeesToEmployeeGroup = async (
-//   employeesIds: EmployeeTableInput,
-//   teamId: Team['id']
-// ) => {
-//   try {
-//     return prisma.team.update({
-//       where: {
-//         id: teamId,
-//       },
-//       data: {
-//         members: {
-//           connect: employeesIds.map((id) => ({ id })),
-//         },
-//       },
-//     })
-//   } catch (e) {
-//     console.error(e)
-//     throw badRequest({
-//       message:
-//         'Ha ocurrido un error al intentar agregar colaboradores al equipo',
-//       redirect: null,
-//     })
-//   }
-// }
+export const addEmployeesToTeam = async (
+  employeesIds: string[],
+  teamId: Team['id']
+) => {
+  try {
+    return prisma.team.update({
+      where: {
+        id: teamId,
+      },
+      data: {
+        members: {
+          createMany: {
+            data: employeesIds.map((employeeId) => ({ employeeId })),
+          },
+        },
+      },
+    })
+  } catch (e) {
+    console.error(e)
+    throw badRequest({
+      message:
+        'Ha ocurrido un error al intentar agregar colaboradores al equipo',
+      redirect: null,
+    })
+  }
+}
 
-// export const removeEmployeesFromEmployeeGroup = async (
-//   employeesIds: EmployeeTableInput,
-//   teamId: Team['id']
-// ) => {
-//   try {
-//     return prisma.team.update({
-//       where: {
-//         id: teamId,
-//       },
-//       data: {
-//         employees: {
-//           disconnect: employeesIds.map((id) => ({ id })),
-//         },
-//       },
-//     })
-//   } catch (e) {
-//     console.error(e)
-//     throw badRequest({
-//       message:
-//         'Ha ocurrido un error al intentar remover colaboradores del equipo',
-//       redirect: null,
-//     })
-//   }
-// }
+export const removeEmployeesFromTeam = async (
+  employeesIds: string[],
+  teamId: Team['id']
+) => {
+  try {
+    return prisma.team.update({
+      where: {
+        id: teamId,
+      },
+      data: {
+        members: {
+          deleteMany: employeesIds.map((employeeId) => ({ employeeId })),
+        },
+      },
+    })
+  } catch (e) {
+    console.error(e)
+    throw badRequest({
+      message:
+        'Ha ocurrido un error al intentar remover colaboradores del equipo',
+      redirect: null,
+    })
+  }
+}

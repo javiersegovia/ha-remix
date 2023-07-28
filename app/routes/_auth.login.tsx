@@ -57,15 +57,15 @@ export async function action({ request }: ActionArgs) {
 
   if (user.employee?.company?.isBlacklisted) {
     baseRedirectPath = '/dashboard/overview'
+
+    if (
+      !user.employee?.acceptedPrivacyPolicy &&
+      !user.employee?.acceptedTermsOfService
+    ) {
+      redirectPath = '/dashboard/welcome'
+    }
   } else {
     baseRedirectPath = '/home'
-  }
-
-  if (
-    !user.employee?.acceptedPrivacyPolicy &&
-    !user.employee?.acceptedTermsOfService
-  ) {
-    redirectPath = '/dashboard/welcome'
   }
 
   return createUserSession({

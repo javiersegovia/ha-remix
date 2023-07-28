@@ -9,6 +9,7 @@ import type {
   SalaryRange,
   Wallet,
   Prisma,
+  Team,
 } from '@prisma/client'
 import type { WelcomeSchemaInput } from '~/schemas/welcome.schema'
 import type { EditAccountSchemaInput } from '~/schemas/edit-account.schema'
@@ -1227,6 +1228,7 @@ interface BuildEmployeeFiltersArgs {
   ageRangeId?: AgeRange['id']
   salaryRangeId?: SalaryRange['id']
   employeeGroupId?: EmployeeGroup['id']
+  teamId?: Team['id']
   companyId: Company['id']
 }
 
@@ -1237,6 +1239,7 @@ export const buildEmployeeFilters = async ({
   salaryRangeId,
   employeeGroupId,
   companyId,
+  teamId,
 }: BuildEmployeeFiltersArgs): Promise<
   Prisma.Enumerable<Prisma.EmployeeWhereInput>
 > => {
@@ -1251,6 +1254,16 @@ export const buildEmployeeFilters = async ({
       employeeGroups: {
         some: {
           id: employeeGroupId,
+        },
+      },
+    })
+  }
+
+  if (teamId) {
+    filters.push({
+      teamMembers: {
+        some: {
+          teamId,
         },
       },
     })

@@ -29,14 +29,6 @@ export const loader = async ({ request, params }: LoaderArgs) => {
     })
   }
 
-  // const company = await getCompanyById(companyId)
-
-  // if (!company) {
-  //   throw notFound({
-  //     message: 'No se ha encontrado información sobre la compañía',
-  //     redirect: '/admin/dashboard/companies',
-  //   })
-  // }
   const teams = await getTeamsByCompanyId(companyId)
 
   return json({ teams, companyId })
@@ -45,7 +37,7 @@ export const loader = async ({ request, params }: LoaderArgs) => {
 export default function TeamIndexRoute() {
   const { teams, companyId } = useLoaderData<typeof loader>()
 
-  const headings = ['Nombre del equipo', 'Miembros', 'Líder']
+  const headings = ['Nombre del equipo', 'Miembros']
 
   const rows: TableRowProps[] = teams.map(({ id, name, members, _count }) => ({
     rowId: id,
@@ -54,13 +46,6 @@ export default function TeamIndexRoute() {
       <span className="whitespace-pre-wrap" key={`${id}_name`}>
         {name}
       </span>,
-      // employees?.length > 0 ? (
-      //   <span className="whitespace-pre-wrap" key={`${id}_employee`}>
-      //     {employees?.length}
-      //   </span>
-      // ) : (
-      //   '-'
-      // ),
       _count.members > 0 ? (
         <span className="whitespace-pre-wrap" key={`${id}_employee`}>
           {_count.members}
@@ -68,14 +53,6 @@ export default function TeamIndexRoute() {
       ) : (
         '-'
       ),
-
-      // members ? (
-      //   <span className="whitespace-pre-wrap" key={`${id}_employee`}>
-      //     {members.toString()}
-      //   </span>
-      // ) : (
-      //   '-'
-      // ),
     ],
   }))
 

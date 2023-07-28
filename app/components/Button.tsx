@@ -56,7 +56,7 @@ export const Button = ({
     external ? (
       <>
         <a
-          className="block "
+          className="block w-full"
           href={href}
           {...(targetBlank
             ? { target: '_blank', rel: 'noreferrer noopener' }
@@ -66,7 +66,7 @@ export const Button = ({
         </a>
       </>
     ) : (
-      <Link to={href} className="">
+      <Link to={href} className="w-full">
         <ButtonElement {...props} />
       </Link>
     )

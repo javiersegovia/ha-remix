@@ -1,4 +1,10 @@
-import { redirect, type ActionArgs, type LoaderArgs } from '@remix-run/node'
+import {
+  type ActionArgs,
+  type LoaderArgs,
+  redirect,
+  json,
+} from '@remix-run/node'
+import { useLoaderData } from '@remix-run/react'
 import { validationError } from 'remix-validated-form'
 
 import { AnimatedRightPanel } from '~/components/Animations/AnimatedRightPanel'
@@ -6,11 +12,17 @@ import { ChallengeForm } from '~/components/Forms/ChallengeForm'
 import { SubmitButton } from '~/components/SubmitButton'
 import { challengeValidator } from '~/services/challenge/challenge.schema'
 import { createChallenge } from '~/services/challenge/challenge.server'
+import { getTeamsByCompanyId } from '~/services/team/team.server'
 import { requireEmployee } from '~/session.server'
 
 export const loader = async ({ request }: LoaderArgs) => {
-  await requireEmployee(request)
-  return null
+  const employee = await requireEmployee(request)
+
+  const teams = await getTeamsByCompanyId(employee.companyId)
+
+  return json({
+    teams,
+  })
 }
 
 export const action = async ({ request }: ActionArgs) => {
@@ -32,6 +44,8 @@ export const action = async ({ request }: ActionArgs) => {
 }
 
 const HomeCreateChallengeRoute = () => {
+  const { teams } = useLoaderData<typeof loader>() || {}
+
   return (
     <>
       <AnimatedRightPanel
@@ -47,7 +61,7 @@ const HomeCreateChallengeRoute = () => {
           </SubmitButton>
         }
       >
-        <ChallengeForm formId="ChallengeForm" />
+        <ChallengeForm formId="ChallengeForm" teams={teams} />
       </AnimatedRightPanel>
     </>
   )
