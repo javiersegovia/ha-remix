@@ -15,6 +15,7 @@ import { ButtonColorVariants, ButtonElement } from '~/components/Button'
 import { createTeam, getTeamsByCompanyId } from '~/services/team/team.server'
 import { teamValidator } from '~/services/team/team.schema'
 import { requireAdminUserId } from '~/session.server'
+import { SubmitButton } from '~/components/SubmitButton'
 
 export const meta: MetaFunction = () => {
   return {
@@ -84,6 +85,7 @@ export default function TeamCreateRoute() {
                   Cancelar
                 </ButtonElement>
               </Link>
+              <SubmitButton className="w-full sm:w-auto">Guardar</SubmitButton>
             </div>
           }
           buttonText="Crear"

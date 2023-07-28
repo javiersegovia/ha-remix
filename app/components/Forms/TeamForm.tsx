@@ -8,7 +8,6 @@ import { Title } from '../Typography/Title'
 import { FormGridWrapper } from '../FormFields/FormGridWrapper'
 import { FormGridItem } from '../FormFields/FormGridItem'
 import { Input } from '../FormFields/Input'
-import { ColorPicker } from '../FormFields/ColorPicker'
 import { SubmitButton } from '../SubmitButton'
 import { ButtonColorVariants } from '../Button'
 
@@ -17,9 +16,7 @@ interface TeamFormProps {
   buttonText: string
   showDeleteButton?: boolean
 
-  defaultValues?: Pick<Team, 'name'> & {
-    // leader: Pick<TeamMember, 'isTeamLeader'>
-  }
+  defaultValues?: Pick<Team, 'name'>
 }
 
 export const TeamForm = ({
@@ -49,14 +46,6 @@ export const TeamForm = ({
                 label="Nombre del equipo"
                 placeholder="Ej: Ventas"
               />
-            </FormGridItem>
-
-            <FormGridItem isFullWidth>
-              <ColorPicker name="hexColor" label="Color de equipo" />
-            </FormGridItem>
-
-            <FormGridItem isFullWidth className="mt-6">
-              <SubmitButton>{buttonText}</SubmitButton>
             </FormGridItem>
           </FormGridWrapper>
         </Box>
