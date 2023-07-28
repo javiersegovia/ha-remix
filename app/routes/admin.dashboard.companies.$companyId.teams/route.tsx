@@ -49,7 +49,7 @@ export default function TeamIndexRoute() {
 
   const rows: TableRowProps[] = teams.map(({ id, name, members, _count }) => ({
     rowId: id,
-    href: `${id}`,
+    href: `${id}/details`,
     items: [
       <span className="whitespace-pre-wrap" key={`${id}_name`}>
         {name}
@@ -68,9 +68,10 @@ export default function TeamIndexRoute() {
       ) : (
         '-'
       ),
-      // employees ? (
+
+      // members ? (
       //   <span className="whitespace-pre-wrap" key={`${id}_employee`}>
-      //     {employees}
+      //     {members.toString()}
       //   </span>
       // ) : (
       //   '-'
