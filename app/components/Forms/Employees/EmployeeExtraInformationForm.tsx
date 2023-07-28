@@ -8,7 +8,6 @@ import type { getGenders } from '~/services/gender/gender.server'
 
 import { ValidatedForm } from 'remix-validated-form'
 
-import { Box } from '~/components/Layout/Box'
 import { FormGridWrapper } from '~/components/FormFields/FormGridWrapper'
 import { FormGridItem } from '~/components/FormFields/FormGridItem'
 
@@ -101,7 +100,7 @@ export const EmployeeExtraInformationForm = ({
         birthDay,
       }}
     >
-      <Box className="p-5 shadow-sm">
+      <div className="rounded-3xl bg-white p-5">
         <FormGridWrapper>
           <FormGridItem>
             <Select
@@ -230,7 +229,7 @@ export const EmployeeExtraInformationForm = ({
             />
           </FormGridItem>
         </FormGridWrapper>
-      </Box>
+      </div>
 
       {actions}
     </ValidatedForm>

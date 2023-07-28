@@ -64,7 +64,7 @@ export default function LoginEmailRoute() {
         />
 
         <div className="mx-auto mb-6 mt-8 w-full rounded-none bg-white px-4 pb-6 pt-5 shadow-2xl sm:w-10/12 sm:rounded-lg sm:px-6 md:w-6/12 lg:w-5/12 xl:w-4/12 2xl:w-3/12">
-          <Title className="mb-8 text-center">Inicio de sesión</Title>
+          <Title className="mb-8 text-center">¡Bienvenido!</Title>
 
           <ValidatedForm
             validator={loginEmailValidator}

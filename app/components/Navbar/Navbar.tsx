@@ -14,6 +14,7 @@ import {
 } from 'react-icons/hi2'
 import clsx from 'clsx'
 import { Button } from '../Button'
+import { HiOutlinePencil } from 'react-icons/hi'
 
 const navigation = [
   { name: 'Retos', href: $path('/home'), Icon: HiOutlineClipboardDocumentList },
@@ -99,19 +100,18 @@ export const Navbar = ({ avatar, permissions }: NavbarProps) => {
           </div>
           <div className="hidden items-center gap-6 lg:flex lg:flex-1 lg:justify-end">
             {pathname.includes('/home') && (
-              <Button
-                href="/home/create-challenge"
-                className="ml-auto w-auto"
-                size="XS"
-              >
-                Crear reto
-              </Button>
+              <Link to="/home/create-challenge" preventScrollReset>
+                <Button className="ml-auto w-auto gap-2" size="XS">
+                  <HiOutlinePencil />
+                  Crear reto
+                </Button>
+              </Link>
             )}
 
             <Menu as="div" className="relative">
               <Menu.Button>
-                <span className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-gray-500">
-                  <span className="text-sm font-medium uppercase leading-none text-white">
+                <span className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-gray-300 bg-gray-200">
+                  <span className="text-sm font-semibold uppercase leading-none text-gray-600">
                     {avatar.initials}
                   </span>
                 </span>
@@ -125,21 +125,23 @@ export const Navbar = ({ avatar, permissions }: NavbarProps) => {
                 leaveFrom="transform scale-100 opacity-100"
                 leaveTo="transform scale-95 opacity-0"
               >
-                <Menu.Items className="absolute right-0 mt-2 w-64 origin-top-right divide-y divide-gray-100 rounded-md bg-white p-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                  <Menu.Item>
-                    {({ active }) => (
-                      <Link
-                        className={clsx(
-                          'flex items-center gap-3 rounded-md p-1 text-sm',
-                          active && 'bg-gray-100 text-green-600'
-                        )}
-                        to={$path('/company-settings')}
-                      >
-                        <HiOutlineBuildingOffice2 className="text-2xl" />
-                        Configuración
-                      </Link>
-                    )}
-                  </Menu.Item>
+                <Menu.Items className="absolute right-0 mt-2 w-52 origin-top-right divide-y divide-gray-100 rounded-md bg-white p-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                  {canManageCompany && (
+                    <Menu.Item>
+                      {({ active }) => (
+                        <Link
+                          className={clsx(
+                            'flex items-center gap-3 rounded-md p-1 text-sm',
+                            active && 'bg-gray-100 text-green-600'
+                          )}
+                          to={$path('/company-settings')}
+                        >
+                          <HiOutlineBuildingOffice2 className="text-2xl" />
+                          Configuración
+                        </Link>
+                      )}
+                    </Menu.Item>
+                  )}
 
                   {menuNavigation.map(({ href, name, Icon }) => (
                     <Menu.Item key={href}>

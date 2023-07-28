@@ -17,10 +17,11 @@ export const Title = ({
     <Element
       className={twMerge(
         clsx(
-          'block text-2xl font-bold text-steelBlue-800',
-          Element === 'h1' && `font-semibold lg:text-3xl`,
-          Element === 'h3' && `font-semibold lg:text-xl`,
-          (Element === 'h4' || Element === 'h5') && `text-lg`
+          'block text-2xl font-semibold text-gray-800',
+          Element === 'h1' && `lg:text-3xl`,
+          Element === 'h3' && `lg:text-xl`,
+          Element === 'h4' && `text-lg`,
+          (Element === 'h5' || Element === 'h6') && `text-base`
         ),
         className
       )}

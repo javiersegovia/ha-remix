@@ -104,7 +104,7 @@ export default function LoginRemixRoute() {
             width="200"
           />
           <div className="mx-auto mb-6 mt-8 w-full rounded-none bg-white px-4 pb-6 pt-5 shadow-2xl sm:w-10/12 sm:rounded-lg sm:px-6 md:w-6/12 lg:w-5/12 xl:w-4/12 2xl:w-3/12">
-            <Title className="mb-4 text-center">Inicio de sesión</Title>
+            <Title className="mb-4 text-center">¡Bienvenido!</Title>
             <ValidatedForm
               validator={loginValidator}
               method="post"
@@ -126,12 +126,13 @@ export default function LoginRemixRoute() {
               />
               <SubmitButton data-testid="login-button">Ingresar</SubmitButton>
               <div className="w-full border-b border-gray-300 pt-4" />
+
               <div className="pt-3">
                 <Button
                   type="button"
                   href="/login-email"
                   variant={ButtonColorVariants.SECONDARY}
-                  className="text-sm"
+                  className="text-sm leading-6"
                   data-testid="login-email-button"
                 >
                   Ingresar usando correo electrónico

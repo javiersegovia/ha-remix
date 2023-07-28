@@ -1,20 +1,19 @@
 import { withZod } from '@remix-validated-form/with-zod'
 import { z } from 'zod'
+import { zfd } from 'zod-form-data'
 import { zDate } from '~/schemas/helpers'
 
 export const challengeSchema = z.object({
-  title: z
-    .string({
-      required_error: 'Ingrese el nombre del reto',
-    })
-    .trim()
-    .min(5, 'El nombre debe poseer al menos 5 caracteres'),
+  title: zfd.text(
+    z
+      .string({
+        required_error: 'Ingrese el nombre del reto',
+      })
+      .trim()
+      .min(5, 'El título debe poseer al menos 5 caracteres')
+  ),
 
-  description: z
-    .string()
-    .trim()
-    .min(5, 'La descripción debe poseer al menos 5 caracteres')
-    .nullish(),
+  description: zfd.text(z.string().trim().nullish()),
 
   startDate: zDate(
     z
@@ -38,12 +37,13 @@ export const challengeSchema = z.object({
     .nullable()
     .default(null),
 
-  goalDescription: z
-    .string({
-      required_error: 'Ingrese una meta',
-    })
-    .trim()
-    .nullish(),
+  goalDescription: zfd.text(
+    z
+      .string({
+        required_error: 'Ingrese una meta',
+      })
+      .trim()
+  ),
 
   measurerDescription: z
     .string({
@@ -61,5 +61,5 @@ export const challengeSchema = z.object({
     .nullish(),
 })
 
-export const validator = withZod(challengeSchema)
+export const challengeValidator = withZod(challengeSchema)
 export type ChallengeSchemaInput = z.infer<typeof challengeSchema>

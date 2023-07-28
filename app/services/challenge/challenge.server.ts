@@ -8,6 +8,17 @@ export const getChallengesByCompanyId = (companyId: Company['id']) => {
     where: {
       companyId,
     },
+    orderBy: {
+      createdAt: 'desc',
+    },
+  })
+}
+
+export const getChallengeById = (challengeId: Challenge['id']) => {
+  return prisma.challenge.findUnique({
+    where: {
+      id: challengeId,
+    },
   })
 }
 

@@ -14,7 +14,6 @@ import type { Validator } from 'remix-validated-form'
 
 import { ValidatedForm } from 'remix-validated-form'
 
-import { Box } from '~/components/Layout/Box'
 import { Title } from '~/components/Typography/Title'
 import { Input } from '~/components/FormFields/Input'
 import { Select } from '~/components/FormFields/Select'
@@ -82,9 +81,9 @@ export const CompanyForm = ({
           contactPerson,
         }}
       >
-        <Box className="p-5">
+        <div className="rounded-3xl bg-white p-5">
           <Title as="h2" className="pb-3">
-            Información principal
+            Configuración de empresa
           </Title>
 
           <FormGridWrapper>
@@ -186,7 +185,7 @@ export const CompanyForm = ({
               />
             </FormGridItem>
           </FormGridWrapper>
-        </Box>
+        </div>
 
         {actions}
       </ValidatedForm>
