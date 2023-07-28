@@ -72,13 +72,27 @@ export const verifyLoginLink = async (token: string) => {
       loginToken: null,
       loginExpiration: null,
     },
-    include: {
-      employee: true,
+    select: {
+      id: true,
+      employee: {
+        select: {
+          acceptedPrivacyPolicy: true,
+          acceptedTermsOfService: true,
+          company: {
+            select: {
+              isBlacklisted: true,
+            },
+          },
+        },
+      },
     },
   })
 
   return {
     user: updatedUser,
+    companyIsBlacklisted: Boolean(
+      updatedUser?.employee?.company?.isBlacklisted
+    ),
     hasPassword: Boolean(user.password),
     hasAcceptedTerms:
       updatedUser.employee?.acceptedPrivacyPolicy &&

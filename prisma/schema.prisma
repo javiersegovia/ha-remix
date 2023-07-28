@@ -50,6 +50,9 @@ model Company {
   address     String?
   phone       String?
 
+  // USED FOR BENEFIT BLACKLIST
+  isBlacklisted Boolean @default(false)
+
   // USED FOR PAYROLL ADVANCES
   dispersion     Float?
   paymentDays    Int[]
@@ -85,6 +88,8 @@ model Company {
 
   payrollAdvances PayrollAdvance[]
   premiumAdvances PremiumAdvance[]
+  challenges      Challenge[]
+  teams           Team[]
 }
 
 enum CompanyStatus {
@@ -240,6 +245,7 @@ model Employee {
 
   benefits            Benefit[]
   benefitConsumptions BenefitConsumption[]
+  teamMembers         TeamMember[]
 }
 
 enum EmployeeRole {
@@ -1014,4 +1020,54 @@ enum DataItemType {
   DATE
   TEXT
   NUMBER
+}
+
+model Challenge {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  title       String
+  description String?
+
+  startDate  DateTime?
+  finishDate DateTime?
+
+  // We add "description" because they are temporary values
+  // We will replace them later with specific models
+  goalDescription     String?
+  measurerDescription String?
+  rewardDescription   String?
+
+  teams Team[]
+
+  company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  companyId String
+}
+
+model Team {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  name String
+
+  company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  companyId String
+
+  members    TeamMember[]
+  challenges Challenge[]
+}
+
+model TeamMember {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  isTeamLeader Boolean @default(false)
+
+  team       Team    @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  teamId     String
+  employee   Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  employeeId String
 }

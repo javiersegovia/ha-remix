@@ -35,7 +35,17 @@ export async function verifyUserLogin(email: User['email'], password: string) {
       },
     },
     include: {
-      employee: true,
+      employee: {
+        select: {
+          acceptedPrivacyPolicy: true,
+          acceptedTermsOfService: true,
+          company: {
+            select: {
+              isBlacklisted: true,
+            },
+          },
+        },
+      },
     },
   })
 

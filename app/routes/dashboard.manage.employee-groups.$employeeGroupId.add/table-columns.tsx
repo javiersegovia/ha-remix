@@ -35,7 +35,7 @@ export const columns: ColumnDef<EmployeeDataItem>[] = [
   },
   {
     id: 'email',
-    header: ({ column }) => {
+    header: () => {
       return <span className="block text-left">Nombre colaborador</span>
     },
     accessorKey: 'user.email',

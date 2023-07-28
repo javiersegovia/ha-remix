@@ -4,7 +4,7 @@ import { Link, useSearchParams } from '@remix-run/react'
 import { ValidatedForm, validationError } from 'remix-validated-form'
 
 import { verifyUserLogin } from '~/services/user/user.server'
-import { createUserSession, getUserIdFromSession } from '~/session.server'
+import { createUserSession, getEmployee } from '~/session.server'
 import { safeRedirect } from '~/utils/utils'
 import { loginValidator } from '~/schemas/login.schema'
 import { Input } from '~/components/FormFields/Input'
@@ -13,8 +13,15 @@ import { Title } from '~/components/Typography/Title'
 import { SubmitButton } from '~/components/SubmitButton'
 
 export async function loader({ request }: LoaderArgs) {
-  const userId = await getUserIdFromSession(request)
-  if (userId) return redirect('/dashboard')
+  const employee = await getEmployee(request)
+
+  if (employee) {
+    if (employee.company.isBlacklisted) {
+      return redirect('/dashboard')
+    }
+    return redirect('/home')
+  }
+
   return null
 }
 
@@ -46,18 +53,25 @@ export async function action({ request }: ActionArgs) {
   // todo: check if user has signed terms in Zapsign
 
   let redirectPath = redirectTo
+  let baseRedirectPath: string
 
-  if (
-    !user.employee?.acceptedPrivacyPolicy &&
-    !user.employee?.acceptedTermsOfService
-  ) {
-    redirectPath = '/dashboard/welcome'
+  if (user.employee?.company?.isBlacklisted) {
+    baseRedirectPath = '/dashboard/overview'
+
+    if (
+      !user.employee?.acceptedPrivacyPolicy &&
+      !user.employee?.acceptedTermsOfService
+    ) {
+      redirectPath = '/dashboard/welcome'
+    }
+  } else {
+    baseRedirectPath = '/home'
   }
 
   return createUserSession({
     request,
     userId: user.id,
-    redirectTo: safeRedirect(redirectPath, '/dashboard/overview'),
+    redirectTo: safeRedirect(redirectPath, baseRedirectPath),
   })
 }
 
@@ -69,7 +83,7 @@ export const meta: MetaFunction = () => {
 
 export default function LoginRemixRoute() {
   const [searchParams] = useSearchParams()
-  const redirectTo = searchParams.get('redirectTo') || '/dashboard/overview'
+  const redirectTo = searchParams.get('redirectTo') || ''
 
   return (
     <section className="min-h-screen bg-[#43ab89]">
@@ -90,7 +104,7 @@ export default function LoginRemixRoute() {
             width="200"
           />
           <div className="mx-auto mb-6 mt-8 w-full rounded-none bg-white px-4 pb-6 pt-5 shadow-2xl sm:w-10/12 sm:rounded-lg sm:px-6 md:w-6/12 lg:w-5/12 xl:w-4/12 2xl:w-3/12">
-            <Title className="mb-4 text-center">Inicio de sesión</Title>
+            <Title className="mb-4 text-center">¡Bienvenido!</Title>
             <ValidatedForm
               validator={loginValidator}
               method="post"
@@ -112,12 +126,13 @@ export default function LoginRemixRoute() {
               />
               <SubmitButton data-testid="login-button">Ingresar</SubmitButton>
               <div className="w-full border-b border-gray-300 pt-4" />
+
               <div className="pt-3">
                 <Button
                   type="button"
                   href="/login-email"
                   variant={ButtonColorVariants.SECONDARY}
-                  className="text-sm"
+                  className="text-sm leading-6"
                   data-testid="login-email-button"
                 >
                   Ingresar usando correo electrónico

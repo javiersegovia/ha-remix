@@ -4,7 +4,7 @@ import { redirect } from '@remix-run/node'
 import { ValidatedForm, validationError } from 'remix-validated-form'
 
 import { requestLoginLink } from '~/services/auth.server'
-import { getUserIdFromSession } from '~/session.server'
+import { getEmployee } from '~/session.server'
 import { loginEmailValidator } from '~/schemas/login.schema'
 import { Input } from '~/components/FormFields/Input'
 import { Title } from '~/components/Typography/Title'
@@ -13,8 +13,15 @@ import { Button, ButtonColorVariants } from '~/components/Button'
 import { $path } from 'remix-routes'
 
 export async function loader({ request }: LoaderArgs) {
-  const userId = await getUserIdFromSession(request)
-  if (userId) return redirect('/dashboard')
+  const employee = await getEmployee(request)
+
+  if (employee) {
+    if (employee.company.isBlacklisted) {
+      return redirect('/dashboard')
+    }
+    return redirect('/home')
+  }
+
   return null
 }
 
@@ -57,7 +64,7 @@ export default function LoginEmailRoute() {
         />
 
         <div className="mx-auto mb-6 mt-8 w-full rounded-none bg-white px-4 pb-6 pt-5 shadow-2xl sm:w-10/12 sm:rounded-lg sm:px-6 md:w-6/12 lg:w-5/12 xl:w-4/12 2xl:w-3/12">
-          <Title className="mb-8 text-center">Inicio de sesión</Title>
+          <Title className="mb-8 text-center">¡Bienvenido!</Title>
 
           <ValidatedForm
             validator={loginEmailValidator}

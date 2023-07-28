@@ -3,5 +3,9 @@ interface ErrorMessageProps {
 }
 
 export const ErrorMessage = ({ children }: ErrorMessageProps) => {
-  return <span className="ml-1 text-xs text-red-600">{children}</span>
+  return (
+    <p className="ml-1 mt-1 inline-block text-xs leading-4 text-red-600">
+      {children}
+    </p>
+  )
 }

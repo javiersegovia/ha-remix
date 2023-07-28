@@ -7,7 +7,6 @@ import type { EmployeeBankAccountSchemaInput } from '~/services/employee/employe
 
 import { ValidatedForm } from 'remix-validated-form'
 
-import { Box } from '~/components/Layout/Box'
 import { FormGridWrapper } from '~/components/FormFields/FormGridWrapper'
 import { FormGridItem } from '~/components/FormFields/FormGridItem'
 import { Input } from '~/components/FormFields/Input'
@@ -54,7 +53,7 @@ export const EmployeeBankAccountForm = ({
           : undefined,
       }}
     >
-      <Box className="p-5 shadow-sm">
+      <div className="rounded-3xl bg-white p-5">
         <FormGridWrapper>
           <FormGridItem>
             <Select
@@ -104,7 +103,7 @@ export const EmployeeBankAccountForm = ({
             />
           </FormGridItem>
         </FormGridWrapper>
-      </Box>
+      </div>
 
       {actions}
     </ValidatedForm>

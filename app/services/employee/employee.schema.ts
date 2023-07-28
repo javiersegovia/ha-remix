@@ -85,6 +85,7 @@ export const employeeSchemaClient = z.object({
         invalid_type_error: 'Por favor, selecciona una membresía',
       })
       .int()
+      .nullish()
   ),
   currencyId: zfd.numeric(z.number().int().nullish()),
   cryptocurrencyId: zfd.numeric(z.number().int().nullish()),

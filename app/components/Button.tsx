@@ -100,9 +100,9 @@ export const ButtonElement = ({
       disabled={disabled}
       className={twMerge(
         clsx(
-          'flex w-full transform items-center justify-center rounded-[2rem] border border-transparent text-center text-base font-medium transition duration-100 active:scale-95',
+          'flex w-full transform items-center justify-center rounded-[2rem] border border-transparent text-center text-base font-medium outline-none transition duration-100 active:scale-95',
 
-          size === 'XS' && 'px-4 py-2',
+          size === 'XS' && 'px-3 py-2 text-sm',
           size === 'SM' && 'px-5 py-3',
           size === 'MD' && 'px-10 py-4',
 
@@ -111,14 +111,17 @@ export const ButtonElement = ({
           design === 'FAB' &&
             'flex h-10 w-10 items-center justify-center gap-3 rounded-full p-2 text-2xl',
 
-          isPrimary && 'bg-electricYellow-500 text-steelBlue-900',
-          isPrimary && !disabled && 'hover:bg-electricYellow-700',
+          isPrimary &&
+            'border-b-green-600 border-t-green-500 bg-gradient-to-b from-green-500 to-green-600 text-white',
+
+          isPrimary &&
+            !disabled &&
+            'hover:border-t-green-600 hover:from-green-600 hover:to-green-600',
 
           isDark && 'bg-gray-800 text-white',
           isDark && !disabled && 'hover:bg-gray-900',
 
-          isSecondary &&
-            'border border-steelBlue-700 bg-transparent text-steelBlue-700',
+          isSecondary && 'border border-gray-300 bg-transparent text-gray-800',
           isSecondary && !disabled && 'hover:bg-transparent',
 
           isAlternative && 'bg-steelBlue-700 text-white',
