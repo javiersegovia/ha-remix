@@ -54,6 +54,12 @@ export const getCompanyById = async (id: Company['id']) => {
       categories: true,
       country: true,
       contactPerson: true,
+      companyPoints: true,
+      _count: {
+        select: {
+          employees: true,
+        },
+      },
     },
   })
 }
@@ -85,6 +91,7 @@ export const createCompany = async (formData: CompanySchemaInput) => {
   const {
     countryId,
     contactPerson,
+    companyPoints,
     categoriesIds,
     benefitsIds,
     status,
@@ -115,6 +122,12 @@ export const createCompany = async (formData: CompanySchemaInput) => {
         }
       : undefined
 
+  const createCompanyPoints: Prisma.CompanyCreateInput['companyPoints'] = {
+    create: {
+      availablePoints: companyPoints?.availablePoints || 0,
+    },
+  }
+
   try {
     const company = await prisma.company.create({
       data: {
@@ -129,6 +142,8 @@ export const createCompany = async (formData: CompanySchemaInput) => {
         benefits: connectMany(benefitsIds),
 
         contactPerson: createContactPerson,
+        companyPoints: createCompanyPoints,
+
         status,
 
         logoImage: logoImageKey
@@ -174,6 +189,7 @@ export const updateCompanyById = async (
     categoriesIds,
     benefitsIds,
     contactPerson,
+    companyPoints,
     status,
     paymentDays,
     dispersion,
@@ -191,6 +207,7 @@ export const updateCompanyById = async (
     select: {
       logoImage: { select: { key: true } },
       contactPerson: { select: { id: true } },
+      companyPoints: { select: { id: true } },
       countryId: true,
     },
   })
@@ -223,6 +240,17 @@ export const updateCompanyById = async (
       : {
           delete: !!existingCompany.contactPerson?.id,
         }
+
+  const upsertCompanyPoints: Prisma.CompanyUpdateInput['companyPoints'] = {
+    upsert: {
+      create: {
+        availablePoints: companyPoints?.availablePoints || 0,
+      },
+      update: {
+        availablePoints: companyPoints?.availablePoints || 0,
+      },
+    },
+  }
 
   if (
     existingCompany.logoImage &&
@@ -258,6 +286,7 @@ export const updateCompanyById = async (
         benefits: setMany(benefitsIds),
 
         contactPerson: upsertContactPerson,
+        companyPoints: upsertCompanyPoints,
         status,
 
         logoImage: createLogoImage,
