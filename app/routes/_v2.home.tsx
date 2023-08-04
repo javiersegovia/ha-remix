@@ -48,11 +48,11 @@ const HomeRoute = () => {
         <img
           src={company.logoImage.url}
           alt="Company logo"
-          className=" mx-auto mt-6 max-w-xs"
+          className="mx-auto mt-6 max-w-full sm:max-w-xs"
         />
       )}
 
-      <section className="mb-20 mt-10 grid grid-cols-4 gap-6">
+      <section className="mb-20 mt-10 grid gap-6 md:grid-cols-4">
         <Card>
           <Title as="h2">{availablePoints}</Title>
           <Text>Puntos por asignar</Text>
