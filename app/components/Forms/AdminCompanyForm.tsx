@@ -8,6 +8,7 @@ import type {
   Company,
   CompanyCategory,
   CompanyContactPerson,
+  CompanyPoints,
   Country,
   Image,
 } from '@prisma/client'
@@ -59,6 +60,7 @@ interface AdminCompanyFormProps<T = CompanySchemaInput> {
       CompanyContactPerson,
       'firstName' | 'lastName' | 'phone'
     > | null
+    companyPoints?: Pick<CompanyPoints, 'availablePoints'> | null
   }
 }
 
@@ -87,6 +89,7 @@ export const AdminCompanyForm = ({
     benefits: companyBenefits,
     countryId,
     contactPerson,
+    companyPoints,
     logoImage,
   } = defaultValues || {}
 
@@ -113,6 +116,7 @@ export const AdminCompanyForm = ({
           benefitsIds: companyBenefits?.map((benefit) => benefit.id),
           countryId,
           contactPerson,
+          companyPoints,
         }}
       >
         <Box className="p-5">
@@ -231,6 +235,21 @@ export const AdminCompanyForm = ({
                 type="text"
                 label="Teléfono"
                 placeholder="Teléfono de la persona contacto"
+              />
+            </FormGridItem>
+          </FormGridWrapper>
+
+          <Title as="h4" className="py-3">
+            Puntos
+          </Title>
+
+          <FormGridWrapper>
+            <FormGridItem>
+              <Input
+                name="companyPoints.availablePoints"
+                type="number"
+                label="Puntos disponibles por asignar"
+                placeholder="Puntos por asignar"
               />
             </FormGridItem>
           </FormGridWrapper>

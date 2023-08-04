@@ -7,6 +7,10 @@ generator client {
   provider = "prisma-client-js"
 }
 
+generator dbml {
+  provider = "prisma-dbml-generator"
+}
+
 model User {
   id        String   @id @default(cuid())
   createdAt DateTime @default(now())
@@ -90,6 +94,9 @@ model Company {
   premiumAdvances PremiumAdvance[]
   challenges      Challenge[]
   teams           Team[]
+
+  companyPoints     CompanyPoints?
+  pointTransactions PointTransaction[]
 }
 
 enum CompanyStatus {
@@ -246,6 +253,9 @@ model Employee {
   benefits            Benefit[]
   benefitConsumptions BenefitConsumption[]
   teamMembers         TeamMember[]
+
+  pointTransactionsSent     PointTransaction[] @relation("sender")
+  pointTransactionsReceived PointTransaction[] @relation("receiver")
 }
 
 enum EmployeeRole {
@@ -1066,8 +1076,42 @@ model TeamMember {
 
   isTeamLeader Boolean @default(false)
 
-  team       Team    @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  team       Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
   teamId     String
   employee   Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
   employeeId String
+}
+
+model CompanyPoints {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  availablePoints Int @default(0)
+  spentPoints     Int @default(0)
+
+  company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  companyId String  @unique
+}
+
+model PointTransaction {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  value Int
+  type  PointTransactionType
+
+  sender     Employee? @relation("sender", fields: [senderId], references: [id], onDelete: SetNull)
+  senderId   String?
+  receiver   Employee? @relation("receiver", fields: [receiverId], references: [id], onDelete: SetNull)
+  receiverId String?
+
+  company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  companyId String
+}
+
+enum PointTransactionType {
+  TRANSFER
+  CONSUMPTION
 }

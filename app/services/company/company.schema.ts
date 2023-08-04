@@ -67,6 +67,12 @@ const companySchema = z.object({
         .nullish(),
     })
     .nullish(),
+
+  companyPoints: z
+    .object({
+      availablePoints: zfd.numeric(z.number()).nullish(),
+    })
+    .nullish(),
 })
 
 export const validator = withZod(companySchema)
