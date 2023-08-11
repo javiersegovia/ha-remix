@@ -7,7 +7,7 @@ import { HiOutlinePencilSquare, HiOutlineTrash } from 'react-icons/hi2'
 import { MenuButton } from '../Button/MenuButton'
 import { $path } from 'remix-routes'
 import type { ReactNode } from 'react'
-import { formatDate } from '~/utils/formatDate'
+import { formatDate, sanitizeDate } from '~/utils/formatDate'
 
 type ChallengeCardProps = Pick<
   Challenge,
@@ -60,11 +60,15 @@ export const ChallengeCard = ({
     },
     {
       label: 'Fecha de inicio',
-      content: startDate ? formatDate(Date.parse(startDate)) : '-',
+      content: startDate
+        ? formatDate(sanitizeDate(new Date(Date.parse(startDate))) as Date)
+        : '-',
     },
     {
       label: 'Fecha de finalización',
-      content: finishDate ? formatDate(Date.parse(finishDate)) : '-',
+      content: finishDate
+        ? formatDate(sanitizeDate(new Date(Date.parse(finishDate))) as Date)
+        : '-',
     },
     {
       label: 'Recompensa',

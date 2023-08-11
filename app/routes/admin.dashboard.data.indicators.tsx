@@ -4,7 +4,11 @@ import type { TableRowProps } from '~/components/Lists/Table'
 import { useLoaderData, useOutlet } from '@remix-run/react'
 import { json } from '@remix-run/node'
 
-import { Button, ButtonIconVariants } from '~/components/Button'
+import {
+  Button,
+  ButtonColorVariants,
+  ButtonIconVariants,
+} from '~/components/Button'
 import { Container } from '~/components/Layout/Container'
 import { TitleWithActions } from '~/components/Layout/TitleWithActions'
 import { Table } from '~/components/Lists/Table'
@@ -35,14 +39,30 @@ export default function IndicatorIndexRoute() {
 
   const outlet = useOutlet()
 
-  const headings = ['Nombre']
+  const headings = ['Nombre', '']
 
   const rows: TableRowProps[] = indicators?.map((indicator) => ({
     rowId: indicator.id,
     href: $path('/admin/dashboard/data/indicators/:indicatorId', {
       indicatorId: indicator.id,
     }),
-    items: [indicator.name],
+    items: [
+      indicator.name,
+      <Button
+        key={indicator.id}
+        href={$path(
+          '/admin/dashboard/data/indicators/:indicatorId/activities',
+          {
+            indicatorId: indicator.id,
+          }
+        )}
+        size="XS"
+        className="ml-auto w-auto"
+        variant={ButtonColorVariants.SECONDARY}
+      >
+        Ver actividad
+      </Button>,
+    ],
   }))
 
   return (
