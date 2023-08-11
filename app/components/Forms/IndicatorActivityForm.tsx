@@ -33,7 +33,7 @@ export const IndicatorActivityForm = ({
               name="value"
               type="text"
               label="Valor"
-              placeholder="Ingrese un valor"
+              placeholder="Ej: 5000"
             />
           </FormGridItem>
 
