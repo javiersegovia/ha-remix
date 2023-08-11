@@ -254,8 +254,9 @@ model Employee {
   benefitConsumptions BenefitConsumption[]
   teamMembers         TeamMember[]
 
-  pointTransactionsSent     PointTransaction[] @relation("sender")
-  pointTransactionsReceived PointTransaction[] @relation("receiver")
+  pointTransactionsSent     PointTransaction[]  @relation("sender")
+  pointTransactionsReceived PointTransaction[]  @relation("receiver")
+  IndicatorActivity         IndicatorActivity[]
 }
 
 enum EmployeeRole {
@@ -1053,6 +1054,10 @@ model Challenge {
 
   company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
   companyId String
+
+  goal        Float?
+  indicator   Indicator? @relation(fields: [indicatorId], references: [id])
+  indicatorId Int?
 }
 
 model Team {
@@ -1114,4 +1119,37 @@ model PointTransaction {
 enum PointTransactionType {
   TRANSFER
   CONSUMPTION
+}
+
+model Indicator {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  name String // Ej. "Ventas"
+  type IndicatorType
+
+  activities IndicatorActivity[]
+  challenges Challenge[]
+}
+
+// Here we can design custom activity logic based on predefined options.
+// Right now, we have only the "CUSTOM" type, which can be adapted for anything.
+// Later, we can add new types, such as "PRODUCT_SALE" or "TASK_COMPLETION".
+enum IndicatorType {
+  CUSTOM
+}
+
+model IndicatorActivity {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  value Float
+
+  employee   Employee @relation(fields: [employeeId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  employeeId String
+
+  indicator   Indicator @relation(fields: [indicatorId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  indicatorId Int
 }

@@ -3,6 +3,7 @@ import type { ChallengeSchemaInput } from './challenge.schema'
 
 import { prisma } from '~/db.server'
 import { connectMany, setMany } from '~/utils/relationships'
+import { sanitizeDate } from '~/utils/formatDate'
 
 export const getChallengesByCompanyId = (companyId: Company['id']) => {
   return prisma.challenge.findMany({
@@ -14,6 +15,7 @@ export const getChallengesByCompanyId = (companyId: Company['id']) => {
     },
     include: {
       teams: true,
+      indicator: true,
     },
   })
 }
@@ -48,7 +50,7 @@ export const updateChallengeById = (
   data: ChallengeSchemaInput,
   challengeId: Challenge['id']
 ) => {
-  const { teamIds, ...challengeData } = data
+  const { teamIds, startDate, finishDate, ...challengeData } = data
 
   return prisma.challenge.update({
     where: {
@@ -56,6 +58,8 @@ export const updateChallengeById = (
     },
     data: {
       ...challengeData,
+      startDate: sanitizeDate(startDate) || null,
+      finishDate: sanitizeDate(finishDate) || null,
       teams: setMany(teamIds),
     },
   })

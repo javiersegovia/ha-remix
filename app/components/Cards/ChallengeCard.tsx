@@ -1,4 +1,4 @@
-import type { Challenge, Team } from '@prisma/client'
+import type { Challenge, Indicator, Team } from '@prisma/client'
 
 import { Card } from './Card'
 import { Title } from '../Typography/Title'
@@ -7,20 +7,16 @@ import { HiOutlinePencilSquare, HiOutlineTrash } from 'react-icons/hi2'
 import { MenuButton } from '../Button/MenuButton'
 import { $path } from 'remix-routes'
 import type { ReactNode } from 'react'
-import { formatDate } from '~/utils/formatDate'
+import { formatDate, sanitizeDate } from '~/utils/formatDate'
 
 type ChallengeCardProps = Pick<
   Challenge,
-  | 'id'
-  | 'title'
-  | 'description'
-  | 'goalDescription'
-  | 'rewardDescription'
-  | 'measurerDescription'
+  'id' | 'title' | 'description' | 'goal' | 'rewardDescription'
 > & {
   startDate?: string | null
   finishDate?: string | null
   teams?: Pick<Team, 'id' | 'name'>[]
+  indicator?: Pick<Indicator, 'name'> | null
 }
 
 type TGridItems = {
@@ -34,9 +30,9 @@ export const ChallengeCard = ({
   description,
   startDate,
   finishDate,
-  goalDescription,
+  goal,
   rewardDescription,
-  measurerDescription,
+  indicator,
   teams,
 }: ChallengeCardProps) => {
   const navigation = [
@@ -64,11 +60,15 @@ export const ChallengeCard = ({
     },
     {
       label: 'Fecha de inicio',
-      content: startDate ? formatDate(Date.parse(startDate)) : '-',
+      content: startDate
+        ? formatDate(sanitizeDate(new Date(Date.parse(startDate))) as Date)
+        : '-',
     },
     {
       label: 'Fecha de finalización',
-      content: finishDate ? formatDate(Date.parse(finishDate)) : '-',
+      content: finishDate
+        ? formatDate(sanitizeDate(new Date(Date.parse(finishDate))) as Date)
+        : '-',
     },
     {
       label: 'Recompensa',
@@ -76,11 +76,11 @@ export const ChallengeCard = ({
     },
     {
       label: 'Meta',
-      content: goalDescription || '-',
+      content: goal || '-',
     },
     {
-      label: 'Medidor',
-      content: measurerDescription || '-',
+      label: 'Indicador de progreso',
+      content: indicator?.name || '-',
     },
   ]
 

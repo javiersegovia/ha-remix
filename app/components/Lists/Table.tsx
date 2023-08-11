@@ -38,8 +38,8 @@ export const Table = ({
         <div className="inline-block min-w-full py-2 align-middle xl:px-8">
           <div className="overflow-hidden border-b border-gray-200 shadow sm:rounded-[20px]">
             <table className="min-w-full divide-y divide-gray-200 text-sm">
-              <thead>
-                <tr>
+              <thead className="bg-white">
+                <tr className="bg-white">
                   {headings.map((heading, index) => (
                     <TableHeading
                       key={heading}

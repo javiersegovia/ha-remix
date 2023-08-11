@@ -99,8 +99,8 @@ const HomeRoute = () => {
                     description,
                     startDate,
                     finishDate,
-                    goalDescription,
-                    measurerDescription,
+                    goal,
+                    indicator,
                     rewardDescription,
                     teams: currentTeams,
                   }) => {
@@ -112,8 +112,8 @@ const HomeRoute = () => {
                         description={description}
                         startDate={startDate}
                         finishDate={finishDate}
-                        goalDescription={goalDescription}
-                        measurerDescription={measurerDescription}
+                        goal={goal}
+                        indicator={indicator}
                         rewardDescription={rewardDescription}
                         teams={currentTeams}
                       />

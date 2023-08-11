@@ -12,6 +12,7 @@ import { ChallengeForm } from '~/components/Forms/ChallengeForm'
 import { SubmitButton } from '~/components/SubmitButton'
 import { challengeValidator } from '~/services/challenge/challenge.schema'
 import { createChallenge } from '~/services/challenge/challenge.server'
+import { getIndicators } from '~/services/indicator/indicator.server'
 import { getTeamsByCompanyId } from '~/services/team/team.server'
 import { requireEmployee } from '~/session.server'
 
@@ -19,9 +20,11 @@ export const loader = async ({ request }: LoaderArgs) => {
   const employee = await requireEmployee(request)
 
   const teams = await getTeamsByCompanyId(employee.companyId)
+  const indicators = await getIndicators()
 
   return json({
     teams,
+    indicators,
   })
 }
 
@@ -44,7 +47,7 @@ export const action = async ({ request }: ActionArgs) => {
 }
 
 const HomeCreateChallengeRoute = () => {
-  const { teams } = useLoaderData<typeof loader>() || {}
+  const { teams, indicators } = useLoaderData<typeof loader>() || {}
 
   return (
     <>
@@ -61,7 +64,11 @@ const HomeCreateChallengeRoute = () => {
           </SubmitButton>
         }
       >
-        <ChallengeForm formId="ChallengeForm" teams={teams} />
+        <ChallengeForm
+          formId="ChallengeForm"
+          teams={teams}
+          indicators={indicators}
+        />
       </AnimatedRightPanel>
     </>
   )

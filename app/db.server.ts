@@ -14,18 +14,6 @@ declare global {
 // create a new connection to the DB with every change either.
 if (process.env.NODE_ENV === 'production') {
   prisma = new PrismaClient()
-  // .$extends({
-  //   result: {
-  //     user: {
-  //       fullName: {
-  //         needs: { firstName: true, lastName: true },
-  //         compute(user) {
-  //           return `${user.firstName} ${user.lastName}`
-  //         },
-  //       },
-  //     },
-  //   },
-  // })
 } else {
   if (!global.__db) {
     global.__db = new PrismaClient()
@@ -33,4 +21,17 @@ if (process.env.NODE_ENV === 'production') {
   prisma = global.__db
 }
 
-export { prisma }
+const xprisma = prisma.$extends({
+  result: {
+    user: {
+      fullName: {
+        needs: { firstName: true, lastName: true },
+        compute(user) {
+          return `${user.firstName} ${user.lastName}`
+        },
+      },
+    },
+  },
+})
+
+export { prisma, xprisma }

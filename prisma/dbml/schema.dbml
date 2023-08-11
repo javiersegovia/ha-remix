@@ -193,6 +193,7 @@ Table Employee {
   teamMembers TeamMember [not null]
   pointTransactionsSent PointTransaction [not null]
   pointTransactionsReceived PointTransaction [not null]
+  IndicatorActivity IndicatorActivity [not null]
 }
 
 Table EmployeeGroup {
@@ -788,6 +789,9 @@ Table Challenge {
   teams Team [not null]
   company Company [not null]
   companyId String [not null]
+  goal Float
+  indicator Indicator
+  indicatorId Int
 }
 
 Table Team {
@@ -834,6 +838,27 @@ Table PointTransaction {
   receiverId String
   company Company [not null]
   companyId String [not null]
+}
+
+Table Indicator {
+  id Int [pk, increment]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  name String [not null]
+  type IndicatorType [not null]
+  activities IndicatorActivity [not null]
+  challenges Challenge [not null]
+}
+
+Table IndicatorActivity {
+  id Int [pk, increment]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  value Float [not null]
+  employee Employee [not null]
+  employeeId String [not null]
+  indicator Indicator [not null]
+  indicatorId Int [not null]
 }
 
 Enum CompanyStatus {
@@ -917,6 +942,10 @@ Enum DataItemType {
 Enum PointTransactionType {
   TRANSFER
   CONSUMPTION
+}
+
+Enum IndicatorType {
+  CUSTOM
 }
 
 Ref: User.roleId > UserRole.id [delete: Set Null]
@@ -1081,6 +1110,8 @@ Ref: DataItem.benefitId > Benefit.id [delete: Cascade]
 
 Ref: Challenge.companyId > Company.id [delete: Cascade]
 
+Ref: Challenge.indicatorId > Indicator.id
+
 Ref: Team.companyId > Company.id [delete: Cascade]
 
 Ref: TeamMember.teamId > Team.id [delete: Cascade]
@@ -1094,3 +1125,7 @@ Ref: PointTransaction.senderId > Employee.id [delete: Set Null]
 Ref: PointTransaction.receiverId > Employee.id [delete: Set Null]
 
 Ref: PointTransaction.companyId > Company.id [delete: Cascade]
+
+Ref: IndicatorActivity.employeeId > Employee.id [delete: Cascade]
+
+Ref: IndicatorActivity.indicatorId > Indicator.id [delete: Cascade]

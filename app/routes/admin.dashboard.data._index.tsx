@@ -9,6 +9,7 @@ import { requireAdminUserId } from '~/session.server'
 import { json } from '@remix-run/node'
 import { prisma } from '~/db.server'
 import { useLoaderData } from '@remix-run/react'
+import { $path } from 'remix-routes'
 
 const headings: TableProps['headings'] = ['Nombre', 'Resultados']
 
@@ -36,6 +37,7 @@ export const loader = async ({ request }: LoaderArgs) => {
     identityDocumentTypes,
     ageRanges,
     salaryRanges,
+    indicators,
   ] = await Promise.all([
     prisma.bank.count(),
     prisma.benefitCategory.count(),
@@ -51,6 +53,7 @@ export const loader = async ({ request }: LoaderArgs) => {
     prisma.identityDocumentType.count(),
     prisma.ageRange.count(),
     prisma.salaryRange.count(),
+    prisma.indicator.count(),
   ])
 
   const rows: TableRowProps[] = [
@@ -95,6 +98,11 @@ export const loader = async ({ request }: LoaderArgs) => {
       rowId: 'genders',
       items: ['Géneros', genders],
       href: '/admin/dashboard/data/genders',
+    },
+    {
+      rowId: 'indicators',
+      items: ['Indicadores de progreso', indicators],
+      href: $path('/admin/dashboard/data/indicators'),
     },
     {
       rowId: 'currencies',

@@ -76,12 +76,12 @@ export const AnimatedRightPanel = ({
             </Link>
           </section>
 
-          <section className="mx-3 my-6 flex-grow overflow-y-auto px-3">
+          <section className="z-20 mx-3 my-6 flex-grow overflow-y-auto px-3">
             {children}
           </section>
 
           {actions && (
-            <section className="mt-auto px-6 pt-6">{actions}</section>
+            <section className="z-0 mt-auto px-6 pt-6">{actions}</section>
           )}
         </motion.div>
       </motion.div>
