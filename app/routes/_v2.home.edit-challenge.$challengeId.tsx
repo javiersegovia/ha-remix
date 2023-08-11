@@ -17,6 +17,7 @@ import { challengeValidator } from '~/services/challenge/challenge.schema'
 import { parseISOLocalNullable } from '~/utils/formatDate'
 import { useToastError } from '~/hooks/useToastError'
 import { getTeamsByCompanyId } from '../services/team/team.server'
+import { getIndicators } from '~/services/indicator/indicator.server'
 
 export const loader = async ({ request, params }: LoaderArgs) => {
   const employee = await requireEmployee(request)
@@ -30,7 +31,6 @@ export const loader = async ({ request, params }: LoaderArgs) => {
   }
 
   const challenge = await getChallengeById(Number(challengeId))
-  const teams = await getTeamsByCompanyId(employee.companyId)
 
   if (!challenge) {
     throw badRequest({
@@ -39,7 +39,10 @@ export const loader = async ({ request, params }: LoaderArgs) => {
     })
   }
 
-  return json({ challenge, teams })
+  const teams = await getTeamsByCompanyId(employee.companyId)
+  const indicators = await getIndicators()
+
+  return json({ challenge, teams, indicators })
 }
 
 export const action = async ({ request, params }: ActionArgs) => {
@@ -71,15 +74,16 @@ export const action = async ({ request, params }: ActionArgs) => {
 }
 
 const HomeEditChallengeRoute = () => {
-  const { challenge, teams } = useLoaderData<typeof loader>() || {}
+  const { challenge, teams, indicators } = useLoaderData<typeof loader>() || {}
   const {
     title,
     description,
-    goalDescription,
+    goal,
     measurerDescription,
     rewardDescription,
     startDate,
     finishDate,
+    indicatorId,
     teams: currentTeams,
   } = challenge || {}
 
@@ -100,16 +104,18 @@ const HomeEditChallengeRoute = () => {
       >
         <ChallengeForm
           teams={teams}
+          indicators={indicators}
           formId="ChallengeForm"
           defaultValues={{
             title,
             description,
-            goalDescription,
+            goal,
             measurerDescription,
             rewardDescription,
             startDate: parseISOLocalNullable(startDate),
             finishDate: parseISOLocalNullable(finishDate),
             teams: currentTeams,
+            indicatorId,
           }}
         />
       </AnimatedRightPanel>

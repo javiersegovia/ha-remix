@@ -37,14 +37,6 @@ export const challengeSchema = z.object({
     .nullable()
     .default(null),
 
-  goalDescription: zfd.text(
-    z
-      .string({
-        required_error: 'Ingrese una meta',
-      })
-      .trim()
-  ),
-
   measurerDescription: z
     .string({
       required_error: 'Ingrese el nombre del medidor',
@@ -59,6 +51,17 @@ export const challengeSchema = z.object({
     })
     .trim()
     .nullish(),
+
+  goal: zfd.numeric(
+    z
+      .number({
+        required_error: 'Ingrese una meta',
+      })
+      .positive()
+      .nullish()
+  ),
+
+  indicatorId: zfd.numeric(z.number().nullish()),
 
   teamIds: z.array(zfd.text(z.string())).nullish(),
 })

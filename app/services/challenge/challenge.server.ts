@@ -14,6 +14,7 @@ export const getChallengesByCompanyId = (companyId: Company['id']) => {
     },
     include: {
       teams: true,
+      indicator: true,
     },
   })
 }

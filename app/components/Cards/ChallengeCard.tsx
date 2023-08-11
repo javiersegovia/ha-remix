@@ -1,4 +1,4 @@
-import type { Challenge, Team } from '@prisma/client'
+import type { Challenge, Indicator, Team } from '@prisma/client'
 
 import { Card } from './Card'
 import { Title } from '../Typography/Title'
@@ -11,16 +11,12 @@ import { formatDate } from '~/utils/formatDate'
 
 type ChallengeCardProps = Pick<
   Challenge,
-  | 'id'
-  | 'title'
-  | 'description'
-  | 'goalDescription'
-  | 'rewardDescription'
-  | 'measurerDescription'
+  'id' | 'title' | 'description' | 'goal' | 'rewardDescription'
 > & {
   startDate?: string | null
   finishDate?: string | null
   teams?: Pick<Team, 'id' | 'name'>[]
+  indicator?: Pick<Indicator, 'name'> | null
 }
 
 type TGridItems = {
@@ -34,9 +30,9 @@ export const ChallengeCard = ({
   description,
   startDate,
   finishDate,
-  goalDescription,
+  goal,
   rewardDescription,
-  measurerDescription,
+  indicator,
   teams,
 }: ChallengeCardProps) => {
   const navigation = [
@@ -76,11 +72,11 @@ export const ChallengeCard = ({
     },
     {
       label: 'Meta',
-      content: goalDescription || '-',
+      content: goal || '-',
     },
     {
-      label: 'Medidor',
-      content: measurerDescription || '-',
+      label: 'Indicador de progreso',
+      content: indicator?.name || '-',
     },
   ]
 
