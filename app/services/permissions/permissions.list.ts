@@ -27,4 +27,12 @@ export const defaultPermissions = [
     code: PermissionCode.MANAGE_EMPLOYEE_GROUP,
     name: 'Crear, consultar o editar grupos de colaboradores',
   },
+  {
+    code: PermissionCode.VIEW_INDICATOR_ACTIVITY,
+    name: 'Ver actividades existentes en los indicadores',
+  },
+  {
+    code: PermissionCode.MANAGE_INDICATOR_ACTIVITY,
+    name: 'Crear, editar o eliminar actividades en los indicadores',
+  },
 ] as const
