@@ -1150,6 +1150,8 @@ model IndicatorActivity {
 
   value Float
 
+  date DateTime @default(now())
+
   employee   Employee @relation(fields: [employeeId], references: [id], onUpdate: Cascade, onDelete: Cascade)
   employeeId String
 

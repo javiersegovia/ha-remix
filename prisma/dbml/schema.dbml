@@ -855,6 +855,7 @@ Table IndicatorActivity {
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [not null]
   value Float [not null]
+  date DateTime [default: `now()`, not null]
   employee Employee [not null]
   employeeId String [not null]
   indicator Indicator [not null]

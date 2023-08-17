@@ -1,15 +1,25 @@
-import type { LoaderArgs, MetaFunction } from '@remix-run/server-runtime'
+import type {
+  ActionArgs,
+  LoaderArgs,
+  MetaFunction,
+} from '@remix-run/server-runtime'
 
-import { json } from '@remix-run/node'
+import { json, redirect } from '@remix-run/node'
 import { useLoaderData } from '@remix-run/react'
 import { $path } from 'remix-routes'
 import { badRequest } from '~/utils/responses'
 
 import { requireAdminUserId } from '~/session.server'
 import { getIndicatorById } from '~/services/indicator/indicator.server'
-import { getIndicatorActivitiesByIndicatorId } from '~/services/indicator-activity/indicator-activity.server'
+import {
+  createIndicatorActivity,
+  getIndicatorActivitiesByIndicatorId,
+} from '~/services/indicator-activity/indicator-activity.server'
 import { AnimatedRightPanel } from '~/components/Animations/AnimatedRightPanel'
 import { IndicatorActivityForm } from '~/components/Forms/IndicatorActivityForm'
+import { SubmitButton } from '~/components/SubmitButton'
+import { indicatorActivityValidator } from '~/services/indicator-activity/indicator-activity.schema'
+import { validationError } from 'remix-validated-form'
 
 export const meta: MetaFunction = () => {
   return {
@@ -58,6 +68,39 @@ export const loader = async ({ request, params }: LoaderArgs) => {
   return json({ indicator, indicatorActivities, onCloseRedirectTo })
 }
 
+export const action = async ({ request, params }: ActionArgs) => {
+  await requireAdminUserId(request)
+
+  const { indicatorId } = params
+
+  if (!indicatorId || isNaN(Number(indicatorId))) {
+    throw badRequest({
+      message: 'No se encontró el ID del indicador',
+      redirect: $path('/admin/dashboard/data/indicators'),
+    })
+  }
+
+  const formData = await request.formData()
+
+  const { data, submittedData, error } =
+    await indicatorActivityValidator.validate(formData)
+
+  if (error) {
+    return validationError(error, submittedData)
+  }
+
+  const onCloseRedirectTo = $path(
+    '/admin/dashboard/data/indicators/:indicatorId/activities',
+    {
+      indicatorId,
+    }
+  )
+
+  await createIndicatorActivity(data, Number(indicatorId))
+
+  return redirect(onCloseRedirectTo)
+}
+
 export default function IndicatorActivityIndexRoute() {
   const { onCloseRedirectTo } = useLoaderData<typeof loader>() || {}
   const formId = 'CreateIndicatorActivityForm'
@@ -66,6 +109,11 @@ export default function IndicatorActivityIndexRoute() {
     <AnimatedRightPanel
       title="Crear actividad"
       onCloseRedirectTo={onCloseRedirectTo}
+      actions={
+        <SubmitButton form={formId} size="SM" className="ml-auto md:w-auto">
+          Crear actividad
+        </SubmitButton>
+      }
     >
       <IndicatorActivityForm formId={formId} />
     </AnimatedRightPanel>

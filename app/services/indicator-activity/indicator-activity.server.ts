@@ -1,5 +1,6 @@
 import type { Indicator, IndicatorActivity } from '@prisma/client'
-import { xprisma } from '~/db.server'
+import type { IndicatorActivitySchemaInput } from './indicator-activity.schema'
+import { prisma, xprisma } from '~/db.server'
 
 export const getIndicatorActivitiesByIndicatorId = async (
   indicatorId: Indicator['id']
@@ -13,6 +14,8 @@ export const getIndicatorActivitiesByIndicatorId = async (
     },
     select: {
       id: true,
+      value: true,
+      date: true,
       employee: {
         select: {
           user: {
@@ -35,8 +38,12 @@ export const getIndicatorActivityById = async (
       id: indicatorActivityId,
     },
     select: {
+      id: true,
+      value: true,
+      date: true,
       employee: {
         select: {
+          id: true,
           user: {
             select: {
               email: true,
@@ -45,6 +52,50 @@ export const getIndicatorActivityById = async (
           },
         },
       },
+    },
+  })
+}
+
+export const createIndicatorActivity = (
+  data: IndicatorActivitySchemaInput,
+  indicatorId: Indicator['id']
+) => {
+  const { value, date, employeeId } = data
+
+  return prisma.indicatorActivity.create({
+    data: {
+      value,
+      date: date as Date,
+      employeeId,
+      indicatorId,
+    },
+  })
+}
+
+export const updateIndicatorActivityById = (
+  data: IndicatorActivitySchemaInput,
+  indicatorActivityId: Indicator['id']
+) => {
+  const { value, date, employeeId } = data
+
+  return prisma.indicatorActivity.update({
+    where: {
+      id: indicatorActivityId,
+    },
+    data: {
+      value,
+      date: date as Date,
+      employeeId,
+    },
+  })
+}
+
+export const deleteIndicatorActivityById = async (
+  indicatorActivityId: IndicatorActivity['id']
+) => {
+  return prisma.indicatorActivity.delete({
+    where: {
+      id: indicatorActivityId,
     },
   })
 }
