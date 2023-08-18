@@ -43,7 +43,7 @@ export default function IndicatorCreateRoute() {
       onCloseRedirectTo={onCloseRedirectTo}
       actions={
         <SubmitButton form={formId} size="SM" className="ml-auto md:w-auto">
-          Crear
+          Crear indicador
         </SubmitButton>
       }
     >

@@ -40,6 +40,7 @@ interface SelectProps extends TSelectProps {
   noOptionsText?: string
   defaultValue?: TSelectOption | null
   onSelectChange?: (newValue?: TOptionValue | null) => void
+  onInputChange?: (newValue?: string | null) => void
 }
 
 const formatOptions = (
@@ -80,6 +81,7 @@ export const Select = ({
   disabled,
   noOptionsText,
   onSelectChange,
+  onInputChange,
 }: SelectProps) => {
   const { error: formError, defaultValue, validate } = useField(name)
   const [value, setValue] = useControlField<TOptionValue | undefined>(name)
@@ -149,6 +151,7 @@ export const Select = ({
                 }
                 value={currentValue}
                 onBlur={validate}
+                onInputChange={onInputChange}
                 onChange={(newValue) => {
                   setValue(getSelectValue(newValue))
                   validate()

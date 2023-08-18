@@ -25,7 +25,7 @@ import { PayrollAdvancePaymentMethod, EmployeeStatus } from '@prisma/client'
 import { Response } from '@remix-run/node'
 import { badRequest, notFound } from '~/utils/responses'
 import { hash } from 'bcryptjs'
-import { prisma } from '~/db.server'
+import { prisma, xprisma } from '~/db.server'
 import {
   connect,
   connectMany,
@@ -116,6 +116,57 @@ export const getEmployeeById = async (employeeId: Employee['id']) => {
           lastName: true,
           email: true,
           roleId: true,
+        },
+      },
+    },
+  })
+}
+
+export const findEmployeesByQuery = async (
+  keywords: string,
+  companyId?: Company['id'] | null
+) => {
+  return xprisma.employee.findMany({
+    where: {
+      AND: [
+        { companyId: companyId || undefined },
+        {
+          OR: [
+            {
+              user: {
+                firstName: {
+                  contains: keywords,
+                  mode: 'insensitive',
+                },
+              },
+            },
+            {
+              user: {
+                lastName: {
+                  contains: keywords,
+                  mode: 'insensitive',
+                },
+              },
+            },
+            {
+              user: {
+                email: {
+                  contains: keywords,
+                  mode: 'insensitive',
+                },
+              },
+            },
+          ],
+        },
+      ],
+    },
+    take: 50,
+    select: {
+      id: true,
+      user: {
+        select: {
+          email: true,
+          fullName: true,
         },
       },
     },

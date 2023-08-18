@@ -8,6 +8,12 @@ import { hasPermissionByUserId } from '~/services/permissions/permissions.server
 import { PermissionCode } from '@prisma/client'
 import { Container } from '~/components/Layout/Container'
 
+const {
+  MANAGE_COMPANY,
+  MANAGE_EMPLOYEE_MAIN_INFORMATION,
+  VIEW_INDICATOR_ACTIVITY,
+} = PermissionCode
+
 export const loader = async ({ request }: LoaderArgs) => {
   const employee = await requireEmployee(request)
 
@@ -15,15 +21,12 @@ export const loader = async ({ request }: LoaderArgs) => {
     user: { id: userId, firstName, lastName },
   } = employee
 
-  const canManageCompany = await hasPermissionByUserId(
-    userId,
-    PermissionCode.MANAGE_COMPANY
-  )
-
-  const canManageEmployees = await hasPermissionByUserId(
-    userId,
-    PermissionCode.MANAGE_EMPLOYEE_MAIN_INFORMATION
-  )
+  const [canManageCompany, canManageEmployees, canViewIndicatorActivity] =
+    await Promise.all([
+      hasPermissionByUserId(userId, MANAGE_COMPANY),
+      hasPermissionByUserId(userId, MANAGE_EMPLOYEE_MAIN_INFORMATION),
+      hasPermissionByUserId(userId, VIEW_INDICATOR_ACTIVITY),
+    ])
 
   return json({
     avatar: {
@@ -32,6 +35,7 @@ export const loader = async ({ request }: LoaderArgs) => {
     permissions: {
       canManageCompany,
       canManageEmployees,
+      canViewIndicatorActivity,
     },
   })
 }
