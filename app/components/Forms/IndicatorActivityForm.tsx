@@ -1,5 +1,11 @@
-import type { Employee, IndicatorActivity } from '@prisma/client'
+import type {
+  Company,
+  Employee,
+  Indicator,
+  IndicatorActivity,
+} from '@prisma/client'
 import type { loader as employeesLoader } from '~/routes/_api.employees'
+import type { getIndicators } from '~/services/indicator/indicator.server'
 
 import debounce from 'lodash.debounce'
 import { useFetcher } from '@remix-run/react'
@@ -9,15 +15,21 @@ import { FormGridWrapper } from '../FormFields/FormGridWrapper'
 import { FormGridItem } from '../FormFields/FormGridItem'
 import { Input } from '../FormFields/Input'
 import { Select } from '../FormFields/Select'
-import { indicatorActivityValidator } from '~/services/indicator-activity/indicator-activity.schema'
+import {
+  extendedIndicatorActivityValidator,
+  indicatorActivityValidator,
+} from '~/services/indicator-activity/indicator-activity.schema'
 import { DatePicker } from '../FormFields/DatePicker'
 import { formatMDYDate } from '~/utils/formatDate'
 
 interface IndicatorActivityFormProps {
   formId: string
   currentUserEmail?: string
+  indicators?: Awaited<ReturnType<typeof getIndicators>>
+  companyId?: Company['id']
   defaultValues?: Pick<IndicatorActivity, 'value' | 'date'> & {
     employeeId: Employee['id']
+    indicatorId?: Indicator['id']
   }
 }
 
@@ -25,6 +37,8 @@ export const IndicatorActivityForm = ({
   formId,
   currentUserEmail,
   defaultValues,
+  indicators,
+  companyId,
 }: IndicatorActivityFormProps) => {
   const employeesFetcher = useFetcher<typeof employeesLoader>()
 
@@ -45,7 +59,13 @@ export const IndicatorActivityForm = ({
 
   const handleEmployeeInputChange = debounce((keywords) => {
     if (keywords) {
-      employeesFetcher.load(`/employees?query=${keywords}`)
+      const q = `/employees?query=${keywords}`
+
+      if (companyId) {
+        employeesFetcher.load(q.concat(`&companyId=${companyId}`))
+      } else {
+        employeesFetcher.load(q)
+      }
     }
   }, 300)
 
@@ -53,7 +73,11 @@ export const IndicatorActivityForm = ({
     <>
       <ValidatedForm
         id={formId}
-        validator={indicatorActivityValidator}
+        validator={
+          indicators
+            ? extendedIndicatorActivityValidator
+            : indicatorActivityValidator
+        }
         method="post"
         className="pt-10"
         defaultValues={{
@@ -79,6 +103,17 @@ export const IndicatorActivityForm = ({
               maxDate={formatMDYDate(new Date())}
             />
           </FormGridItem>
+
+          {indicators && (
+            <FormGridItem isFullWidth>
+              <Select
+                name="indicatorId"
+                label="Indicador de progreso"
+                placeholder="Seleccione un indicador"
+                options={indicators}
+              />
+            </FormGridItem>
+          )}
 
           <FormGridItem isFullWidth>
             <Select

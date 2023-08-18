@@ -101,7 +101,7 @@ export const action = async ({ request, params }: ActionArgs) => {
   return redirect(onCloseRedirectTo)
 }
 
-export default function IndicatorActivityIndexRoute() {
+export default function IndicatorActivityCreateRoute() {
   const { onCloseRedirectTo } = useLoaderData<typeof loader>() || {}
   const formId = 'CreateIndicatorActivityForm'
 

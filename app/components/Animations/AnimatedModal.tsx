@@ -51,7 +51,7 @@ export const AnimatedModal = ({
               {actions}
             </>
           ) : (
-            <Card className="m-auto w-full max-w-lg px-0">
+            <Card className="m-auto w-full max-w-xl px-0">
               <section
                 className={clsx('mx-3 max-h-[30rem] overflow-y-auto px-3')}
               >

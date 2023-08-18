@@ -5,7 +5,7 @@ import { Form, useLoaderData } from '@remix-run/react'
 import { validationError } from 'remix-validated-form'
 import { badRequest } from '~/utils/responses'
 
-import { requireAdminUserId } from '~/session.server'
+import { requireEmployee } from '~/session.server'
 import { AnimatedRightPanel } from '~/components/Animations/AnimatedRightPanel'
 
 import { $path } from 'remix-routes'
@@ -15,28 +15,27 @@ import {
   getIndicatorActivityById,
   updateIndicatorActivityById,
 } from '~/services/indicator-activity/indicator-activity.server'
-import { indicatorActivityValidator } from '~/services/indicator-activity/indicator-activity.schema'
+import { extendedIndicatorActivityValidator } from '~/services/indicator-activity/indicator-activity.schema'
 import { parseISOLocalNullable } from '~/utils/formatDate'
 import { ButtonColorVariants } from '~/components/Button'
+import { getIndicators } from '~/services/indicator/indicator.server'
+import { requirePermissionByUserId } from '~/services/permissions/permissions.server'
+import { PermissionCode } from '@prisma/client'
+
+const { MANAGE_INDICATOR_ACTIVITY } = PermissionCode
 
 export const loader = async ({ request, params }: LoaderArgs) => {
-  await requireAdminUserId(request)
+  const employee = await requireEmployee(request)
+  await requirePermissionByUserId(employee.userId, MANAGE_INDICATOR_ACTIVITY)
 
-  const { indicatorActivityId, indicatorId } = params
+  const { indicatorActivityId } = params
 
-  if (!indicatorId || isNaN(Number(indicatorId))) {
+  if (!indicatorActivityId || isNaN(Number(indicatorActivityId))) {
     throw badRequest({
-      message: 'No se encontró el ID del indicador',
-      redirect: $path('/admin/dashboard/data/indicators'),
+      message: 'No se encontró el ID de la actividad de indicador',
+      redirect: onCloseRedirectTo,
     })
   }
-
-  const onCloseRedirectTo = $path(
-    '/admin/dashboard/data/indicators/:indicatorId/activities',
-    {
-      indicatorId,
-    }
-  )
 
   const indicatorActivity = await getIndicatorActivityById(
     Number(indicatorActivityId)
@@ -49,27 +48,23 @@ export const loader = async ({ request, params }: LoaderArgs) => {
     })
   }
 
-  return json({ indicatorId, indicatorActivity, onCloseRedirectTo })
+  const indicators = await getIndicators()
+
+  return json({
+    indicators,
+    companyId: employee.companyId,
+    indicatorActivity,
+    onCloseRedirectTo,
+  })
 }
 
+const onCloseRedirectTo = $path('/activity')
+
 export const action = async ({ request, params }: ActionArgs) => {
-  await requireAdminUserId(request)
+  const employee = await requireEmployee(request)
+  await requirePermissionByUserId(employee.userId, MANAGE_INDICATOR_ACTIVITY)
 
-  const { indicatorActivityId, indicatorId } = params
-
-  if (!indicatorId || isNaN(Number(indicatorId))) {
-    throw badRequest({
-      message: 'No se encontró el ID del indicador',
-      redirect: $path('/admin/dashboard/data/indicators'),
-    })
-  }
-
-  const onCloseRedirectTo = $path(
-    '/admin/dashboard/data/indicators/:indicatorId/activities',
-    {
-      indicatorId,
-    }
-  )
+  const { indicatorActivityId } = params
 
   if (!indicatorActivityId || isNaN(Number(indicatorActivityId))) {
     throw badRequest({
@@ -81,7 +76,7 @@ export const action = async ({ request, params }: ActionArgs) => {
   const formData = await request.formData()
 
   const { data, submittedData, error } =
-    await indicatorActivityValidator.validate(formData)
+    await extendedIndicatorActivityValidator.validate(formData)
 
   if (error) {
     return validationError(error, submittedData)
@@ -93,11 +88,11 @@ export const action = async ({ request, params }: ActionArgs) => {
 }
 
 export default function IndicatorActivityUpdateRoute() {
-  const { indicatorId, indicatorActivity, onCloseRedirectTo } =
+  const { indicators, companyId, indicatorActivity } =
     useLoaderData<typeof loader>() || {}
   const formId = 'UpdateIndicatorActivityForm' as const
 
-  const { value, date, employee } = indicatorActivity || {}
+  const { value, date, employee, indicatorId } = indicatorActivity || {}
 
   if (!indicatorActivity) return null
 
@@ -114,10 +109,9 @@ export default function IndicatorActivityUpdateRoute() {
           <Form
             className="w-full"
             method="post"
-            action={$path(
-              '/admin/dashboard/data/indicators/:indicatorId/activities/:indicatorActivityId/delete',
-              { indicatorId, indicatorActivityId: indicatorActivity?.id }
-            )}
+            action={$path('/activity/:indicatorActivityId/delete', {
+              indicatorActivityId: indicatorActivity?.id,
+            })}
           >
             <SubmitButton variant={ButtonColorVariants.WARNING} size="SM">
               Eliminar
@@ -129,9 +123,12 @@ export default function IndicatorActivityUpdateRoute() {
       <IndicatorActivityForm
         formId={formId}
         currentUserEmail={employee.user.email}
+        indicators={indicators}
+        companyId={companyId}
         defaultValues={{
           value,
           date: parseISOLocalNullable(date) as Date,
+          indicatorId,
           employeeId: employee.id,
         }}
       />

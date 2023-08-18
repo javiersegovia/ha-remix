@@ -29,3 +29,22 @@ export const indicatorActivityValidator = withZod(indicatorActivitySchema)
 export type IndicatorActivitySchemaInput = z.infer<
   typeof indicatorActivitySchema
 >
+
+// The extended version includes the "indicatorId", and will be used in the manager dashboard.
+
+export const extendedIndicatorActivitySchema = indicatorActivitySchema.extend({
+  indicatorId: zfd.numeric(
+    z
+      .number({
+        invalid_type_error: 'Seleccione un indicador',
+        required_error: 'Seleccione un indicador',
+      })
+      .int()
+  ),
+})
+export const extendedIndicatorActivityValidator = withZod(
+  extendedIndicatorActivitySchema
+)
+export type ExtendedIndicatorActivitySchemaInput = z.infer<
+  typeof extendedIndicatorActivitySchema
+>

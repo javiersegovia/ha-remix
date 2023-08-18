@@ -122,33 +122,41 @@ export const getEmployeeById = async (employeeId: Employee['id']) => {
   })
 }
 
-export const findEmployeesByQuery = async (keywords: string) => {
+export const findEmployeesByQuery = async (
+  keywords: string,
+  companyId?: Company['id'] | null
+) => {
   return xprisma.employee.findMany({
     where: {
-      OR: [
+      AND: [
+        { companyId: companyId || undefined },
         {
-          user: {
-            firstName: {
-              contains: keywords,
-              mode: 'insensitive',
+          OR: [
+            {
+              user: {
+                firstName: {
+                  contains: keywords,
+                  mode: 'insensitive',
+                },
+              },
             },
-          },
-        },
-        {
-          user: {
-            lastName: {
-              contains: keywords,
-              mode: 'insensitive',
+            {
+              user: {
+                lastName: {
+                  contains: keywords,
+                  mode: 'insensitive',
+                },
+              },
             },
-          },
-        },
-        {
-          user: {
-            email: {
-              contains: keywords,
-              mode: 'insensitive',
+            {
+              user: {
+                email: {
+                  contains: keywords,
+                  mode: 'insensitive',
+                },
+              },
             },
-          },
+          ],
         },
       ],
     },

@@ -90,15 +90,7 @@ export const uploadEmployeeSchema = z.object({
       .trim()
       .nullish()
   ),
-  ERRORES: zfd.text(
-    z
-      .string({
-        invalid_type_error: 'Ingrese un cupo disponible',
-        required_error: 'Ingrese un cupo disponible',
-      })
-      .trim()
-      .optional()
-  ),
+  ERRORES: zfd.text(z.string().trim().optional().nullish()),
   CELULAR: zfd.text(z.string().trim().nullish()),
   PUNTOS_DISPONIBLES: zfd.text(z.string().trim().nullish()),
 })

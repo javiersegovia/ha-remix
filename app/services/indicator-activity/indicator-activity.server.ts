@@ -1,5 +1,8 @@
-import type { Indicator, IndicatorActivity } from '@prisma/client'
-import type { IndicatorActivitySchemaInput } from './indicator-activity.schema'
+import type { Company, Indicator, IndicatorActivity } from '@prisma/client'
+import type {
+  ExtendedIndicatorActivitySchemaInput,
+  IndicatorActivitySchemaInput,
+} from './indicator-activity.schema'
 import { prisma, xprisma } from '~/db.server'
 
 export const getIndicatorActivitiesByIndicatorId = async (
@@ -29,6 +32,41 @@ export const getIndicatorActivitiesByIndicatorId = async (
     },
   })
 }
+export const getIndicatorActivitiesByCompanyId = async (
+  companyId: Company['id']
+) => {
+  return xprisma.indicatorActivity.findMany({
+    where: {
+      employee: {
+        companyId,
+      },
+    },
+    orderBy: {
+      date: 'desc',
+    },
+    select: {
+      id: true,
+      value: true,
+      date: true,
+      indicator: {
+        select: {
+          name: true,
+        },
+      },
+      employee: {
+        select: {
+          id: true,
+          user: {
+            select: {
+              email: true,
+              fullName: true,
+            },
+          },
+        },
+      },
+    },
+  })
+}
 
 export const getIndicatorActivityById = async (
   indicatorActivityId: IndicatorActivity['id']
@@ -41,6 +79,7 @@ export const getIndicatorActivityById = async (
       id: true,
       value: true,
       date: true,
+      indicatorId: true,
       employee: {
         select: {
           id: true,
@@ -73,7 +112,7 @@ export const createIndicatorActivity = (
 }
 
 export const updateIndicatorActivityById = (
-  data: IndicatorActivitySchemaInput,
+  data: IndicatorActivitySchemaInput | ExtendedIndicatorActivitySchemaInput,
   indicatorActivityId: Indicator['id']
 ) => {
   const { value, date, employeeId } = data
@@ -86,6 +125,7 @@ export const updateIndicatorActivityById = (
       value,
       date: date as Date,
       employeeId,
+      indicatorId: 'indicatorId' in data ? data.indicatorId : undefined,
     },
   })
 }

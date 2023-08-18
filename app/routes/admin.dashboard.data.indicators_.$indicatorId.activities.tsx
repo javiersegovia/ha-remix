@@ -98,7 +98,7 @@ export default function IndicatorActivityIndexRoute() {
         className="ml-auto w-auto"
         variant={ButtonColorVariants.SECONDARY}
       >
-        Ver detalles
+        Editar
       </Button>,
     ],
   }))
@@ -114,9 +114,21 @@ export default function IndicatorActivityIndexRoute() {
               className="mb-10"
               title={`Actividad de ${indicator.name}`}
               actions={
-                <Button href="create" size="SM">
-                  Crear actividad
-                </Button>
+                <>
+                  <Button
+                    className="flex w-full items-center whitespace-nowrap sm:w-auto"
+                    size="SM"
+                    href="upload"
+                    variant={ButtonColorVariants.SECONDARY}
+                    icon={ButtonIconVariants.UPLOAD}
+                  >
+                    Cargar
+                  </Button>
+
+                  <Button href="create" size="SM" className="whitespace-nowrap">
+                    Crear actividad
+                  </Button>
+                </>
               }
             />
 

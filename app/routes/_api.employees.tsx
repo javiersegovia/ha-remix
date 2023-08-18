@@ -6,11 +6,12 @@ import { findEmployeesByQuery } from '~/services/employee/employee.server'
 export const loader = async ({ request }: LoaderArgs) => {
   const url = new URL(request.url)
   const query = url.searchParams.get('query')
+  const companyId = url.searchParams.get('companyId')
 
   return json({
     employees:
       query && query !== 'undefined' && query !== 'null'
-        ? await findEmployeesByQuery(query)
+        ? await findEmployeesByQuery(query, companyId)
         : [],
   })
 }
