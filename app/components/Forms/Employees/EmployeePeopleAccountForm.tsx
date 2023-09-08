@@ -26,7 +26,7 @@ interface EmployeePeopleAccountFormProps<T = EmployeeAccountSchemaInput> {
   benefits: Awaited<ReturnType<typeof getAvailableBenefitsByCompanyId>>
   employeeGroups: Awaited<ReturnType<typeof getEmployeeGroupsByCompanyId>>
   validator: Validator<T>
-  defaultValues?: Pick<Employee, 'status' | 'availablePoints'> & {
+  defaultValues?: Pick<Employee, 'status'> & {
     user: Pick<User, 'email' | 'firstName' | 'lastName' | 'roleId'>
   }
 }
@@ -38,7 +38,7 @@ export const EmployeePeopleAccountForm = ({
 
   userRoles,
 }: EmployeePeopleAccountFormProps) => {
-  const { status, availablePoints, user } = defaultValues || {}
+  const { status, user } = defaultValues || {}
 
   return (
     <ValidatedForm
@@ -47,7 +47,6 @@ export const EmployeePeopleAccountForm = ({
       method="post"
       defaultValues={{
         status: status || EmployeeStatus.INACTIVE,
-        availablePoints,
         user: {
           firstName: user?.firstName || '',
           email: user?.email || '',
@@ -103,15 +102,6 @@ export const EmployeePeopleAccountForm = ({
             placeholder="Rol de usuario"
             options={userRoles}
             isClearable
-          />
-        </FormGridItem>
-
-        <FormGridItem>
-          <Input
-            name="availablePoints"
-            type="number"
-            label="Puntos disponibles"
-            placeholder="Puntos disponibles para redimir"
           />
         </FormGridItem>
 

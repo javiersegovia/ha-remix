@@ -37,7 +37,7 @@ export const loader = async ({ request }: LoaderArgs) => {
     PermissionCode.MANAGE_INDICATOR_ACTIVITY
   )
 
-  const onCloseRedirectTo = $path('/activity')
+  const onCloseRedirectTo = $path('/activity/indicators')
 
   const indicators = await getIndicators()
 
@@ -65,7 +65,7 @@ export const action = async ({ request }: ActionArgs) => {
   if (!csvFile) {
     throw badRequest({
       message: 'No se ha encontrado el archivo CSV',
-      redirect: $path('/activity'),
+      redirect: $path('/activity/indicators'),
     })
   }
 
@@ -119,7 +119,7 @@ export const action = async ({ request }: ActionArgs) => {
     throw badRequest({
       message:
         'Ha ocurrido un error inesperado, por favor verifica que el formato del archivo CSV sea correcto.',
-      redirect: $path('/activity'),
+      redirect: $path('/activity/indicators'),
     })
   }
 }
@@ -149,7 +149,7 @@ const IndicatorActivityUploadRoute = () => {
           <div className="mt-6 flex items-center gap-6">
             <Button
               variant={ButtonColorVariants.SECONDARY}
-              href={$path('/activity/upload')}
+              href={$path('/activity/indicators/upload')}
               external
             >
               Regresar

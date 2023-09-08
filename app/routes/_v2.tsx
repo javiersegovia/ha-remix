@@ -12,6 +12,7 @@ const {
   MANAGE_COMPANY,
   MANAGE_EMPLOYEE_MAIN_INFORMATION,
   VIEW_INDICATOR_ACTIVITY,
+  MANAGE_COMPANY_POINTS,
 } = PermissionCode
 
 export const loader = async ({ request }: LoaderArgs) => {
@@ -21,12 +22,17 @@ export const loader = async ({ request }: LoaderArgs) => {
     user: { id: userId, firstName, lastName },
   } = employee
 
-  const [canManageCompany, canManageEmployees, canViewIndicatorActivity] =
-    await Promise.all([
-      hasPermissionByUserId(userId, MANAGE_COMPANY),
-      hasPermissionByUserId(userId, MANAGE_EMPLOYEE_MAIN_INFORMATION),
-      hasPermissionByUserId(userId, VIEW_INDICATOR_ACTIVITY),
-    ])
+  const [
+    canManageCompany,
+    canManageEmployees,
+    canViewIndicatorActivity,
+    canManageCompanyPoints,
+  ] = await Promise.all([
+    hasPermissionByUserId(userId, MANAGE_COMPANY),
+    hasPermissionByUserId(userId, MANAGE_EMPLOYEE_MAIN_INFORMATION),
+    hasPermissionByUserId(userId, VIEW_INDICATOR_ACTIVITY),
+    hasPermissionByUserId(userId, MANAGE_COMPANY_POINTS),
+  ])
 
   return json({
     avatar: {
@@ -36,6 +42,7 @@ export const loader = async ({ request }: LoaderArgs) => {
       canManageCompany,
       canManageEmployees,
       canViewIndicatorActivity,
+      canManageCompanyPoints,
     },
   })
 }

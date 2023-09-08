@@ -33,12 +33,17 @@ interface NavbarProps {
     canManageCompany: boolean
     canManageEmployees: boolean
     canViewIndicatorActivity: boolean
+    canManageCompanyPoints: boolean
   }
 }
 
 export const Navbar = ({ avatar, permissions }: NavbarProps) => {
-  const { canManageCompany, canManageEmployees, canViewIndicatorActivity } =
-    permissions
+  const {
+    canManageCompany,
+    canManageEmployees,
+    canViewIndicatorActivity,
+    canManageCompanyPoints,
+  } = permissions
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const { pathname } = useLocation()
@@ -67,7 +72,13 @@ export const Navbar = ({ avatar, permissions }: NavbarProps) => {
   if (canViewIndicatorActivity) {
     navigation.splice(-1, 0, {
       name: 'Actividad',
-      href: $path('/activity'),
+      href: $path('/activity/indicators'),
+      Icon: HiOutlineUserGroup,
+    })
+  } else if (canManageCompanyPoints) {
+    navigation.splice(-1, 0, {
+      name: 'Actividad',
+      href: $path('/activity/points'),
       Icon: HiOutlineUserGroup,
     })
   }

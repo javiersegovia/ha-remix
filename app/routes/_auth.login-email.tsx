@@ -89,7 +89,7 @@ export default function LoginEmailRoute() {
                 variant={ButtonColorVariants.SECONDARY}
                 className="text-sm"
               >
-                Ingresar usando correo y contraseña
+                Ingresar con correo y contraseña
               </Button>
             </div>
           </ValidatedForm>

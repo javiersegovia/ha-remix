@@ -14,9 +14,9 @@ import { getChallengesByCompanyId } from '~/services/challenge/challenge.server'
 import { HiStar, HiMiniUserGroup } from 'react-icons/hi2'
 import { TeamSimpleCard } from '~/components/Cards/TeamSimpleCard'
 import { getTeamsByCompanyId } from '~/services/team/team.server'
-import { calculateCompanyPointMetricsByCompanyId } from '~/services/company-points/company-points.server'
-import { Card } from '~/components/Cards/Card'
+import { getCompanyPointMetricsByCompanyId } from '~/services/company-points/company-points.server'
 import { getCompanyById } from '~/services/company/company.server'
+import { PointMetrics } from '~/containers/home/PointMetrics'
 
 export const loader = async ({ request }: LoaderArgs) => {
   const employee = await requireEmployee(request)
@@ -24,22 +24,25 @@ export const loader = async ({ request }: LoaderArgs) => {
   const challenges = await getChallengesByCompanyId(employee.companyId)
   const teams = await getTeamsByCompanyId(employee.companyId)
   const company = await getCompanyById(employee.companyId)
-  const pointsMetrics = await calculateCompanyPointMetricsByCompanyId(
+  const pointMetrics = await getCompanyPointMetricsByCompanyId(
     employee.companyId
   )
 
   return json({
     challenges,
     teams,
-    pointsMetrics,
+    pointMetrics,
     company,
   })
 }
 
 const HomeRoute = () => {
-  const { challenges, teams, pointsMetrics, company } =
+  const { challenges, teams, pointMetrics, company } =
     useLoaderData<typeof loader>()
-  const { assignedPoints, consumedPoints, availablePoints } = pointsMetrics
+
+  const { estimatedBudget, currentBudget, circulatingPoints, spentPoints } =
+    pointMetrics
+
   const outlet = useOutlet()
 
   return (
@@ -52,27 +55,14 @@ const HomeRoute = () => {
         />
       )}
 
-      <section className="mb-20 mt-10 grid gap-6 md:grid-cols-4">
-        <Card>
-          <Title as="h2">{availablePoints}</Title>
-          <Text>Puntos por asignar</Text>
-        </Card>
-
-        <Card>
-          <Title as="h2">{assignedPoints}</Title>
-          <Text>Puntos asignados</Text>
-        </Card>
-
-        <Card>
-          <Title as="h2">{consumedPoints}</Title>
-          <Text>Puntos consumidos</Text>
-        </Card>
-
-        <Card>
-          <Title as="h2">{company?._count.employees}</Title>
-          <Text>Colaboradores</Text>
-        </Card>
-      </section>
+      <div className="mb-20 mt-10">
+        <PointMetrics
+          estimatedBudget={estimatedBudget}
+          currentBudget={currentBudget}
+          circulatingPoints={circulatingPoints}
+          spentPoints={spentPoints}
+        />
+      </div>
 
       <div className="gap-10 pb-16 md:grid md:grid-cols-12">
         <section className="col-span-12 space-y-6 md:col-span-8">

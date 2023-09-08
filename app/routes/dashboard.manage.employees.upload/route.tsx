@@ -145,7 +145,7 @@ const DashboardManageEmployeesUploadRoute = () => {
               actualizados satisfactoriamente
             </p>
 
-            <div className="mt-6 flex items-center gap-6">
+            <div className="mt-6 flex flex-col items-center gap-6">
               <Button
                 variant={ButtonColorVariants.SECONDARY}
                 href="/dashboard/manage/employees/upload"

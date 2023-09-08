@@ -8,13 +8,12 @@ import type {
   Company,
   CompanyCategory,
   CompanyContactPerson,
-  CompanyPoints,
   Country,
   Image,
 } from '@prisma/client'
 import type { Validator } from 'remix-validated-form'
 
-import { CompanyStatus } from '@prisma/client'
+import { ApplicationFeature, CompanyStatus } from '@prisma/client'
 import { ValidatedForm } from 'remix-validated-form'
 
 import { Box } from '../Layout/Box'
@@ -29,6 +28,11 @@ import { ImageInput } from '../FormFields/ImageInput'
 const companyStatusList: EnumOption[] = [
   { name: 'Activa', value: CompanyStatus.ACTIVE },
   { name: 'Inactiva', value: CompanyStatus.INACTIVE },
+]
+
+const applicationFeaturesList: EnumOption[] = [
+  { name: 'Beneficios', value: ApplicationFeature.BENEFITS_FEATURE },
+  { name: 'Retos', value: ApplicationFeature.CHALLENGES_FEATURE },
 ]
 
 interface AdminCompanyFormProps<T = CompanySchemaInput> {
@@ -56,11 +60,11 @@ interface AdminCompanyFormProps<T = CompanySchemaInput> {
     country?: Pick<Country, 'id'> | null
     categories?: Pick<CompanyCategory, 'id'>[]
     benefits?: Pick<Benefit, 'id'>[]
+    applicationFeatures?: ApplicationFeature[]
     contactPerson?: Pick<
       CompanyContactPerson,
       'firstName' | 'lastName' | 'phone'
     > | null
-    companyPoints?: Pick<CompanyPoints, 'availablePoints'> | null
   }
 }
 
@@ -68,7 +72,6 @@ export const AdminCompanyForm = ({
   defaultValues,
   actions,
   validator,
-
   companyCategories,
   countries,
   benefits,
@@ -89,7 +92,6 @@ export const AdminCompanyForm = ({
     benefits: companyBenefits,
     countryId,
     contactPerson,
-    companyPoints,
     logoImage,
   } = defaultValues || {}
 
@@ -116,7 +118,6 @@ export const AdminCompanyForm = ({
           benefitsIds: companyBenefits?.map((benefit) => benefit.id),
           countryId,
           contactPerson,
-          companyPoints,
         }}
       >
         <Box className="p-5">
@@ -171,6 +172,7 @@ export const AdminCompanyForm = ({
                 placeholder="Teléfono de contacto"
               />
             </FormGridItem>
+
             <FormGridItem>
               <SelectMultiple
                 name="categoriesIds"
@@ -240,16 +242,16 @@ export const AdminCompanyForm = ({
           </FormGridWrapper>
 
           <Title as="h4" className="py-3">
-            Puntos
+            Módulos
           </Title>
 
           <FormGridWrapper>
             <FormGridItem>
-              <Input
-                name="companyPoints.availablePoints"
-                type="number"
-                label="Puntos disponibles por asignar"
-                placeholder="Puntos por asignar"
+              <SelectMultiple
+                name="applicationFeatures"
+                label="Módulos habilitados"
+                placeholder="Módulos habilitados para la empresa"
+                options={applicationFeaturesList}
               />
             </FormGridItem>
           </FormGridWrapper>

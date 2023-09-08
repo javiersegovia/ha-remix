@@ -1,6 +1,6 @@
 import z from 'zod'
 import { zfd } from 'zod-form-data'
-import { CompanyStatus } from '@prisma/client'
+import { ApplicationFeature, CompanyStatus } from '@prisma/client'
 import { formatPaymentDays } from '../../schemas/helpers'
 import { withZod } from '@remix-validated-form/with-zod'
 
@@ -23,6 +23,10 @@ const companySchema = z.object({
     .min(3, 'El nombre debe poseer al menos 3 caracteres'),
 
   status: z.nativeEnum(CompanyStatus).default(CompanyStatus.INACTIVE),
+
+  applicationFeatures: z
+    .array(z.nativeEnum(ApplicationFeature))
+    .default([ApplicationFeature.CHALLENGES_FEATURE]),
 
   address: z.string().trim().nullable().default(null),
   description: z.string().trim().nullable().default(null),

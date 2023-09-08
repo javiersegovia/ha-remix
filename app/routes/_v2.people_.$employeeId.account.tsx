@@ -127,7 +127,6 @@ const CreateEmployeeAccountRoute = () => {
       <EmployeePeopleAccountForm
         defaultValues={{
           status: employee?.status || EmployeeStatus.INACTIVE,
-          availablePoints: employee?.availablePoints,
           user: {
             email: employee?.user.email,
             firstName: employee?.user.firstName,

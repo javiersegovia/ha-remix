@@ -57,6 +57,8 @@ model Company {
   // USED FOR BENEFIT BLACKLIST
   isBlacklisted Boolean @default(false)
 
+  applicationFeatures ApplicationFeature[] @default([CHALLENGES_FEATURE])
+
   // USED FOR PAYROLL ADVANCES
   dispersion     Float?
   paymentDays    Int[]
@@ -102,6 +104,11 @@ model Company {
 enum CompanyStatus {
   ACTIVE
   INACTIVE
+}
+
+enum ApplicationFeature {
+  BENEFITS_FEATURE
+  CHALLENGES_FEATURE
 }
 
 model CompanyDebt {
@@ -256,7 +263,8 @@ model Employee {
 
   pointTransactionsSent     PointTransaction[]  @relation("sender")
   pointTransactionsReceived PointTransaction[]  @relation("receiver")
-  IndicatorActivity         IndicatorActivity[]
+  indicatorActivities       IndicatorActivity[]
+  challengeHistory          ChallengeHistory[]
 }
 
 enum EmployeeRole {
@@ -1004,8 +1012,8 @@ enum PermissionCode {
   VIEW_INDICATOR_ACTIVITY
   MANAGE_INDICATOR_ACTIVITY
 
-  // Deprecated 
-  MANAGE_BENEFIT_CATEGORY
+  TRANSFER_POINTS
+  MANAGE_COMPANY_POINTS
 }
 
 model SalaryRange {
@@ -1044,11 +1052,14 @@ model Challenge {
   title       String
   description String?
 
+  status ChallengeStatus @default(ACTIVE)
+
   startDate  DateTime?
   finishDate DateTime?
 
   // We add "description" because they are temporary values
   // We will replace them later with specific models
+  // DEPRECATED
   goalDescription     String?
   measurerDescription String?
   rewardDescription   String?
@@ -1058,9 +1069,35 @@ model Challenge {
   company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
   companyId String
 
-  goal        Float?
+  goal            Float?
+  reward          Int?
+  rewardEligibles Int    @default(1)
+
   indicator   Indicator? @relation(fields: [indicatorId], references: [id])
   indicatorId Int?
+}
+
+enum ChallengeStatus {
+  ACTIVE
+  INACTIVE
+}
+
+model ChallengeHistory {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  type ChallengeHistoryType
+
+  employee   Employee? @relation(fields: [employeeId], references: [id])
+  employeeId String?
+}
+
+enum ChallengeHistoryType {
+  CREATION
+  MODIFICATION
+  COMPLETION
+  EXPIRATION
 }
 
 model Team {
@@ -1095,8 +1132,12 @@ model CompanyPoints {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  availablePoints Int @default(0)
-  spentPoints     Int @default(0)
+  estimatedBudget Int @default(0)
+  currentBudget   Int @default(0)
+
+  circulatingPoints Int @default(0)
+  spentPoints       Int @default(0)
+  prepaidPoints     Int @default(0)
 
   company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
   companyId String  @unique
@@ -1122,6 +1163,8 @@ model PointTransaction {
 enum PointTransactionType {
   TRANSFER
   CONSUMPTION
+  REWARD
+  MODIFICATION
 }
 
 model Indicator {

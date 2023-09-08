@@ -6,7 +6,6 @@ import { badRequest } from '~/utils/responses'
 import { stringify } from 'csv-stringify/sync'
 import { requireAdminUserId } from '~/session.server'
 import { uploadEmployeesByAdmin } from '~/services/employee/upload-employees-by-admin.server'
-import { useToastError } from '~/hooks/useToastError'
 import { parseCSV } from '~/utils/utils.server'
 
 export const action = async ({ request, params }: ActionArgs) => {
@@ -86,19 +85,11 @@ export const action = async ({ request, params }: ActionArgs) => {
     return redirect(`/admin/dashboard/companies/${companyId}/employees`)
   } catch (e) {
     console.error(e)
+
     throw badRequest({
       message:
         'Ha ocurrido un error inesperado, por favor verifica que el formato del archivo CSV sea correcto.',
       redirect: `/admin/dashboard/companies/${companyId}/employees/upload`,
     })
   }
-}
-
-export default function CSVErrorPage() {
-  return <p>Ha ocurrido un error inesperado</p>
-}
-
-export const ErrorBoundary = () => {
-  useToastError()
-  return null
 }

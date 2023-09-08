@@ -58,7 +58,7 @@ export const loader = async ({ request, params }: LoaderArgs) => {
   })
 }
 
-const onCloseRedirectTo = $path('/activity')
+const onCloseRedirectTo = $path('/activity/indicators')
 
 export const action = async ({ request, params }: ActionArgs) => {
   const employee = await requireEmployee(request)
@@ -109,7 +109,7 @@ export default function IndicatorActivityUpdateRoute() {
           <Form
             className="w-full"
             method="post"
-            action={$path('/activity/:indicatorActivityId/delete', {
+            action={$path('/activity/indicators/:indicatorActivityId/delete', {
               indicatorActivityId: indicatorActivity?.id,
             })}
           >

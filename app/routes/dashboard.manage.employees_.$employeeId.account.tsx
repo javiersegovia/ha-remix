@@ -128,7 +128,6 @@ const CreateEmployeeAccountRoute = () => {
         defaultValues={{
           status: employee?.status || EmployeeStatus.INACTIVE,
           benefits: employee?.benefits,
-          availablePoints: employee?.availablePoints,
           employeeGroups: employee?.employeeGroups,
           user: {
             email: employee?.user.email,

@@ -18,7 +18,6 @@ import { extendedIndicatorActivityValidator } from '~/services/indicator-activit
 import { validationError } from 'remix-validated-form'
 import { requirePermissionByUserId } from '~/services/permissions/permissions.server'
 import { PermissionCode } from '@prisma/client'
-import { useToastError } from '~/hooks/useToastError'
 
 export const meta: MetaFunction = () => {
   return {
@@ -59,7 +58,7 @@ export const action = async ({ request, params }: ActionArgs) => {
   return redirect(onCloseRedirectTo)
 }
 
-const onCloseRedirectTo = $path('/activity')
+const onCloseRedirectTo = $path('/activity/indicators')
 
 export default function IndicatorActivityCreateRoute() {
   const { indicators, companyId } = useLoaderData<typeof loader>() || {}
@@ -82,9 +81,4 @@ export default function IndicatorActivityCreateRoute() {
       />
     </AnimatedRightPanel>
   )
-}
-
-export const ErrorBoundary = () => {
-  useToastError()
-  return null
 }

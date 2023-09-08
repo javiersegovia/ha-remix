@@ -82,6 +82,10 @@ export const columns: ColumnDef<IndicatorActivityDataItem>[] = [
       </>
     ),
   },
+]
+
+export const fullColumns: ColumnDef<IndicatorActivityDataItem>[] = [
+  ...columns,
   {
     accessorKey: 'id',
     header: '',
@@ -91,7 +95,7 @@ export const columns: ColumnDef<IndicatorActivityDataItem>[] = [
       return (
         <>
           <Button
-            href={$path('/activity/:indicatorActivityId', {
+            href={$path('/activity/indicators/:indicatorActivityId', {
               indicatorActivityId: item.id,
             })}
             size="XS"

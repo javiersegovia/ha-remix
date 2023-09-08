@@ -1,15 +1,18 @@
-import { PointTransactionType, type Company } from '@prisma/client'
-import { prisma } from '~/db.server'
+import type { Company } from '@prisma/client'
+import type { CompanyPointsSchemaInput } from './company-points.schema'
+
+import { prisma, xprisma } from '~/db.server'
 
 export const getPointsTransactionsByCompanyId = async (
   companyId: Company['id']
 ) => {
-  return prisma.pointTransaction.findMany({
+  return xprisma.pointTransaction.findMany({
     where: {
       companyId,
     },
     select: {
       id: true,
+      createdAt: true,
       updatedAt: true,
       type: true,
       value: true,
@@ -17,8 +20,7 @@ export const getPointsTransactionsByCompanyId = async (
         select: {
           user: {
             select: {
-              firstName: true,
-              lastName: true,
+              fullName: true,
               email: true,
             },
           },
@@ -28,18 +30,20 @@ export const getPointsTransactionsByCompanyId = async (
         select: {
           user: {
             select: {
-              firstName: true,
-              lastName: true,
+              fullName: true,
               email: true,
             },
           },
         },
       },
     },
+    orderBy: {
+      createdAt: 'desc',
+    },
   })
 }
 
-export const calculateCompanyPointMetricsByCompanyId = async (
+export const getCompanyPointMetricsByCompanyId = async (
   companyId: Company['id']
 ) => {
   let companyPoints = await prisma.companyPoints.findUnique({
@@ -49,64 +53,73 @@ export const calculateCompanyPointMetricsByCompanyId = async (
     select: {
       id: true,
       updatedAt: true,
+      estimatedBudget: true,
+      currentBudget: true,
+      circulatingPoints: true,
       spentPoints: true,
-      availablePoints: true,
-      company: {
-        select: {
-          pointTransactions: {
-            select: {
-              id: true,
-              type: true,
-              value: true,
-            },
-          },
-        },
-      },
     },
   })
 
   if (!companyPoints) {
     companyPoints = await prisma.companyPoints.create({
       data: {
-        availablePoints: 0,
         spentPoints: 0,
+        estimatedBudget: 0,
+        currentBudget: 0,
+        circulatingPoints: 0,
         companyId,
       },
       select: {
         id: true,
         updatedAt: true,
+        estimatedBudget: true,
+        currentBudget: true,
+        circulatingPoints: true,
         spentPoints: true,
-        availablePoints: true,
-        company: {
-          select: {
-            pointTransactions: {
-              select: {
-                id: true,
-                type: true,
-                value: true,
-              },
-            },
-          },
-        },
       },
     })
   }
 
-  let assignedPoints = 0
-  let consumedPoints = 0
-
   const {
-    company: { pointTransactions },
-    availablePoints,
+    updatedAt,
+    estimatedBudget,
+    currentBudget,
+    circulatingPoints,
+    spentPoints,
   } = companyPoints
 
-  for (let i = 0; i < pointTransactions.length; i++) {
-    if (pointTransactions[i].type === PointTransactionType.TRANSFER) {
-      assignedPoints += pointTransactions[i].value
-    } else if (pointTransactions[i].type === PointTransactionType.CONSUMPTION) {
-      consumedPoints += pointTransactions[i].value
-    }
+  return {
+    updatedAt,
+    estimatedBudget,
+    currentBudget,
+    circulatingPoints,
+    spentPoints,
   }
+}
 
-  return { assignedPoints, consumedPoints, availablePoints }
+export const upsertCompanyPoints = async (
+  data: CompanyPointsSchemaInput,
+  companyId: Company['id']
+) => {
+  const { estimatedBudget, currentBudget, circulatingPoints, spentPoints } =
+    data
+
+  return prisma.companyPoints.upsert({
+    where: {
+      companyId,
+    },
+    create: {
+      estimatedBudget,
+      currentBudget,
+      circulatingPoints,
+      spentPoints,
+      companyId,
+    },
+    update: {
+      estimatedBudget,
+      currentBudget,
+      circulatingPoints,
+      spentPoints,
+    },
+  })
 }

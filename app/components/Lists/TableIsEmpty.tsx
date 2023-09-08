@@ -7,7 +7,7 @@ import { Title } from '../Typography/Title'
 interface TableIsEmptyProps {
   title: string
   description?: string
-  actions: JSX.Element
+  actions?: JSX.Element
   className?: string
 }
 

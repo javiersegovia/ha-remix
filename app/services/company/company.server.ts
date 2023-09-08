@@ -91,7 +91,6 @@ export const createCompany = async (formData: CompanySchemaInput) => {
   const {
     countryId,
     contactPerson,
-    companyPoints,
     categoriesIds,
     benefitsIds,
     status,
@@ -122,12 +121,6 @@ export const createCompany = async (formData: CompanySchemaInput) => {
         }
       : undefined
 
-  const createCompanyPoints: Prisma.CompanyCreateInput['companyPoints'] = {
-    create: {
-      availablePoints: companyPoints?.availablePoints || 0,
-    },
-  }
-
   try {
     const company = await prisma.company.create({
       data: {
@@ -142,7 +135,6 @@ export const createCompany = async (formData: CompanySchemaInput) => {
         benefits: connectMany(benefitsIds),
 
         contactPerson: createContactPerson,
-        companyPoints: createCompanyPoints,
 
         status,
 
@@ -241,17 +233,6 @@ export const updateCompanyById = async (
           delete: !!existingCompany.contactPerson?.id,
         }
 
-  const upsertCompanyPoints: Prisma.CompanyUpdateInput['companyPoints'] = {
-    upsert: {
-      create: {
-        availablePoints: companyPoints?.availablePoints || 0,
-      },
-      update: {
-        availablePoints: companyPoints?.availablePoints || 0,
-      },
-    },
-  }
-
   if (
     existingCompany.logoImage &&
     logoImageKey !== existingCompany.logoImage.key
@@ -286,7 +267,6 @@ export const updateCompanyById = async (
         benefits: setMany(benefitsIds),
 
         contactPerson: upsertContactPerson,
-        companyPoints: upsertCompanyPoints,
         status,
 
         logoImage: createLogoImage,

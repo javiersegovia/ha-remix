@@ -135,7 +135,7 @@ export default function LoginRemixRoute() {
                   className="text-sm leading-6"
                   data-testid="login-email-button"
                 >
-                  Ingresar usando correo electrónico
+                  Ingresar con correo electrónico
                 </Button>
               </div>
             </ValidatedForm>

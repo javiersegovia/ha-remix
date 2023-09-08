@@ -35,4 +35,12 @@ export const defaultPermissions = [
     code: PermissionCode.MANAGE_INDICATOR_ACTIVITY,
     name: 'Crear, editar o eliminar actividades en los indicadores',
   },
+  {
+    code: PermissionCode.TRANSFER_POINTS,
+    name: 'Transferir puntos a un colaborador',
+  },
+  {
+    code: PermissionCode.MANAGE_COMPANY_POINTS,
+    name: 'Administrar los puntos de la compañía',
+  },
 ] as const

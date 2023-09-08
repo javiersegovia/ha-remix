@@ -15,6 +15,7 @@ export type EmployeeDataItem = {
   id: Employee['id']
   fullName: string | null
   email: string | null
+  availablePoints?: number
   jobDepartment?: Pick<JobDepartment, 'name'> | null
   city?: Pick<City, 'name'> | null
   status: EmployeeStatus
@@ -66,7 +67,13 @@ export const columns: ColumnDef<EmployeeDataItem>[] = [
       return <TableSortableButton title="Ciudad" column={column} />
     },
   },
-
+  {
+    accessorKey: 'availablePoints',
+    sortingFn: 'alphanumeric',
+    header: ({ column }) => {
+      return <TableSortableButton title="Puntos disponibles" column={column} />
+    },
+  },
   {
     accessorKey: 'status',
     sortingFn: 'alphanumeric',

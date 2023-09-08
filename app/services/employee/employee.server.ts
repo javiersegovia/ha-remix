@@ -262,6 +262,7 @@ export const getCompanyEmployeesByCompanyId = async (
     select: {
       id: true,
       status: true,
+      availablePoints: true,
       companyId: true,
       membership: {
         select: {

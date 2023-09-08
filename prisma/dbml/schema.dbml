@@ -39,6 +39,7 @@ Table Company {
   address String
   phone String
   isBlacklisted Boolean [not null, default: false]
+  applicationFeatures ApplicationFeature[] [not null]
   dispersion Float
   paymentDays Int[] [not null]
   lastRequestDay Int [default: 25]
@@ -193,7 +194,8 @@ Table Employee {
   teamMembers TeamMember [not null]
   pointTransactionsSent PointTransaction [not null]
   pointTransactionsReceived PointTransaction [not null]
-  IndicatorActivity IndicatorActivity [not null]
+  indicatorActivities IndicatorActivity [not null]
+  challengeHistory ChallengeHistory [not null]
 }
 
 Table EmployeeGroup {
@@ -781,6 +783,7 @@ Table Challenge {
   updatedAt DateTime [not null]
   title String [not null]
   description String
+  status ChallengeStatus [not null, default: 'ACTIVE']
   startDate DateTime
   finishDate DateTime
   goalDescription String
@@ -790,8 +793,19 @@ Table Challenge {
   company Company [not null]
   companyId String [not null]
   goal Float
+  reward Int
+  rewardEligibles Int [not null, default: 1]
   indicator Indicator
   indicatorId Int
+}
+
+Table ChallengeHistory {
+  id Int [pk, increment]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  type ChallengeHistoryType [not null]
+  employee Employee
+  employeeId String
 }
 
 Table Team {
@@ -820,8 +834,11 @@ Table CompanyPoints {
   id String [pk]
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [not null]
-  availablePoints Int [not null, default: 0]
+  estimatedBudget Int [not null, default: 0]
+  currentBudget Int [not null, default: 0]
+  circulatingPoints Int [not null, default: 0]
   spentPoints Int [not null, default: 0]
+  prepaidPoints Int [not null, default: 0]
   company Company [not null]
   companyId String [unique, not null]
 }
@@ -865,6 +882,11 @@ Table IndicatorActivity {
 Enum CompanyStatus {
   ACTIVE
   INACTIVE
+}
+
+Enum ApplicationFeature {
+  BENEFITS_FEATURE
+  CHALLENGES_FEATURE
 }
 
 Enum EmployeeRole {
@@ -933,7 +955,8 @@ Enum PermissionCode {
   MANAGE_BENEFIT
   VIEW_INDICATOR_ACTIVITY
   MANAGE_INDICATOR_ACTIVITY
-  MANAGE_BENEFIT_CATEGORY
+  TRANSFER_POINTS
+  MANAGE_COMPANY_POINTS
 }
 
 Enum DataItemType {
@@ -942,9 +965,23 @@ Enum DataItemType {
   NUMBER
 }
 
+Enum ChallengeStatus {
+  ACTIVE
+  INACTIVE
+}
+
+Enum ChallengeHistoryType {
+  CREATION
+  MODIFICATION
+  COMPLETION
+  EXPIRATION
+}
+
 Enum PointTransactionType {
   TRANSFER
   CONSUMPTION
+  REWARD
+  MODIFICATION
 }
 
 Enum IndicatorType {
@@ -1114,6 +1151,8 @@ Ref: DataItem.benefitId > Benefit.id [delete: Cascade]
 Ref: Challenge.companyId > Company.id [delete: Cascade]
 
 Ref: Challenge.indicatorId > Indicator.id
+
+Ref: ChallengeHistory.employeeId > Employee.id
 
 Ref: Team.companyId > Company.id [delete: Cascade]
 

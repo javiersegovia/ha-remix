@@ -14,7 +14,7 @@ export const action = async ({ request, params }: ActionArgs) => {
 
   const { indicatorActivityId } = params
 
-  const onCloseRedirectTo = $path('/activity')
+  const onCloseRedirectTo = $path('/activity/indicators')
 
   if (!indicatorActivityId || isNaN(Number(indicatorActivityId))) {
     throw badRequest({

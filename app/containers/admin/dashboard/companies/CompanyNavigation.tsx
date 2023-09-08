@@ -4,6 +4,7 @@ import type { Company } from '@prisma/client'
 import { Title } from '~/components/Typography/Title'
 import { Tabs } from '~/components/Tabs/Tabs'
 import { Container } from '~/components/Layout/Container'
+import { $path } from 'remix-routes'
 
 interface CompanyNavigationProps extends PropsWithChildren {
   company: Pick<Company, 'id' | 'name'>
@@ -16,22 +17,42 @@ export const CompanyNavigation = ({
   const navPaths = [
     {
       title: 'Información principal',
-      path: `/admin/dashboard/companies/${company.id}?index`,
+      path: $path(
+        '/admin/dashboard/companies/:companyId',
+        {
+          companyId: company.id,
+        },
+        { index: true }
+      ),
     },
     {
       title: 'Colaboradores',
-      path: `/admin/dashboard/companies/${company.id}/employees`,
+      path: $path('/admin/dashboard/companies/:companyId/employees', {
+        companyId: company.id,
+      }),
       nestedPaths: [
-        `/admin/dashboard/companies/${company.id}/employees/create`,
+        $path('/admin/dashboard/companies/:companyId/employees/create', {
+          companyId: company.id,
+        }),
       ],
     },
     {
-      title: 'Novedades',
-      path: `/admin/dashboard/companies/${company.id}/debts`,
+      title: 'Equipos',
+      path: $path('/admin/dashboard/companies/:companyId/teams', {
+        companyId: company.id,
+      }),
     },
     {
-      title: 'Equipos',
-      path: `/admin/dashboard/companies/${company.id}/teams`,
+      title: 'Puntos',
+      path: $path('/admin/dashboard/companies/:companyId/points', {
+        companyId: company.id,
+      }),
+    },
+    {
+      title: 'Novedades',
+      path: $path('/admin/dashboard/companies/:companyId/debts', {
+        companyId: company.id,
+      }),
     },
   ]
 

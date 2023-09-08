@@ -46,17 +46,6 @@ export const employeeSchemaClient = z.object({
     roleId: zfd.text(z.string().nullable().default(null)),
   }),
 
-  availablePoints: zfd.numeric(
-    z
-      .number()
-      .nonnegative({
-        message: 'El número debe ser positivo',
-      })
-      .int()
-      .optional()
-      .default(0)
-  ),
-
   phone: zfd.text(z.string().nullable().default(null)),
   address: zfd.text(z.string().nullable().default(null)),
   numberOfChildren: zfd.numeric(
@@ -221,7 +210,6 @@ export const employeeAccountSchema = employeeSchemaClient
   .pick({
     user: true,
     status: true,
-    availablePoints: true,
     benefitsIds: true,
     employeeGroupsIds: true,
   })
