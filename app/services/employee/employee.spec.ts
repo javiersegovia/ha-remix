@@ -71,7 +71,7 @@ describe('uploadEmployees', () => {
 
     expect(response.createdUsersCount).toEqual(3)
     expect(response.updatedUsersCount).toEqual(0)
-    expect(response.usersWithErrors.length).toEqual(0)
+    expect(response.errorReports.length).toEqual(0)
 
     const expectedUser = dummyCsvData[0]
     const createdUser = await prisma.user.findFirst({
@@ -185,18 +185,16 @@ describe('uploadEmployees', () => {
       canManageFinancialInformation: true,
     })
 
-    const { createdUsersCount, updatedUsersCount, usersWithErrors } =
+    const { createdUsersCount, updatedUsersCount, errorReports } =
       await uploadEmployees({
         data: [newUserData],
         companyId: company.id,
         canManageFinancialInformation: true,
       })
 
-    console.log(usersWithErrors)
-
     expect(createdUsersCount).toEqual(0)
     expect(updatedUsersCount).toEqual(1)
-    expect(usersWithErrors.length).toEqual(0)
+    expect(errorReports.length).toEqual(0)
 
     const updatedUser = await prisma.user.findFirst({
       where: {

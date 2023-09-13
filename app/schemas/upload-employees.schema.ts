@@ -14,6 +14,7 @@ export const uploadEmployeeSchema = z.object({
       .trim()
       .email('Correo electrónico inválido')
   ),
+
   NOMBRE: zfd.text(
     z
       .string({
@@ -22,6 +23,7 @@ export const uploadEmployeeSchema = z.object({
       })
       .trim()
   ),
+
   APELLIDO: zfd.text(
     z
       .string({
@@ -30,46 +32,57 @@ export const uploadEmployeeSchema = z.object({
       })
       .trim()
   ),
+
   MEMBRESIA: zfd.text(z.string().trim().nullish()),
+
   ESTADO: zfd.text(
     z.string().trim().nullable().default(EmployeeStatus.INACTIVE)
   ),
 
   CARGO: zfd.text(z.string().trim().nullish()),
-  DEPARTAMENTO: zfd.text(z.string().trim().nullish()),
+
+  AREA: zfd.text(z.string().trim().nullish()),
+
+  DIRECCION: zfd.text(z.string().trim().nullish()),
+
+  GENERO: zfd.text(z.string().trim().nullish()),
 
   PAIS: zfd.text(z.string().trim().nullish()),
 
   BANCO: zfd.text(z.string().trim().nullish()),
+
   TIPO_DE_CUENTA: zfd.text(z.string().trim().nullish()),
+
   NUMERO_DE_CUENTA: zfd.text(z.string().trim().nullish()),
+
   TIPO_DE_DOCUMENTO: zfd.text(z.string().trim().nullish()),
+
   DOCUMENTO_DE_IDENTIDAD: zfd.text(z.string().trim().nullish()),
 
-  SALARIO: zfd.text(
+  SALARIO: zfd.numeric(
     z
-      .string({
-        invalid_type_error: 'Ingrese un salario',
-        required_error: 'Ingrese un salario',
+      .number({
+        invalid_type_error: 'El formato del salario es incorrecto',
       })
-      .trim()
+      .nullish()
   ),
-  CUPO_APROBADO: zfd.text(
+
+  CUPO_APROBADO: zfd.numeric(
     z
-      .string({
-        invalid_type_error: 'Ingrese un cupo aprobado',
-        required_error: 'Ingrese un cupo aprobado',
+      .number({
+        invalid_type_error: 'El formato del cupo aprobado es incorrecto',
       })
-      .trim()
+      .nullish()
   ),
-  CUPO_DISPONIBLE: zfd.text(
+
+  CUPO_DISPONIBLE: zfd.numeric(
     z
-      .string({
-        invalid_type_error: 'Ingrese un cupo disponible',
-        required_error: 'Ingrese un cupo disponible',
+      .number({
+        invalid_type_error: 'El formato del cupo disponible es incorrecto',
       })
-      .trim()
+      .nullish()
   ),
+
   FECHA_DE_INGRESO: zfd.text(
     z
       .string()
@@ -80,6 +93,7 @@ export const uploadEmployeeSchema = z.object({
       .trim()
       .nullish()
   ),
+
   FECHA_DE_RETIRO: zfd.text(
     z
       .string()
@@ -90,9 +104,10 @@ export const uploadEmployeeSchema = z.object({
       .trim()
       .nullish()
   ),
+
   ERRORES: zfd.text(z.string().trim().optional().nullish()),
+
   CELULAR: zfd.text(z.string().trim().nullish()),
-  PUNTOS_DISPONIBLES: zfd.text(z.string().trim().nullish()),
 })
 
 export const clientUploadEmployeesSchema = uploadEmployeeSchema.omit({

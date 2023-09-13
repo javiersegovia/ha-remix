@@ -1,0 +1,5 @@
+-- AlterTable
+ALTER TABLE "BankAccount" ALTER COLUMN "accountNumber" DROP NOT NULL,
+ALTER COLUMN "accountTypeId" DROP NOT NULL,
+ALTER COLUMN "bankId" DROP NOT NULL,
+ALTER COLUMN "identityDocumentId" DROP NOT NULL;

@@ -41,6 +41,7 @@ model AdminUser {
   payrollAdvanceTransfers PayrollAdvanceTransfer[]
   payrollAdvanceHistories PayrollAdvanceHistory[]
   premiumAdvanceHistories PremiumAdvanceHistory[]
+  errorReports            ErrorReport[]
 }
 
 model Company {
@@ -265,6 +266,7 @@ model Employee {
   pointTransactionsReceived PointTransaction[]  @relation("receiver")
   indicatorActivities       IndicatorActivity[]
   challengeHistory          ChallengeHistory[]
+  errorReports              ErrorReport[]
 }
 
 enum EmployeeRole {
@@ -449,14 +451,14 @@ model BankAccount {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  accountNumber String
+  accountNumber String?
 
-  accountType        BankAccountType  @relation(fields: [accountTypeId], references: [id], onDelete: Restrict)
-  accountTypeId      Int
-  bank               Bank             @relation(fields: [bankId], references: [id], onDelete: Restrict)
-  bankId             Int
-  identityDocument   IdentityDocument @relation(fields: [identityDocumentId], references: [id], onDelete: Restrict)
-  identityDocumentId Int              @unique
+  accountType        BankAccountType?  @relation(fields: [accountTypeId], references: [id], onDelete: Restrict)
+  accountTypeId      Int?
+  bank               Bank?             @relation(fields: [bankId], references: [id], onDelete: Restrict)
+  bankId             Int?
+  identityDocument   IdentityDocument? @relation(fields: [identityDocumentId], references: [id], onDelete: Restrict)
+  identityDocumentId Int?              @unique
   employee           Employee?
 }
 
@@ -1200,4 +1202,23 @@ model IndicatorActivity {
 
   indicator   Indicator @relation(fields: [indicatorId], references: [id], onUpdate: Cascade, onDelete: Cascade)
   indicatorId Int
+}
+
+model ErrorReport {
+  id        String      @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  details Json
+  type    ErrorReportType
+
+  employee    Employee?  @relation(fields: [employeeId], references: [id], onDelete: SetNull)
+  employeeId  String?
+  adminUser   AdminUser? @relation(fields: [adminUserId], references: [id], onDelete: SetNull)
+  adminUserId String?
+}
+
+enum ErrorReportType {
+  UPLOAD_EMPLOYEE
+  UNKNOWN
 }
