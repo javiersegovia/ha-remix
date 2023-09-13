@@ -9,6 +9,7 @@ import { badRequest } from '~/utils/responses'
 import { generateCreateUserInput } from './employee.server'
 import { uploadEmployeeSchema } from '~/schemas/upload-employees.schema'
 import { sendInvitation } from '../email/email.server'
+import type { TUploadEmployeeErrorReport } from './upload-employees.server'
 
 interface UploadEmployeesByAdminArgs {
   data: UploadEmployeeSchemaInput[]
@@ -32,7 +33,7 @@ export const uploadEmployeesByAdmin = async ({
   const errorResponses: Record<string, string[]> = {}
   let createdUsersCount = 0
   let updatedUsersCount = 0
-  const usersWithErrors: Array<UploadEmployeeSchemaInput> = []
+  const errorReports: TUploadEmployeeErrorReport = []
 
   const promises = data.map(async (item, itemIndex) => {
     const parsed = uploadEmployeeSchema.safeParse(item)
@@ -44,9 +45,9 @@ export const uploadEmployeesByAdmin = async ({
         errorResponses[itemIndex].push(issue.message)
       )
 
-      return usersWithErrors.push({
-        ...item,
-        ERRORES: errorResponses[itemIndex].join('\n'),
+      return errorReports.push({
+        email: item.CORREO_ELECTRONICO,
+        errors: errorResponses[itemIndex].join('\n'),
       })
     } else {
       const {
@@ -56,7 +57,7 @@ export const uploadEmployeesByAdmin = async ({
         ESTADO: status,
 
         CARGO: jobPositionName,
-        DEPARTAMENTO: jobDepartmentName,
+        AREA: jobDepartmentName,
         CELULAR: phone,
         PAIS: countryName,
 
@@ -270,7 +271,7 @@ export const uploadEmployeesByAdmin = async ({
             : undefined
 
         if (errorResponses[itemIndex].length > 0) {
-          return usersWithErrors.push({
+          return errorReports.push({
             ...item,
             ERRORES: errorResponses[itemIndex].join('\n'),
           })

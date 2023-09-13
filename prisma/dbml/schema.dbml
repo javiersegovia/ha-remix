@@ -27,6 +27,7 @@ Table AdminUser {
   payrollAdvanceTransfers PayrollAdvanceTransfer [not null]
   payrollAdvanceHistories PayrollAdvanceHistory [not null]
   premiumAdvanceHistories PremiumAdvanceHistory [not null]
+  errorReports ErrorReport [not null]
 }
 
 Table Company {
@@ -196,6 +197,7 @@ Table Employee {
   pointTransactionsReceived PointTransaction [not null]
   indicatorActivities IndicatorActivity [not null]
   challengeHistory ChallengeHistory [not null]
+  errorReports ErrorReport [not null]
 }
 
 Table EmployeeGroup {
@@ -339,13 +341,13 @@ Table BankAccount {
   id String [pk]
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [not null]
-  accountNumber String [not null]
-  accountType BankAccountType [not null]
-  accountTypeId Int [not null]
-  bank Bank [not null]
-  bankId Int [not null]
-  identityDocument IdentityDocument [not null]
-  identityDocumentId Int [unique, not null]
+  accountNumber String
+  accountType BankAccountType
+  accountTypeId Int
+  bank Bank
+  bankId Int
+  identityDocument IdentityDocument
+  identityDocumentId Int [unique]
   employee Employee
 }
 
@@ -879,6 +881,18 @@ Table IndicatorActivity {
   indicatorId Int [not null]
 }
 
+Table ErrorReport {
+  id String [pk]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  details Json [not null]
+  type ErrorReportType [not null]
+  employee Employee
+  employeeId String
+  adminUser AdminUser
+  adminUserId String
+}
+
 Enum CompanyStatus {
   ACTIVE
   INACTIVE
@@ -986,6 +1000,11 @@ Enum PointTransactionType {
 
 Enum IndicatorType {
   CUSTOM
+}
+
+Enum ErrorReportType {
+  UPLOAD_EMPLOYEE
+  UNKNOWN
 }
 
 Ref: User.roleId > UserRole.id [delete: Set Null]
@@ -1171,3 +1190,7 @@ Ref: PointTransaction.companyId > Company.id [delete: Cascade]
 Ref: IndicatorActivity.employeeId > Employee.id [delete: Cascade]
 
 Ref: IndicatorActivity.indicatorId > Indicator.id [delete: Cascade]
+
+Ref: ErrorReport.employeeId > Employee.id [delete: Set Null]
+
+Ref: ErrorReport.adminUserId > AdminUser.id [delete: Set Null]

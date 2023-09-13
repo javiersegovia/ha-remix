@@ -1,17 +1,14 @@
-import type { ActionArgs } from '@remix-run/server-runtime'
+import type { LoaderArgs, ActionArgs } from '@remix-run/server-runtime'
 
-import { PermissionCode } from '@prisma/client'
-import { json } from '@remix-run/server-runtime'
+import { ErrorReportType, PermissionCode } from '@prisma/client'
+import { redirect, json } from '@remix-run/node'
 import { $path } from 'remix-routes'
-import { CSVLink } from 'react-csv'
 import { twMerge } from 'tailwind-merge'
 import clsx from 'clsx'
 
 import { useActionData } from '@remix-run/react'
 
-import { useToastError } from '~/hooks/useToastError'
 import { UploadForm } from './upload-form'
-import { badRequest } from '~/utils/responses'
 
 import { uploadEmployees } from '~/services/employee/upload-employees.server'
 import {
@@ -30,11 +27,24 @@ import { Title } from '~/components/Typography/Title'
 import { Button, ButtonColorVariants } from '~/components/Button'
 import { AnimatedModal } from '~/components/Animations/AnimatedModal'
 import { Card } from '~/components/Cards/Card'
+import { prisma } from '~/db.server'
 
 const onCloseRedirectTo = $path('/people')
 
-export const action = async ({ request, params }: ActionArgs) => {
+export const loader = async ({ request }: LoaderArgs) => {
   const employee = await requireEmployee(request)
+
+  await requirePermissionByUserId(
+    employee.userId,
+    PermissionCode.MANAGE_EMPLOYEE_MAIN_INFORMATION
+  )
+
+  return json(null)
+}
+
+export const action = async ({ request }: ActionArgs) => {
+  const employee = await requireEmployee(request)
+  const session = await getSession(request)
 
   await requirePermissionByUserId(
     employee.userId,
@@ -50,8 +60,12 @@ export const action = async ({ request, params }: ActionArgs) => {
   const csvFile = formData.get('csvFile') as File
 
   if (!csvFile) {
-    return badRequest({
-      message: 'No se ha encontrado el archivo CSV',
+    session.flash(ERROR_FLASH_KEY, 'No se ha encontrado el archivo CSV.')
+
+    return json(null, {
+      headers: {
+        'Set-Cookie': await sessionStorage.commitSession(session),
+      },
     })
   }
 
@@ -60,40 +74,63 @@ export const action = async ({ request, params }: ActionArgs) => {
   try {
     const csvData = parseCSV(csvString)
 
-    if (csvData?.length > 500) {
-      return badRequest({
-        message:
-          'Se ha excedido el límite de subida. Por favor, evita cargar más de 400 colaboradores a la vez.',
+    if (csvData?.length > 400) {
+      session.flash(
+        ERROR_FLASH_KEY,
+        'Se ha excedido el límite de subida. Por favor, evita cargar más de 400 colaboradores a la vez.'
+      )
+
+      return json(null, {
+        headers: {
+          'Set-Cookie': await sessionStorage.commitSession(session),
+        },
       })
     }
 
-    const { usersWithErrors, createdUsersCount, updatedUsersCount } =
+    const { errorReports, createdUsersCount, updatedUsersCount } =
       await uploadEmployees({
         data: csvData,
         companyId: employee.companyId,
         canManageFinancialInformation,
       })
 
-    const session = await getSession(request)
-
-    if (usersWithErrors.length === 0) {
+    if (errorReports.length === 0) {
       session.flash(
         SUCCESS_FLASH_KEY,
         'La lista de colaboradores se cargó de forma satisfactoria.'
       )
-    } else {
-      session.flash(
-        ERROR_FLASH_KEY,
-        `Ha ocurrido un error durante la carga de colaboradores.`
+
+      return json(
+        {
+          errorReports,
+          createdUsersCount,
+          updatedUsersCount,
+        },
+        {
+          headers: {
+            'Set-Cookie': await sessionStorage.commitSession(session),
+          },
+        }
       )
     }
 
-    return json(
-      {
-        usersWithErrors,
-        createdUsersCount,
-        updatedUsersCount,
+    session.flash(
+      ERROR_FLASH_KEY,
+      `Ha ocurrido un error durante la carga de colaboradores.`
+    )
+
+    const errorReport = await prisma.errorReport.create({
+      data: {
+        details: JSON.stringify(errorReports),
+        type: ErrorReportType.UPLOAD_EMPLOYEE,
+        employeeId: employee.id,
       },
+    })
+
+    return redirect(
+      $path('/people/upload/errors/:errorReportId', {
+        errorReportId: errorReport.id,
+      }),
       {
         headers: {
           'Set-Cookie': await sessionStorage.commitSession(session),
@@ -103,17 +140,29 @@ export const action = async ({ request, params }: ActionArgs) => {
   } catch (e) {
     console.error(e)
 
-    return badRequest({
-      message:
-        'Ha ocurrido un error inesperado, por favor verifica que el formato del archivo CSV sea correcto.',
+    await prisma.errorReport.create({
+      data: {
+        details: JSON.stringify(e),
+        type: ErrorReportType.UNKNOWN,
+        employeeId: employee.id,
+      },
+    })
+
+    session.flash(
+      ERROR_FLASH_KEY,
+      'Ha ocurrido un error inesperado, por favor verifica que el formato del archivo CSV sea correcto.'
+    )
+
+    return json(null, {
+      headers: {
+        'Set-Cookie': await sessionStorage.commitSession(session),
+      },
     })
   }
 }
 
 const DashboardManageEmployeesUploadRoute = () => {
-  useToastError()
   const actionData = useActionData<typeof action>()
-  const hasActionData = actionData && 'usersWithErrors' in actionData
 
   return (
     <AnimatedModal onCloseRedirectTo={onCloseRedirectTo} overrideContainer>
@@ -124,16 +173,11 @@ const DashboardManageEmployeesUploadRoute = () => {
           )
         )}
       >
-        {hasActionData ? (
+        {actionData ? (
           <div className="text-left">
             <Title className="mb-4 text-center">
               Resultados de carga masiva
             </Title>
-
-            <p className="text-red-500">
-              <strong>{actionData.usersWithErrors?.length}</strong> usuarios
-              contienen errores
-            </p>
 
             <p className="text-green-500">
               <strong>{actionData.createdUsersCount}</strong> usuarios creados
@@ -152,15 +196,6 @@ const DashboardManageEmployeesUploadRoute = () => {
                 external
               >
                 Regresar
-              </Button>
-
-              <Button>
-                <CSVLink
-                  data={actionData.usersWithErrors}
-                  filename={`${actionData.usersWithErrors.length}_usuarios_con_errores.csv`}
-                >
-                  Descargar usuarios con errores
-                </CSVLink>
               </Button>
             </div>
           </div>
