@@ -2,9 +2,10 @@ import {
   redirect,
   type ActionArgs,
   type LoaderArgs,
+  json,
 } from '@remix-run/server-runtime'
 
-import { Form } from '@remix-run/react'
+import { Form, useLoaderData } from '@remix-run/react'
 import { Button, ButtonColorVariants } from '~/components/Button'
 import { AnimatedModal } from '~/components/Animations/AnimatedModal'
 import { SubmitButton } from '~/components/SubmitButton'
@@ -16,10 +17,22 @@ import {
   deleteChallengeById,
   requireEmployeeCanViewChallenge,
 } from '~/services/challenge/challenge.server'
+import { $path } from 'remix-routes'
 
 export const loader = async ({ request, params }: LoaderArgs) => {
   await requireEmployee(request)
-  return null
+
+  const { challengeId } = params
+  if (!challengeId || isNaN(Number(challengeId))) {
+    throw badRequest({
+      message: 'No se encontró el ID del reto',
+      redirect: $path('/home'),
+    })
+  }
+
+  return json({
+    challengeId,
+  })
 }
 
 export const action = async ({ request, params }: ActionArgs) => {
@@ -40,10 +53,16 @@ export const action = async ({ request, params }: ActionArgs) => {
   return redirect('/home')
 }
 
-const HomeDeleteChallengeRoute = () => {
+const ChallengeDeleteRoute = () => {
+  const { challengeId } = useLoaderData<typeof loader>()
+
+  const onCloseRedirectTo = $path('/challenges/:challengeId', {
+    challengeId,
+  })
+
   return (
     <>
-      <AnimatedModal onCloseRedirectTo="/home">
+      <AnimatedModal onCloseRedirectTo={onCloseRedirectTo}>
         <div className="space-y-4 text-center">
           <Title>¿Estás seguro?</Title>
 
@@ -58,7 +77,7 @@ const HomeDeleteChallengeRoute = () => {
             </SubmitButton>
 
             <Button
-              href="/home"
+              href={onCloseRedirectTo}
               variant={ButtonColorVariants.SECONDARY}
               className="mt-4"
             >
@@ -71,4 +90,4 @@ const HomeDeleteChallengeRoute = () => {
   )
 }
 
-export default HomeDeleteChallengeRoute
+export default ChallengeDeleteRoute

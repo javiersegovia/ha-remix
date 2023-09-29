@@ -10,7 +10,7 @@ import { Title } from '~/components/Typography/Title'
 import { Text } from '~/components/Typography/Text'
 import { Button } from '~/components/Button'
 import { ChallengeCard } from '~/components/Cards/ChallengeCard'
-import { getChallengesByCompanyId } from '~/services/challenge/challenge.server'
+import { getChallengesWithProgressByCompanyId } from '~/services/challenge/challenge.server'
 import { HiStar, HiMiniUserGroup } from 'react-icons/hi2'
 import { TeamSimpleCard } from '~/components/Cards/TeamSimpleCard'
 import { getTeamsByCompanyId } from '~/services/team/team.server'
@@ -21,7 +21,9 @@ import { PointMetrics } from '~/containers/home/PointMetrics'
 export const loader = async ({ request }: LoaderArgs) => {
   const employee = await requireEmployee(request)
 
-  const challenges = await getChallengesByCompanyId(employee.companyId)
+  const challenges = await getChallengesWithProgressByCompanyId(
+    employee.companyId
+  )
   const teams = await getTeamsByCompanyId(employee.companyId)
   const company = await getCompanyById(employee.companyId)
   const pointMetrics = await getCompanyPointMetricsByCompanyId(
@@ -86,12 +88,14 @@ const HomeRoute = () => {
                   ({
                     title,
                     id,
-                    description,
+                    progress,
                     startDate,
                     finishDate,
                     goal,
                     indicator,
-                    rewardDescription,
+                    status,
+                    reward,
+                    rewardEligibles,
                     teams: currentTeams,
                   }) => {
                     return (
@@ -99,12 +103,14 @@ const HomeRoute = () => {
                         key={id}
                         id={id}
                         title={title}
-                        description={description}
+                        progress={progress}
                         startDate={startDate}
                         finishDate={finishDate}
                         goal={goal}
                         indicator={indicator}
-                        rewardDescription={rewardDescription}
+                        status={status}
+                        reward={reward}
+                        rewardEligibles={rewardEligibles}
                         teams={currentTeams}
                       />
                     )

@@ -7,7 +7,7 @@ import { TableSortableButton } from '~/components/UI/Table'
 import { formatDate, sanitizeDate } from '~/utils/formatDate'
 import { Button, ButtonColorVariants } from '~/components/Button'
 
-export type IndicatorActivityDataItem = Pick<
+export type ChallengeIndicatorActivityDataItem = Pick<
   IndicatorActivity,
   'id' | 'value'
 > & {
@@ -22,7 +22,7 @@ export type IndicatorActivityDataItem = Pick<
   }
 }
 
-export const columns: ColumnDef<IndicatorActivityDataItem>[] = [
+export const columns: ColumnDef<ChallengeIndicatorActivityDataItem>[] = [
   {
     id: 'employee.user.fullName',
     header: ({ column }) => {
@@ -85,7 +85,7 @@ export const columns: ColumnDef<IndicatorActivityDataItem>[] = [
   },
 ]
 
-export const fullColumns: ColumnDef<IndicatorActivityDataItem>[] = [
+export const fullColumns: ColumnDef<ChallengeIndicatorActivityDataItem>[] = [
   ...columns,
   {
     accessorKey: 'id',

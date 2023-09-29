@@ -85,9 +85,9 @@ export const Navbar = ({ avatar, permissions }: NavbarProps) => {
 
   return (
     <>
-      <div className="pt-[88px]" />
+      <div className="pt-[74px] lg:pt-[88px]" />
       <header
-        className="fixed left-0 right-0 top-0 z-10 bg-white"
+        className="fixed left-0 right-0 top-0 z-10 border-b border-gray-200 bg-white"
         key={pathname}
       >
         <nav
@@ -132,14 +132,12 @@ export const Navbar = ({ avatar, permissions }: NavbarProps) => {
             ))}
           </div>
           <div className="hidden items-center gap-6 lg:flex lg:flex-1 lg:justify-end">
-            {pathname.includes('/home') && (
-              <Link to="/home/create-challenge" preventScrollReset>
-                <Button className="ml-auto w-auto gap-2" size="XS">
-                  <HiOutlinePencil />
-                  Crear reto
-                </Button>
-              </Link>
-            )}
+            <Link to={$path('/challenges/create')} preventScrollReset>
+              <Button className="ml-auto w-auto gap-2" size="XS">
+                <HiOutlinePencil />
+                Crear reto
+              </Button>
+            </Link>
 
             <Menu as="div" className="relative">
               <Menu.Button>

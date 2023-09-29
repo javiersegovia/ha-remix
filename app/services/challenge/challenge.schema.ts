@@ -1,3 +1,4 @@
+import { ChallengeStatus } from '@prisma/client'
 import { withZod } from '@remix-validated-form/with-zod'
 import { z } from 'zod'
 import { zfd } from 'zod-form-data'
@@ -37,31 +38,41 @@ export const challengeSchema = z.object({
     .nullable()
     .default(null),
 
-  measurerDescription: z
-    .string({
-      required_error: 'Ingrese el nombre del medidor',
-    })
-    .trim()
-    .min(5, 'El medidor debe poseer al menos 5 caracteres')
-    .nullish(),
-
-  rewardDescription: z
-    .string({
-      required_error: 'Ingrese la recompensa',
-    })
-    .trim()
-    .nullish(),
-
   goal: zfd.numeric(
     z
       .number({
         required_error: 'Ingrese una meta',
       })
       .positive()
-      .nullish()
   ),
 
-  indicatorId: zfd.numeric(z.number().nullish()),
+  reward: zfd.numeric(
+    z
+      .number({
+        required_error: 'Ingrese una recompensa',
+      })
+      .positive()
+      .int()
+  ),
+
+  rewardEligibles: zfd.numeric(
+    z
+      .number({
+        required_error:
+          'Ingrese una cantidad de personas elegibles para la recompensa',
+      })
+      .positive()
+      .int()
+      .default(1)
+  ),
+
+  status: z.nativeEnum(ChallengeStatus).default(ChallengeStatus.INACTIVE),
+
+  indicatorId: zfd.numeric(
+    z.number({
+      required_error: 'Seleccione un indicador de progreso',
+    })
+  ),
 
   teamIds: z.array(zfd.text(z.string())).nullish(),
 })

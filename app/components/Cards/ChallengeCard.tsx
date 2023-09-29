@@ -1,22 +1,29 @@
 import type { Challenge, Indicator, Team } from '@prisma/client'
+import type { ReactNode } from 'react'
 
 import { Card } from './Card'
 import { Title } from '../Typography/Title'
-import { Text } from '../Typography/Text'
 import { HiOutlinePencilSquare, HiOutlineTrash } from 'react-icons/hi2'
 import { MenuButton } from '../Button/MenuButton'
 import { $path } from 'remix-routes'
-import type { ReactNode } from 'react'
 import { formatDate, sanitizeDate } from '~/utils/formatDate'
+import { ChallengeStatusPill } from '../Pills/ChallengeStatusPill'
+import { Button, ButtonColorVariants, ButtonIconVariants } from '../Button'
+import type { getChallengesWithProgressByCompanyId } from '~/services/challenge/challenge.server'
+import { ChallengeProgressBar } from '../Bars/ChallengeProgressBar'
+import clsx from 'clsx'
 
 type ChallengeCardProps = Pick<
   Challenge,
-  'id' | 'title' | 'description' | 'goal' | 'rewardDescription'
+  'id' | 'title' | 'goal' | 'reward' | 'rewardEligibles' | 'status'
 > & {
   startDate?: string | null
   finishDate?: string | null
   teams?: Pick<Team, 'id' | 'name'>[]
   indicator?: Pick<Indicator, 'name'> | null
+  progress?: Awaited<
+    ReturnType<typeof getChallengesWithProgressByCompanyId>
+  >[number]['progress']
 }
 
 type TGridItems = {
@@ -27,19 +34,20 @@ type TGridItems = {
 export const ChallengeCard = ({
   id,
   title,
-  description,
   startDate,
   finishDate,
+  progress,
   goal,
-  rewardDescription,
+  reward,
+  rewardEligibles,
+  status,
   indicator,
   teams,
 }: ChallengeCardProps) => {
   const navigation = [
     {
       name: 'Editar',
-      href: $path('/home/edit-challenge/:challengeId', { challengeId: id }),
-      preventScrollReset: true,
+      href: $path('/challenges/:challengeId/update', { challengeId: id }),
       Icon: HiOutlinePencilSquare,
     },
     {
@@ -51,13 +59,6 @@ export const ChallengeCard = ({
   ]
 
   const gridItems: TGridItems[] = [
-    {
-      label: 'Equipos',
-      content:
-        teams?.length && teams.length > 0
-          ? teams.map((t) => t.name).join(', ')
-          : '-',
-    },
     {
       label: 'Fecha de inicio',
       content: startDate
@@ -71,33 +72,56 @@ export const ChallengeCard = ({
         : '-',
     },
     {
-      label: 'Recompensa',
-      content: rewardDescription || '-',
+      label: 'Recompensa individual',
+      content: reward?.toLocaleString() || '-',
     },
     {
-      label: 'Meta',
-      content: goal || '-',
+      label: 'Recompensa total',
+      content: reward ? (reward * rewardEligibles).toLocaleString() : '-',
+    },
+    {
+      label: 'Meta individual',
+      content: goal?.toLocaleString() || '-',
+    },
+    {
+      label: 'Meta grupal',
+      content: goal ? (goal * rewardEligibles).toLocaleString() : '-',
+    },
+    {
+      label: 'Elegibles para recompensa',
+      content: rewardEligibles || '-',
     },
     {
       label: 'Indicador de progreso',
       content: indicator?.name || '-',
     },
+    {
+      label: 'Equipos participantes',
+      content:
+        teams?.length && teams.length > 0
+          ? teams.map((t) => t.name).join(', ')
+          : '-',
+    },
   ]
 
   return (
-    <Card>
-      <div className="flex items-center justify-between">
+    <Card
+      className={clsx(
+        progress?.progressPercentage &&
+          progress.progressPercentage > 100 &&
+          'border-green-300 bg-green-50'
+      )}
+    >
+      <div className="flex items-center">
         <Title as="h3">{title}</Title>
-        <MenuButton navigation={navigation} />
+
+        <div className="ml-auto flex items-center gap-4">
+          <ChallengeStatusPill status={status} />
+          <MenuButton navigation={navigation} />
+        </div>
       </div>
 
-      {description && (
-        <Text className="mt-2 text-justify text-sm text-gray-500">
-          {description}
-        </Text>
-      )}
-
-      <section className="mt-6 grid grid-cols-2 gap-6 text-sm md:grid-cols-3">
+      <section className="mt-6 grid grid-cols-2 gap-6 text-sm ">
         {gridItems?.map(({ label, content }) => (
           <div key={label}>
             <p className="font-semibold text-gray-700">{label}</p>
@@ -105,6 +129,31 @@ export const ChallengeCard = ({
           </div>
         ))}
       </section>
+
+      <div className="mt-6 h-[1px] w-full bg-gray-200" />
+
+      {goal && indicator ? (
+        <div className="pb-4 pt-10">
+          <ChallengeProgressBar
+            indicator={indicator}
+            totalGoal={goal ? goal * rewardEligibles : 0}
+            progressPercentage={progress?.progressPercentage}
+            progressValue={progress?.progressValue}
+          />
+        </div>
+      ) : null}
+
+      <div className="mt-6">
+        <Button
+          variant={ButtonColorVariants.ALTERNATIVE}
+          size="XS"
+          icon={ButtonIconVariants.VIEW}
+          className="ml-auto md:w-auto"
+          href={$path('/challenges/:challengeId', { challengeId: id })}
+        >
+          Ver detalles
+        </Button>
+      </div>
     </Card>
   )
 }

@@ -9,6 +9,7 @@ import {
   MdOutlineDownload,
   MdOutlineDelete,
 } from 'react-icons/md'
+import { HiOutlineEye } from 'react-icons/hi2'
 
 export type TButtonSizes = 'XS' | 'SM' | 'MD' | 'LG' | 'XL'
 
@@ -27,6 +28,7 @@ export enum ButtonIconVariants {
   DOWNLOAD = 'DOWNLOAD',
   DELETE = 'DELETE',
   SEARCH = 'SEARCH',
+  VIEW = 'VIEW',
 }
 
 export enum ButtonDesignVariants {
@@ -56,7 +58,7 @@ export const Button = ({
     external ? (
       <>
         <a
-          className="block w-full"
+          className="block"
           href={href}
           {...(targetBlank
             ? { target: '_blank', rel: 'noreferrer noopener' }
@@ -66,7 +68,7 @@ export const Button = ({
         </a>
       </>
     ) : (
-      <Link to={href} className="w-full">
+      <Link to={href}>
         <ButtonElement {...props} />
       </Link>
     )
@@ -145,12 +147,15 @@ export const ButtonElement = ({
         <HiCheck className="text-2xl" />
       ) : (
         <>
-          {children}
-
           {icon && (
             <span
-              className={clsx(
-                design === ButtonDesignVariants.BUTTON && icon && 'ml-3 text-xl'
+              className={twMerge(
+                clsx(
+                  design === ButtonDesignVariants.BUTTON &&
+                    icon &&
+                    'mr-3 text-xl'
+                ),
+                size === 'XS' && 'mr-2'
               )}
             >
               {icon === ButtonIconVariants.UPLOAD && <MdOutlineUploadFile />}
@@ -158,8 +163,11 @@ export const ButtonElement = ({
               {icon === ButtonIconVariants.DOWNLOAD && <MdOutlineDownload />}
               {icon === ButtonIconVariants.DELETE && <MdOutlineDelete />}
               {icon === ButtonIconVariants.SEARCH && <HiSearch />}
+              {icon === ButtonIconVariants.VIEW && <HiOutlineEye />}
             </span>
           )}
+
+          {children}
         </>
       )}
     </button>
