@@ -1,9 +1,17 @@
-import type { Company, Indicator, IndicatorActivity } from '@prisma/client'
+import type {
+  Challenge,
+  Company,
+  Indicator,
+  IndicatorActivity,
+  Prisma,
+} from '@prisma/client'
 import type {
   ExtendedIndicatorActivitySchemaInput,
   IndicatorActivitySchemaInput,
 } from './indicator-activity.schema'
 import { prisma, xprisma } from '~/db.server'
+import { badRequest } from '~/utils/responses'
+import { $path } from 'remix-routes'
 
 export const getIndicatorActivitiesByIndicatorId = async (
   indicatorId: Indicator['id']
@@ -66,6 +74,105 @@ export const getIndicatorActivitiesByCompanyId = async (
       },
     },
   })
+}
+
+export const getIndicatorActivitiesByChallengeId = async (
+  challengeId: Challenge['id']
+) => {
+  const challenge = await prisma.challenge.findUnique({
+    where: {
+      id: challengeId,
+    },
+    select: {
+      companyId: true,
+      startDate: true,
+      finishDate: true,
+      teams: {
+        select: {
+          id: true,
+        },
+      },
+      indicator: {
+        select: {
+          id: true,
+        },
+      },
+    },
+  })
+
+  if (!challenge) {
+    throw badRequest({
+      message: 'No se pudo encontrar el reto',
+      redirect: $path('/home'),
+    })
+  }
+
+  const indicatorActivityFilters: Prisma.Enumerable<Prisma.IndicatorActivityWhereInput> =
+    [
+      {
+        employee: {
+          companyId: challenge.companyId,
+        },
+      },
+    ]
+
+  if (challenge.indicator?.id) {
+    indicatorActivityFilters.push({
+      indicatorId: challenge.indicator.id,
+    })
+  }
+
+  if (challenge.startDate || challenge.finishDate) {
+    indicatorActivityFilters.push({
+      date: {
+        gte: challenge.startDate || undefined,
+        lte: challenge.finishDate || undefined,
+      },
+    })
+  }
+
+  if (challenge.teams?.length > 0) {
+    indicatorActivityFilters.push({
+      employee: {
+        teamMembers: {
+          some: {
+            teamId: {
+              in: challenge.teams.map((t) => t.id),
+            },
+          },
+        },
+      },
+    })
+  }
+
+  const indicatorActivities = await xprisma.indicatorActivity.findMany({
+    where: {
+      AND: indicatorActivityFilters,
+    },
+    select: {
+      id: true,
+      date: true,
+      value: true,
+      employee: {
+        select: {
+          id: true,
+          user: {
+            select: {
+              email: true,
+              fullName: true,
+            },
+          },
+        },
+      },
+      indicator: {
+        select: {
+          name: true,
+        },
+      },
+    },
+  })
+
+  return indicatorActivities
 }
 
 export const getIndicatorActivityById = async (

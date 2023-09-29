@@ -1,9 +1,17 @@
-import type { Challenge, Company } from '@prisma/client'
+import type {
+  Challenge,
+  Company,
+  Employee,
+  IndicatorActivity,
+} from '@prisma/client'
 import type { ChallengeSchemaInput } from './challenge.schema'
 
 import { prisma } from '~/db.server'
 import { connectMany, setMany } from '~/utils/relationships'
 import { sanitizeDate } from '~/utils/formatDate'
+import { badRequest } from '~/utils/responses'
+import { $path } from 'remix-routes'
+import { getIndicatorActivitiesByChallengeId } from '../indicator-activity/indicator-activity.server'
 
 export const getChallengesByCompanyId = (companyId: Company['id']) => {
   return prisma.challenge.findMany({
@@ -20,6 +28,28 @@ export const getChallengesByCompanyId = (companyId: Company['id']) => {
   })
 }
 
+export const getChallengesWithProgressByCompanyId = async (
+  companyId: Company['id']
+) => {
+  const challenges = await getChallengesByCompanyId(companyId)
+
+  const promises = challenges.map(async (challenge, index) => {
+    const indicatorActivities = await getIndicatorActivitiesByChallengeId(
+      challenge.id
+    )
+
+    const progress = calculateChallengeProgress({
+      goal: challenge.goal,
+      rewardEligibles: challenge.rewardEligibles,
+      indicatorActivities,
+    })
+
+    return { ...challenge, progress }
+  })
+
+  return Promise.all(promises)
+}
+
 export const getChallengeById = (challengeId: Challenge['id']) => {
   return prisma.challenge.findUnique({
     where: {
@@ -27,6 +57,7 @@ export const getChallengeById = (challengeId: Challenge['id']) => {
     },
     include: {
       teams: true,
+      indicator: true,
     },
   })
 }
@@ -71,4 +102,68 @@ export const deleteChallengeById = (challengeId: Challenge['id']) => {
       id: challengeId,
     },
   })
+}
+
+/** If both items belong to the same company, the value will be true */
+export const canEmployeeViewChallenge = async (
+  challengeId: Challenge['id'],
+  employeeId: Employee['id']
+) => {
+  const findEmployee = prisma.employee.findUnique({
+    where: { id: employeeId },
+    select: {
+      companyId: true,
+    },
+  })
+
+  const findChallenge = prisma.challenge.findUnique({
+    where: { id: challengeId },
+    select: {
+      companyId: true,
+    },
+  })
+
+  const [employee, challenge] = await Promise.all([findEmployee, findChallenge])
+
+  return employee?.companyId === challenge?.companyId
+}
+
+interface CalculateChallengeProgressArgs {
+  goal?: Challenge['goal']
+  rewardEligibles?: Challenge['rewardEligibles']
+  indicatorActivities: Pick<IndicatorActivity, 'value'>[]
+}
+
+export const calculateChallengeProgress = ({
+  goal,
+  rewardEligibles = 1,
+  indicatorActivities,
+}: CalculateChallengeProgressArgs) => {
+  if (!goal) {
+    return null
+  }
+
+  const progressValue = indicatorActivities.reduce(
+    (prev, curr) => prev + curr.value,
+    0
+  )
+
+  return {
+    progressValue,
+    progressPercentage: (progressValue * 100) / (goal * rewardEligibles),
+  }
+}
+
+export const requireEmployeeCanViewChallenge = async (
+  challengeId: Challenge['id'],
+  employeeId: Employee['id']
+) => {
+  const hasPermission = await canEmployeeViewChallenge(challengeId, employeeId)
+
+  if (!hasPermission) {
+    throw badRequest({
+      message: `No estás autorizado para realizar esta acción`,
+      redirect: $path('/unauthorized'),
+    })
+  }
 }

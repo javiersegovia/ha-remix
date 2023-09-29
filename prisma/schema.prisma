@@ -1082,6 +1082,7 @@ model Challenge {
 enum ChallengeStatus {
   ACTIVE
   INACTIVE
+  COMPLETED
 }
 
 model ChallengeHistory {

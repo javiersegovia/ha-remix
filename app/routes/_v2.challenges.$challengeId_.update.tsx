@@ -4,11 +4,11 @@ import { useLoaderData } from '@remix-run/react'
 import { json, redirect } from '@remix-run/server-runtime'
 import { validationError } from 'remix-validated-form'
 
-import { AnimatedRightPanel } from '~/components/Animations/AnimatedRightPanel'
 import { ChallengeForm } from '~/components/Forms/ChallengeForm'
 import { SubmitButton } from '~/components/SubmitButton'
 import {
   getChallengeById,
+  requireEmployeeCanViewChallenge,
   updateChallengeById,
 } from '~/services/challenge/challenge.server'
 import { requireEmployee } from '~/session.server'
@@ -18,6 +18,10 @@ import { parseISOLocalNullable } from '~/utils/formatDate'
 import { useToastError } from '~/hooks/useToastError'
 import { getTeamsByCompanyId } from '../services/team/team.server'
 import { getIndicators } from '~/services/indicator/indicator.server'
+import { Container } from '~/components/Layout/Container'
+import { Title } from '~/components/Typography/Title'
+import { Button, ButtonColorVariants } from '~/components/Button'
+import { $path } from 'remix-routes'
 
 export const loader = async ({ request, params }: LoaderArgs) => {
   const employee = await requireEmployee(request)
@@ -26,16 +30,18 @@ export const loader = async ({ request, params }: LoaderArgs) => {
   if (!challengeId || isNaN(Number(challengeId))) {
     throw badRequest({
       message: 'No se encontró el ID del reto',
-      redirect: '/home',
+      redirect: $path('/home'),
     })
   }
+
+  await requireEmployeeCanViewChallenge(Number(challengeId), employee.id)
 
   const challenge = await getChallengeById(Number(challengeId))
 
   if (!challenge) {
     throw badRequest({
       message: 'No se encontró el reto',
-      redirect: '/home',
+      redirect: $path('/home'),
     })
   }
 
@@ -46,17 +52,17 @@ export const loader = async ({ request, params }: LoaderArgs) => {
 }
 
 export const action = async ({ request, params }: ActionArgs) => {
-  await requireEmployee(request)
-
-  // todo: Validate that the user can update the challenge
+  const employee = await requireEmployee(request)
 
   const { challengeId } = params
   if (!challengeId || isNaN(Number(challengeId))) {
     throw badRequest({
       message: 'No se encontró el ID del reto',
-      redirect: '/home',
+      redirect: $path('/home'),
     })
   }
+
+  await requireEmployeeCanViewChallenge(Number(challengeId), employee.id)
 
   const formData = await request.formData()
 
@@ -68,62 +74,75 @@ export const action = async ({ request, params }: ActionArgs) => {
     return validationError(error, submittedData)
   }
 
-  await updateChallengeById(data, Number(challengeId))
+  const challenge = await updateChallengeById(data, Number(challengeId))
 
-  return redirect('/home')
+  return redirect(
+    $path('/challenges/:challengeId', { challengeId: challenge.id })
+  )
 }
 
-const HomeEditChallengeRoute = () => {
+const ChallengeUpdateRoute = () => {
   const { challenge, teams, indicators } = useLoaderData<typeof loader>() || {}
   const {
+    id,
     title,
     description,
     goal,
-    measurerDescription,
-    rewardDescription,
+    status,
+    reward,
+    rewardEligibles,
     startDate,
     finishDate,
     indicatorId,
     teams: currentTeams,
   } = challenge || {}
 
+  const formId = 'UpdateChallengeForm'
+
   return (
     <>
-      <AnimatedRightPanel
-        title="Modificar reto"
-        onCloseRedirectTo="/home"
-        actions={
-          <SubmitButton
-            form="ChallengeForm"
-            size="SM"
-            className="ml-auto w-auto"
-          >
-            Guardar
-          </SubmitButton>
-        }
-      >
+      <Container>
+        <Title className="mb-10">Modificar reto</Title>
+
         <ChallengeForm
           teams={teams}
           indicators={indicators}
-          formId="ChallengeForm"
+          formId={formId}
           defaultValues={{
             title,
             description,
             goal,
-            measurerDescription,
-            rewardDescription,
+            status,
+            reward,
+            rewardEligibles,
             startDate: parseISOLocalNullable(startDate),
             finishDate: parseISOLocalNullable(finishDate),
             teams: currentTeams,
             indicatorId,
           }}
         />
-      </AnimatedRightPanel>
+
+        <section className="mt-10 flex justify-end gap-4">
+          <Button
+            href={$path('/challenges/:challengeId', {
+              challengeId: id,
+            })}
+            variant={ButtonColorVariants.WARNING}
+            className="md:w-auto"
+          >
+            Cancelar
+          </Button>
+
+          <SubmitButton form={formId} size="SM" className="md:w-auto">
+            Guardar
+          </SubmitButton>
+        </section>
+      </Container>
     </>
   )
 }
 
-export default HomeEditChallengeRoute
+export default ChallengeUpdateRoute
 
 export const ErrorBoundary = () => {
   useToastError()

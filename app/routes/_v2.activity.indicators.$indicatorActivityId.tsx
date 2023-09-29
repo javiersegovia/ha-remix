@@ -99,7 +99,7 @@ export default function IndicatorActivityUpdateRoute() {
   return (
     <AnimatedRightPanel
       onCloseRedirectTo={onCloseRedirectTo}
-      title="Modificar indicador"
+      title="Modificar actividad"
       actions={
         <div className="flex flex-col gap-4 md:flex-row">
           <SubmitButton form={formId} size="SM">
