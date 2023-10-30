@@ -1,6 +1,7 @@
 import type {
   Challenge,
   Company,
+  Employee,
   Indicator,
   IndicatorActivity,
   Prisma,
@@ -149,6 +150,9 @@ export const getIndicatorActivitiesByChallengeId = async (
     where: {
       AND: indicatorActivityFilters,
     },
+    orderBy: {
+      date: 'asc',
+    },
     select: {
       id: true,
       date: true,
@@ -173,6 +177,91 @@ export const getIndicatorActivitiesByChallengeId = async (
   })
 
   return indicatorActivities
+}
+
+export interface EmployeeIndicatorActivity {
+  employeeId: Employee['id']
+  fullName: string
+  email: string
+  fulfillmentDate: Date | null
+  totalActivityValue: number
+  indicator: Pick<Indicator, 'name'>
+  indicatorActivities: Pick<IndicatorActivity, 'date' | 'id' | 'value'>[]
+}
+
+interface GetEmployeeIndicatorActivitiesArgs {
+  goal: number
+  indicatorActivities: Awaited<
+    ReturnType<typeof getIndicatorActivitiesByChallengeId>
+  >
+}
+
+export const getEmployeeIndicatorActivities = ({
+  indicatorActivities,
+  goal,
+}: GetEmployeeIndicatorActivitiesArgs) => {
+  const employeesIActivities: Record<
+    Employee['id'],
+    EmployeeIndicatorActivity
+  > = {}
+
+  for (let iActivity of indicatorActivities) {
+    const { date, value, id, employee, indicator } = iActivity
+
+    if (employeesIActivities[employee.id]) {
+      const newTotalActivityValue =
+        employeesIActivities[employee.id].totalActivityValue + value
+
+      employeesIActivities[employee.id] = {
+        ...employeesIActivities[employee.id],
+
+        totalActivityValue: newTotalActivityValue,
+
+        fulfillmentDate:
+          !employeesIActivities[employee.id].fulfillmentDate &&
+          newTotalActivityValue >= goal
+            ? date
+            : employeesIActivities[employee.id].fulfillmentDate,
+
+        indicatorActivities: [
+          ...employeesIActivities[employee.id].indicatorActivities,
+          {
+            id,
+            date,
+            value,
+          },
+        ],
+      }
+    } else {
+      employeesIActivities[employee.id] = {
+        employeeId: employee.id,
+        email: employee.user.email,
+        fullName: employee.user.fullName,
+        totalActivityValue: value,
+        fulfillmentDate: value >= goal ? date : null,
+        indicator,
+        indicatorActivities: [{ id, date, value }],
+      }
+    }
+  }
+
+  const employees = Object.values(employeesIActivities).sort((a, b) => {
+    if (a.fulfillmentDate === null) {
+      return 1
+    }
+
+    if (b.fulfillmentDate === null) {
+      return -1
+    }
+
+    if (a.fulfillmentDate.getTime() === b.fulfillmentDate.getTime()) {
+      return a.totalActivityValue < b.totalActivityValue ? 1 : -1
+    }
+
+    return a.fulfillmentDate < b.fulfillmentDate ? -1 : 1
+  })
+
+  return employees
 }
 
 export const getIndicatorActivityById = async (

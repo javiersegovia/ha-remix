@@ -875,6 +875,7 @@ Table IndicatorActivity {
   updatedAt DateTime [not null]
   value Float [not null]
   date DateTime [default: `now()`, not null]
+  isEditable Boolean [default: true]
   employee Employee [not null]
   employeeId String [not null]
   indicator Indicator [not null]
@@ -982,6 +983,7 @@ Enum DataItemType {
 Enum ChallengeStatus {
   ACTIVE
   INACTIVE
+  CANCELED
   COMPLETED
 }
 

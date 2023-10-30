@@ -1,4 +1,9 @@
-import type { Challenge, Indicator, Team } from '@prisma/client'
+import {
+  ChallengeStatus,
+  type Challenge,
+  type Indicator,
+  type Team,
+} from '@prisma/client'
 import type { ReactNode } from 'react'
 
 import { Card } from './Card'
@@ -44,19 +49,28 @@ export const ChallengeCard = ({
   indicator,
   teams,
 }: ChallengeCardProps) => {
-  const navigation = [
-    {
+  const navigation = []
+
+  if (
+    status !== ChallengeStatus.CANCELED &&
+    status !== ChallengeStatus.COMPLETED
+  ) {
+    navigation.push({
       name: 'Editar',
       href: $path('/challenges/:challengeId/update', { challengeId: id }),
+      preventScrollReset: false,
       Icon: HiOutlinePencilSquare,
-    },
-    {
+    })
+  }
+
+  if (status !== ChallengeStatus.COMPLETED) {
+    navigation.push({
       name: 'Eliminar',
-      href: $path('/home/delete-challenge/:challengeId', { challengeId: id }),
+      href: $path('/challenges/:challengeId/delete', { challengeId: id }),
       preventScrollReset: true,
       Icon: HiOutlineTrash,
-    },
-  ]
+    })
+  }
 
   const gridItems: TGridItems[] = [
     {
@@ -117,7 +131,7 @@ export const ChallengeCard = ({
 
         <div className="ml-auto flex items-center gap-4">
           <ChallengeStatusPill status={status} />
-          <MenuButton navigation={navigation} />
+          {navigation.length > 0 && <MenuButton navigation={navigation} />}
         </div>
       </div>
 

@@ -1,10 +1,12 @@
-import type {
-  Challenge,
-  Company,
-  Employee,
-  IndicatorActivity,
+import {
+  PointTransactionType,
+  type Challenge,
+  type Company,
+  type Employee,
+  type IndicatorActivity,
 } from '@prisma/client'
 import type { ChallengeSchemaInput } from './challenge.schema'
+import type { EmployeeIndicatorActivity } from '../indicator-activity/indicator-activity.server'
 
 import { prisma } from '~/db.server'
 import { connectMany, setMany } from '~/utils/relationships'
@@ -12,6 +14,8 @@ import { sanitizeDate } from '~/utils/formatDate'
 import { badRequest } from '~/utils/responses'
 import { $path } from 'remix-routes'
 import { getIndicatorActivitiesByChallengeId } from '../indicator-activity/indicator-activity.server'
+import { percentageOf } from '~/utils/percentage'
+import { createPointTransaction } from '../points/point.server'
 
 export const getChallengesByCompanyId = (companyId: Company['id']) => {
   return prisma.challenge.findMany({
@@ -104,6 +108,46 @@ export const deleteChallengeById = (challengeId: Challenge['id']) => {
   })
 }
 
+interface HandleChallengeRewardArgs {
+  employeesIActivities: EmployeeIndicatorActivity[]
+  challenge: Pick<Challenge, 'id' | 'reward' | 'companyId'>
+}
+
+export const handleChallengeReward = async ({
+  employeesIActivities,
+  challenge,
+}: HandleChallengeRewardArgs) => {
+  employeesIActivities.map(async (employee) => {
+    if (!challenge.reward) {
+      return
+    }
+
+    const updateIndicatorActivities = employee.indicatorActivities.map(
+      async (iActivity) => {
+        return prisma.indicatorActivity.update({
+          where: {
+            id: iActivity.id,
+          },
+          data: {
+            isEditable: false,
+          },
+          select: {},
+        })
+      }
+    )
+
+    await Promise.all(updateIndicatorActivities)
+
+    await createPointTransaction({
+      type: PointTransactionType.REWARD,
+      value: challenge.reward,
+      companyId: challenge.companyId,
+      receiverId: employee.employeeId,
+      senderId: null,
+    })
+  })
+}
+
 /** If both items belong to the same company, the value will be true */
 export const canEmployeeViewChallenge = async (
   challengeId: Challenge['id'],
@@ -150,7 +194,9 @@ export const calculateChallengeProgress = ({
 
   return {
     progressValue,
-    progressPercentage: (progressValue * 100) / (goal * rewardEligibles),
+    progressPercentage: Math.round(
+      percentageOf(progressValue, goal * rewardEligibles)
+    ),
   }
 }
 

@@ -191,7 +191,7 @@ const handlePointConsumption = async (data: CreatePointTransactionArgs) => {
 }
 
 const handlePointReward = async (data: CreatePointTransactionArgs) => {
-  const { value, receiverId, companyId } = data
+  const { value, senderId, receiverId, companyId } = data
 
   if (!receiverId) {
     throw badRequest({
@@ -236,6 +236,7 @@ const handlePointReward = async (data: CreatePointTransactionArgs) => {
       data: {
         type: PointTransactionType.REWARD,
         value,
+        senderId,
         receiverId,
         companyId,
       },

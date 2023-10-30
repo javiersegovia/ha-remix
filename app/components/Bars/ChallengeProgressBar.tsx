@@ -5,6 +5,7 @@ interface ChallengeProgressBarProps {
   progressPercentage?: number
   totalGoal?: number
   indicator?: Pick<Indicator, 'name'> | null
+  showDetails?: boolean
 }
 
 export const ChallengeProgressBar = ({
@@ -12,6 +13,7 @@ export const ChallengeProgressBar = ({
   progressPercentage = 0,
   totalGoal,
   indicator,
+  showDetails = true,
 }: ChallengeProgressBarProps) => {
   return (
     <div className="text-gray-500">
@@ -24,10 +26,12 @@ export const ChallengeProgressBar = ({
 
       {totalGoal && indicator ? (
         <>
-          <div className="mb-2 flex items-center justify-between text-sm">
-            <p>Progreso actual ({Math.round(progressPercentage)}%)</p>
-            <p>Meta total ({indicator.name})</p>
-          </div>
+          {showDetails && (
+            <div className="mb-2 flex items-center justify-between text-sm">
+              <p>Progreso actual ({progressPercentage}%)</p>
+              <p>Meta total ({indicator.name})</p>
+            </div>
+          )}
 
           <div className="relative h-2 w-full overflow-hidden rounded-md bg-gray-200">
             <div
@@ -38,10 +42,12 @@ export const ChallengeProgressBar = ({
             />
           </div>
 
-          <div className="mt-2 flex items-center justify-between text-sm">
-            <p>{progressValue.toLocaleString()}</p>
-            <p>{totalGoal.toLocaleString()}</p>
-          </div>
+          {showDetails && (
+            <div className="mt-2 flex items-center justify-between text-sm">
+              <p>{progressValue.toLocaleString()}</p>
+              <p>{totalGoal.toLocaleString()}</p>
+            </div>
+          )}
         </>
       ) : null}
     </div>

@@ -2,7 +2,13 @@ import type { ReactNode } from 'react'
 
 import { json, type LoaderArgs } from '@remix-run/node'
 import { useLoaderData, useOutlet } from '@remix-run/react'
-import { HiOutlinePencilSquare, HiOutlineTrash } from 'react-icons/hi2'
+import {
+  HiMiniUserGroup,
+  HiOutlinePencilSquare,
+  HiOutlineTrash,
+} from 'react-icons/hi2'
+import { GiProgression } from 'react-icons/gi'
+
 import { $path } from 'remix-routes'
 import { MenuButton } from '~/components/Button/MenuButton'
 import { Container } from '~/components/Layout/Container'
@@ -18,12 +24,26 @@ import {
 import { requireEmployee } from '~/session.server'
 import { formatDate, sanitizeDate } from '~/utils/formatDate'
 import { badRequest } from '~/utils/responses'
-import { getIndicatorActivitiesByChallengeId } from '~/services/indicator-activity/indicator-activity.server'
+import {
+  getEmployeeIndicatorActivities,
+  getIndicatorActivitiesByChallengeId,
+} from '~/services/indicator-activity/indicator-activity.server'
 import { DataTable } from '~/components/Table/DataTable'
 import { ChallengeProgressBar } from '~/components/Bars/ChallengeProgressBar'
-import { columns, fullColumns } from './table-columns'
 import { hasPermissionByUserId } from '~/services/permissions/permissions.server'
-import { PermissionCode } from '@prisma/client'
+import { ChallengeStatus, PermissionCode } from '@prisma/client'
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '~/components/Accordions/Accordion'
+import { percentageOf } from '~/utils/percentage'
+import { Button, ButtonColorVariants } from '~/components/Button'
+import {
+  fullIndicatorActivityColumns,
+  indicatorActivityColumns,
+} from './table-columns'
 
 export const loader = async ({ request, params }: LoaderArgs) => {
   const employee = await requireEmployee(request)
@@ -51,6 +71,13 @@ export const loader = async ({ request, params }: LoaderArgs) => {
     ? await getIndicatorActivitiesByChallengeId(Number(challengeId))
     : []
 
+  const employeesIActivities = challenge?.goal
+    ? getEmployeeIndicatorActivities({
+        indicatorActivities: challengeIndicatorActivities,
+        goal: challenge.goal,
+      })
+    : []
+
   const canManageIndicatorActivity = await hasPermissionByUserId(
     employee.userId,
     PermissionCode.MANAGE_INDICATOR_ACTIVITY
@@ -64,9 +91,9 @@ export const loader = async ({ request, params }: LoaderArgs) => {
 
   return json({
     challenge,
-    challengeIndicatorActivities,
     progress,
     canManageIndicatorActivity,
+    employeesIActivities,
   })
 }
 
@@ -79,8 +106,8 @@ const ChallengeDetailsRoute = () => {
   const {
     challenge,
     progress,
-    challengeIndicatorActivities,
     canManageIndicatorActivity,
+    employeesIActivities,
   } = useLoaderData<typeof loader>()
 
   const outlet = useOutlet()
@@ -99,19 +126,28 @@ const ChallengeDetailsRoute = () => {
     teams: currentTeams,
   } = challenge
 
-  const navigation = [
-    {
+  const navigation = []
+
+  if (
+    challenge.status !== ChallengeStatus.CANCELED &&
+    challenge.status !== ChallengeStatus.COMPLETED
+  ) {
+    navigation.push({
       name: 'Editar',
       href: $path('/challenges/:challengeId/update', { challengeId: id }),
+      preventScrollReset: false,
       Icon: HiOutlinePencilSquare,
-    },
-    {
+    })
+  }
+
+  if (challenge.status !== ChallengeStatus.COMPLETED) {
+    navigation.push({
       name: 'Eliminar',
       href: $path('/challenges/:challengeId/delete', { challengeId: id }),
       preventScrollReset: true,
       Icon: HiOutlineTrash,
-    },
-  ]
+    })
+  }
 
   const gridItems: TGridItems[] = [
     {
@@ -162,13 +198,17 @@ const ChallengeDetailsRoute = () => {
   return (
     <>
       <Container>
-        <div className="flex items-center">
+        <div className="flex items-center gap-4">
           <Title as="h1">{title}</Title>
-          <div className="ml-auto flex items-center gap-4">
-            <ChallengeStatusPill status={status} />
-            <MenuButton navigation={navigation} />
-          </div>
+          <ChallengeStatusPill status={status} />
+
+          {navigation.length > 0 && (
+            <div className="ml-auto flex items-center gap-4">
+              <MenuButton navigation={navigation} />
+            </div>
+          )}
         </div>
+
         {description && (
           <Text className="mt-6 text-justify text-sm text-gray-500">
             {description}
@@ -182,42 +222,126 @@ const ChallengeDetailsRoute = () => {
             </div>
           ))}
         </section>
-        <section className="mt-10">
-          <Title as="h3">Progreso</Title>
-          <div className="mt-4">
-            <ChallengeProgressBar
-              totalGoal={goal ? goal * rewardEligibles : undefined}
-              indicator={indicator}
-              progressValue={progress?.progressValue}
-              progressPercentage={progress?.progressPercentage}
-            />
-          </div>
-        </section>
-        <section className="mt-10">
-          <Title as="h3">Actividad relacionada</Title>
-          <div className="mt-4">
-            {!challenge.indicator ? (
-              <p className="text-sm text-gray-500">
-                Para visualizar las actividades relacionadas, primero debes
-                establecer un indicador de progreso.
-              </p>
-            ) : challengeIndicatorActivities?.length > 0 ? (
-              <DataTable
-                data={challengeIndicatorActivities}
-                columns={canManageIndicatorActivity ? fullColumns : columns}
-                // pagination={pagination}
-                // tableActions={(table) => (
-                //   <TableActions table={table} indicators={indicators} />
-                // )}
+
+        {challenge.status !== ChallengeStatus.CANCELED &&
+          challenge.status !== ChallengeStatus.COMPLETED && (
+            <section className="mt-10">
+              <div className="flex items-center justify-end gap-4 py-4">
+                <Button
+                  size="XS"
+                  className="ml-auto whitespace-nowrap sm:w-auto"
+                  href={$path('/challenges/:challengeId/complete', {
+                    challengeId: challenge.id,
+                  })}
+                >
+                  Finalizar reto
+                </Button>
+
+                <Button
+                  size="XS"
+                  className="whitespace-nowrap sm:w-auto"
+                  variant={ButtonColorVariants.WARNING}
+                  href={$path('/challenges/:challengeId/cancel', {
+                    challengeId: challenge.id,
+                  })}
+                >
+                  Cancelar reto
+                </Button>
+              </div>
+            </section>
+          )}
+
+        {challenge.status !== ChallengeStatus.CANCELED && (
+          <section className="mt-10">
+            <div className="flex items-center gap-4">
+              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-green-200">
+                <GiProgression className="text-lg text-green-700" />
+              </div>
+
+              <Title as="h3">Progreso</Title>
+            </div>
+
+            <div className="mt-4">
+              <ChallengeProgressBar
+                totalGoal={goal ? goal * rewardEligibles : undefined}
+                indicator={indicator}
+                progressValue={progress?.progressValue}
+                progressPercentage={progress?.progressPercentage}
               />
-            ) : (
-              <p className="text-sm text-gray-500">
-                Todavía no se ha encontrado ninguna actividad relacionada a este
-                reto.
-              </p>
-            )}
-          </div>
-        </section>
+            </div>
+          </section>
+        )}
+
+        {challenge.status !== ChallengeStatus.CANCELED &&
+          employeesIActivities?.length > 0 && (
+            <section className="mt-10">
+              <div className="flex items-center gap-4">
+                <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-teal-200">
+                  <HiMiniUserGroup className="text-lg text-teal-700" />
+                </div>
+
+                <Title as="h3">Participantes</Title>
+              </div>
+
+              <Accordion type="single" collapsible className="w-full">
+                {employeesIActivities.map((item) => {
+                  return (
+                    <AccordionItem
+                      value={item.employeeId}
+                      key={item.employeeId}
+                    >
+                      <AccordionTrigger>
+                        <div className="w-full pr-4 font-normal text-gray-500">
+                          <div className="text-left">
+                            {item.fullName} (
+                            {Math.round(
+                              percentageOf(item.totalActivityValue, goal || 0)
+                            )}
+                            %)
+                          </div>
+
+                          <ChallengeProgressBar
+                            totalGoal={goal || undefined}
+                            indicator={indicator}
+                            showDetails={false}
+                            progressValue={item.totalActivityValue}
+                            progressPercentage={
+                              goal
+                                ? (item.totalActivityValue * 100) / goal
+                                : undefined
+                            }
+                          />
+                        </div>
+                      </AccordionTrigger>
+
+                      <AccordionContent className="">
+                        <div className="flex justify-between pb-6 text-gray-500">
+                          <div>
+                            <p>Progreso actual</p>
+                            <p>{item.totalActivityValue?.toLocaleString()}</p>
+                          </div>
+
+                          <div className="text-right">
+                            <p>Meta individual</p>{' '}
+                            <p>{goal?.toLocaleString()}</p>
+                          </div>
+                        </div>
+
+                        <DataTable
+                          data={item.indicatorActivities}
+                          columns={
+                            canManageIndicatorActivity
+                              ? fullIndicatorActivityColumns
+                              : indicatorActivityColumns
+                          }
+                        />
+                      </AccordionContent>
+                    </AccordionItem>
+                  )
+                })}
+              </Accordion>
+            </section>
+          )}
       </Container>
 
       {outlet}

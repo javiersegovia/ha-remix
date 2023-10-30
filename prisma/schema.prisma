@@ -1082,6 +1082,7 @@ model Challenge {
 enum ChallengeStatus {
   ACTIVE
   INACTIVE
+  CANCELED
   COMPLETED
 }
 
@@ -1198,6 +1199,8 @@ model IndicatorActivity {
 
   date DateTime @default(now())
 
+  isEditable Boolean? @default(true)
+
   employee   Employee @relation(fields: [employeeId], references: [id], onUpdate: Cascade, onDelete: Cascade)
   employeeId String
 
@@ -1206,7 +1209,7 @@ model IndicatorActivity {
 }
 
 model ErrorReport {
-  id        String      @id @default(cuid())
+  id        String   @id @default(cuid())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

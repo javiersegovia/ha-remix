@@ -9,6 +9,7 @@ const ChallengeStatusLabel = {
   [ChallengeStatus.ACTIVE]: 'Reto activo',
   [ChallengeStatus.INACTIVE]: 'Reto inactivo',
   [ChallengeStatus.COMPLETED]: 'Reto completado',
+  [ChallengeStatus.CANCELED]: 'Reto cancelado',
 } as const
 
 export const ChallengeStatusPill = ({ status }: ChallengeStatusPillProps) => {
@@ -18,7 +19,8 @@ export const ChallengeStatusPill = ({ status }: ChallengeStatusPillProps) => {
         'inline-flex min-w-[6rem] justify-center rounded-3xl px-4 py-2 text-xs font-semibold leading-5',
         status === ChallengeStatus.ACTIVE && 'bg-blue-200 text-blue-700',
         status === ChallengeStatus.INACTIVE && 'bg-gray-200 text-gray-700',
-        status === ChallengeStatus.COMPLETED && 'bg-green-200 text-green-700'
+        status === ChallengeStatus.COMPLETED && 'bg-green-200 text-green-700',
+        status === ChallengeStatus.CANCELED && 'bg-red-200 text-red-700'
       )}
     >
       {ChallengeStatusLabel[status]}
