@@ -83,26 +83,26 @@ export const action = async ({ request, params }: ActionArgs) => {
 }
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => {
-  if (!data) {
+  if (!data || !data.payrollAdvance) {
     return {
-      title: 'Ha ocurrido un error | HoyAdelantas',
+      title: 'Ha ocurrido un error | HoyTrabajas Beneficios',
     }
   }
 
   const { payrollAdvance } = data
 
-  const { employee } = payrollAdvance
+  const { employee } = payrollAdvance || {}
   const { user } = employee || {}
   const { firstName, lastName } = user || {}
 
   if (firstName || lastName) {
     return {
-      title: `Solicitud de ${`${firstName} ${lastName}`.trim()} | HoyAdelantas`,
+      title: `Solicitud de ${`${firstName} ${lastName}`.trim()} | HoyTrabajas Beneficios`,
     }
   }
 
   return {
-    title: `Solicitud de ${payrollAdvance.totalAmount} | HoyAdelantas`,
+    title: `Solicitud de ${payrollAdvance.totalAmount} | HoyTrabajas Beneficios`,
   }
 }
 

@@ -17,6 +17,7 @@ import { getTeamsByCompanyId } from '~/services/team/team.server'
 import { getCompanyPointMetricsByCompanyId } from '~/services/company-points/company-points.server'
 import { getCompanyById } from '~/services/company/company.server'
 import { PointMetrics } from '~/containers/home/PointMetrics'
+import { $path } from 'remix-routes'
 
 export const loader = async ({ request }: LoaderArgs) => {
   const employee = await requireEmployee(request)
@@ -125,7 +126,7 @@ const HomeRoute = () => {
               </Text>
 
               <Button
-                href="/home/create-challenge"
+                href={$path('/challenges/create')}
                 className="mt-6 w-auto"
                 size="SM"
               >

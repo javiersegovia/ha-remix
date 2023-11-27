@@ -19,10 +19,10 @@ const AchievementsIndexRoute = () => {
               Bienvenido a Logros
             </h1>
             <p className="mx-auto flex justify-center text-white">
-              Lorem ipsum dolor sit amet consectetur, adipisicing elit. Et, sit
-              a voluptates cupiditate autem nam illum praesentium atque
-              architecto odit at quis voluptatem quo natus eius sunt ipsum.
-              Soluta, doloremque.
+              Un sistema gamificado de evaluación de desempeño que destaca los
+              logros individuales de los empleados, asignando clasificaciones
+              basadas en estos logros y premiando con bonificaciones o
+              beneficios a quienes alcanzan los niveles más altos.
             </p>
 
             <div className="mx-auto">
